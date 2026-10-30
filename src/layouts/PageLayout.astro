@@ -1,0 +1,63 @@
+---
+import Base from './Base.astro';
+import Footer from '../components/footer/Footer.astro';
+import Header from '../components/header/Header.astro';
+import TextureField from '../components/texture-field/TextureField.astro';
+
+type CreditEntry = {
+  label: string;
+  text: string;
+};
+
+interface Props {
+  title: string;
+  active: 'results' | 'how-we-check' | 'about' | 'none';
+  showFooter?: boolean;
+  showFooterOnPhone?: boolean;
+  floatingBackToTop?: boolean;
+  credits?: CreditEntry[];
+  showSearch?: boolean;
+}
+
+const {
+  title,
+  active,
+  showFooter = true,
+  showFooterOnPhone = true,
+  floatingBackToTop = true,
+  credits,
+  showSearch = false,
+} = Astro.props;
+const PageTag = showSearch ? 'uruk-menu' : 'div';
+---
+
+<Base title={title}>
+  <PageTag class="page-layout" id="top" data-page-layout>
+    <TextureField />
+    <Header active={active} showSearch={showSearch}><slot name="search" slot="search" /></Header>
+    <main class="page-layout__main">
+      <slot />
+    </main>
+    {showFooter && (
+      <Footer
+        credits={credits}
+        floatingBackToTop={floatingBackToTop}
+        hideOnPhone={!showFooterOnPhone}
+      />
+    )}
+  </PageTag>
+</Base>
+
+<style>
+  .page-layout {
+    --page-gutter: clamp(20px, calc(6.628571px + 3.428571vw), 56px);
+    min-height: 100svh;
+    overflow-x: clip;
+    position: relative;
+  }
+
+  .page-layout__main {
+    min-width: 0;
+    position: relative;
+  }
+</style>

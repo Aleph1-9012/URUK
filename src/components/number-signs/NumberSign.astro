@@ -1,0 +1,105 @@
+---
+import sign1 from '../../assets/tablet/sign-1.png';
+import sign10 from '../../assets/tablet/sign-10.png';
+import sign60 from '../../assets/tablet/sign-60.png';
+
+type Unit = '60' | '10' | '1';
+type Mode = 'key' | 'tablet' | 'tally';
+
+interface Props {
+  unit: Unit;
+  mode: Mode;
+  style?: string;
+}
+
+const { unit, mode, style } = Astro.props;
+const assets = {
+  '60': sign60,
+  '10': sign10,
+  '1': sign1,
+} as const;
+const image = assets[unit];
+---
+
+<span
+  class:list={['number-sign', `number-sign--${mode}`, `number-sign--${unit}`, `number-sign--${mode}-${unit}`]}
+  style={style}
+  aria-hidden="true"
+>
+  <span class="number-sign__crop">
+    <img src={image.src} alt="" width={image.width} height={image.height} />
+  </span>
+</span>
+
+<style>
+  .number-sign {
+    display: inline-flex;
+    flex: none;
+    mix-blend-mode: multiply;
+    overflow: hidden;
+  }
+
+  .number-sign__crop {
+    display: block;
+    flex: none;
+    overflow: hidden;
+  }
+
+  .number-sign__crop img {
+    display: block;
+    height: 100%;
+    width: 100%;
+  }
+
+  .number-sign--tablet {
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+  }
+
+  .number-sign--tablet .number-sign__crop {
+    height: var(--crop-height);
+    transform: rotate(var(--rotation));
+    width: var(--crop-width);
+  }
+
+  .number-sign--key-60 .number-sign__crop {
+    border-radius: 0 15px 15px 0;
+    height: 30px;
+    width: 37.143px;
+  }
+
+  .number-sign--tally-10 .number-sign__crop { width: 39px; height: 39px; border-radius: 50%; }
+  .number-sign--tally-1 .number-sign__crop { width: 23.914px; height: 18.6px; }
+
+  .number-sign--key-10 .number-sign__crop {
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+  }
+
+  .number-sign--key-1 .number-sign__crop {
+    border-radius: 0 15px 15px 0;
+    height: 30px;
+    width: 38.571px;
+  }
+
+  @media (max-width: 47.999rem) {
+    .number-sign--key-60 .number-sign__crop {
+      border-radius: 0 11px 11px 0;
+      height: 22px;
+      width: 27.238px;
+    }
+
+    .number-sign--key-10 .number-sign__crop {
+      height: 22px;
+      width: 22px;
+    }
+
+    .number-sign--key-1 .number-sign__crop {
+      border-radius: 0 11px 11px 0;
+      height: 22px;
+      width: 28.286px;
+    }
+  }
+</style>

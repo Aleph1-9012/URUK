@@ -1,0 +1,150 @@
+---
+import Ornament from '../assets/ornaments/ornament.svg?url';
+import Diamond from '../assets/ornaments/diamond.svg?url';
+import PageLayout from '../layouts/PageLayout.astro';
+---
+
+<PageLayout title="What is Uruk?" active="about">
+  <article class="folio-page about-page">
+    <section class="folio-top about-page__top">
+      <div class="folio-top__text">
+        <h1>What is Uruk?</h1>
+        <div class="folio-ornament" aria-hidden="true">
+          <img class="folio-ornament__desktop" src={Ornament} alt="" width="640" height="12" />
+          <div class="folio-ornament__phone">
+            <span></span><img src={Diamond} alt="" width="10" height="10" /><span></span>
+          </div>
+        </div>
+        <p class="folio-top__copy">
+          Uruk explains results from OpenAI's mathematics release of October 2026 in plain words. Each result gets one page, and each page answers four questions:
+        </p>
+      </div>
+      <aside class="folio-top__contents">
+        <p class="folio-contents__title">Contents</p>
+        <a class="folio-contents__row case-link case-link--row" href="#who-it-is-for">
+          <span class="folio-contents__number">I.</span><span class="folio-contents__text">Who it is for</span><span class="folio-contents__leader"></span>
+        </a>
+        <a class="folio-contents__row case-link case-link--row" href="#where-results-come-from">
+          <span class="folio-contents__number">II.</span><span class="folio-contents__text">Where the results come from</span><span class="folio-contents__leader"></span>
+        </a>
+        <a class="folio-contents__row case-link case-link--row" href="#open-source">
+          <span class="folio-contents__number">III.</span><span class="folio-contents__text">Open source</span><span class="folio-contents__leader"></span>
+        </a>
+        <a class="folio-contents__row case-link case-link--row" href="#why-uruk">
+          <span class="folio-contents__number">IV.</span><span class="folio-contents__text">Why Uruk?</span><span class="folio-contents__leader"></span>
+        </a>
+      </aside>
+    </section>
+
+    <section class="folio-question-list">
+      <div class="folio-row folio-row--question">
+        <p class="folio-row__margin folio-question-list__number">1.</p>
+        <div class="folio-row__text"><h2>What is the problem?</h2><p>You can play with it before you see a formula.</p></div>
+      </div>
+      <div class="folio-row folio-row--question">
+        <p class="folio-row__margin folio-question-list__number">2.</p>
+        <div class="folio-row__text"><h2>Why did it stay open?</h2><p>Who asked it, what was tried, and what stood in the way.</p></div>
+      </div>
+      <div class="folio-row folio-row--question">
+        <p class="folio-row__margin folio-question-list__number">3.</p>
+        <div class="folio-row__text"><h2>Does it matter outside mathematics?</h2><p>Often not directly, and when it doesn't, the page says so.</p></div>
+      </div>
+      <div class="folio-row folio-row--question about-page__question--last">
+        <p class="folio-row__margin folio-question-list__number">4.</p>
+        <div class="folio-row__text">
+          <h2>Have mathematicians approved the proof?</h2>
+          <p>Every page carries a label with a date. <a class="case-link case-link--tight" href="/how-we-check/">How we check</a> explains the labels.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="folio-section" id="who-it-is-for">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">I.</p>
+        <h2 class="folio-section__title">Who it is for</h2>
+      </div>
+      <div class="folio-row about-page__row--section-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>Anyone curious, with no mathematics past school. Every term is explained the first time it appears. The exact theorem is always there too, for readers who want it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="folio-section" id="where-results-come-from">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">II.</p>
+        <h2 class="folio-section__title">Where the results come from</h2>
+      </div>
+      <div class="folio-row">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>Every paper comes from OpenAI's public repository, <a class="case-link case-link--tight" href="https://github.com/openai/math/tree/adc7f1241b42e322a6451854ab7e4b4c146bf78a">github.com/openai/math</a>. We read it at one fixed version, commit adc7f12, and link that version rather than the latest. That way the text we describe cannot change under us. If OpenAI later revises or withdraws a paper, the page says so. The repository is published under the Apache 2.0 licence.</p>
+        </div>
+      </div>
+      <div class="folio-row">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>We choose a small set of results: ones whose question can be pictured and said plainly.</p>
+        </div>
+      </div>
+      <div class="folio-row about-page__row--section-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>[To confirm: "Uruk is independent. It is not made by OpenAI or connected to it."]</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="folio-section" id="open-source">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">III.</p>
+        <h2 class="folio-section__title">Open source</h2>
+      </div>
+      <div class="folio-row about-page__row--section-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>Uruk is open source: <a class="case-link case-link--tight" href="https://github.com/Aleph1-9012/URUK">github.com/Aleph1-9012/URUK</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="folio-section" id="why-uruk">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">IV.</p>
+        <h2 class="folio-section__title">Why Uruk?</h2>
+      </div>
+      <div class="folio-row about-page__row--page-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>Uruk, in southern Iraq, is one of the oldest cities we know. Some of the earliest writing ever found comes from there, much of it keeping count of things.</p>
+        </div>
+      </div>
+    </section>
+  </article>
+</PageLayout>
+
+<style>
+  .about-page__top {
+    padding-bottom: 56px;
+  }
+
+  .about-page .about-page__question--last {
+    padding-bottom: 104px;
+  }
+
+  .about-page .about-page__row--section-end {
+    padding-bottom: 72px;
+  }
+
+  .about-page .about-page__row--page-end {
+    padding-bottom: 120px;
+  }
+
+  @media (max-width: 47.999rem) {
+    .about-page .about-page__question--last,
+    .about-page .about-page__row--page-end {
+      padding-bottom: 72px;
+    }
+  }
+</style>

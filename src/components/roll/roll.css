@@ -1,0 +1,152 @@
+uruk-roll, .menu-page, .result-on-roll {
+  --content-left: max(var(--page-gutter), calc((100% - 1328px) / 2));
+  --roll-inset: max(4px, calc(var(--content-left) - 36px));
+  --roll-lead: clamp(24px, 4.862vw, 70px);
+}
+
+uruk-roll { display: flex; flex-direction: column; min-width: 0; }
+
+.roll-stage { padding: 8px 0 0 calc(var(--roll-inset) + 60px); }
+.roll-sheet { isolation: isolate; position: relative; }
+uruk-roll[data-closed] .roll-sheet { width: calc(var(--roll-lead) + var(--count) * var(--card-width) + 40px); }
+
+/* A roller always sits under the sheet, so the sheet hides its inner half. */
+.roll-roller { bottom: -20px; left: -60px; position: absolute; top: -36px; width: 120px; z-index: 0; }
+.roll-roller span { border-image: var(--roller-desktop) 240 0 64 0 fill / 120px 0 32px; border-style: solid; border-width: 120px 0 32px; box-sizing: border-box; display: block; height: 100%; position: relative; }
+.roll-roller canvas { display: block; height: calc(100% + 152px); left: 0; position: absolute; top: -120px; width: 120px; }
+.roll-roller--end { display: none; left: auto; right: -60px; transform: scaleX(-1); }
+uruk-roll[data-closed] .roll-roller--end { display: block; }
+
+/* The sheet slides out from under the roller as the page loads; the roller turns with it in element.ts. */
+@keyframes roll-open {
+  from { clip-path: inset(-2px -2px -2px 100%); transform: translateX(-100%); }
+  to { clip-path: inset(-2px -2px -2px 0); transform: translateX(0); }
+}
+@keyframes roll-open-down {
+  from { clip-path: inset(100% -2px -2px -2px); transform: translateY(-100%); }
+  to { clip-path: inset(0 -2px -2px -2px); transform: translateY(0); }
+}
+@keyframes roll-edge { from, to { opacity: 1; } }
+.roll-paper::after { border-right: 1.5px solid var(--ink); content: ""; inset: 0 0 0 auto; opacity: 0; pointer-events: none; position: absolute; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .roll-paper { animation: roll-open 1.2s cubic-bezier(.3, 0, .2, 1); }
+  .roll-paper::after { animation: roll-edge 1.2s linear; }
+}
+
+.roll-paper { background: var(--paper); border-block: 1.5px solid var(--ink); position: relative; z-index: 1; }
+.roll-seal { background: var(--seal) repeat-x calc(0px - var(--seal-offset, 0px)) 8px / var(--seal-tile, 228px) 64px; border-bottom: 1px solid var(--ink); height: 80px; }
+.roll-heading { display: none; }
+.roll-frame { container-type: inline-size; margin-left: var(--roll-lead); }
+uruk-roll[data-closed] .roll-frame { margin-right: 40px; }
+
+.roll-window { overflow: auto hidden; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.roll-window::-webkit-scrollbar { display: none; }
+.roll-window:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* Room for a hovered card's case to cross past its corners, which the scroller would otherwise clip. Only while it shows, so a neighbouring card never shows a strip at rest. */
+@media (min-width: 48rem) {
+  .roll-window:has(.roll-card:is(:hover, :focus-visible)) { margin: -4px; padding: 4px; scroll-padding-inline: 4px; }
+}
+
+.roll-track { --slots: 1; display: grid; grid-auto-columns: calc(100cqw / var(--slots)); grid-auto-flow: column; position: relative; width: max-content; }
+uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
+.roll-track::after { border-right: 1px solid var(--ink); content: ""; inset: 0 0 0 auto; pointer-events: none; position: absolute; }
+
+/* Every width below shows whole cards, and the last one ends on the window edge. */
+@container (min-width: 472px) { .roll-track { --slots: 2; } }
+@container (min-width: 708px) { .roll-track { --slots: 3; } }
+@container (min-width: 944px) { .roll-track { --slots: 4; } }
+@container (min-width: 1180px) { .roll-track { --slots: 5; } }
+@container (min-width: 1416px) { .roll-track { --slots: 6; } }
+@container (min-width: 1652px) { .roll-track { --slots: 7; } }
+@container (min-width: 1888px) { .roll-track { --slots: 8; } }
+
+.roll-card { border-left: 1px solid var(--ink); color: var(--ink); display: flex; flex-direction: column; min-height: 286px; min-width: 0; padding: 28px 20px 24px; scroll-snap-align: start; text-decoration: none; }
+.roll-card__topic { color: var(--muted); font: .6875rem/1.2 var(--font-special-elite); letter-spacing: .04em; min-height: 34px; text-transform: uppercase; }
+.roll-card__number { display: none; }
+.roll-card__question { font: italic 1.375rem/1.75rem var(--font-alegreya); margin-bottom: 16px; overflow-wrap: anywhere; }
+.roll-card__status, .roll-card__read { align-items: center; display: flex; font: .75rem/1.2 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
+.roll-card__status { gap: 8px; margin-top: auto; }
+.roll-card__read { gap: 6px; margin-top: 14px; }
+.roll-icon { align-items: center; display: inline-flex; flex: none; height: 12px; justify-content: center; width: 12px; }
+.roll-icon svg { max-height: 12px; max-width: 12px; }
+.roll-card:hover { z-index: 1; }
+.roll-card.is-current { background: var(--ink); color: var(--paper); }
+.roll-card.is-current .roll-card__topic { color: var(--paper); }
+.roll-card.is-current .status-sign, .roll-card.is-current .roll-icon { filter: invert(1); }
+
+.roll-slot { border-left: 1px solid var(--ink); display: flex; min-height: 286px; min-width: 0; padding: 28px 20px; scroll-snap-align: start; }
+.roll-slot p { align-items: center; border: 1.5px dashed rgb(31 31 27 / 35%); color: var(--muted); display: flex; flex: 1; font: italic 1.125rem/1.5rem var(--font-alegreya); justify-content: center; min-width: 0; overflow-wrap: anywhere; padding: 12px 20px; text-align: center; }
+
+.roll-controls { align-items: center; display: flex; flex-wrap: wrap; gap: 12px 32px; margin-top: 36px; padding-inline: calc(var(--roll-inset) + 20px) var(--content-left); }
+.roll-wind { align-items: center; display: flex; flex: 1 1 320px; min-width: 0; }
+.roll-arrows { display: flex; flex: none; gap: 16px; }
+.roll-wind p { color: var(--muted); font: .8125rem/1.3 var(--font-special-elite); letter-spacing: .04em; margin-left: max(12px, calc(var(--roll-lead) - 40px)); min-width: 0; }
+.roll-arrow { background: var(--paper); border: 1px solid var(--ink); border-radius: 50%; color: var(--ink); cursor: pointer; display: grid; flex: none; height: 32px; padding: 0; place-items: center; width: 32px; }
+.roll-arrow:disabled { cursor: default; opacity: .35; }
+.roll-arrow:disabled::before, .roll-arrow:disabled::after { display: none; }
+.roll-all { align-items: center; color: var(--muted); display: inline-flex; gap: 6px; white-space: nowrap; }
+
+/* Past the 1440 frame the sheet stops at the content edge, between two rollers, so the roll stays centred. */
+@media (min-width: 90.0625rem) {
+  .roll-stage { padding-right: calc(var(--roll-inset) + 60px); }
+  .roll-roller--end { display: block; }
+  .roll-frame { margin-right: var(--roll-lead); }
+}
+
+@media (hover: hover) {
+  .roll-arrow:not(:disabled):hover { border-radius: 0; }
+}
+
+@media (max-width: 47.999rem) {
+  uruk-roll:not(.roll-neighbors) .roll-controls { margin-top: 0; order: -1; padding-inline: 20px; }
+  uruk-roll:not(.roll-neighbors) .roll-wind { display: none; }
+  .roll-neighbors .roll-controls { margin-top: 20px; padding-inline: 24px; }
+  .roll-arrows { display: none; }
+  .roll-wind { flex-basis: 100%; }
+  .roll-wind p { margin-left: 0; }
+
+  .roll-stage { padding: 60px 36px 0 24px; }
+  uruk-roll[data-closed] .roll-stage { padding-bottom: 60px; }
+  uruk-roll[data-closed] .roll-sheet { width: auto; }
+
+  .roll-roller { bottom: auto; container-type: inline-size; height: 120px; left: -20px; right: -36px; top: -60px; width: auto; }
+  .roll-roller span { border-image-source: var(--roller-phone); height: 100cqw; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(90deg); width: 120px; }
+  .roll-roller--end { bottom: -60px; left: -20px; right: -36px; top: auto; transform: scaleY(-1); }
+
+  .roll-paper::after { display: none; }
+  .roll-paper { animation-name: roll-open-down; border-block: 0 1px solid var(--ink); border-inline: 1.5px solid var(--ink); padding-right: 80px; }
+  .roll-seal { background: none; border-bottom: 0; border-left: 1px solid var(--ink); bottom: 0; height: auto; overflow: hidden; position: absolute; right: 0; top: 0; width: 80px; }
+  .roll-seal::after { background: var(--seal) repeat-x calc(0px - var(--seal-offset, 0px)) 0 / var(--seal-tile, 228px) 64px; content: ""; height: 64px; left: 72px; position: absolute; top: 0; transform: rotate(90deg); transform-origin: 0 0; width: var(--sheet-height, 4000px); }
+
+  .roll-frame { margin-left: 0; padding-top: 24px; }
+  uruk-roll[data-closed] .roll-frame { margin-right: 0; padding-block: 0 24px; }
+  uruk-roll[data-closed] .roll-heading { color: var(--ink); display: block; font: .6875rem/1.2 var(--font-special-elite); letter-spacing: .04em; padding: 28px 16px 8px; text-transform: uppercase; }
+  uruk-roll[data-empty] .roll-heading { display: none; }
+  uruk-roll[data-empty] .roll-frame { padding-top: 24px; }
+
+  .roll-window { height: var(--window-height, auto); overflow: hidden auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; }
+  .roll-track { grid-auto-columns: auto; grid-auto-flow: row; grid-auto-rows: var(--row-height, 1fr); width: auto; }
+  .roll-track::after { display: none; }
+
+  .roll-card { border-left: 0; border-top: 1px solid var(--ink); min-height: 228px; padding: 24px 16px 20px; }
+  .roll-card__topic { min-height: 0; }
+  .roll-card__question { margin-block: 13px 8px; }
+
+  .roll-slot { border-left: 0; border-top: 1px solid var(--ink); min-height: 228px; padding: 24px 16px; }
+
+  uruk-roll[data-closed] .roll-card { align-content: start; align-items: center; border-bottom: 1px solid var(--ink); border-top: 0; flex-flow: row wrap; gap: 6px 10px; min-height: 0; padding: 12px 16px; }
+  uruk-roll[data-closed] .roll-card__topic { display: none; }
+  uruk-roll[data-closed] .roll-card__number { color: var(--muted); display: block; font: .75rem/1.2 var(--font-special-elite); order: 1; width: 40px; }
+  uruk-roll[data-closed] .roll-card__status { gap: 6px; letter-spacing: 0; margin: 0 auto 0 0; order: 2; }
+  uruk-roll[data-closed] .roll-card__read { letter-spacing: 0; margin: 0; order: 3; }
+  uruk-roll[data-closed] .roll-card__question { flex-basis: 100%; font-size: 1rem; line-height: 1.25rem; margin: 0; order: 4; }
+  uruk-roll[data-closed] .roll-slot { border-bottom: 0; border-top: 1px solid var(--ink); }
+
+  .roll-neighbors .roll-card__question { margin-bottom: 16px; }
+  .roll-neighbors .roll-card:not([data-neighbor]) { display: none; }
+  .roll-neighbors .roll-window { height: auto; }
+}
+
+[hidden] { display: none !important; }

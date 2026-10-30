@@ -1,0 +1,264 @@
+---
+import { Image } from 'astro:assets';
+import tablet from '../assets/tablet/text-180-obverse-2x.png';
+import Icon from '../components/icon/Icon.astro';
+import NumberSign from '../components/number-signs/NumberSign.astro';
+import NumberSigns from '../components/number-signs/NumberSigns.astro';
+import PageLayout from '../layouts/PageLayout.astro';
+---
+
+<PageLayout title="Error 404" active="none" showFooter={false}>
+  <div class="not-found">
+    <div class="not-found__tablet" aria-hidden="true">
+      <Image src={tablet} alt="" widths={[284, 525, 568, 1050]} sizes="(max-width: 323px) calc(100vw - 40px), (max-width: 767px) 283.5px, 525px" format="webp" quality={90} loading="eager" />
+      <NumberSigns count={404} />
+    </div>
+    <section class="not-found__message">
+      <p class="not-found__eyebrow">Error 404</p>
+      <h1>This page is not here.</h1>
+      <p class="not-found__address">The address may be mistyped, or the page may have moved.</p>
+      <div class="not-found__hairline"></div>
+      <div class="not-found__key">
+        <NumberSign unit="60" mode="key" />
+        <span>60 × 6</span>
+        <span class="not-found__operator">+</span>
+        <NumberSign unit="10" mode="key" />
+        <span>10 × 4</span>
+        <span class="not-found__operator">+</span>
+        <NumberSign unit="1" mode="key" />
+        <span>1 × 4</span>
+        <span class="not-found__operator">=</span>
+        <span>404</span>
+      </div>
+      <p class="not-found__note">
+        Uruk's scribes wrote numbers by pressing a round stylus into wet clay: six sixties, four tens and four ones. The empty case on this tablet now holds 404, counted their way.
+      </p>
+      <a class="not-found__button case-link case-link--framed" href="/results/">
+        <span>All results</span>
+        <Icon name="right" />
+      </a>
+    </section>
+    <p class="not-found__credit">
+      Tablet: Text 180, an account of barley and emmer, about 3100–2900 BCE, probably from Uruk. Drawing, The Met, 1988.433.2, open access. The number signs in the empty case were added for this page.
+    </p>
+  </div>
+</PageLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    column-gap: clamp(40px, calc(40px + (100vw - 1200px) * 0.270833), 105px);
+    row-gap: 24px;
+    grid-template-columns: 525px minmax(0, 500px);
+    grid-template-rows: minmax(651px, auto) auto;
+    margin: 28px auto 0;
+    max-width: 1140px;
+    position: relative;
+    width: calc(100% - 2 * var(--page-gutter));
+    padding-bottom: 40px;
+  }
+
+  .not-found__tablet {
+    height: 680px;
+    margin-top: 0;
+    mix-blend-mode: multiply;
+    position: relative;
+    width: 525px;
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  .not-found__tablet > img {
+    display: block;
+    height: auto;
+    width: 100%;
+  }
+
+  .not-found__message {
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 177px;
+    width: 100%;
+    min-width: 0;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .not-found__eyebrow {
+    color: var(--muted);
+    font-family: var(--font-special-elite);
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    line-height: 0.9375rem;
+    text-transform: uppercase;
+  }
+
+  .not-found__message h1 {
+    font-family: var(--font-alegreya);
+    font-size: var(--folio-question-font-size);
+    font-style: italic;
+    font-weight: 400;
+    line-height: var(--folio-question-line-height);
+  }
+
+  .not-found__address {
+    font-family: var(--font-alegreya);
+    font-size: var(--folio-standfirst-font-size);
+    line-height: var(--folio-standfirst-line-height);
+  }
+
+  .not-found__hairline {
+    background: var(--muted);
+    height: 1px;
+    width: 100%;
+  }
+
+  .not-found__key {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    white-space: nowrap;
+  }
+
+  .not-found__key > span {
+    font-family: var(--font-special-elite);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .not-found__key .not-found__operator {
+    color: var(--muted);
+  }
+
+  .not-found__note {
+    color: var(--muted);
+    font-family: var(--font-alegreya);
+    font-size: 1rem;
+    font-style: italic;
+    line-height: 1.5rem;
+  }
+
+  .not-found__button {
+    align-items: center;
+    align-self: start;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    display: inline-flex;
+    font-family: var(--font-special-elite);
+    font-size: 0.75rem;
+    gap: 6px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    padding: 15px 22px;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .not-found__button :global(svg) {
+    display: block;
+    flex: none;
+    height: 12px;
+    width: 12px;
+  }
+
+  .not-found__credit {
+    color: var(--muted);
+    font-family: var(--font-special-elite);
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+    line-height: 0.9375rem;
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+  }
+
+  @media (min-width: 48rem) and (max-width: 74.999rem) {
+    .not-found {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .not-found__tablet {
+      flex: none;
+    }
+
+    .not-found__message {
+      margin-top: 0;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .not-found__credit {
+      margin-top: 0;
+      max-width: 500px;
+      position: static;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 47.999rem) {
+    .not-found {
+      display: block;
+      margin: 8px auto 0;
+      padding-bottom: 28.8px;
+      width: calc(100% - 40px);
+    }
+
+    .not-found__tablet {
+      aspect-ratio: 283.5 / 367.2;
+      height: auto;
+      margin: 0 auto 22px;
+      width: min(17.71875rem, 100%);
+    }
+
+    .not-found__message {
+      gap: 12px;
+      margin: 0;
+      width: 100%;
+    }
+
+    .not-found__eyebrow {
+      font-size: 0.75rem;
+      line-height: 1.125rem;
+      letter-spacing: 0.04em;
+    }
+
+    .not-found__address {
+      font-size: 1.0625rem;
+      line-height: 1.6875rem;
+    }
+
+    .not-found__key {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .not-found__key > span {
+      font-size: 0.75rem;
+    }
+
+    .not-found__note {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+
+    .not-found__button {
+      padding: 15px 22px;
+    }
+
+    .not-found__credit {
+      font-size: 0.625rem;
+      line-height: 0.9375rem;
+      margin-top: 28px;
+      position: static;
+      width: 100%;
+    }
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+import ClearIcon from '../../assets/icons/clear.svg';
+import CloseIcon from '../../assets/icons/close.svg';
+import DownIcon from '../../assets/icons/down.svg';
+import LeftIcon from '../../assets/icons/left.svg';
+import OpenIcon from '../../assets/icons/open.svg';
+import RightIcon from '../../assets/icons/right.svg';
+import RollBackIcon from '../../assets/icons/roll-back.svg';
+import RollForwardIcon from '../../assets/icons/roll-forward.svg';
+import SearchIcon from '../../assets/icons/search.svg';
+
+interface Props {
+  name:
+    | 'right'
+    | 'left'
+    | 'down'
+    | 'roll-forward'
+    | 'roll-back'
+    | 'open'
+    | 'close'
+    | 'search'
+    | 'clear';
+}
+
+const { name } = Astro.props;
+const icons = {
+  right: RightIcon,
+  left: LeftIcon,
+  down: DownIcon,
+  'roll-forward': RollForwardIcon,
+  'roll-back': RollBackIcon,
+  open: OpenIcon,
+  close: CloseIcon,
+  search: SearchIcon,
+  clear: ClearIcon,
+} as const;
+const Icon = icons[name];
+---
+
+<Icon aria-hidden="true" />

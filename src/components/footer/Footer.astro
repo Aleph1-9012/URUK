@@ -1,0 +1,240 @@
+---
+import rosetteUrl from '../../assets/rosette/loftus-64.png?url';
+import logoUrl from '../../assets/logo/footer.svg?url';
+import BackToTop from '../back-to-top/BackToTop.astro';
+
+type Credit = {
+  label: string;
+  text: string;
+};
+
+interface Props {
+  credits?: Credit[] | undefined;
+  floatingBackToTop?: boolean;
+  hideOnPhone?: boolean;
+}
+
+const DEFAULT_CREDITS: Credit[] = [
+  {
+    label: 'Seal impression',
+    text: 'A male figure, hunting dogs and boars, rolled on Text 179. Jemdet Nasr, ca. 3100–2900 BCE. The Met, 1988.433.1, open access.',
+  },
+  {
+    label: 'Rosette',
+    text: 'From the plate of ornaments found at Warka (Uruk). W. K. Loftus, 1857. Public domain.',
+  },
+  {
+    label: 'Texture',
+    text: 'The Wave, Coyote Buttes, Arizona. Photo by Romain Guy, CC0.',
+  },
+  {
+    label: 'Type',
+    text: 'Set in Alegreya, Special Elite and Garamond-Math.',
+  },
+];
+
+const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false } = Astro.props;
+---
+
+<footer
+  class:list={['site-footer', { 'site-footer--hidden-on-phone': hideOnPhone }]}
+  data-page-footer
+>
+  <div class="site-footer__ornament">
+    <span class="site-footer__rule"></span>
+    <img src={rosetteUrl} alt="" width="64" height="64" />
+    <span class="site-footer__rule"></span>
+  </div>
+  <nav class="site-footer__links" aria-label="Footer">
+    <a class="case-link" href="/results/">All results</a>
+    <span aria-hidden="true">·</span>
+    <a class="case-link" href="/how-we-check/">How we check</a>
+    <span aria-hidden="true">·</span>
+    <a class="case-link" href="/about/">About</a>
+  </nav>
+  <div class="site-footer__credits">
+    {credits.map((credit) => (
+      <div class="site-footer__credit">
+        <p class="site-footer__credit-label">{credit.label}</p>
+        {credit.label === 'Type' ? (
+          <p>
+            <span>Set in Alegreya, Special Elite</span>{' '}
+            <span class="site-footer__type-second">and Garamond-Math.</span>
+          </p>
+        ) : (
+          <p>{credit.text}</p>
+        )}
+      </div>
+    ))}
+  </div>
+  <div class="site-footer__bottom">
+    <img src={logoUrl} alt="" width="104" height="35" />
+    <BackToTop floating={floatingBackToTop} />
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding: 56px var(--page-gutter) 64px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .site-footer__ornament {
+    align-items: center;
+    display: flex;
+    gap: 18px;
+    height: 64px;
+    max-width: 1220px;
+    width: 100%;
+  }
+
+  .site-footer__rule {
+    background: var(--ink);
+    flex: 1 1 0;
+    height: 1px;
+    min-width: 0;
+  }
+
+  .site-footer__ornament img {
+    display: block;
+    flex: none;
+    height: 64px;
+    width: 64px;
+  }
+
+  .site-footer__links {
+    align-items: center;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 36px;
+  }
+
+  .site-footer__links a {
+    color: var(--ink);
+    font-family: var(--font-alegreya);
+    font-size: 1.375rem;
+    font-style: italic;
+    line-height: 1.8125rem;
+    text-decoration: none;
+  }
+
+  .site-footer__links span {
+    color: var(--muted);
+    font-family: var(--font-alegreya);
+    font-size: 1.375rem;
+    font-style: italic;
+    line-height: 1.8125rem;
+  }
+
+  .site-footer__credits {
+    display: flex;
+    gap: 48px;
+    justify-content: center;
+    margin-top: 44px;
+    max-width: 1168px;
+    width: 100%;
+  }
+
+  .site-footer__credit {
+    align-items: center;
+    display: flex;
+    flex: 0 1 256px;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .site-footer__credit-label {
+    color: var(--muted);
+    font-family: var(--font-special-elite);
+    font-size: 0.6875rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 0.9375rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .site-footer__credit p:not(.site-footer__credit-label) {
+    color: var(--ink);
+    font-family: var(--font-alegreya);
+    font-size: 0.875rem;
+    font-style: italic;
+    line-height: 1.3125rem;
+    max-width: 256px;
+  }
+
+  .site-footer__type-second {
+    display: block;
+  }
+
+  .site-footer__bottom {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 56px;
+    max-width: 1328px;
+    width: 100%;
+  }
+
+  .site-footer__bottom > img {
+    display: block;
+    flex: none;
+    height: auto;
+    width: 104px;
+  }
+
+  @media (max-width: 47.999rem) {
+    .site-footer--hidden-on-phone {
+      display: none;
+    }
+
+    .site-footer {
+      padding-block: 40px;
+    }
+
+    .site-footer__ornament {
+      height: 48px;
+    }
+
+    .site-footer__ornament img {
+      height: 48px;
+      width: 48px;
+    }
+
+    .site-footer__links {
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .site-footer__credits {
+      align-items: center;
+      flex-direction: column;
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .site-footer__credit {
+      flex-basis: auto;
+      width: 100%;
+    }
+
+    .site-footer__credit p {
+      max-width: none;
+    }
+
+    .site-footer__type-second {
+      display: inline;
+    }
+
+    .site-footer__bottom {
+      margin-top: 40px;
+    }
+  }
+</style>

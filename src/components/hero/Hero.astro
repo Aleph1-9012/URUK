@@ -1,0 +1,477 @@
+---
+import { getImage } from 'astro:assets';
+import Icon from '../icon/Icon.astro';
+import engraving from '../../assets/hero/engraving.png';
+import textureDesktop from '../../assets/hero/texture-desktop.jpg';
+import texturePhone from '../../assets/hero/texture-phone.jpg';
+import logoUrl from '../../assets/logo/uruk.svg?url';
+import Water from './Water.astro';
+
+const [
+  plate760,
+  plate1520,
+  plate2168,
+  desktopTextureOneX,
+  desktopTextureTwoX,
+  phoneTextureOneX,
+  phoneTextureTwoX,
+] = await Promise.all([
+  getImage({ src: engraving, width: 760, format: 'png' }),
+  getImage({ src: engraving, width: 1520, format: 'png' }),
+  getImage({ src: engraving, width: 2168, format: 'png' }),
+  getImage({ src: textureDesktop, width: 1440, format: 'webp', quality: 90 }),
+  getImage({ src: textureDesktop, width: 2880, format: 'webp', quality: 90 }),
+  getImage({ src: texturePhone, width: 390, format: 'webp', quality: 90 }),
+  getImage({ src: texturePhone, width: 780, format: 'webp', quality: 90 }),
+]);
+
+const plateSrcset = [
+  `${plate760.src} 760w`,
+  `${plate1520.src} 1520w`,
+  `${plate2168.src} 2168w`,
+].join(', ');
+const desktopTextureSrcset = [
+  `${desktopTextureOneX.src} 1440w`,
+  `${desktopTextureTwoX.src} 2880w`,
+].join(', ');
+const phoneTextureSrcset = [
+  `${phoneTextureOneX.src} 390w`,
+  `${phoneTextureTwoX.src} 780w`,
+].join(', ');
+---
+
+<div class="hero">
+  <div
+    class="hero__texture hero__texture--desktop"
+    aria-hidden="true"
+  >
+    <img
+      class="hero__texture-image"
+      src={desktopTextureOneX.src}
+      srcset={desktopTextureSrcset}
+      sizes="100vw"
+      alt=""
+      width="2880"
+      height="1070"
+    />
+  </div>
+  <div
+    class="hero__texture hero__texture--phone-top"
+    aria-hidden="true"
+  >
+    <img
+      class="hero__texture-image"
+      src={phoneTextureOneX.src}
+      srcset={phoneTextureSrcset}
+      sizes="100vw"
+      alt=""
+      width="780"
+      height="1688"
+    />
+  </div>
+  <div
+    class="hero__texture hero__texture--phone-bottom"
+    aria-hidden="true"
+  >
+    <img
+      class="hero__texture-image"
+      src={phoneTextureOneX.src}
+      srcset={phoneTextureSrcset}
+      sizes="100vw"
+      alt=""
+      width="780"
+      height="1688"
+    />
+  </div>
+  <header class="hero__header">
+    <nav aria-label="Site">
+      <ul class="hero__nav-list">
+        <li>
+          <a class="hero__nav-link hero__nav-link--muted case-link" href="/results/">
+            Results
+          </a>
+        </li>
+        <li>
+          <a
+            class="hero__nav-link hero__nav-link--muted case-link"
+            href="/how-we-check/"
+          >
+            How we check
+          </a>
+        </li>
+        <li>
+          <a class="hero__nav-link hero__nav-link--muted case-link" href="/about/">
+            About
+          </a>
+        </li>
+        <li class="hero__nav-start">
+          <a
+            class="hero__nav-link hero__nav-link--ink case-link"
+            href="/results/"
+          >
+            <span>Start reading</span>
+            <Icon name="right" />
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  <Water />
+  <main class="hero__main">
+    <div class="hero__art" data-bleed>
+      <h1 class="hero__logo">
+        <img src={logoUrl} alt="URUK" width="290" height="98" />
+      </h1>
+      <img
+        id="hero-plate"
+        class="hero__plate"
+        data-bleed
+        src={plate760.src}
+        srcset={plateSrcset}
+        sizes="(max-width: 48rem) 100vw, 60vw"
+        alt=""
+        width="760"
+        height="382"
+      />
+    </div>
+    <a class="hero__button case-link case-link--framed" href="/results/">
+      <span>Start reading</span>
+      <Icon name="right" />
+    </a>
+    <footer class="hero__foot">
+      <a class="hero__scroll case-link" href="/results/">
+        <span>Scroll</span>
+        <Icon name="down" />
+      </a>
+      <p class="hero__credit">
+        Plate: ornaments found at Warka (Uruk). W. K. Loftus, 1857. Public
+        domain.
+      </p>
+    </footer>
+  </main>
+</div>
+
+<style>
+  .hero {
+    --plate: min(calc(197.166667px + 39.085714vw), 84.444444svh);
+    --logo-w: calc(0.365497 * var(--plate) + 12.2222px);
+    --logo-left: calc(0.121832 * var(--plate) - 26.5926px);
+    --art-gap: calc(0.048733 * var(--plate) - 13.037px);
+    --right-edge: calc(
+      var(--logo-left) + var(--logo-w) + var(--art-gap) + var(--plate)
+    );
+    --shift: max(0px, calc((100vw - 1.263158 * var(--right-edge)) / 2));
+    --art-h: calc(0.490926 * var(--plate));
+    --water-h: calc(0.427632 * var(--plate));
+    --water-w: calc(1.894737 * var(--plate));
+    --water-left: calc(
+      var(--shift) + var(--logo-left) + var(--logo-w) + var(--art-gap) -
+        0.5 * var(--plate)
+    );
+    --margin: clamp(16px, calc(1.142857px + 3.809524vw), 56px);
+    --nav-top: clamp(32px, calc(25.314286px + 1.714286vw), 50px);
+    --foot-pad: clamp(20.5px, calc(10.285714px + 2.619048vw), 48px);
+    --nav-gap: clamp(14px, calc(5.828571px + 2.095238vw), 36px);
+    background: var(--paper);
+    display: grid;
+    grid-column: 1;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows:
+      [nav-start] auto
+      [nav-end rise-start] minmax(1.5rem, 6.25rem)
+      [rise-end air-start] minmax(0, 2fr)
+      [air-end art-start] var(--art-h)
+      [art-end water-start] calc(var(--water-h) - 20.5px)
+      [water-end sink-start] minmax(0, 1fr)
+      [sink-end foot-start] auto
+      [foot-end];
+    min-height: 100svh;
+    overflow-x: clip;
+    position: relative;
+  }
+
+  .hero__texture {
+    inset: 0;
+    isolation: isolate;
+    min-height: 0;
+    min-width: 0;
+    mix-blend-mode: multiply;
+    opacity: 0.3;
+    overflow: hidden;
+    position: absolute;
+    z-index: 0;
+  }
+
+  .hero__texture::after {
+    background: #21262a;
+    content: "";
+    inset: 0;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .hero__texture-image {
+    display: block;
+    filter: var(--texture-filter);
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+  }
+
+  .hero__texture--desktop {
+    grid-column: 1;
+    grid-row: nav-start / water-start;
+  }
+
+  .hero__texture--desktop .hero__texture-image {
+    object-position: 50% 100%;
+  }
+
+  .hero__texture--phone-top,
+  .hero__texture--phone-bottom {
+    display: none;
+  }
+
+  .hero__header {
+    grid-column: 1;
+    grid-row: nav-start / nav-end;
+    padding: var(--nav-top) var(--margin) 0;
+    position: relative;
+    z-index: 3;
+  }
+
+  .hero__header nav {
+    margin-inline-start: auto;
+    width: fit-content;
+  }
+
+  .hero__nav-list {
+    align-items: center;
+    display: flex;
+    gap: var(--nav-gap);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .hero__nav-list > li {
+    align-items: center;
+    display: flex;
+  }
+
+  .hero__nav-link,
+  .hero__scroll,
+  .hero__button {
+    align-items: center;
+    display: inline-flex;
+    gap: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .hero__nav-link {
+    font-family: var(--folio-nav-font-family);
+    font-size: var(--folio-nav-font-size);
+    font-style: var(--folio-nav-font-style);
+    font-weight: var(--folio-nav-font-weight);
+    letter-spacing: var(--folio-nav-letter-spacing);
+    line-height: var(--folio-nav-line-height);
+    text-transform: uppercase;
+  }
+
+  .hero__nav-link--muted,
+  .hero__scroll {
+    color: var(--muted);
+  }
+
+  .hero__nav-link--ink {
+    color: var(--ink);
+  }
+
+  .hero__nav-link :global(svg),
+  .hero__scroll :global(svg),
+  .hero__button :global(svg) {
+    flex: none;
+    height: 12px;
+    width: 12px;
+  }
+
+  .hero__main {
+    display: grid;
+    grid-column: 1;
+    grid-row: rise-start / foot-end;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    min-width: 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero__art {
+    align-items: flex-end;
+    display: flex;
+    gap: var(--art-gap);
+    grid-column: 1;
+    grid-row: 3;
+    min-width: max-content;
+    padding-inline-start: calc(var(--shift) + var(--logo-left));
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero__logo {
+    flex: none;
+    line-height: 0;
+    margin: 0 0 calc(0.010345 * var(--logo-w));
+    width: var(--logo-w);
+  }
+
+  .hero__logo img {
+    display: block;
+    height: auto;
+    width: 100%;
+  }
+
+  .hero__plate {
+    display: block;
+    flex: none;
+    height: auto;
+    margin: 0 0 calc(-0.011842 * var(--plate));
+    width: var(--plate);
+  }
+
+  .hero__button {
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    display: none;
+    font-family: var(--folio-nav-font-family);
+    font-size: var(--folio-nav-font-size);
+    font-style: var(--folio-nav-font-style);
+    font-weight: var(--folio-nav-font-weight);
+    gap: 6px;
+    grid-column: 1;
+    grid-row: button-start / button-end;
+    justify-self: start;
+    letter-spacing: var(--folio-nav-letter-spacing);
+    line-height: var(--folio-nav-line-height);
+    margin-inline-start: var(--margin);
+    padding: 15px 22px;
+    position: relative;
+    text-transform: uppercase;
+    z-index: 3;
+  }
+
+  .hero__foot {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    grid-column: 1;
+    grid-row: 6;
+    justify-content: space-between;
+    padding: 0 var(--margin) var(--foot-pad);
+    position: relative;
+    z-index: 3;
+  }
+
+  .hero__scroll {
+    font-family: var(--font-special-elite);
+    font-size: var(--folio-label-font-size);
+    font-weight: var(--folio-label-font-weight);
+    letter-spacing: var(--folio-label-letter-spacing);
+    line-height: 1;
+    position: relative;
+    text-transform: uppercase;
+  }
+
+  .hero__credit {
+    color: var(--muted);
+    font-family: var(--font-special-elite);
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1;
+    margin: 0;
+    margin-inline-start: auto;
+    text-align: right;
+    width: 412px;
+  }
+
+  @media (max-width: 47.999rem) {
+    .hero {
+      --nav-gap: 14px;
+      grid-template-rows:
+        [nav-start] auto
+        [nav-end air-start] minmax(1.5rem, 1fr)
+        [air-end art-start] var(--art-h)
+        [art-end water-start] calc(var(--water-h) + 56.5px)
+        [water-end button-start] auto
+        [button-end sink-start] minmax(1.5rem, 1fr)
+        [sink-end foot-start] auto
+        [foot-end];
+    }
+
+    .hero__texture--desktop {
+      display: none;
+    }
+
+    .hero__texture--phone-top {
+      display: block;
+      grid-column: 1;
+      grid-row: nav-start / water-start;
+    }
+
+    .hero__texture--phone-top .hero__texture-image {
+      object-position: 50% 0;
+    }
+
+    .hero__texture--phone-bottom {
+      display: block;
+      grid-column: 1;
+      grid-row: water-start / foot-end;
+      mask-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent var(--water-h),
+        #000 calc(var(--water-h) + 60px)
+      );
+    }
+
+    .hero__texture--phone-bottom .hero__texture-image {
+      object-position: 50% 100%;
+    }
+
+    .hero__main {
+      grid-row: air-start / foot-end;
+    }
+
+    .hero__header nav {
+      margin-inline-end: 4px;
+    }
+
+    .hero__art {
+      grid-row: 2;
+    }
+
+    .hero__foot {
+      grid-row: 6;
+    }
+
+    .hero__nav-list > li.hero__nav-start {
+      display: none;
+    }
+
+    .hero__button {
+      display: inline-flex;
+      grid-row: 4;
+    }
+
+    .hero__credit {
+      max-width: 232px;
+      width: 232px;
+    }
+  }
+</style>

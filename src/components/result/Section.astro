@@ -1,0 +1,12 @@
+---
+interface Props { id: string; numeral: string; title: string; }
+
+const { id, numeral, title } = Astro.props;
+---
+
+<section id={id} class="result-section">
+  <div class="folio-section__heading"><p class="folio-section__number">{numeral}.</p><h2 class="folio-section__title">{title}</h2></div>
+  <slot />
+</section>
+
+<style>.result-section { margin-bottom: 72px; scroll-margin-top: 24px; }</style>

@@ -1,0 +1,160 @@
+---
+import logoUrl from '../../assets/logo/uruk.svg?url';
+
+interface Props {
+  active: 'results' | 'how-we-check' | 'about' | 'none';
+  showSearch?: boolean;
+}
+
+const { active, showSearch = false } = Astro.props;
+---
+
+<header class:list={['site-header', { 'site-header--search': showSearch }]}>
+  <div class="site-header__inner">
+    <div class="site-header__row">
+      <a class="site-header__logo case-link" href="/" aria-label="URUK">
+        <img src={logoUrl} alt="" width="290" height="98" />
+      </a>
+      <nav aria-label="Site">
+        <ul class="site-header__links">
+          <li>
+            <a
+              class:list={['site-header__link', 'case-link', { 'is-active': active === 'results' }]}
+              href="/results/"
+              aria-current={active === 'results' ? 'page' : undefined}
+            >All results</a>
+          </li>
+          <li>
+            <a
+              class:list={['site-header__link', 'case-link', { 'is-active': active === 'how-we-check' }]}
+              href="/how-we-check/"
+              aria-current={active === 'how-we-check' ? 'page' : undefined}
+            >How we check</a>
+          </li>
+          <li>
+            <a
+              class:list={['site-header__link', 'case-link', { 'is-active': active === 'about' }]}
+              href="/about/"
+              aria-current={active === 'about' ? 'page' : undefined}
+            >About</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    {showSearch && <div class="site-header__search"><slot name="search" /></div>}
+  </div>
+</header>
+
+<style>
+  .site-header {
+    min-height: 112px;
+    position: relative;
+    z-index: 3;
+  }
+
+  .site-header__inner {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 112px;
+    justify-content: space-between;
+    margin-inline: auto;
+    max-width: 1328px;
+    width: calc(100% - 2 * var(--page-gutter));
+  }
+
+  .site-header__row {
+    align-items: center;
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    min-height: 112px;
+  }
+
+  .site-header__logo {
+    display: block;
+    flex: none;
+    line-height: 0;
+  }
+
+  .site-header__logo img {
+    display: block;
+    height: auto;
+    width: 104px;
+  }
+
+  .site-header__links {
+    align-items: center;
+    display: flex;
+    gap: 40px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    transform: translateY(-3.5px);
+  }
+
+  .site-header__link {
+    align-items: center;
+    color: var(--ink-logo);
+    display: inline-flex;
+    font-family: var(--font-special-elite);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .site-header__link.is-active {
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 5px;
+  }
+
+  .site-header__search {
+    flex-basis: 100%;
+  }
+
+  @media (min-width: 48rem) {
+    .site-header--search .site-header__inner { position: relative; }
+    .site-header--search .site-header__search { position: absolute; left: 144px; top: 37px; width: min(300px, calc(100% - 455px)); }
+  }
+
+  @media (max-width: 47.999rem) {
+    .site-header {
+      min-height: 84px;
+    }
+
+    .site-header__inner {
+      align-content: center;
+      min-height: 84px;
+    }
+
+    .site-header__row {
+      min-height: 84px;
+    }
+
+    .site-header__logo img {
+      width: 84px;
+    }
+
+    .site-header__links {
+      gap: 14px;
+    }
+
+    .site-header__search {
+      width: 100%;
+    }
+
+    .site-header--search,
+    .site-header--search .site-header__inner {
+      min-height: 0;
+    }
+
+    .site-header--search .site-header__row {
+      min-height: 76px;
+    }
+  }
+</style>

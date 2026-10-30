@@ -1,0 +1,64 @@
+:root {
+  --ink: #1c1a17;
+  --ink-logo: #1f1f1b;
+  --paper: #e7e5e0;
+  --muted: #5f584d;
+  --blue: #28486e;
+  --texture-filter: grayscale(1) contrast(0.52) brightness(1.73);
+
+  --font-alegreya: "Alegreya", Georgia, serif;
+  --font-special-elite: "Special Elite", "Courier New", monospace;
+  --font-garamond-math: "Garamond Math", "Alegreya", serif;
+
+  --folio-question-font-size: clamp(2rem, calc(1.721429rem + 1.142857vw), 2.75rem);
+  --folio-question-line-height: clamp(2.375rem, calc(2.05rem + 1.333333vw), 3.25rem);
+  --folio-question-letter-spacing: 0em;
+
+  --folio-standfirst-font-family: var(--font-alegreya);
+  --folio-standfirst-font-size: clamp(1.0625rem, calc(1.039286rem + 0.095238vw), 1.125rem);
+  --folio-standfirst-line-height: clamp(1.6875rem, calc(1.641071rem + 0.190476vw), 1.8125rem);
+  --folio-standfirst-letter-spacing: 0em;
+
+  --folio-contents-font-size: 1.0625rem;
+  --folio-contents-line-height: 1.625rem;
+  --folio-contents-letter-spacing: 0em;
+
+  --folio-numeral-font-size: clamp(2.5rem, calc(2.128571rem + 1.52381vw), 3.5rem);
+  --folio-numeral-line-height: clamp(2.75rem, calc(2.378571rem + 1.52381vw), 3.75rem);
+  --folio-numeral-letter-spacing: 0em;
+
+  --folio-heading-font-size: clamp(1.75rem, calc(1.564286rem + 0.761905vw), 2.25rem);
+  --folio-heading-line-height: clamp(2.125rem, calc(1.892857rem + 0.952381vw), 2.75rem);
+  --folio-heading-letter-spacing: 0em;
+
+  --folio-body-font-family: var(--font-alegreya);
+  --folio-body-font-weight: 400;
+  --folio-body-font-size: clamp(1.0625rem, calc(1.016071rem + 0.190476vw), 1.1875rem);
+  --folio-body-line-height: clamp(1.6875rem, calc(1.594643rem + 0.380952vw), 1.9375rem);
+  --folio-body-letter-spacing: 0em;
+
+  --folio-part-font-family: var(--font-alegreya);
+  --folio-part-font-size: clamp(1.3125rem, calc(1.242857rem + 0.285714vw), 1.5rem);
+  --folio-part-line-height: clamp(1.75rem, calc(1.657143rem + 0.380952vw), 2rem);
+  --folio-part-letter-spacing: 0em;
+
+  --folio-theorem-font-size: clamp(1.25rem, calc(1.180357rem + 0.285714vw), 1.4375rem);
+  --folio-theorem-line-height: clamp(1.8125rem, calc(1.719643rem + 0.380952vw), 2.0625rem);
+
+  --folio-step-font-size: clamp(1.1875rem, calc(1.141071rem + 0.190476vw), 1.3125rem);
+  --folio-step-line-height: clamp(1.6875rem, calc(1.617857rem + 0.285714vw), 1.875rem);
+
+  --folio-source-font-size: 0.9375rem;
+  --folio-source-line-height: 1.4375rem;
+
+  --folio-nav-font-family: var(--font-special-elite);
+  --folio-nav-font-weight: 400;
+  --folio-nav-font-style: normal;
+  --folio-nav-font-size: 0.75rem;
+  --folio-nav-line-height: 1;
+  --folio-nav-letter-spacing: 0.04em;
+
+  --folio-label-font-weight: 400;
+  --folio-label-font-size: 0.6875rem;
+  --folio-label-letter-spacing: 0.04em;
+}

@@ -1,0 +1,246 @@
+---
+import { getImage } from 'astro:assets';
+import desktop0 from '../../assets/texture/desktop/wave-0.jpg';
+import desktop1 from '../../assets/texture/desktop/wave-1.jpg';
+import desktop2 from '../../assets/texture/desktop/wave-2.jpg';
+import desktop3 from '../../assets/texture/desktop/wave-3.jpg';
+import phone0 from '../../assets/texture/phone/wave-0.jpg';
+import phone1 from '../../assets/texture/phone/wave-1.jpg';
+import phone2 from '../../assets/texture/phone/wave-2.jpg';
+import phone3 from '../../assets/texture/phone/wave-3.jpg';
+import phone4 from '../../assets/texture/phone/wave-4.jpg';
+import phone5 from '../../assets/texture/phone/wave-5.jpg';
+
+const desktopSources = [
+  { src: desktop0, width: 1440, height: 2048 },
+  { src: desktop1, width: 1440, height: 2048 },
+  { src: desktop2, width: 1440, height: 2048 },
+  { src: desktop3, width: 1440, height: 1646 },
+];
+const phoneSources = [
+  { src: phone0, width: 390, height: 2048 },
+  { src: phone1, width: 390, height: 2048 },
+  { src: phone2, width: 390, height: 2048 },
+  { src: phone3, width: 390, height: 2048 },
+  { src: phone4, width: 390, height: 2048 },
+  { src: phone5, width: 390, height: 2029 },
+];
+const desktopImages = await Promise.all(
+  desktopSources.map(async (source) => {
+    const image = await getImage({ src: source.src, width: 1440, format: 'webp', quality: 60 });
+
+    return { ...source, url: image.src };
+  }),
+);
+const phoneImages = await Promise.all(
+  phoneSources.map(async (source) => {
+    const image = await getImage({ src: source.src, width: 390, format: 'webp', quality: 60 });
+
+    return { ...source, url: image.src };
+  }),
+);
+---
+
+<uruk-texture-field aria-hidden="true" data-bleed>
+  <div class="texture-field__stack texture-field__stack--desktop" data-texture-stack>
+    {desktopImages.map((image) => (
+      <img
+        src={image.url}
+        loading="lazy"
+        decoding="async"
+        alt=""
+        width={image.width}
+        height={image.height}
+      />
+    ))}
+  </div>
+  <div class="texture-field__stack texture-field__stack--phone" data-texture-stack>
+    {phoneImages.map((image) => (
+      <img
+        src={image.url}
+        loading="lazy"
+        decoding="async"
+        alt=""
+        width={image.width}
+        height={image.height}
+      />
+    ))}
+  </div>
+</uruk-texture-field>
+
+<script>
+  class UrukTextureField extends HTMLElement {
+    private observer: ResizeObserver | undefined;
+    private readonly update = () => {
+      const page = this.parentElement;
+
+      if (!page) {
+        return;
+      }
+
+      const pageHeight = page.getBoundingClientRect().height;
+
+      for (const stack of this.querySelectorAll<HTMLElement>('[data-texture-stack]')) {
+        if (window.getComputedStyle(stack).display === 'none') {
+          continue;
+        }
+
+        this.extendStack(stack, pageHeight);
+      }
+    };
+
+    connectedCallback(): void {
+      this.observer = new ResizeObserver(this.update);
+      if (this.parentElement) {
+        this.observer.observe(this.parentElement);
+      }
+      for (const image of this.querySelectorAll<HTMLImageElement>(
+        '[data-texture-stack] > img:not([data-repeat])',
+      )) {
+        image.addEventListener('load', this.update, { once: true });
+      }
+      window.addEventListener('resize', this.update);
+      this.update();
+    }
+
+    disconnectedCallback(): void {
+      this.observer?.disconnect();
+      for (const image of this.querySelectorAll<HTMLImageElement>(
+        '[data-texture-stack] > img:not([data-repeat])',
+      )) {
+        image.removeEventListener('load', this.update);
+      }
+      window.removeEventListener('resize', this.update);
+    }
+
+    private extendStack(stack: HTMLElement, pageHeight: number): void {
+      const sources: HTMLImageElement[] = [];
+
+      for (const image of stack.querySelectorAll<HTMLImageElement>(':scope > img:not([data-repeat])')) {
+        sources.push(image);
+      }
+
+      for (const clone of stack.querySelectorAll('img[data-repeat]')) {
+        clone.remove();
+      }
+
+      if (sources.length === 0) {
+        return;
+      }
+
+      let stackHeight = 0;
+
+      for (const source of sources) {
+        stackHeight += source.getBoundingClientRect().height;
+      }
+
+      if (stackHeight === 0) {
+        return;
+      }
+
+      let direction = -1;
+
+      while (stackHeight < pageHeight) {
+        const step = direction;
+        let index = step < 0 ? sources.length - 1 : 0;
+
+        while (index >= 0 && index < sources.length) {
+          const source = sources[index];
+
+          if (!source) {
+            break;
+          }
+
+          const clone = document.createElement('img');
+          clone.src = source.currentSrc || source.src;
+          clone.srcset = source.srcset;
+          clone.sizes = source.sizes;
+          clone.width = source.width;
+          clone.height = source.height;
+          clone.alt = '';
+          clone.loading = 'lazy';
+          clone.decoding = 'async';
+          clone.dataset.repeat = '';
+
+          if (step < 0) {
+            clone.style.transform = 'scaleY(-1)';
+          }
+
+          stack.append(clone);
+          stackHeight += source.getBoundingClientRect().height;
+
+          if (stackHeight >= pageHeight) {
+            break;
+          }
+
+          index += step;
+        }
+
+        direction *= -1;
+      }
+    }
+  }
+
+  if (!customElements.get('uruk-texture-field')) {
+    customElements.define('uruk-texture-field', UrukTextureField);
+  }
+</script>
+
+<style>
+  uruk-texture-field {
+    /* Matches the texture's average tone, so the page doesn't change colour while the images load. */
+    background: #a2a2a2;
+    inset: 0;
+    isolation: isolate;
+    mix-blend-mode: multiply;
+    opacity: 0.22;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+  }
+
+  uruk-texture-field::after {
+    background: #21262a;
+    content: "";
+    inset: 0;
+    mix-blend-mode: screen;
+    position: absolute;
+  }
+
+  .texture-field__stack {
+    display: flex;
+    flex-direction: column;
+    left: 50%;
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .texture-field__stack img {
+    display: block;
+    flex: none;
+    filter: var(--texture-filter);
+    height: auto;
+    width: 100%;
+  }
+
+  .texture-field__stack--desktop {
+    width: max(90rem, 100vw);
+  }
+
+  .texture-field__stack--phone {
+    display: none;
+    width: max(24.375rem, 100vw);
+  }
+
+  @media (max-width: 47.999rem) {
+    .texture-field__stack--desktop {
+      display: none;
+    }
+
+    .texture-field__stack--phone {
+      display: flex;
+    }
+  }
+</style>

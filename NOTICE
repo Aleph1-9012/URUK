@@ -1,0 +1,61 @@
+Uruk
+https://github.com/Aleph1-9012/URUK
+
+The code is under the Apache License 2.0 (see LICENSE). The written content
+and status data are under CC BY 4.0 (see LICENSE-CONTENT.md). Everything listed
+below stays under its own terms.
+
+
+Name and logo
+
+The URUK name, the Seal Cut logo (src/assets/logo/) and the icons cut from the
+same alphabet (src/assets/icons/) are reserved. Neither licence grants the
+right to use them, except as needed to describe where this work comes from.
+
+
+Source material
+
+The results come from OpenAI's math release, licensed under Apache-2.0:
+https://github.com/openai/math/tree/adc7f1241b42e322a6451854ab7e4b4c146bf78a
+
+At that commit the repository has no NOTICE file and its LICENSE names no
+copyright owner, so there is no further notice text to reproduce here. Uruk is
+not the source of the papers, which remain under their own terms.
+
+
+Images
+
+Engraving and rosette (src/assets/hero/engraving.png, src/assets/hero/water.png,
+src/assets/rosette/ and the favicons in public/)
+  From the plate of ornaments found at Warka (Uruk). W. K. Loftus, 1857.
+  Public domain.
+
+Seal impression (src/assets/roll/)
+  A male figure, hunting dogs and boars, rolled on Text 179. Jemdet Nasr,
+  ca. 3100-2900 BCE. The Metropolitan Museum of Art, 1988.433.1, Open Access.
+  https://www.metmuseum.org/art/collection/search/329081
+
+Tablet (src/assets/tablet/)
+  Text 180, an account of barley and emmer, about 3100-2900 BCE, probably from
+  Uruk. Drawing, The Metropolitan Museum of Art, 1988.433.2, Open Access.
+  https://www.metmuseum.org/art/collection/search/327384
+
+Texture (src/assets/texture/, src/assets/hero/texture-desktop.jpg and
+src/assets/hero/texture-phone.jpg)
+  The Wave, Coyote Buttes, Arizona. Photo by Romain Guy, CC0.
+  https://commons.wikimedia.org/wiki/File:The_Wave_rock_formation_-_Arizona.jpg
+
+
+Fonts (public/fonts/, each with its licence text beside it)
+
+Alegreya
+  Copyright 2011 The Alegreya Project Authors
+  https://github.com/huertatipografica/Alegreya
+  SIL Open Font License 1.1
+
+Garamond-Math
+  Copyleft (C) 2018-2022 Yuansheng Zhao and Xiangdong Zeng
+  SIL Open Font License 1.1
+
+Special Elite
+  Apache License 2.0

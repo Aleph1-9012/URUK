@@ -1,0 +1,77 @@
+---
+import desktopRoller from '../../assets/roll/roller-desktop.png';
+import phoneRoller from '../../assets/roll/roller-phone.png';
+import seal from '../../assets/roll/seal-impression.png';
+import { statusKind, type ResultEntry } from '../../content/results';
+import StatusSign from '../status-sign/StatusSign.astro';
+import Icon from '../icon/Icon.astro';
+import './roll.css';
+
+interface Props {
+  results: ResultEntry[];
+  current?: string;
+}
+
+const { results, current } = Astro.props;
+const currentIndex = results.findIndex(({ data }) => data.family === current);
+const images = `--seal: url('${seal.src}'); --roller-desktop: url('${desktopRoller.src}'); --roller-phone: url('${phoneRoller.src}')`;
+---
+
+<uruk-roll data-current={current} class:list={{ 'roll-neighbors': current !== undefined }} style={images} data-seal={seal.src}>
+  <div class="roll-stage">
+    <div class="roll-sheet">
+      <div class="roll-roller roll-roller--start" aria-hidden="true"><span><canvas></canvas></span></div>
+      <div class="roll-roller roll-roller--end" aria-hidden="true"><span><canvas></canvas></span></div>
+      <div class="roll-paper">
+        <div class="roll-seal" aria-hidden="true" data-bleed></div>
+        {!current && <p class="roll-heading" data-roll-heading></p>}
+        <div class="roll-frame">
+          <div class="roll-window" data-scroller tabindex="0" role="group" aria-label="Results roll">
+            <div class="roll-track">
+              {results.map(({ data }, index) => (
+                <a
+                  class:list={['roll-card', 'case-link', 'case-link--edge', { 'is-current': data.family === current }]}
+                  href={`/results/${data.family}/`}
+                  data-snap-item
+                  data-family={data.family}
+                  data-status={statusKind(data.status)}
+                  data-topic={data.topic}
+                  data-title={data.title}
+                  data-neighbor={Math.abs(index - currentIndex) <= 1 ? '' : undefined}
+                  aria-current={data.family === current ? 'page' : undefined}
+                >
+                  <span class="roll-card__topic" data-highlight>{data.family} · {data.topic}</span>
+                  <span class="roll-card__number" aria-hidden="true">{data.family}</span>
+                  <span class="roll-card__question" data-highlight>{data.title}</span>
+                  <span class="roll-card__status"><StatusSign kind={statusKind(data.status)} />{data.status}</span>
+                  <span class="roll-card__read">
+                    {current && index === currentIndex - 1 && <span class="roll-icon"><Icon name="left" /></span>}
+                    {data.family === current ? 'You are here' : current && index === currentIndex - 1 ? 'Previous' : current && index === currentIndex + 1 ? 'Next' : 'Read'}
+                    {data.family !== current && !(current && index === currentIndex - 1) && <span class="roll-icon"><Icon name="right" /></span>}
+                  </span>
+                </a>
+              ))}
+              {!current && <div class="roll-slot" data-snap-item data-roll-slot><p data-roll-slot-note>More claims join the roll as they are read.</p></div>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="roll-controls">
+    <div class="roll-wind">
+      <div class="roll-arrows" data-roll-arrows hidden>
+        <button class="roll-arrow case-link case-link--square" type="button" data-direction="-1" aria-label="Previous result"><Icon name="roll-back" /></button>
+        <button class="roll-arrow case-link case-link--square" type="button" data-direction="1" aria-label="Next result"><Icon name="roll-forward" /></button>
+      </div>
+      {current
+        ? <p>Previous and next follow the numbers on the roll. <a class="roll-all case-link case-link--tight" href="/results/">All results<span class="roll-icon"><Icon name="right" /></span></a></p>
+        : <p data-roll-help>Drag the roll or scroll sideways. Results run in number order.</p>}
+    </div>
+    <slot name="controls" />
+  </div>
+</uruk-roll>
+
+<script>
+  import './element';
+</script>

@@ -1,0 +1,93 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Section from '../../components/result/Section.astro';
+import Roll from '../../components/roll/Roll.astro';
+import Sources from '../../components/sources/Sources.astro';
+import Formula from '../../components/formula/Formula.astro';
+import StatusSign from '../../components/status-sign/StatusSign.astro';
+import ornament from '../../assets/ornaments/ornament.svg?url';
+import { checkedDate, paperBase, statusKind, visibleResults } from '../../content/results';
+import '../../components/result/result.css';
+
+export const getStaticPaths = (async () => {
+  const results = await visibleResults();
+
+  return results.map((entry) => ({ params: { family: entry.data.family }, props: { entry, results } }));
+}) satisfies GetStaticPaths;
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>;
+
+const { entry, results } = Astro.props;
+const { data } = entry;
+const headings = [
+  { numeral: 'I', id: 'the-problem', title: 'The problem' },
+  { numeral: 'II', id: 'why-it-stayed-open', title: 'Why it stayed open' },
+  { numeral: 'III', id: 'what-openai-claims', title: 'What OpenAI claims' },
+  { numeral: 'IV', id: 'how-the-claimed-proof-goes', title: 'How the claimed proof goes' },
+  { numeral: 'V', id: 'uses-outside-mathematics', title: 'Uses outside mathematics' },
+  { numeral: 'VI', id: 'has-anyone-checked-it', title: 'Has anyone checked it?' },
+  { numeral: 'VII', id: 'sources', title: 'Sources' },
+] as const;
+---
+
+<PageLayout title={`${data.family} · ${data.topic} · Uruk`} active="results">
+  <article class="folio-page result-page">
+    <a class="result-breadcrumb case-link" href="/results/">All results / {data.family}</a>
+    <div class="result-opening">
+      <figure class="result-plate-one">
+        <div class="result-visual"><span>No visual yet.</span></div>
+        <figcaption>Plate I. Placeholder. An interactive visual for this result will appear here.</figcaption>
+      </figure>
+      <div class="result-introduction">
+        <p class="result-label">{data.family} · {data.topic}</p>
+        <h1>{data.title}</h1>
+        <img class="result-ornament" src={ornament} alt="" width="640" height="12" />
+        <p class="folio-top__copy">{data.claim}</p>
+        <p class="result-draft">Placeholder preview. The result text and figures have not been added.</p>
+        <p class="result-status"><StatusSign kind={statusKind(data.status)} /><span>{data.status}</span></p>
+        <p class="result-checked">Checked {checkedDate(data.checked)}. <a class="case-link case-link--tight" href="/how-we-check/">What this label means</a>.</p>
+        <nav class="result-contents" aria-label="On this page">
+          <p class="folio-contents__title">Contents</p>
+          {headings.map(({ numeral, id, title }) => <a class="folio-contents__row case-link case-link--row" href={`#${id}`}><span class="folio-contents__number">{numeral}.</span><span class="folio-contents__text">{title}</span><span class="folio-contents__leader"></span></a>)}
+        </nav>
+      </div>
+    </div>
+
+    <Section {...headings[0]}>
+      <div class="folio-row">
+        <div class="folio-row__text"><p>Placeholder. This section will explain the problem in plain words, define its terms, and connect them to the visual above.</p><p>Placeholder. The exact mathematical statement and its sources will follow the explanation.</p></div>
+        <aside class="folio-row__aside result-aside">Placeholder sidenote. Definitions and qualifications will sit beside the paragraph they explain.</aside>
+      </div>
+      {data.family === '158' && <div class="folio-row"><div class="folio-row__text"><p>Formula specimen from the approved design: <Formula tex="\chi(\mathbb{R}^{2})" />.</p></div></div>}
+    </Section>
+
+    <Section {...headings[1]}>
+      {['The question', 'Earlier work', 'The obstacle'].map((label) => <div class="folio-row"><p class="folio-row__margin result-margin">{label}</p><div class="folio-row__text"><p>Placeholder. This entry will name the researchers, give the dates, and link the sources for this part of the history.</p></div></div>)}
+    </Section>
+
+    <Section {...headings[2]}>
+      <div class="folio-row"><div class="folio-row__text"><div class="result-theorem"><p class="result-label">The claim</p><p>Placeholder. The precise theorem and its assumptions will appear here.</p>{data.family === '158' && <><p class="result-specimen">Formula specimen from the approved design.</p><Formula tex="6 \leq \chi(\mathbb{R}^{2}) \leq 7" display /></>}</div><p>Placeholder. This paragraph will distinguish what the paper claims from what it leaves unresolved.</p></div><aside class="folio-row__aside result-aside">The paper is linked at the project's fixed repository version. Human review is reported separately.</aside></div>
+    </Section>
+
+    <Section {...headings[3]}>
+      <div class="folio-row"><div class="folio-row__text"><p>Placeholder. A plain-language map of the claimed proof will go here. It will identify the main steps without presenting this summary as a proof.</p></div></div>
+      <figure class="result-plate-two"><figcaption>Plate II. Placeholder figures for the proof map.</figcaption><div class="result-figures">{Array.from({ length: 10 }, (_, index) => <div><span class="result-label">Fig. {index + 3}</span><span>No figure yet.</span></div>)}</div></figure>
+      {[1, 2, 3, 4].map((number) => <div class="folio-row"><p class="folio-row__margin result-margin">Step {number}</p><div class="folio-row__text"><h3>Placeholder proof step {number}</h3><p>Placeholder. This step will describe what is constructed, why it is needed, and how it connects to the next part of the argument.</p></div><aside class="folio-row__aside result-aside">Placeholder. The matching figure and paper reference will appear here.</aside></div>)}
+    </Section>
+
+    <Section {...headings[4]}>
+      <div class="folio-row"><div class="folio-row__text"><p>Placeholder. This section will describe only applications supported by sources. It will say when no known direct application has been found.</p></div></div>
+    </Section>
+
+    <Section {...headings[5]}>
+      <div class="folio-row"><p class="folio-row__margin result-margin">{checkedDate(data.checked)}</p><div class="folio-row__text"><p class="result-status"><StatusSign kind={statusKind(data.status)} /><span>{data.status}</span></p><p>Placeholder. The dated review evidence and the names of the reviewers will appear here. This layout preview does not add new review evidence.</p><p><a class="case-link case-link--tight" href="/how-we-check/">How we check</a></p></div></div>
+    </Section>
+
+    <Section {...headings[6]}>
+      <div class="folio-row"><div class="folio-row__text"><p class="result-paper-links">{data.papers.map((path, index) => <a class="case-link case-link--tight" href={`${paperBase}${path}`}>{index === 0 ? 'Read the paper' : `Companion paper ${index}`}</a>)}</p></div></div>
+      <div class="folio-row"><Sources /></div>
+    </Section>
+  </article>
+  <nav class="result-on-roll" aria-label="Previous and next results"><h2>On the roll</h2><Roll results={results} current={data.family} /></nav>
+</PageLayout>

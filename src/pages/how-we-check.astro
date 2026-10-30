@@ -1,0 +1,197 @@
+---
+import Ornament from '../assets/ornaments/ornament.svg?url';
+import Diamond from '../assets/ornaments/diamond.svg?url';
+import StatusSign from '../components/status-sign/StatusSign.astro';
+import PageLayout from '../layouts/PageLayout.astro';
+---
+
+<PageLayout title="How do we know if a proof has been checked?" active="how-we-check">
+  <article class="folio-page how-page">
+    <section class="folio-top">
+      <div class="folio-top__text">
+        <h1>How do we know if a proof has been checked?</h1>
+        <div class="folio-ornament" aria-hidden="true">
+          <img class="folio-ornament__desktop" src={Ornament} alt="" width="640" height="12" />
+          <div class="folio-ornament__phone">
+            <span></span><img src={Diamond} alt="" width="10" height="10" /><span></span>
+          </div>
+        </div>
+        <p class="folio-top__copy">
+          Every result on Uruk comes from OpenAI's mathematics release of October 2026. Each paper in it claims to prove something. A proof only counts once mathematicians who work in that field have read it and say it holds. Most of these papers are too new for that.
+        </p>
+        <p class="folio-top__copy">
+          So every result page carries one of four labels, with the date we last checked. This page explains what the labels mean, what does not count, and how we look.
+        </p>
+      </div>
+      <aside class="folio-top__contents">
+        <p class="folio-contents__title">Contents</p>
+        <a class="folio-contents__row case-link case-link--row" href="#the-four-labels">
+          <span class="folio-contents__number">I.</span><span class="folio-contents__text">The four labels</span><span class="folio-contents__leader"></span>
+        </a>
+        <a class="folio-contents__row case-link case-link--row" href="#what-does-not-count">
+          <span class="folio-contents__number">II.</span><span class="folio-contents__text">What does not count</span><span class="folio-contents__leader"></span>
+        </a>
+        <a class="folio-contents__row case-link case-link--row" href="#how-we-look">
+          <span class="folio-contents__number">III.</span><span class="folio-contents__text">How we look</span><span class="folio-contents__leader"></span>
+        </a>
+        <a class="folio-contents__row case-link case-link--row" href="#what-every-result-page-shows">
+          <span class="folio-contents__number">IV.</span><span class="folio-contents__text">What every result page shows</span><span class="folio-contents__leader"></span>
+        </a>
+        <a class="folio-contents__row case-link case-link--row" href="#if-we-missed-something">
+          <span class="folio-contents__number">V.</span><span class="folio-contents__text">If we missed something</span><span class="folio-contents__leader"></span>
+        </a>
+      </aside>
+    </section>
+
+    <section class="folio-section" id="the-four-labels">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">I.</p>
+        <h2 class="folio-section__title">The four labels</h2>
+      </div>
+      <div class="folio-row folio-row--status">
+        <div class="folio-row__margin folio-label"><StatusSign kind="approved" /> Approved.</div>
+        <div class="folio-row__text">
+          <p>A named mathematician who works in the field says in public that they checked the proof and it holds. A peer-reviewed journal accepting the paper also counts. The page links to what they said.</p>
+        </div>
+      </div>
+      <div class="folio-row folio-row--status">
+        <div class="folio-row__margin folio-label"><StatusSign kind="disputed" /> Disputed.</div>
+        <div class="folio-row__text">
+          <p>A named mathematician who works in the field reports an error or a gap in the proof. The page links to the report.</p>
+        </div>
+      </div>
+      <div class="folio-row folio-row--status">
+        <div class="folio-row__margin folio-label"><StatusSign kind="under-review" /> Under review.</div>
+        <div class="folio-row__text">
+          <p>A named mathematician who works in the field says in public that they are reading or working through the proof, and has not given a verdict yet.</p>
+        </div>
+      </div>
+      <div class="folio-row folio-row--status">
+        <div class="folio-row__margin folio-label"><StatusSign kind="unreviewed" /> Unreviewed.</div>
+        <div class="folio-row__text">
+          <p>We found no public review by a mathematician in the field.</p>
+        </div>
+      </div>
+      <div class="folio-row how-we-check__row--section-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>Every label shows the date of our last search. Labels change as mathematicians respond, so the date tells you how fresh the label is.</p>
+        </div>
+        <aside class="folio-row__aside">
+          <div class="folio-status-line"><StatusSign kind="under-review" /><span>Under review · checked 17 Oct 2026</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="folio-section" id="what-does-not-count">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">II.</p>
+        <h2 class="folio-section__title">What does not count</h2>
+      </div>
+      <div class="folio-row folio-row--label">
+        <p class="folio-row__margin folio-side-label">The release itself.</p>
+        <div class="folio-row__text"><p>A paper from OpenAI is a claim, not a check.</p></div>
+      </div>
+      <div class="folio-row folio-row--label">
+        <p class="folio-row__margin folio-side-label">Praise.</p>
+        <div class="folio-row__text"><p>A famous mathematician calling a result exciting has not checked it. Neither has a news story or a popular post.</p></div>
+      </div>
+      <div class="folio-row folio-row--label">
+        <p class="folio-row__margin folio-side-label">Computer checks.</p>
+        <div class="folio-row__text">
+          <p>Some results come with files for Lean, a program that checks every step of a proof written in a formal language. A passing check shows that the formal statement follows from the formal definitions. It does not show that the formal statement says what the paper claims. We report the Lean status on each page, but it never changes the label.</p>
+        </div>
+      </div>
+      <div class="folio-row folio-row--label">
+        <p class="folio-row__margin folio-side-label">AI summaries and audits.</p>
+        <div class="folio-row__text"><p>Write-ups produced by AI systems do not count, even when they go through the whole paper.</p></div>
+      </div>
+      <div class="folio-row folio-row--label how-we-check__row--section-end">
+        <p class="folio-row__margin folio-side-label">Follow-up work.</p>
+        <div class="folio-row__text"><p>A paper that builds on the result, or borrows its method, uses the result without checking it. We report such papers with their dates. They do not change the label.</p></div>
+      </div>
+    </section>
+
+    <section class="folio-section" id="how-we-look">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">III.</p>
+        <h2 class="folio-section__title">How we look</h2>
+      </div>
+      <div class="folio-row how-we-check__row--intro">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>For each result we search for named mathematicians in its field who have said something in public about the proof. We look in:</p>
+        </div>
+      </div>
+      <div class="folio-row">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <ul class="folio-list">
+            <li>the arXiv, for papers that cite, check or re-prove the result;</li>
+            <li>journals, for acceptances;</li>
+            <li>mathematicians' blogs and MathOverflow;</li>
+            <li>news coverage and interviews that quote mathematicians;</li>
+            <li>posts on X, through news roundups and quotes.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="folio-row how-we-check__row--section-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>We write down what we find, with dates and links, before choosing a label. When the evidence falls between two labels, the page says so and keeps the stricter one. We search again before a page goes up.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="folio-section" id="what-every-result-page-shows">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">IV.</p>
+        <h2 class="folio-section__title">What every result page shows</h2>
+      </div>
+      <div class="folio-row how-we-check__row--section-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <ul class="folio-list">
+            <li>the label and the date of the last check;</li>
+            <li>the evidence behind it, quoted and dated, with links;</li>
+            <li>the paper, linked at one fixed version of OpenAI's repository, so the text we describe cannot change under us;</li>
+            <li>a numbered source for every claim.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="folio-section" id="if-we-missed-something">
+      <div class="folio-section__heading">
+        <p class="folio-section__number">V.</p>
+        <h2 class="folio-section__title">If we missed something</h2>
+      </div>
+      <div class="folio-row how-we-check__row--page-end">
+        <div class="folio-row__margin"></div>
+        <div class="folio-row__text">
+          <p>If you know of a review we have not found, or think a label is wrong, open an issue on <a class="case-link case-link--tight" href="https://github.com/Aleph1-9012/URUK/issues">GitHub</a>. We will look at it and update the page.</p>
+        </div>
+      </div>
+    </section>
+  </article>
+</PageLayout>
+
+<style>
+  .how-page .how-we-check__row--intro {
+    padding-bottom: 16px;
+  }
+
+  .how-page .how-we-check__row--section-end {
+    padding-bottom: 72px;
+  }
+
+  .how-page .how-we-check__row--page-end {
+    padding-bottom: 120px;
+  }
+
+  @media (max-width: 47.999rem) {
+    .how-page .how-we-check__row--page-end {
+      padding-bottom: 72px;
+    }
+  }
+</style>

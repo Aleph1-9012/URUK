@@ -1,0 +1,100 @@
+---
+import Icon from '../icon/Icon.astro';
+import NumberSign from '../number-signs/NumberSign.astro';
+
+const sources = Array.from({ length: 19 }, (_, index) => index + 1);
+---
+
+<uruk-sources>
+  <div class="sources-preview" hidden>
+    {sources.slice(0, 6).map((number) => <p>{number}. Placeholder source {number}.</p>)}
+  </div>
+  <div class="sources-table" id="source-table">
+    <ol class="sources-list">
+      {sources.map((number) => <li id={`source-${number}`}><span>{number}.</span> Placeholder source {number}.</li>)}
+    </ol>
+    <div class="sources-total">
+      <p class="sources-label">Total</p>
+      <div class="sources-numerals" aria-label="Nineteen in Uruk number signs"><NumberSign unit="10" mode="tally" /><div>{Array.from({ length: 9 }, () => <NumberSign unit="1" mode="tally" />)}</div></div>
+      <p class="sources-key">10 × 1 + 1 × 9 = 19 sources</p>
+    </div>
+  </div>
+  <button type="button" class="sources-toggle case-link" aria-expanded="true" aria-controls="source-table" hidden>
+    <span data-sources-label>Show fewer</span><span class="sources-icon" data-sources-open><Icon name="open" /></span><span class="sources-icon" data-sources-close><Icon name="close" /></span>
+  </button>
+</uruk-sources>
+
+<script>
+  class UrukSources extends HTMLElement {
+    private events: AbortController | undefined;
+
+    connectedCallback(): void {
+      this.events = new AbortController();
+      const button = this.querySelector<HTMLButtonElement>('button');
+
+      if (!button) {
+        return;
+      }
+
+      const update = (open: boolean) => {
+        this.toggleAttribute('data-open', open);
+        this.querySelector('.sources-preview')?.toggleAttribute('hidden', open);
+        this.querySelector('.sources-table')?.toggleAttribute('hidden', !open);
+        button.setAttribute('aria-expanded', String(open));
+        this.querySelector('[data-sources-label]')?.replaceChildren(open ? 'Show fewer' : 'Show all 19 sources');
+      };
+
+      button.hidden = false;
+      update(new URLSearchParams(location.search).get('sources') === 'open');
+      button.addEventListener('click', () => update(button.getAttribute('aria-expanded') !== 'true'), { signal: this.events.signal });
+    }
+
+    disconnectedCallback(): void {
+      this.events?.abort();
+    }
+  }
+
+  if (!customElements.get('uruk-sources')) {
+    customElements.define('uruk-sources', UrukSources);
+  }
+</script>
+
+<style>
+  uruk-sources { display: block; grid-column: 2 / -1; min-width: 0; }
+  .sources-preview { display: grid; grid-auto-flow: column; grid-template-rows: repeat(3, auto); grid-template-columns: 640px minmax(0, 1fr); column-gap: 40px; row-gap: 16px; }
+  .sources-preview p, .sources-list li { font: var(--folio-source-font-size)/var(--folio-source-line-height) var(--font-alegreya); }
+  .sources-table { border: 1px solid var(--muted); display: grid; grid-template-columns: 3fr 2fr; }
+  .sources-list { display: contents; margin: 0; padding: 0; list-style: none; }
+  .sources-list li { padding: 12px 20px; border-bottom: 1px solid var(--muted); min-width: 0; }
+  .sources-list li:nth-child(-n+10) { grid-column: 1; border-right: 1px solid var(--muted); }
+  .sources-list li:nth-child(n+11) { grid-column: 2; }
+  .sources-list li:nth-child(11) { grid-row: 1; }
+  .sources-list li:nth-child(12) { grid-row: 2; }
+  .sources-list li:nth-child(13) { grid-row: 3; }
+  .sources-list li:nth-child(14) { grid-row: 4; }
+  .sources-list li:nth-child(15) { grid-row: 5; }
+  .sources-list li:nth-child(16) { grid-row: 6; }
+  .sources-list li:nth-child(17) { grid-row: 7; }
+  .sources-list li:nth-child(18) { grid-row: 8; }
+  .sources-list li:nth-child(19) { grid-row: 9; }
+  .sources-list li:nth-child(10) { grid-row: 10 / 12; border-bottom: 0; }
+  .sources-list li span { margin-right: 6px; }
+  .sources-total { grid-column: 2; grid-row: 10 / 12; padding: 18px 20px; border-top: 3px double var(--muted); }
+  .sources-total .sources-label, .sources-total .sources-key { font: .6875rem/1.6 var(--font-special-elite); margin-bottom: 12px; }
+  .sources-label { text-transform: uppercase; }
+  .sources-numerals { display: flex; align-items: center; gap: 16px; margin-block: 10px 20px; }
+  .sources-numerals > div { display: grid; grid-template-columns: repeat(3, 24px); gap: 3px; }
+  .sources-toggle { display: inline-flex; gap: 10px; align-items: center; border: 0; background: transparent; color: var(--ink); cursor: pointer; margin-top: 24px; padding: 0; font: .6875rem/1.4 var(--font-special-elite); text-transform: uppercase; }
+  .sources-icon { display: inline-flex; width: 12px; height: 12px; }
+  .sources-icon :global(svg) { max-width: 12px; max-height: 12px; }
+  uruk-sources[data-open] [data-sources-open], uruk-sources:not([data-open]) [data-sources-close] { display: none; }
+  @media (max-width: 74.999rem) { .sources-preview { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 47.999rem) {
+    .sources-preview { display: flex; flex-direction: column; gap: 14px; }
+    .sources-table { display: block; }
+    .sources-list { display: block; }
+    .sources-list li:nth-child(-n+10) { border-right: 0; }
+    .sources-list li:nth-child(10) { border-bottom: 1px solid var(--muted); }
+    .sources-total { padding: 20px 16px; }
+  }
+</style>

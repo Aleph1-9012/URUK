@@ -1,0 +1,52 @@
+.result-page { padding-top: 8px; }
+.result-breadcrumb { display: inline-block; font: .75rem/1.4 var(--font-special-elite); text-transform: uppercase; margin-bottom: 28px; }
+.result-opening { display: grid; grid-template-columns: minmax(0, 800fr) minmax(0, 488fr); gap: 40px; margin-bottom: 88px; align-items: start; }
+.result-plate-one { margin: 0; padding: 20px; border: 1px solid var(--ink); }
+.result-visual { border: 1px solid var(--muted); min-height: 260px; aspect-ratio: 760 / 560; display: grid; place-items: center; background: var(--paper); font: italic 1.375rem/1.4 var(--font-alegreya); }
+.result-plate-one figcaption { font: italic 1rem/1.5 var(--font-alegreya); margin-top: 14px; }
+.result-introduction { min-width: 0; }
+.result-introduction > * + * { margin-top: 20px; }
+.result-page .result-label { font: .6875rem/1.5 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
+.result-ornament { display: block; width: 100%; height: auto; }
+.result-page .result-draft { font: italic 1rem/1.5 var(--font-alegreya); color: var(--muted); }
+.result-page .result-status { display: flex; align-items: center; gap: 10px; font: .875rem/1.5 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
+.result-page .result-checked { font: .875rem/1.5 var(--font-alegreya); }
+.result-contents { padding-top: 12px; }
+.result-page .result-aside { font: .875rem/1.5 var(--font-alegreya); color: var(--muted); }
+.result-page .result-margin { font: .8125rem/1.8 var(--font-special-elite); text-transform: uppercase; overflow-wrap: anywhere; }
+.result-page .folio-row__text { min-width: 0; }
+.result-page .folio-row__text > * + * { margin-top: 16px; }
+.result-theorem { border-block: 1px solid var(--ink); padding-block: 22px; }
+.result-theorem > p + p { margin-top: 16px; }
+.result-page .result-theorem p:not(.result-label):not(.result-specimen) { font-style: italic; font-size: var(--folio-theorem-font-size); line-height: var(--folio-theorem-line-height); }
+.result-page .result-specimen { font: italic .875rem/1.5 var(--font-alegreya); }
+.result-plate-two { margin: 24px 0 44px; padding: 20px; border: 1px solid var(--ink); }
+.result-plate-two figcaption { font: .6875rem/1.5 var(--font-special-elite); text-transform: uppercase; margin-bottom: 20px; }
+.result-figures { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; }
+.result-figures > div { border: 1px solid var(--muted); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; font: italic 1rem/1.4 var(--font-alegreya); }
+.result-page h3 { font: italic var(--folio-step-font-size)/var(--folio-step-line-height) var(--font-alegreya); font-weight: 400; }
+.result-paper-links { display: flex; flex-wrap: wrap; gap: 14px 30px; }
+.result-on-roll { margin-bottom: 40px; }
+.result-on-roll > h2 { color: var(--muted); font: .6875rem/1.2 var(--font-special-elite); letter-spacing: .04em; margin: 0 var(--content-left) 40px; text-transform: uppercase; }
+
+@media (min-width: 75rem) and (max-width: 89.999rem) {
+  .result-page .folio-row, .result-page .folio-section__heading { grid-template-columns: minmax(60px, 180px) minmax(0, 640px) minmax(160px, 1fr); gap: 32px; }
+}
+
+@media (max-width: 63.999rem) { .result-opening { grid-template-columns: 1fr 1fr; gap: 24px; } .result-figures { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 47.999rem) {
+  .result-opening { display: flex; flex-direction: column; gap: 30px; margin-bottom: 56px; }
+  .result-introduction { display: contents; }
+  .result-introduction h1, .result-introduction > .result-label, .result-introduction > .result-ornament, .result-introduction > .folio-top__copy { order: -1; margin: 0; }
+  .result-introduction > * { margin: 0; width: 100%; }
+  .result-plate-one { padding: 14px; width: 100%; }
+  .result-visual { min-height: 200px; }
+  .result-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .result-plate-two { padding: 14px; }
+  .result-figures > div { min-height: 120px; }
+  .result-page .folio-row { display: block; }
+  .result-page .result-margin { margin-bottom: 10px; }
+  .result-page .result-aside { margin-top: 20px; }
+  .result-on-roll { margin-bottom: 40px; }
+  .result-on-roll > h2 { margin: 0 20px 12px; }
+}

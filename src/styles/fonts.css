@@ -1,0 +1,31 @@
+@font-face {
+  font-display: swap;
+  font-family: "Alegreya";
+  font-style: normal;
+  font-weight: 400 900;
+  src: url("/fonts/alegreya-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Alegreya";
+  font-style: italic;
+  font-weight: 400 900;
+  src: url("/fonts/alegreya-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Special Elite";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/special-elite-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Garamond Math";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/garamond-math.woff2") format("woff2");
+}

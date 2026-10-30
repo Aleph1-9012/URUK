@@ -1,0 +1,70 @@
+---
+import Approved from '../../assets/status/approved.svg';
+import DisputedRing from '../../assets/status/disputed-ring.svg';
+import DisputedSlash from '../../assets/status/disputed-slash.svg';
+import ReviewHalf from '../../assets/status/review-half.svg';
+import ReviewRing from '../../assets/status/review-ring.svg';
+import Unreviewed from '../../assets/status/unreviewed.svg';
+
+interface Props {
+  kind: 'approved' | 'disputed' | 'under-review' | 'unreviewed';
+}
+
+const { kind } = Astro.props;
+---
+
+<span class="status-sign" aria-hidden="true">
+  {kind === 'approved' && <Approved class="status-sign__full" />}
+  {kind === 'unreviewed' && <Unreviewed class="status-sign__ring" />}
+  {kind === 'under-review' && (
+    <>
+      <ReviewRing class="status-sign__ring" />
+      <ReviewHalf class="status-sign__half" />
+    </>
+  )}
+  {kind === 'disputed' && (
+    <>
+      <DisputedRing class="status-sign__ring" />
+      <DisputedSlash class="status-sign__slash" />
+    </>
+  )}
+</span>
+
+<style>
+  .status-sign {
+    display: inline-block;
+    flex: none;
+    height: 12px;
+    position: relative;
+    vertical-align: middle;
+    width: 12px;
+  }
+
+  .status-sign__full,
+  .status-sign__ring {
+    display: block;
+    height: 12px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 12px;
+  }
+
+  .status-sign__half {
+    display: block;
+    height: 12px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 6px;
+  }
+
+  .status-sign__slash {
+    display: block;
+    height: 9.65px;
+    left: 1.175px;
+    position: absolute;
+    top: 1.175px;
+    width: 9.65px;
+  }
+</style>

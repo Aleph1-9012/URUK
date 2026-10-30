@@ -1,0 +1,126 @@
+---
+import NumberSign from './NumberSign.astro';
+import { decomposeNumberSigns } from './decompose';
+
+type Unit = '60' | '10' | '1';
+
+type Placement = {
+  unit: Unit;
+  left: number;
+  top: number;
+  boundsWidth: number;
+  boundsHeight: number;
+  cropWidth: number;
+  cropHeight: number;
+  rotation: number;
+};
+
+interface Props {
+  count: number;
+}
+
+const { count } = Astro.props;
+const counts = decomposeNumberSigns(count);
+const desktopPositions: Placement[] = [
+  { unit: '60', left: 295.8, top: 179.02, boundsWidth: 54.127, boundsHeight: 44.664, cropWidth: 52, cropHeight: 42, rotation: 3 },
+  { unit: '60', left: 352, top: 180.21, boundsWidth: 53.434, boundsHeight: 43.789, cropWidth: 52, cropHeight: 42, rotation: -2 },
+  { unit: '60', left: 412.27, top: 181.02, boundsWidth: 52.725, boundsHeight: 42.901, cropWidth: 52, cropHeight: 42, rotation: 1 },
+  { unit: '60', left: 295, top: 224.3, boundsWidth: 54.127, boundsHeight: 44.664, cropWidth: 52, cropHeight: 42, rotation: -3 },
+  { unit: '60', left: 354.53, top: 230.02, boundsWidth: 53.434, boundsHeight: 43.789, cropWidth: 52, cropHeight: 42, rotation: 2 },
+  { unit: '60', left: 412, top: 226.12, boundsWidth: 52.725, boundsHeight: 42.901, cropWidth: 52, cropHeight: 42, rotation: -1 },
+  { unit: '10', left: 297.6, top: 277.78, boundsWidth: 36.924, boundsHeight: 36.924, cropWidth: 35.7, cropHeight: 35.7, rotation: -2 },
+  { unit: '10', left: 341.05, top: 281.02, boundsWidth: 36.924, boundsHeight: 36.924, cropWidth: 35.7, cropHeight: 35.7, rotation: 2 },
+  { unit: '10', left: 382, top: 279.4, boundsWidth: 36.318, boundsHeight: 36.318, cropWidth: 35.7, cropHeight: 35.7, rotation: -1 },
+  { unit: '10', left: 426.08, top: 277.02, boundsWidth: 36.318, boundsHeight: 36.318, cropWidth: 35.7, cropHeight: 35.7, rotation: 1 },
+  { unit: '1', left: 294.5, top: 322.39, boundsWidth: 39.265, boundsHeight: 31.067, cropWidth: 38.25, cropHeight: 29.75, rotation: -2 },
+  { unit: '1', left: 336.19, top: 321.73, boundsWidth: 39.755, boundsHeight: 31.711, cropWidth: 38.25, cropHeight: 29.75, rotation: 3 },
+  { unit: '1', left: 384, top: 322.06, boundsWidth: 38.763, boundsHeight: 30.413, cropWidth: 38.25, cropHeight: 29.75, rotation: -1 },
+  { unit: '1', left: 424.73, top: 323.73, boundsWidth: 38.763, boundsHeight: 30.413, cropWidth: 38.25, cropHeight: 29.75, rotation: 1 },
+];
+const phonePositions: Placement[] = [
+  { unit: '60', left: 160.65, top: 96.21, boundsWidth: 29.228, boundsHeight: 24.119, cropWidth: 28.08, cropHeight: 22.68, rotation: 3 },
+  { unit: '60', left: 189.16, top: 98.23, boundsWidth: 28.854, boundsHeight: 23.646, cropWidth: 28.08, cropHeight: 22.68, rotation: -2 },
+  { unit: '60', left: 223.08, top: 98.21, boundsWidth: 28.472, boundsHeight: 23.167, cropWidth: 28.08, cropHeight: 22.68, rotation: 1 },
+  { unit: '60', left: 158.84, top: 120.2, boundsWidth: 29.228, boundsHeight: 24.119, cropWidth: 28.08, cropHeight: 22.68, rotation: -3 },
+  { unit: '60', left: 192.37, top: 124.67, boundsWidth: 28.854, boundsHeight: 23.646, cropWidth: 28.08, cropHeight: 22.68, rotation: 2 },
+  { unit: '60', left: 222.48, top: 121.18, boundsWidth: 28.472, boundsHeight: 23.167, cropWidth: 28.08, cropHeight: 22.68, rotation: -1 },
+  { unit: '10', left: 159.78, top: 150, boundsWidth: 19.939, boundsHeight: 19.939, cropWidth: 19.278, cropHeight: 19.278, rotation: -2 },
+  { unit: '10', left: 184.63, top: 152.67, boundsWidth: 19.939, boundsHeight: 19.939, cropWidth: 19.278, cropHeight: 19.278, rotation: 2 },
+  { unit: '10', left: 205.82, top: 151.34, boundsWidth: 19.612, boundsHeight: 19.612, cropWidth: 19.278, cropHeight: 19.278, rotation: -1 },
+  { unit: '10', left: 231, top: 148.67, boundsWidth: 19.612, boundsHeight: 19.612, cropWidth: 19.278, cropHeight: 19.278, rotation: 1 },
+  { unit: '1', left: 159.03, top: 174.55, boundsWidth: 21.203, boundsHeight: 16.776, cropWidth: 20.655, cropHeight: 16.065, rotation: -2 },
+  { unit: '1', left: 181.08, top: 173.27, boundsWidth: 21.467, boundsHeight: 17.124, cropWidth: 20.655, cropHeight: 16.065, rotation: 3 },
+  { unit: '1', left: 207.82, top: 173.91, boundsWidth: 20.932, boundsHeight: 16.423, cropWidth: 20.655, cropHeight: 16.065, rotation: -1 },
+  { unit: '1', left: 228.43, top: 175.27, boundsWidth: 20.932, boundsHeight: 16.423, cropWidth: 20.655, cropHeight: 16.065, rotation: 1 },
+];
+const remaining = {
+  '60': counts.sixties,
+  '10': counts.tens,
+  '1': counts.ones,
+};
+
+function placementsFor(positions: Placement[]): Placement[] {
+  const selected: Placement[] = [];
+
+  for (const position of positions) {
+    if (remaining[position.unit] === 0) {
+      continue;
+    }
+
+    selected.push(position);
+    remaining[position.unit] -= 1;
+  }
+
+  return selected;
+}
+
+const desktop = placementsFor(desktopPositions);
+remaining['60'] = counts.sixties;
+remaining['10'] = counts.tens;
+remaining['1'] = counts.ones;
+const phone = placementsFor(phonePositions);
+---
+
+<div class="number-signs" aria-hidden="true">
+  <div class="number-signs__layer number-signs__layer--desktop">
+    {desktop.map((position) => (
+      <NumberSign
+        unit={position.unit}
+        mode="tablet"
+        style={`left:${position.left}px;top:${position.top}px;width:${position.boundsWidth}px;height:${position.boundsHeight}px;--crop-width:${position.cropWidth}px;--crop-height:${position.cropHeight}px;--rotation:${position.rotation}deg;`}
+      />
+    ))}
+  </div>
+  <div class="number-signs__layer number-signs__layer--phone">
+    {phone.map((position) => (
+      <NumberSign
+        unit={position.unit}
+        mode="tablet"
+        style={`left:${position.left}px;top:${position.top}px;width:${position.boundsWidth}px;height:${position.boundsHeight}px;--crop-width:${position.cropWidth}px;--crop-height:${position.cropHeight}px;--rotation:${position.rotation}deg;`}
+      />
+    ))}
+  </div>
+</div>
+
+<style>
+  .number-signs,
+  .number-signs__layer {
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .number-signs__layer--phone {
+    display: none;
+  }
+
+  @media (max-width: 47.999rem) {
+    .number-signs__layer--desktop {
+      display: none;
+    }
+
+    .number-signs__layer--phone {
+      display: block;
+    }
+  }
+</style>

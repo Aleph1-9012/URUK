@@ -1,0 +1,74 @@
+---
+import temml from 'temml';
+import { alignedFormula } from '../../lib/formulas/break';
+import Icon from '../icon/Icon.astro';
+
+interface Props { tex: string; display?: boolean; }
+
+const { tex, display = false } = Astro.props;
+const single = temml.renderToString(tex, { displayMode: display, throwOnError: true });
+const broken = display ? temml.renderToString(alignedFormula(tex), { displayMode: true, throwOnError: true }) : '';
+---
+
+{display ? (
+  <uruk-formula>
+    <div class="formula-viewport" data-scroller tabindex="0" aria-label="Formula">
+      <div class="formula-single" set:html={single}></div>
+      <div class="formula-broken" hidden set:html={broken}></div>
+    </div>
+    <span class="formula-hint" hidden>Scroll to read the formula <span><Icon name="roll-forward" /></span></span>
+  </uruk-formula>
+) : <span class="formula-inline" set:html={single}></span>}
+
+<script>
+  class UrukFormula extends HTMLElement {
+    private observer: ResizeObserver | undefined;
+
+    connectedCallback(): void {
+      this.observer = new ResizeObserver(() => this.fit());
+      this.observer.observe(this);
+      void document.fonts.ready.then(() => this.fit());
+    }
+
+    disconnectedCallback(): void {
+      this.observer?.disconnect();
+    }
+
+    private fit(): void {
+      const single = this.querySelector<HTMLElement>('.formula-single');
+      const broken = this.querySelector<HTMLElement>('.formula-broken');
+      const viewport = this.querySelector<HTMLElement>('.formula-viewport');
+      const hint = this.querySelector<HTMLElement>('.formula-hint');
+
+      if (!single || !broken || !viewport || !hint) {
+        return;
+      }
+
+      single.hidden = false;
+      broken.hidden = true;
+
+      if (single.scrollWidth > viewport.clientWidth) {
+        single.hidden = true;
+        broken.hidden = false;
+      }
+
+      const overflowing = viewport.scrollWidth > viewport.clientWidth;
+      viewport.tabIndex = overflowing ? 0 : -1;
+      hint.hidden = !overflowing;
+    }
+  }
+
+  if (!customElements.get('uruk-formula')) {
+    customElements.define('uruk-formula', UrukFormula);
+  }
+</script>
+
+<style>
+  .formula-inline :global(math), uruk-formula :global(math) { font-family: var(--font-garamond-math); font-size: 1.07em; }
+  uruk-formula { display: block; min-width: 0; margin-block: 24px; }
+  .formula-viewport { overflow-x: auto; padding-block: 12px; }
+  .formula-single, .formula-broken { width: max-content; min-width: 100%; }
+  .formula-hint { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font: .6875rem/1.4 var(--font-special-elite); }
+  .formula-hint span { width: 16px; height: 16px; display: inline-flex; }
+  .formula-hint :global(svg) { max-width: 16px; max-height: 16px; }
+</style>

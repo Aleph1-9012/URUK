@@ -1,0 +1,57 @@
+---
+import { getImage } from 'astro:assets';
+import waterImage from '../../assets/hero/water.png';
+import { waterTintCss } from '../../motion/water/tint';
+
+const [waterOneX, waterTwoX] = await Promise.all([
+  getImage({ src: waterImage, width: 1440, format: 'webp', quality: 90 }),
+  getImage({ src: waterImage, width: 2880, format: 'webp', quality: 90 }),
+]);
+const backgroundStyle = `--water-still: image-set(url("${waterOneX.src}") 1x, url("${waterTwoX.src}") 2x); --water-tint: ${waterTintCss()};`;
+---
+
+<uruk-water
+  class="hero__water"
+  data-bleed
+  for="hero-plate"
+  data-water-1x={waterOneX.src}
+  data-water-2x={waterTwoX.src}
+  style={backgroundStyle}
+  aria-hidden="true"
+>
+  <canvas aria-hidden="true"></canvas>
+</uruk-water>
+
+<script>
+  import '../../motion/water/element';
+</script>
+
+<style>
+  uruk-water {
+    align-self: start;
+    background:
+      var(--water-still) var(--water-left) 0 / var(--water-w) 100% no-repeat,
+      var(--water-tint) 0 0 / max(0px, var(--water-left)) 100% no-repeat,
+      var(--water-tint) right 0 top 0 / max(0px, calc(100% - var(--water-left) - var(--water-w))) 100% no-repeat;
+    display: block;
+    grid-column: 1;
+    grid-row: water-start / water-end;
+    height: var(--water-h);
+    pointer-events: none;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+  }
+
+  uruk-water[data-live] {
+    background: none;
+  }
+
+  canvas {
+    display: block;
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+  }
+</style>

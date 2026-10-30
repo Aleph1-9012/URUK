@@ -1,0 +1,134 @@
+---
+import rosetteUrl from '../../assets/rosette/loftus-32.png?url';
+import ringUrl from '../../assets/icons/ring-open.svg?url';
+import upUrl from '../../assets/icons/up-16.svg?url';
+
+interface Props {
+  floating?: boolean;
+}
+
+const { floating = true } = Astro.props;
+---
+
+<uruk-back-to-top data-floating-enabled={floating ? 'true' : 'false'}>
+  <a class="back-to-top__rest case-link" href="#top">
+    <span>Back to top</span>
+    <span class="back-to-top__rest-roundel" aria-hidden="true">
+      <span class="back-to-top__roundel">
+        <img class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
+        <img class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
+        <img class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
+      </span>
+    </span>
+  </a>
+  <a
+    class="back-to-top__floating case-link case-link--framed"
+    href="#top"
+    aria-label="Back to top"
+  >
+    <span class="back-to-top__roundel" aria-hidden="true">
+      <img class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
+      <img class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
+      <img class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
+    </span>
+  </a>
+</uruk-back-to-top>
+
+<script>
+  import './element';
+</script>
+
+<style>
+  uruk-back-to-top {
+    display: block;
+  }
+
+  .back-to-top__rest {
+    align-items: center;
+    color: var(--ink);
+    display: inline-flex;
+    font-family: var(--font-special-elite);
+    font-size: 0.75rem;
+    gap: 10px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    position: relative;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .back-to-top__rest-roundel {
+    height: 12px;
+    position: relative;
+    width: 44px;
+  }
+
+  .back-to-top__roundel {
+    background: var(--paper);
+    border-radius: 50%;
+    display: block;
+    height: 44px;
+    position: relative;
+    width: 44px;
+  }
+
+  .back-to-top__ring {
+    display: block;
+    height: 41.81px;
+    left: 0;
+    position: absolute;
+    top: 2.19px;
+    width: 44px;
+  }
+
+  .back-to-top__rosette {
+    display: block;
+    height: 32px;
+    left: 6px;
+    position: absolute;
+    top: 6px;
+    width: 32px;
+  }
+
+  .back-to-top__up {
+    display: block;
+    height: 16px;
+    left: 14px;
+    position: absolute;
+    top: -8px;
+    width: 16px;
+  }
+
+  .back-to-top__rest .back-to-top__roundel {
+    position: absolute;
+    top: -16px;
+  }
+
+  .back-to-top__floating {
+    display: none;
+    height: 44px;
+    position: fixed;
+    right: 56px;
+    top: auto;
+    width: 44px;
+    z-index: 10;
+  }
+
+  uruk-back-to-top[data-floating] .back-to-top__floating {
+    display: block;
+  }
+
+  @media (max-width: 47.999rem) {
+    .back-to-top__floating {
+      right: 20px;
+      bottom: 24px;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .back-to-top__floating {
+      bottom: 40px;
+    }
+  }
+</style>
