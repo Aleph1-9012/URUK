@@ -15,9 +15,9 @@ const { floating = true } = Astro.props;
     <span>Back to top</span>
     <span class="back-to-top__rest-roundel" aria-hidden="true">
       <span class="back-to-top__roundel">
-        <img class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
-        <img class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
-        <img class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
+        <img draggable="false" class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
+        <img draggable="false" class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
+        <img draggable="false" class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
       </span>
     </span>
   </a>
@@ -27,9 +27,9 @@ const { floating = true } = Astro.props;
     aria-label="Back to top"
   >
     <span class="back-to-top__roundel" aria-hidden="true">
-      <img class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
-      <img class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
-      <img class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
+      <img draggable="false" class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
+      <img draggable="false" class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
+      <img draggable="false" class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
     </span>
   </a>
 </uruk-back-to-top>

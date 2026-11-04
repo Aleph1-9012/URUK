@@ -10,7 +10,7 @@ import PageLayout from '../layouts/PageLayout.astro';
 <PageLayout title="Error 404" active="none" showFooter={false}>
   <div class="not-found">
     <div class="not-found__tablet" aria-hidden="true">
-      <Image src={tablet} alt="" widths={[284, 525, 568, 1050]} sizes="(max-width: 323px) calc(100vw - 40px), (max-width: 767px) 283.5px, 525px" format="webp" quality={90} loading="eager" />
+      <Image draggable="false" src={tablet} alt="" widths={[284, 525, 568, 1050]} sizes="(max-width: 323px) calc(100vw - 40px), (max-width: 767px) 283.5px, 525px" format="webp" quality={90} loading="eager" />
       <NumberSigns count={404} />
     </div>
     <section class="not-found__message">
@@ -60,7 +60,6 @@ import PageLayout from '../layouts/PageLayout.astro';
 
   .not-found__tablet {
     height: 680px;
-    margin-top: 0;
     mix-blend-mode: multiply;
     position: relative;
     width: 525px;
@@ -192,14 +191,10 @@ import PageLayout from '../layouts/PageLayout.astro';
     .not-found__message {
       margin-top: 0;
       max-width: 500px;
-      width: 100%;
     }
 
     .not-found__credit {
-      margin-top: 0;
       max-width: 500px;
-      position: static;
-      width: 100%;
     }
   }
 
@@ -221,13 +216,11 @@ import PageLayout from '../layouts/PageLayout.astro';
     .not-found__message {
       gap: 12px;
       margin: 0;
-      width: 100%;
     }
 
     .not-found__eyebrow {
       font-size: 0.75rem;
       line-height: 1.125rem;
-      letter-spacing: 0.04em;
     }
 
     .not-found__address {
@@ -236,7 +229,6 @@ import PageLayout from '../layouts/PageLayout.astro';
     }
 
     .not-found__key {
-      flex-wrap: wrap;
       gap: 8px;
     }
 
@@ -244,21 +236,8 @@ import PageLayout from '../layouts/PageLayout.astro';
       font-size: 0.75rem;
     }
 
-    .not-found__note {
-      font-size: 1rem;
-      line-height: 1.5rem;
-    }
-
-    .not-found__button {
-      padding: 15px 22px;
-    }
-
     .not-found__credit {
-      font-size: 0.625rem;
-      line-height: 0.9375rem;
       margin-top: 28px;
-      position: static;
-      width: 100%;
     }
   }
 </style>

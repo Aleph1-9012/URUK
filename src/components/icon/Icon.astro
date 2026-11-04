@@ -1,13 +1,13 @@
 ---
-import ClearIcon from '../../assets/icons/clear.svg';
-import CloseIcon from '../../assets/icons/close.svg';
-import DownIcon from '../../assets/icons/down.svg';
-import LeftIcon from '../../assets/icons/left.svg';
-import OpenIcon from '../../assets/icons/open.svg';
-import RightIcon from '../../assets/icons/right.svg';
-import RollBackIcon from '../../assets/icons/roll-back.svg';
-import RollForwardIcon from '../../assets/icons/roll-forward.svg';
-import SearchIcon from '../../assets/icons/search.svg';
+import clearUrl from '../../assets/icons/clear.svg?url';
+import closeUrl from '../../assets/icons/close.svg?url';
+import downUrl from '../../assets/icons/down.svg?url';
+import leftUrl from '../../assets/icons/left.svg?url';
+import openUrl from '../../assets/icons/open.svg?url';
+import rightUrl from '../../assets/icons/right.svg?url';
+import rollBackUrl from '../../assets/icons/roll-back.svg?url';
+import rollForwardUrl from '../../assets/icons/roll-forward.svg?url';
+import searchUrl from '../../assets/icons/search.svg?url';
 
 interface Props {
   name:
@@ -23,18 +23,29 @@ interface Props {
 }
 
 const { name } = Astro.props;
+// The cut paths are thousands of points each, so a page points at the file instead of carrying a copy per use.
 const icons = {
-  right: RightIcon,
-  left: LeftIcon,
-  down: DownIcon,
-  'roll-forward': RollForwardIcon,
-  'roll-back': RollBackIcon,
-  open: OpenIcon,
-  close: CloseIcon,
-  search: SearchIcon,
-  clear: ClearIcon,
+  right: rightUrl,
+  left: leftUrl,
+  down: downUrl,
+  'roll-forward': rollForwardUrl,
+  'roll-back': rollBackUrl,
+  open: openUrl,
+  close: closeUrl,
+  search: searchUrl,
+  clear: clearUrl,
 } as const;
-const Icon = icons[name];
 ---
 
-<Icon aria-hidden="true" />
+<svg
+  aria-hidden="true"
+  preserveAspectRatio="none"
+  overflow="visible"
+  style="display: block;"
+  width="12"
+  height="12"
+  viewBox="0 0 12 12"
+  fill="none"
+>
+  <use href={`${icons[name]}#icon`}></use>
+</svg>

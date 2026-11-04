@@ -1,6 +1,6 @@
 ---
-import Ornament from '../assets/ornaments/ornament.svg?url';
-import Diamond from '../assets/ornaments/diamond.svg?url';
+import ornamentUrl from '../assets/ornaments/ornament.svg?url';
+import diamondUrl from '../assets/ornaments/diamond.svg?url';
 import StatusSign from '../components/status-sign/StatusSign.astro';
 import PageLayout from '../layouts/PageLayout.astro';
 ---
@@ -11,9 +11,9 @@ import PageLayout from '../layouts/PageLayout.astro';
       <div class="folio-top__text">
         <h1>How do we know if a proof has been checked?</h1>
         <div class="folio-ornament" aria-hidden="true">
-          <img class="folio-ornament__desktop" src={Ornament} alt="" width="640" height="12" />
+          <img draggable="false" class="folio-ornament__desktop" src={ornamentUrl} alt="" width="640" height="12" />
           <div class="folio-ornament__phone">
-            <span></span><img src={Diamond} alt="" width="10" height="10" /><span></span>
+            <span></span><img draggable="false" src={diamondUrl} alt="" width="10" height="10" /><span></span>
           </div>
         </div>
         <p class="folio-top__copy">
@@ -169,7 +169,7 @@ import PageLayout from '../layouts/PageLayout.astro';
       <div class="folio-row how-we-check__row--page-end">
         <div class="folio-row__margin"></div>
         <div class="folio-row__text">
-          <p>If you know of a review we have not found, or think a label is wrong, open an issue on <a class="case-link case-link--tight" href="https://github.com/Aleph1-9012/URUK/issues">GitHub</a>. We will look at it and update the page.</p>
+          <p>If you know of a review we have not found, or think a label is wrong, open an issue on <a class="text-link" href="https://github.com/Aleph1-9012/URUK/issues">GitHub</a>. We will look at it and update the page.</p>
         </div>
       </div>
     </section>

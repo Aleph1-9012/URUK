@@ -3,22 +3,16 @@ import PageLayout from '../../layouts/PageLayout.astro';
 import Roll from '../../components/roll/Roll.astro';
 import Icon from '../../components/icon/Icon.astro';
 import StatusSign from '../../components/status-sign/StatusSign.astro';
+import { SEAL_CREDIT } from '../../components/footer/credits';
 import { visibleResults, statusKind } from '../../content/results';
 import '../../components/menu/menu.css';
 
 const results = await visibleResults();
 const filters = ['under-review', 'unreviewed', 'approved', 'disputed'] as const;
-const credit = 'A male figure, hunting dogs and boars, rolled on Text 179. Jemdet Nasr, ca. 3100–2900 BCE. The Met, 1988.433.1, open access.';
-const credits = [
-  { label: 'Seal impression', text: credit },
-  { label: 'Rosette', text: 'From the plate of ornaments found at Warka (Uruk). W. K. Loftus, 1857. Public domain.' },
-  { label: 'Texture', text: 'The Wave, Coyote Buttes, Arizona. Photo by Romain Guy, CC0.' },
-  { label: 'Type', text: 'Set in Alegreya, Special Elite and Garamond-Math.' },
-];
 ---
 
-  <PageLayout title="All results · Uruk" active="results" showSearch showFooterOnPhone={false} floatingBackToTop={false} credits={credits}>
-    <div class="menu-search case-link case-link--framed" slot="search" data-menu-enhancement hidden>
+  <PageLayout title="All results · Uruk" active="results" showSearch showFooterOnPhone={false} floatingBackToTop={false}>
+    <div class="menu-search case-link case-link--framed" slot="search" data-script-only>
       <span class="menu-icon menu-icon--search"><Icon name="search" /></span>
       <input type="search" aria-label="Search results" placeholder="Search results" data-search autocomplete="off" />
       <button type="button" aria-label="Clear search" data-clear hidden><span class="menu-icon"><Icon name="clear" /></span></button>
@@ -26,15 +20,25 @@ const credits = [
     <div class="menu-page">
       <h1 class="visually-hidden">All results</h1>
       <Roll results={results}>
-        <div class="menu-filters" slot="controls" data-menu-enhancement hidden role="group" aria-label="Filter by review status">
+        <div class="menu-filters" slot="controls" data-script-only role="group" aria-label="Filter by review status">
           <span>Show</span>
           <button class="case-link" type="button" data-filter="" aria-pressed="true"><span>All</span></button>
-          {filters.map((status) => <button class="case-link" type="button" data-filter={status} aria-pressed="false"><StatusSign kind={status} /><span>{status.replace('-', ' ')}</span></button>)}
+          {filters.map((status) => (
+            <button
+              class="case-link"
+              type="button"
+              data-filter={status}
+              aria-pressed="false"
+              disabled={!results.some(({ data }) => statusKind(data.status) === status)}
+            >
+              <StatusSign kind={status} /><span>{status.replace('-', ' ')}</span>
+            </button>
+          ))}
         </div>
       </Roll>
       <p class="visually-hidden" role="status" aria-live="polite" data-result-count></p>
-      <section class="menu-index" data-result-index hidden>
-        <h2 data-result-count>Results</h2>
+      <section class="menu-index" data-result-index data-script-only>
+        <h2 data-result-count>{results.length} {results.length === 1 ? 'result' : 'results'}</h2>
         {results.map(({ data }) => (
           <div class="menu-index__row case-link case-link--row" data-index-family={data.family}>
             <button type="button" class="menu-index__wind" data-wind>
@@ -51,7 +55,7 @@ const credits = [
         <h2 data-result-count>No results</h2>
         <p>Try a word from a question, a number or a field, or clear the search to unroll all {results.length}.</p>
       </section>
-      <p class="menu-phone-credit" data-roll-footnote>Seal impression along the roll: {credit}</p>
+      <p class="menu-phone-credit" data-roll-footnote>Seal impression along the roll: {SEAL_CREDIT.text}</p>
     </div>
   </PageLayout>
 

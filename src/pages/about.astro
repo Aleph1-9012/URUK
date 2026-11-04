@@ -1,6 +1,6 @@
 ---
-import Ornament from '../assets/ornaments/ornament.svg?url';
-import Diamond from '../assets/ornaments/diamond.svg?url';
+import ornamentUrl from '../assets/ornaments/ornament.svg?url';
+import diamondUrl from '../assets/ornaments/diamond.svg?url';
 import PageLayout from '../layouts/PageLayout.astro';
 ---
 
@@ -10,9 +10,9 @@ import PageLayout from '../layouts/PageLayout.astro';
       <div class="folio-top__text">
         <h1>What is Uruk?</h1>
         <div class="folio-ornament" aria-hidden="true">
-          <img class="folio-ornament__desktop" src={Ornament} alt="" width="640" height="12" />
+          <img draggable="false" class="folio-ornament__desktop" src={ornamentUrl} alt="" width="640" height="12" />
           <div class="folio-ornament__phone">
-            <span></span><img src={Diamond} alt="" width="10" height="10" /><span></span>
+            <span></span><img draggable="false" src={diamondUrl} alt="" width="10" height="10" /><span></span>
           </div>
         </div>
         <p class="folio-top__copy">
@@ -53,7 +53,7 @@ import PageLayout from '../layouts/PageLayout.astro';
         <p class="folio-row__margin folio-question-list__number">4.</p>
         <div class="folio-row__text">
           <h2>Have mathematicians approved the proof?</h2>
-          <p>Every page carries a label with a date. <a class="case-link case-link--tight" href="/how-we-check/">How we check</a> explains the labels.</p>
+          <p>Every page carries a label with a date. <a class="text-link" href="/how-we-check/">How we check</a> explains the labels.</p>
         </div>
       </div>
     </section>
@@ -79,7 +79,7 @@ import PageLayout from '../layouts/PageLayout.astro';
       <div class="folio-row">
         <div class="folio-row__margin"></div>
         <div class="folio-row__text">
-          <p>Every paper comes from OpenAI's public repository, <a class="case-link case-link--tight" href="https://github.com/openai/math/tree/adc7f1241b42e322a6451854ab7e4b4c146bf78a">github.com/openai/math</a>. We read it at one fixed version, commit adc7f12, and link that version rather than the latest. That way the text we describe cannot change under us. If OpenAI later revises or withdraws a paper, the page says so. The repository is published under the Apache 2.0 licence.</p>
+          <p>Every paper comes from OpenAI's public repository, <a class="text-link" href="https://github.com/openai/math/tree/4eaee87548250b2682affda7d05d947c05554bae">github.com/openai/math</a>. We read it at one fixed version, commit 4eaee87, and link that version rather than the latest. That way the text we describe cannot change under us. If OpenAI later revises or withdraws a paper, the page says so. The repository is published under the Apache 2.0 licence.</p>
         </div>
       </div>
       <div class="folio-row">
@@ -104,7 +104,7 @@ import PageLayout from '../layouts/PageLayout.astro';
       <div class="folio-row about-page__row--section-end">
         <div class="folio-row__margin"></div>
         <div class="folio-row__text">
-          <p>Uruk is open source: <a class="case-link case-link--tight" href="https://github.com/Aleph1-9012/URUK">github.com/Aleph1-9012/URUK</a>.</p>
+          <p>Uruk is open source: <a class="text-link" href="https://github.com/Aleph1-9012/URUK">github.com/Aleph1-9012/URUK</a>.</p>
         </div>
       </div>
     </section>

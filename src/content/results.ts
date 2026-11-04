@@ -2,7 +2,7 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type ResultEntry = CollectionEntry<'results'>;
 
-export const paperBase = 'https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/';
+export const paperBase = 'https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/';
 
 export async function visibleResults(): Promise<ResultEntry[]> {
   const includeDrafts = import.meta.env.DEV || process.env.URUK_DRAFTS === '1';

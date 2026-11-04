@@ -6,7 +6,7 @@ const sources = Array.from({ length: 19 }, (_, index) => index + 1);
 ---
 
 <uruk-sources>
-  <div class="sources-preview" hidden>
+  <div class="sources-preview" data-script-only>
     {sources.slice(0, 6).map((number) => <p>{number}. Placeholder source {number}.</p>)}
   </div>
   <div class="sources-table" id="source-table">
@@ -19,8 +19,8 @@ const sources = Array.from({ length: 19 }, (_, index) => index + 1);
       <p class="sources-key">10 × 1 + 1 × 9 = 19 sources</p>
     </div>
   </div>
-  <button type="button" class="sources-toggle case-link" aria-expanded="true" aria-controls="source-table" hidden>
-    <span data-sources-label>Show fewer</span><span class="sources-icon" data-sources-open><Icon name="open" /></span><span class="sources-icon" data-sources-close><Icon name="close" /></span>
+  <button type="button" class="sources-toggle case-link" aria-expanded="false" aria-controls="source-table" data-script-only>
+    <span data-sources-label>Show all 19 sources</span><span class="sources-icon" data-sources-open><Icon name="open" /></span><span class="sources-icon" data-sources-close><Icon name="close" /></span>
   </button>
 </uruk-sources>
 
@@ -38,13 +38,10 @@ const sources = Array.from({ length: 19 }, (_, index) => index + 1);
 
       const update = (open: boolean) => {
         this.toggleAttribute('data-open', open);
-        this.querySelector('.sources-preview')?.toggleAttribute('hidden', open);
-        this.querySelector('.sources-table')?.toggleAttribute('hidden', !open);
         button.setAttribute('aria-expanded', String(open));
         this.querySelector('[data-sources-label]')?.replaceChildren(open ? 'Show fewer' : 'Show all 19 sources');
       };
 
-      button.hidden = false;
       update(new URLSearchParams(location.search).get('sources') === 'open');
       button.addEventListener('click', () => update(button.getAttribute('aria-expanded') !== 'true'), { signal: this.events.signal });
     }
@@ -87,7 +84,9 @@ const sources = Array.from({ length: 19 }, (_, index) => index + 1);
   .sources-toggle { display: inline-flex; gap: 10px; align-items: center; border: 0; background: transparent; color: var(--ink); cursor: pointer; margin-top: 24px; padding: 0; font: .6875rem/1.4 var(--font-special-elite); text-transform: uppercase; }
   .sources-icon { display: inline-flex; width: 12px; height: 12px; }
   .sources-icon :global(svg) { max-width: 12px; max-height: 12px; }
-  uruk-sources[data-open] [data-sources-open], uruk-sources:not([data-open]) [data-sources-close] { display: none; }
+  uruk-sources[data-open] [data-sources-open], uruk-sources:not([data-open]) [data-sources-close], uruk-sources[data-open] .sources-preview { display: none; }
+  /* Collapsed from the first paint when scripts run; without them the whole table shows. */
+  @media (scripting: enabled) { uruk-sources:not([data-open]) .sources-table { display: none; } }
   @media (max-width: 74.999rem) { .sources-preview { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 47.999rem) {
     .sources-preview { display: flex; flex-direction: column; gap: 14px; }

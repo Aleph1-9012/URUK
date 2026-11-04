@@ -166,10 +166,6 @@
   min-width: 1px;
 }
 
-.folio-section {
-  margin-bottom: 0;
-}
-
 .folio-question-list .folio-row {
   padding-bottom: 24px;
 }
@@ -211,7 +207,6 @@
 
 .folio-row {
   align-items: start;
-  margin-bottom: 0;
   padding-bottom: 26px;
 }
 
@@ -256,12 +251,6 @@
   margin-top: 4px;
 }
 
-.folio-page a:not(.case-link) {
-  color: var(--blue);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
 .folio-page a.case-link:not(.folio-contents__row) {
   color: var(--blue);
   text-decoration: none;
@@ -277,7 +266,6 @@
   .folio-top,
   .folio-section__heading,
   .folio-row {
-    column-gap: 40px;
     grid-template-columns: minmax(40px, 180px) minmax(0, 640px);
   }
 
@@ -285,10 +273,6 @@
   .folio-row__aside {
     grid-column: 2;
     padding-top: 24px;
-  }
-
-  .folio-section__title {
-    grid-column: 2;
   }
 }
 
@@ -300,10 +284,6 @@
   .folio-top {
     display: block;
     padding-block: 8px 56px;
-  }
-
-  .folio-top__text > * + * {
-    margin-top: 22px;
   }
 
   .folio-ornament__desktop {
@@ -329,7 +309,6 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding-bottom: 18px;
   }
 
   .folio-section__title {

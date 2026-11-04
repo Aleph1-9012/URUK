@@ -1,43 +1,25 @@
 ---
-import { getImage } from 'astro:assets';
 import Icon from '../icon/Icon.astro';
-import engraving from '../../assets/hero/engraving.png';
-import textureDesktop from '../../assets/hero/texture-desktop.jpg';
-import texturePhone from '../../assets/hero/texture-phone.jpg';
+import plateLarge from '../../assets/hero/engraving.webp?url';
+import plateSmall from '../../assets/hero/engraving-760.webp?url';
+import desktopTextureOneX from '../../assets/hero/texture-desktop-1440.webp?url';
+import desktopTextureTwoX from '../../assets/hero/texture-desktop-2880.webp?url';
+import phoneTextureOneX from '../../assets/hero/texture-phone-390.webp?url';
+import phoneTextureTwoX from '../../assets/hero/texture-phone-780.webp?url';
 import logoUrl from '../../assets/logo/uruk.svg?url';
 import Water from './Water.astro';
 
-const [
-  plate760,
-  plate1520,
-  plate2168,
-  desktopTextureOneX,
-  desktopTextureTwoX,
-  phoneTextureOneX,
-  phoneTextureTwoX,
-] = await Promise.all([
-  getImage({ src: engraving, width: 760, format: 'png' }),
-  getImage({ src: engraving, width: 1520, format: 'png' }),
-  getImage({ src: engraving, width: 2168, format: 'png' }),
-  getImage({ src: textureDesktop, width: 1440, format: 'webp', quality: 90 }),
-  getImage({ src: textureDesktop, width: 2880, format: 'webp', quality: 90 }),
-  getImage({ src: texturePhone, width: 390, format: 'webp', quality: 90 }),
-  getImage({ src: texturePhone, width: 780, format: 'webp', quality: 90 }),
-]);
-
-const plateSrcset = [
-  `${plate760.src} 760w`,
-  `${plate1520.src} 1520w`,
-  `${plate2168.src} 2168w`,
-].join(', ');
+// No copy in between: the full-size file is pure ink and very small, but a resized one gains grey edges and grows.
+const plateSrcset = `${plateSmall} 760w, ${plateLarge} 2168w`;
 const desktopTextureSrcset = [
-  `${desktopTextureOneX.src} 1440w`,
-  `${desktopTextureTwoX.src} 2880w`,
+  `${desktopTextureOneX} 1440w`,
+  `${desktopTextureTwoX} 2880w`,
 ].join(', ');
 const phoneTextureSrcset = [
-  `${phoneTextureOneX.src} 390w`,
-  `${phoneTextureTwoX.src} 780w`,
+  `${phoneTextureOneX} 390w`,
+  `${phoneTextureTwoX} 780w`,
 ].join(', ');
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 ---
 
 <div class="hero">
@@ -45,43 +27,58 @@ const phoneTextureSrcset = [
     class="hero__texture hero__texture--desktop"
     aria-hidden="true"
   >
-    <img
-      class="hero__texture-image"
-      src={desktopTextureOneX.src}
-      srcset={desktopTextureSrcset}
-      sizes="100vw"
-      alt=""
-      width="2880"
-      height="1070"
-    />
+    <picture>
+      <source media="(max-width: 47.999rem)" srcset={BLANK} />
+      <img
+        draggable="false"
+        class="hero__texture-image"
+        src={desktopTextureOneX}
+        srcset={desktopTextureSrcset}
+        sizes="100vw"
+        decoding="async"
+        alt=""
+        width="2880"
+        height="1070"
+      />
+    </picture>
   </div>
   <div
     class="hero__texture hero__texture--phone-top"
     aria-hidden="true"
   >
-    <img
-      class="hero__texture-image"
-      src={phoneTextureOneX.src}
-      srcset={phoneTextureSrcset}
-      sizes="100vw"
-      alt=""
-      width="780"
-      height="1688"
-    />
+    <picture>
+      <source media="(min-width: 48rem)" srcset={BLANK} />
+      <img
+        draggable="false"
+        class="hero__texture-image"
+        src={phoneTextureOneX}
+        srcset={phoneTextureSrcset}
+        sizes="100vw"
+        decoding="async"
+        alt=""
+        width="780"
+        height="1688"
+      />
+    </picture>
   </div>
   <div
     class="hero__texture hero__texture--phone-bottom"
     aria-hidden="true"
   >
-    <img
-      class="hero__texture-image"
-      src={phoneTextureOneX.src}
-      srcset={phoneTextureSrcset}
-      sizes="100vw"
-      alt=""
-      width="780"
-      height="1688"
-    />
+    <picture>
+      <source media="(min-width: 48rem)" srcset={BLANK} />
+      <img
+        draggable="false"
+        class="hero__texture-image"
+        src={phoneTextureOneX}
+        srcset={phoneTextureSrcset}
+        sizes="100vw"
+        decoding="async"
+        alt=""
+        width="780"
+        height="1688"
+      />
+    </picture>
   </div>
   <header class="hero__header">
     <nav aria-label="Site">
@@ -117,18 +114,19 @@ const phoneTextureSrcset = [
     </nav>
   </header>
   <Water />
-  <main class="hero__main">
+  <div class="hero__main">
     <div class="hero__art" data-bleed>
       <h1 class="hero__logo">
-        <img src={logoUrl} alt="URUK" width="290" height="98" />
+        <img src={logoUrl} alt="URUK" width="290" height="98" draggable="false" />
       </h1>
       <img
         id="hero-plate"
         class="hero__plate"
+        draggable="false"
         data-bleed
-        src={plate760.src}
+        src={plateSmall}
         srcset={plateSrcset}
-        sizes="(max-width: 48rem) 100vw, 60vw"
+        sizes="min(calc(197.166667px + 39.085714vw), 84.444444svh)"
         alt=""
         width="760"
         height="382"
@@ -139,7 +137,7 @@ const phoneTextureSrcset = [
       <Icon name="right" />
     </a>
     <footer class="hero__foot">
-      <a class="hero__scroll case-link" href="/results/">
+      <a class="hero__scroll case-link" href="#dig">
         <span>Scroll</span>
         <Icon name="down" />
       </a>
@@ -148,7 +146,7 @@ const phoneTextureSrcset = [
         domain.
       </p>
     </footer>
-  </main>
+  </div>
 </div>
 
 <style>
@@ -192,28 +190,15 @@ const phoneTextureSrcset = [
 
   .hero__texture {
     inset: 0;
-    isolation: isolate;
     min-height: 0;
     min-width: 0;
-    mix-blend-mode: multiply;
-    opacity: 0.3;
     overflow: hidden;
     position: absolute;
     z-index: 0;
   }
 
-  .hero__texture::after {
-    background: #21262a;
-    content: "";
-    inset: 0;
-    mix-blend-mode: screen;
-    pointer-events: none;
-    position: absolute;
-  }
-
   .hero__texture-image {
     display: block;
-    filter: var(--texture-filter);
     height: 100%;
     inset: 0;
     object-fit: cover;
@@ -351,7 +336,6 @@ const phoneTextureSrcset = [
     font-size: var(--folio-nav-font-size);
     font-style: var(--folio-nav-font-style);
     font-weight: var(--folio-nav-font-weight);
-    gap: 6px;
     grid-column: 1;
     grid-row: button-start / button-end;
     justify-self: start;
@@ -436,7 +420,9 @@ const phoneTextureSrcset = [
         to bottom,
         transparent 0,
         transparent var(--water-h),
-        #000 calc(var(--water-h) + 60px)
+        #000 calc(var(--water-h) + 60px),
+        #000 calc(100% - 40px),
+        transparent 100%
       );
     }
 
@@ -454,10 +440,6 @@ const phoneTextureSrcset = [
 
     .hero__art {
       grid-row: 2;
-    }
-
-    .hero__foot {
-      grid-row: 6;
     }
 
     .hero__nav-list > li.hero__nav-start {

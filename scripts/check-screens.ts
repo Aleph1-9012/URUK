@@ -29,22 +29,12 @@ type LayoutFailure = {
 };
 
 type LayoutResult = {
-  scrollWidth: number;
-  clientWidth: number;
   failures: LayoutFailure[];
 };
 
-async function runCommand(
-  command: string,
-  args: string[],
-  includeDrafts = false,
-): Promise<void> {
+async function runCommand(command: string, args: string[]): Promise<void> {
   await new Promise<void>((resolve, reject) => {
-    const env = { ...process.env };
-
-    if (includeDrafts) {
-      env.URUK_DRAFTS = '1';
-    }
+    const env = { ...process.env, URUK_DRAFTS: '1' };
 
     const child = spawn(command, args, {
       cwd: REPO_ROOT,
@@ -374,11 +364,7 @@ async function inspectPage(page: Page): Promise<LayoutResult> {
       node.scrollTo({ left, top, behavior: 'instant' });
     }
 
-    return {
-      scrollWidth: root.scrollWidth,
-      clientWidth: root.clientWidth,
-      failures,
-    };
+    return { failures };
   });
 }
 
@@ -415,15 +401,16 @@ function timestamp(): string {
 }
 
 async function runScreenChecks(): Promise<void> {
-  await runCommand('bun', ['run', 'build'], true);
+  await runCommand('bun', ['run', 'build']);
 
   const distDirectory = join(REPO_ROOT, 'dist');
   const discoveredPaths = await collectPagePaths(distDirectory);
-  discoveredPaths.push(...EXTRA_URLS);
 
   if (discoveredPaths.length === 0) {
     throw new Error('No HTML pages were found in dist.');
   }
+
+  discoveredPaths.push(...EXTRA_URLS);
 
   const pagePaths = selectPagePaths(discoveredPaths, process.argv.slice(2));
   const server = await preview({ root: REPO_ROOT, server: { host: PREVIEW_HOST, port: 0 }, logLevel: 'error' });

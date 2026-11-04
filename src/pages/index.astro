@@ -1,8 +1,64 @@
 ---
 import Base from '../layouts/Base.astro';
+import Dig from '../components/dig/Dig.astro';
+import Footer from '../components/footer/Footer.astro';
+import { ROSETTE_CREDIT, TEXTURE_CREDIT, TYPE_CREDIT } from '../components/footer/credits';
 import Hero from '../components/hero/Hero.astro';
+import TextureField from '../components/texture-field/TextureField.astro';
+
+const CREDITS = [
+  {
+    label: 'Woodcuts',
+    text: 'The Buwáriyya Ruin and the patterns of the cone wall at Warka. W. K. Loftus, 1857, pp. 167 and 188. Public domain.',
+  },
+  ROSETTE_CREDIT,
+  TEXTURE_CREDIT,
+  TYPE_CREDIT,
+];
 ---
 
 <Base title="URUK">
-  <Hero />
+  <div class="home" id="top">
+    <TextureField />
+    <main>
+      <Hero />
+      <div class="home__dig">
+        <Dig />
+      </div>
+    </main>
+    <Footer credits={CREDITS} />
+  </div>
 </Base>
+
+<style>
+  .home {
+    overflow-x: clip;
+    position: relative;
+  }
+
+  /* The hero has its own texture on top, so this one starts under it and doesn't load on the first screen. */
+  .home > :global(uruk-texture-field) {
+    top: 100svh;
+  }
+
+  .home__dig {
+    position: relative;
+  }
+
+  /* The hero's foot is plain paper, so the texture comes in gradually under it. */
+  .home__dig::before {
+    background: linear-gradient(to bottom, var(--paper), rgb(231 229 224 / 0));
+    content: "";
+    height: 220px;
+    inset: 0 0 auto;
+    pointer-events: none;
+    position: absolute;
+    z-index: 1;
+  }
+
+  @media (max-width: 47.999rem) {
+    .home__dig::before {
+      height: 40px;
+    }
+  }
+</style>

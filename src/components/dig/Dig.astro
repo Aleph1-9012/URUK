@@ -1,0 +1,498 @@
+---
+import { getCollection } from 'astro:content';
+import Icon from '../icon/Icon.astro';
+import StatusSign from '../status-sign/StatusSign.astro';
+import moundSmall from '../../assets/home/mound-716.webp?url';
+import moundMedium from '../../assets/home/mound-1100.webp?url';
+import moundLarge from '../../assets/home/mound-2200.webp?url';
+import bark from '../../assets/home/bark.webp?url';
+import lozenge from '../../assets/home/lozenge.webp?url';
+import slant from '../../assets/home/slant.webp?url';
+import zigzag from '../../assets/home/zigzag.webp?url';
+import { statusKind, visibleResults } from '../../content/results';
+
+// The text of the approved 57a frames. It has no home in the results schema yet.
+const LAYERS = [
+  {
+    numeral: 'I',
+    question: 'What is the problem?',
+    answer: 'In 1965 Richard Thompson wrote down a group of simple-looking maps: stretch and squeeze a line piecewise, with every slope a power of two. One question about it became famous: does the group admit a fair way to average?',
+    pattern: bark,
+  },
+  {
+    numeral: 'II',
+    question: 'Why did it stay open?',
+    answer: "For fifty years nobody could decide. False proofs in both directions appeared, by one expert's count, about once a year, including a 2012 claim that its author withdrew after a competitor found the error.",
+    pattern: slant,
+  },
+  {
+    numeral: 'III',
+    question: 'Does it matter outside mathematics?',
+    answer: "No known direct application. Amenability underlies ergodic theory and the Banach-Tarski paradox, but Thompson's group is an object of pure mathematics.",
+    pattern: zigzag,
+  },
+  {
+    numeral: 'IV',
+    question: 'Have mathematicians approved the proof?',
+    answer: 'Yes. Sang-hyun Kim and Yash Lodha, two experts in exactly this area, rewrote the proof as their own and published it under their names. It is not a journal acceptance, and it is not a consensus.',
+    pattern: lozenge,
+  },
+];
+const OTHER_TRENCHES = [
+  { family: '158', question: 'How many colours does it take to paint the plane so that no two points one unit apart match?' },
+  { family: '003', question: 'How close can the zeros get to the edge?' },
+  { family: '102', question: 'Can you fix one rule without breaking another?' },
+  { family: '167', question: 'How many pairs of points can be exactly one unit apart?' },
+];
+
+const visible = await visibleResults();
+const allResults = await getCollection('results');
+// A draft has no page in a production build, so only results with a page get a link.
+const hasPage = (family: string) => visible.some((entry) => entry.data.family === family);
+const statusOf = (family: string) => allResults.find((entry) => entry.data.family === family)?.data.status;
+const digStatus = statusOf('248');
+const trenches = OTHER_TRENCHES.flatMap((trench) => {
+  const status = statusOf(trench.family);
+
+  return status !== undefined && hasPage(trench.family) ? [{ ...trench, status }] : [];
+});
+const moundSrcset = `${moundSmall} 716w, ${moundMedium} 1100w, ${moundLarge} 2200w`;
+---
+
+<uruk-dig class="dig">
+  <section aria-labelledby="dig">
+    <div class="dig__head">
+      <h2 class="dig__title" id="dig">Dig into a result</h2>
+      <p class="dig__intro">
+        In the 1850s W. K. Loftus dug into this mound at Warka, hoping to find the records buried at its corners: “my search for these valued records was fruitless,” he wrote. Here they are in the ground. Dig down through any result, one layer at a time.
+      </p>
+    </div>
+    <img
+      class="dig__mound"
+      draggable="false"
+      src={moundMedium}
+      srcset={moundSrcset}
+      sizes="(max-width: 47.999rem) calc(100vw - 32px), min(1100px, calc(100vw - 112px))"
+      loading="lazy"
+      decoding="async"
+      alt="Woodcut of the Buwáriyya mound at Warka, with riders crossing in front of it. W. K. Loftus, 1857."
+      width="1100"
+      height="575"
+    />
+    <div class="dig__layers">
+      {LAYERS.map((layer) => (
+        <div class="dig__layer" data-dig-layer>
+          <div class="dig__question">
+            <p class="dig__label dig__label--muted">Layer {layer.numeral}</p>
+            <h3 tabindex="-1">{layer.question}</h3>
+          </div>
+          <div class="dig__trench" style={`--pattern: url("${layer.pattern}")`} aria-hidden="true" data-dig-buried></div>
+          <div class="dig__answer" data-dig-buried>
+            <p>{layer.answer}</p>
+            {layer.numeral === 'IV' && digStatus !== undefined && (
+              <div class="dig__status">
+                <p class="dig__label dig__sign"><StatusSign kind={statusKind(digStatus)} /><span>{digStatus}</span></p>
+                {hasPage('248') && (
+                  <a class="dig__label dig__read case-link" href="/results/248/">
+                    <span>Read the whole result</span>
+                    <Icon name="right" />
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+      <div class="dig__controls" data-dig-controls hidden>
+        <button class="dig__ring case-link case-link--square" type="button" aria-label="Dig one layer" data-dig-one>
+          <Icon name="down" />
+        </button>
+        <div class="dig__words">
+          <span class="dig__label dig__word case-link" data-dig-one>Dig</span>
+          <button class="dig__label dig__label--muted dig__word case-link" type="button" data-dig-all>Open every layer</button>
+        </div>
+      </div>
+    </div>
+    <p class="visually-hidden" role="status" data-dig-status></p>
+    <div class="dig__elsewhere">
+      {trenches.length > 0 && <p class="dig__label dig__label--muted dig__elsewhere-title">Dig somewhere else</p>}
+      <a class="dig__label dig__read dig__all case-link" href="/results/">
+        <span>All results</span>
+        <Icon name="right" />
+      </a>
+      {trenches.length > 0 && (
+        <ul class="dig__trenches">
+          {trenches.map((trench) => (
+            <li>
+              <a class="dig__other case-link case-link--row" href={`/results/${trench.family}/`}>
+                <span class="dig__label dig__sign">
+                  <StatusSign kind={statusKind(trench.status)} />
+                  <span>Trench {trench.family}</span>
+                  <span class="visually-hidden">, {trench.status}</span>
+                </span>
+                <span class="dig__other-question">{trench.question}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+</uruk-dig>
+
+<script>
+  import './element';
+</script>
+
+<style>
+  .dig {
+    --dig-margin: clamp(16px, calc(1.142857px + 3.809524vw), 56px);
+    --dig-pad: 36px;
+    display: block;
+    margin-inline: auto;
+    max-width: calc(1328px + 2 * var(--dig-margin));
+    padding: 100px var(--dig-margin) 110px;
+    position: relative;
+    scroll-margin-top: 24px;
+    z-index: 2;
+  }
+
+  .dig__head {
+    align-items: start;
+    display: grid;
+    gap: 16px;
+  }
+
+  .dig__title {
+    font-size: clamp(3.25rem, calc(2.785714rem + 1.904762vw), 4.5rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: clamp(3.5rem, calc(3.035714rem + 1.904762vw), 4.75rem);
+    scroll-margin-top: 48px;
+  }
+
+  .dig__intro {
+    font-size: clamp(1.125rem, calc(1.078571rem + 0.190476vw), 1.25rem);
+    line-height: clamp(1.625rem, calc(1.532143rem + 0.380952vw), 1.875rem);
+    max-width: 640px;
+  }
+
+  .dig__mound {
+    display: block;
+    height: auto;
+    margin: 16px auto 0;
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .dig__layers {
+    border-top: 1.5px solid var(--ink);
+  }
+
+  .dig__layer {
+    border-bottom: 1px solid var(--ink);
+    column-gap: 36px;
+    display: grid;
+    grid-template-columns: minmax(0, 612fr) 96px minmax(0, 548fr);
+    padding-block: var(--dig-pad);
+  }
+
+  .dig__label {
+    font-family: var(--font-special-elite);
+    font-size: clamp(0.6875rem, calc(0.664286rem + 0.095238vw), 0.75rem);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .dig__label--muted {
+    color: var(--muted);
+  }
+
+  .dig__question {
+    align-content: start;
+    display: grid;
+    gap: 10px;
+    grid-column: 1;
+    grid-row: 1;
+    text-align: right;
+  }
+
+  .dig__question h3 {
+    font-size: clamp(1.625rem, calc(1.392857rem + 0.952381vw), 2.25rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: clamp(2rem, calc(1.767857rem + 0.952381vw), 2.625rem);
+  }
+
+  .dig__question h3:focus {
+    outline: none;
+  }
+
+  .dig__trench {
+    background: var(--pattern) 0 0 / 96px 400px repeat-y, var(--paper);
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+    grid-column: 2;
+    grid-row: 1;
+    margin-block: calc(-1 * var(--dig-pad));
+  }
+
+  .dig__answer {
+    display: grid;
+    gap: 14px;
+    grid-column: 3;
+    grid-row: 1;
+    align-content: start;
+    font-size: clamp(1.0625rem, calc(0.992857rem + 0.285714vw), 1.25rem);
+    line-height: clamp(1.5625rem, calc(1.446429rem + 0.47619vw), 1.875rem);
+  }
+
+  .dig__status {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+  }
+
+  .dig__sign,
+  .dig__read,
+  .dig__word {
+    font-size: 0.75rem;
+  }
+
+  .dig__sign {
+    align-items: center;
+    display: inline-flex;
+    gap: 8px;
+  }
+
+  .dig__read {
+    align-items: center;
+    color: var(--ink);
+    display: inline-flex;
+    gap: 6px;
+  }
+
+  .dig__read :global(svg),
+  .dig__ring :global(svg) {
+    flex: none;
+    height: 12px;
+    width: 12px;
+  }
+
+  .dig__controls {
+    align-items: center;
+    column-gap: 36px;
+    display: grid;
+    grid-template-columns: minmax(0, 612fr) 96px minmax(0, 548fr);
+    padding-block: 28.5px 8px;
+    scroll-margin-block: 24px;
+  }
+
+  .dig__ring {
+    align-items: center;
+    background: var(--paper);
+    border: 1.5px solid var(--ink);
+    border-radius: 50%;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    grid-column: 2;
+    height: 48px;
+    justify-content: center;
+    justify-self: center;
+    padding: 0;
+    width: 48px;
+  }
+
+  .dig__words {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 42px;
+    grid-column: 3;
+  }
+
+  .dig__word {
+    background: none;
+    border: 0;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 16px 0;
+  }
+
+  .dig__word.dig__label--muted {
+    color: var(--muted);
+  }
+
+  /* The padding gives a finger room; the case stays where it would be around the words. */
+  .dig__word.case-link::before {
+    inset: 8px -14px;
+  }
+
+  .dig__word.case-link::after {
+    inset: 4px -10px;
+  }
+
+  .dig__elsewhere {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-top: 40px;
+  }
+
+  .dig__elsewhere-title {
+    grid-column: 1;
+  }
+
+  .dig__all {
+    grid-column: 2;
+    justify-self: end;
+    text-transform: none;
+  }
+
+  .dig__trenches {
+    display: grid;
+    gap: 20px 0;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dig__trenches li {
+    align-self: start;
+    padding-right: 40px;
+  }
+
+  .dig__trenches li + li {
+    border-left: 1px solid var(--ink);
+    padding-inline: 21px 19px;
+  }
+
+  .dig__other {
+    color: var(--ink);
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+  }
+
+  .dig__other-question {
+    font-size: 1.25rem;
+    font-style: italic;
+    line-height: 1.625rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Each opened layer is ruled down from the line above it, as if dug; nothing fades. */
+    :global([data-just-dug]) .dig__trench:not([hidden]),
+    :global([data-just-dug]) .dig__answer:not([hidden]) {
+      animation: dig-down 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+  }
+
+  @keyframes dig-down {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .dig__head {
+      gap: 0;
+      grid-template-columns: minmax(0, 688fr) minmax(0, 640fr);
+    }
+
+    .dig__intro {
+      padding-top: 8px;
+    }
+
+    .dig__mound {
+      margin-top: 24px;
+    }
+  }
+
+  @media (max-width: 61.999rem) {
+    .dig__trenches {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dig__trenches li + li:nth-child(odd) {
+      border-left: 0;
+      padding-inline: 0 40px;
+    }
+  }
+
+  @media (max-width: 47.999rem) {
+    .dig {
+      --dig-pad: 24px;
+      padding-block: 48px 68px;
+    }
+
+    .dig__layer {
+      column-gap: 12px;
+      grid-template-columns: 56px minmax(0, 1fr);
+      row-gap: 10px;
+    }
+
+    .dig__question {
+      grid-column: 2;
+      text-align: left;
+    }
+
+    .dig__trench {
+      background-size: 96px 400px;
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+
+    .dig__answer {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .dig__controls {
+      column-gap: 12px;
+      grid-template-columns: 56px minmax(0, 1fr);
+      margin-bottom: -8px;
+      padding-block: 15.5px 0;
+    }
+
+    .dig__ring {
+      grid-column: 1;
+    }
+
+    .dig__words {
+      gap: 0 28px;
+      grid-column: 2;
+    }
+
+    .dig__elsewhere {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: 33px;
+    }
+
+    .dig__trenches {
+      grid-template-columns: minmax(0, 1fr);
+      grid-row: 2;
+    }
+
+    .dig__trenches li,
+    .dig__trenches li + li {
+      border-left: 0;
+      padding-inline: 0 40px;
+    }
+
+    .dig__all {
+      grid-column: 1;
+      grid-row: 3;
+      justify-self: start;
+      margin-top: 4px;
+    }
+  }
+</style>

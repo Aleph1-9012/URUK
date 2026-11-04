@@ -13,8 +13,6 @@ html {
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
   font-size: var(--folio-body-font-size);
   line-height: var(--folio-body-line-height);
   margin: 0;
@@ -32,6 +30,14 @@ p {
   margin: 0;
 }
 
+/* Logos, illustrations and icons are pictures, not text to copy. */
+img,
+svg,
+canvas {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 button,
 input,
 select,
@@ -42,4 +48,20 @@ textarea {
 :focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 3px;
+}
+
+.visually-hidden {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+[hidden] {
+  display: none !important;
 }

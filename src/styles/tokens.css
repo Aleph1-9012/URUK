@@ -1,10 +1,10 @@
 :root {
+  --page-gutter: clamp(20px, calc(6.628571px + 3.428571vw), 56px);
   --ink: #1c1a17;
   --ink-logo: #1f1f1b;
   --paper: #e7e5e0;
   --muted: #5f584d;
   --blue: #28486e;
-  --texture-filter: grayscale(1) contrast(0.52) brightness(1.73);
 
   --font-alegreya: "Alegreya", Georgia, serif;
   --font-special-elite: "Special Elite", "Courier New", monospace;

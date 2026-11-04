@@ -18,10 +18,12 @@ function offsetsChanged(
   return false;
 }
 
+// Most rows hold still from one frame to the next, so only the rows that moved are redrawn.
 function drawOffsetRuns(
   context: CanvasRenderingContext2D,
   surface: HTMLCanvasElement,
   offsets: Int16Array,
+  previous: Int16Array | null,
   width: number,
   margin: number,
 ): void {
@@ -29,22 +31,32 @@ function drawOffsetRuns(
     return;
   }
 
-  context.clearRect(0, 0, width, offsets.length);
   context.imageSmoothingEnabled = false;
 
   let rowStart = 0;
 
   while (rowStart < offsets.length) {
     const offset = offsets[rowStart] ?? 0;
+
+    if (previous?.[rowStart] === offset) {
+      rowStart += 1;
+      continue;
+    }
+
     let rowEnd = rowStart + 1;
 
-    while (rowEnd < offsets.length && (offsets[rowEnd] ?? 0) === offset) {
+    while (
+      rowEnd < offsets.length &&
+      (offsets[rowEnd] ?? 0) === offset &&
+      previous?.[rowEnd] !== offset
+    ) {
       rowEnd += 1;
     }
 
     const runHeight = rowEnd - rowStart;
     const sourceX = margin - offset;
 
+    context.clearRect(0, rowStart, width, runHeight);
     context.drawImage(
       surface,
       sourceX,
@@ -72,6 +84,7 @@ class UrukWaterElement extends HTMLElement {
   private intersectionObserver: IntersectionObserver | null = null;
   private frameRequest: number | null = null;
   private previousOffsets: Int16Array | null = null;
+  private surfaceSize = '';
   private rowCount = 0;
   private bitmapWidth = 0;
   private margin = 0;
@@ -241,6 +254,14 @@ class UrukWaterElement extends HTMLElement {
       return;
     }
 
+    // The window and the element both report a resize, and the first report comes as soon as the element is observed.
+    const surfaceSize = [width, height, plateRect.left - waterRect.left, plateRect.width, pixelRatio].join();
+
+    if (surfaceSize === this.surfaceSize && this.preRendered) {
+      return;
+    }
+
+    this.surfaceSize = surfaceSize;
     this.removeAttribute('data-live');
     canvas.width = width;
     canvas.height = height;
@@ -334,6 +355,7 @@ class UrukWaterElement extends HTMLElement {
           this.canvasContext,
           this.preRendered,
           offsets,
+          this.previousOffsets,
           this.bitmapWidth,
           this.margin,
         );
@@ -361,6 +383,7 @@ class UrukWaterElement extends HTMLElement {
     this.removeAttribute('data-live');
     this.image = null;
     this.preRendered = null;
+    this.surfaceSize = '';
     this.previousOffsets = null;
   }
 }

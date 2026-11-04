@@ -42,11 +42,11 @@ const headings = [
       <div class="result-introduction">
         <p class="result-label">{data.family} · {data.topic}</p>
         <h1>{data.title}</h1>
-        <img class="result-ornament" src={ornament} alt="" width="640" height="12" />
+        <img draggable="false" class="result-ornament" src={ornament} alt="" width="640" height="12" />
         <p class="folio-top__copy">{data.claim}</p>
         <p class="result-draft">Placeholder preview. The result text and figures have not been added.</p>
         <p class="result-status"><StatusSign kind={statusKind(data.status)} /><span>{data.status}</span></p>
-        <p class="result-checked">Checked {checkedDate(data.checked)}. <a class="case-link case-link--tight" href="/how-we-check/">What this label means</a>.</p>
+        <p class="result-checked">Checked {checkedDate(data.checked)}. <a class="text-link" href="/how-we-check/">What this label means</a>.</p>
         <nav class="result-contents" aria-label="On this page">
           <p class="folio-contents__title">Contents</p>
           {headings.map(({ numeral, id, title }) => <a class="folio-contents__row case-link case-link--row" href={`#${id}`}><span class="folio-contents__number">{numeral}.</span><span class="folio-contents__text">{title}</span><span class="folio-contents__leader"></span></a>)}
@@ -81,11 +81,11 @@ const headings = [
     </Section>
 
     <Section {...headings[5]}>
-      <div class="folio-row"><p class="folio-row__margin result-margin">{checkedDate(data.checked)}</p><div class="folio-row__text"><p class="result-status"><StatusSign kind={statusKind(data.status)} /><span>{data.status}</span></p><p>Placeholder. The dated review evidence and the names of the reviewers will appear here. This layout preview does not add new review evidence.</p><p><a class="case-link case-link--tight" href="/how-we-check/">How we check</a></p></div></div>
+      <div class="folio-row"><p class="folio-row__margin result-margin">{checkedDate(data.checked)}</p><div class="folio-row__text"><p class="result-status"><StatusSign kind={statusKind(data.status)} /><span>{data.status}</span></p><p>Placeholder. The dated review evidence and the names of the reviewers will appear here. This layout preview does not add new review evidence.</p><p><a class="text-link" href="/how-we-check/">How we check</a></p></div></div>
     </Section>
 
     <Section {...headings[6]}>
-      <div class="folio-row"><div class="folio-row__text"><p class="result-paper-links">{data.papers.map((path, index) => <a class="case-link case-link--tight" href={`${paperBase}${path}`}>{index === 0 ? 'Read the paper' : `Companion paper ${index}`}</a>)}</p></div></div>
+      <div class="folio-row"><div class="folio-row__text"><p class="result-paper-links">{data.papers.map((path, index) => <a class="text-link" href={`${paperBase}${path}`}>{index === 0 ? 'Read the paper' : `Companion paper ${index}`}</a>)}</p></div></div>
       <div class="folio-row"><Sources /></div>
     </Section>
   </article>

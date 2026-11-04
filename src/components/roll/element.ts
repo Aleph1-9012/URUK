@@ -10,7 +10,7 @@ const OPENING_TURNS = 1;
 // The closing roller needs room below the sheet; it may use the 16px above the credit line.
 const CLOSING_ROLLER = 44;
 
-export class UrukRoll extends HTMLElement {
+class UrukRoll extends HTMLElement {
   private observer: ResizeObserver | undefined;
   private events: AbortController | undefined;
   private lastCardWidth = 0;
@@ -47,7 +47,6 @@ export class UrukRoll extends HTMLElement {
       return;
     }
 
-    this.querySelector<HTMLElement>('[data-roll-arrows]')?.removeAttribute('hidden');
     this.loadSeal(signal);
     this.observer = new ResizeObserver(() => this.measure());
     this.observer.observe(this);
@@ -311,4 +310,10 @@ export class UrukRoll extends HTMLElement {
 
 if (!customElements.get('uruk-roll')) {
   customElements.define('uruk-roll', UrukRoll);
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'uruk-roll': UrukRoll;
+  }
 }

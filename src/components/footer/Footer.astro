@@ -2,11 +2,7 @@
 import rosetteUrl from '../../assets/rosette/loftus-64.png?url';
 import logoUrl from '../../assets/logo/footer.svg?url';
 import BackToTop from '../back-to-top/BackToTop.astro';
-
-type Credit = {
-  label: string;
-  text: string;
-};
+import { ROSETTE_CREDIT, SEAL_CREDIT, TEXTURE_CREDIT, TYPE_CREDIT, type Credit } from './credits';
 
 interface Props {
   credits?: Credit[] | undefined;
@@ -15,22 +11,10 @@ interface Props {
 }
 
 const DEFAULT_CREDITS: Credit[] = [
-  {
-    label: 'Seal impression',
-    text: 'A male figure, hunting dogs and boars, rolled on Text 179. Jemdet Nasr, ca. 3100–2900 BCE. The Met, 1988.433.1, open access.',
-  },
-  {
-    label: 'Rosette',
-    text: 'From the plate of ornaments found at Warka (Uruk). W. K. Loftus, 1857. Public domain.',
-  },
-  {
-    label: 'Texture',
-    text: 'The Wave, Coyote Buttes, Arizona. Photo by Romain Guy, CC0.',
-  },
-  {
-    label: 'Type',
-    text: 'Set in Alegreya, Special Elite and Garamond-Math.',
-  },
+  SEAL_CREDIT,
+  ROSETTE_CREDIT,
+  TEXTURE_CREDIT,
+  TYPE_CREDIT,
 ];
 
 const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false } = Astro.props;
@@ -42,7 +26,7 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
 >
   <div class="site-footer__ornament">
     <span class="site-footer__rule"></span>
-    <img src={rosetteUrl} alt="" width="64" height="64" />
+    <img draggable="false" src={rosetteUrl} alt="" width="64" height="64" />
     <span class="site-footer__rule"></span>
   </div>
   <nav class="site-footer__links" aria-label="Footer">
@@ -68,7 +52,7 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
     ))}
   </div>
   <div class="site-footer__bottom">
-    <img src={logoUrl} alt="" width="104" height="35" />
+    <img draggable="false" src={logoUrl} alt="" width="104" height="35" />
     <BackToTop floating={floatingBackToTop} />
   </div>
 </footer>
@@ -225,7 +209,7 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
       width: 100%;
     }
 
-    .site-footer__credit p {
+    .site-footer__credit p:not(.site-footer__credit-label) {
       max-width: none;
     }
 

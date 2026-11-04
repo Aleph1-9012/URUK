@@ -1,4 +1,3 @@
-import { UrukRoll } from '../roll/element';
 import { highlight, matches, readSearch } from './matching';
 
 const ROLL_HELP = 'Drag the roll or scroll sideways. Results run in number order.';
@@ -7,16 +6,25 @@ const INDEX_HELP = 'Choose a line to wind the roll to it.';
 class UrukMenu extends HTMLElement {
   private events: AbortController | undefined;
 
+  // The roll's script is loaded on its own, so the Menu does not pull in a second file before it can run.
   connectedCallback(): void {
-    this.events = new AbortController();
-    const { signal } = this.events;
+    void customElements.whenDefined('uruk-roll').then(() => this.start());
+  }
+
+  disconnectedCallback(): void {
+    this.events?.abort();
+  }
+
+  private start(): void {
     const input = this.querySelector<HTMLInputElement>('[data-search]');
     const roll = this.querySelector('uruk-roll');
 
-    if (!input || !(roll instanceof UrukRoll)) {
+    if (!this.isConnected || !input || !roll) {
       return;
     }
 
+    this.events = new AbortController();
+    const { signal } = this.events;
     const buttons = this.querySelectorAll<HTMLButtonElement>('[data-filter]');
     const cards = roll.cards.map((node) => ({
       node,
@@ -78,7 +86,7 @@ class UrukMenu extends HTMLElement {
       roll.toggleAttribute('data-filtered', active);
       roll.toggleAttribute('data-empty', count === 0);
       roll.querySelector('[data-roll-heading]')?.replaceChildren(description);
-      this.querySelector('[data-result-index]')?.toggleAttribute('hidden', !active || count === 0);
+      this.querySelector('[data-result-index]')?.toggleAttribute('hidden', count === 0);
       this.querySelector('[data-no-results]')?.toggleAttribute('hidden', count !== 0);
       this.querySelector('[data-clear]')?.toggleAttribute('hidden', state.query === '');
 
@@ -106,10 +114,6 @@ class UrukMenu extends HTMLElement {
       render();
     };
 
-    for (const node of this.querySelectorAll('[data-menu-enhancement]')) {
-      node.removeAttribute('hidden');
-    }
-
     input.addEventListener('input', () => {
       state.query = input.value;
       update();
@@ -136,10 +140,6 @@ class UrukMenu extends HTMLElement {
       render();
     }, { signal });
     render();
-  }
-
-  disconnectedCallback(): void {
-    this.events?.abort();
   }
 }
 

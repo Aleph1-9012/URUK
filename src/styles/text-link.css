@@ -1,0 +1,77 @@
+/* 60b: a link inside a sentence has no case. A stroke cut from Text 180 replaces its underline, and because
+   the images are backgrounds of a cloned box, a line break gives each fragment its own stroke. */
+.text-link,
+.folio-page a:not(.case-link) {
+  --stroke-head: 25px;
+  --stroke-tail: 21px;
+  --stroke-mid: calc(100% - var(--stroke-head) - var(--stroke-tail));
+  -webkit-box-decoration-break: clone;
+  background-image:
+    url("../assets/link-stroke/head.png"),
+    url("../assets/link-stroke/mid.png"),
+    url("../assets/link-stroke/tail.png");
+  background-position: left bottom, var(--stroke-head) bottom, right bottom;
+  background-repeat: no-repeat;
+  background-size: 0 14px;
+  box-decoration-break: clone;
+  color: var(--blue);
+  margin-inline: -4px;
+  padding-block-end: 0.35em;
+  padding-inline: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .text-link:hover,
+  .folio-page a:not(.case-link):hover {
+    animation: stroke-rule 240ms linear;
+    background-size:
+      var(--stroke-head) 14px,
+      var(--stroke-mid) 14px,
+      var(--stroke-tail) 14px;
+    text-decoration: none;
+  }
+}
+
+/* The same stroke, heavier and blue, shown at once. */
+.text-link:focus-visible,
+.folio-page a:not(.case-link):focus-visible {
+  animation: none;
+  background-image:
+    url("../assets/link-stroke/head-focus.png"),
+    url("../assets/link-stroke/mid-focus.png"),
+    url("../assets/link-stroke/tail-focus.png");
+  background-size:
+    var(--stroke-head) 18px,
+    var(--stroke-mid) 18px,
+    var(--stroke-tail) 18px;
+  outline: none;
+  text-decoration: none;
+}
+
+/* Ruled in from the left: the head is pressed, the line drawn out, then the tip lifts. */
+@keyframes stroke-rule {
+  0% {
+    background-size: 0 14px, 0 14px, 0 14px;
+  }
+
+  20% {
+    background-size: var(--stroke-head) 14px, 0 14px, 0 14px;
+  }
+
+  85% {
+    background-size: var(--stroke-head) 14px, var(--stroke-mid) 14px, 0 14px;
+  }
+
+  100% {
+    background-size: var(--stroke-head) 14px, var(--stroke-mid) 14px, var(--stroke-tail) 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-link:hover,
+  .folio-page a:not(.case-link):hover {
+    animation: none;
+  }
+}

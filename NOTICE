@@ -16,7 +16,7 @@ right to use them, except as needed to describe where this work comes from.
 Source material
 
 The results come from OpenAI's math release, licensed under Apache-2.0:
-https://github.com/openai/math/tree/adc7f1241b42e322a6451854ab7e4b4c146bf78a
+https://github.com/openai/math/tree/4eaee87548250b2682affda7d05d947c05554bae
 
 At that commit the repository has no NOTICE file and its LICENSE names no
 copyright owner, so there is no further notice text to reproduce here. Uruk is
@@ -25,9 +25,14 @@ not the source of the papers, which remain under their own terms.
 
 Images
 
-Engraving and rosette (src/assets/hero/engraving.png, src/assets/hero/water.png,
+Engraving and rosette (src/assets/hero/engraving*, src/assets/hero/water*,
 src/assets/rosette/ and the favicons in public/)
   From the plate of ornaments found at Warka (Uruk). W. K. Loftus, 1857.
+  Public domain.
+
+Woodcuts (src/assets/home/)
+  The Buwariyya Ruin and the patterns of the cone wall at Warka. W. K. Loftus,
+  Travels and Researches in Chaldaea and Susiana, 1857, pp. 167 and 188.
   Public domain.
 
 Seal impression (src/assets/roll/)
@@ -40,8 +45,7 @@ Tablet (src/assets/tablet/)
   Uruk. Drawing, The Metropolitan Museum of Art, 1988.433.2, Open Access.
   https://www.metmuseum.org/art/collection/search/327384
 
-Texture (src/assets/texture/, src/assets/hero/texture-desktop.jpg and
-src/assets/hero/texture-phone.jpg)
+Texture (src/assets/texture/ and src/assets/hero/texture-*)
   The Wave, Coyote Buttes, Arizona. Photo by Romain Guy, CC0.
   https://commons.wikimedia.org/wiki/File:The_Wave_rock_formation_-_Arizona.jpg
 

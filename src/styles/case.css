@@ -5,7 +5,6 @@
 
 .case-link::before,
 .case-link::after {
-  border-color: var(--ink);
   content: "";
   pointer-events: none;
   position: absolute;
@@ -27,11 +26,15 @@
   transition: transform 120ms ease-out;
 }
 
-.case-link--framed::before {
+.case-link--framed::before,
+.case-link--edge::before,
+.case-link--square::before {
   inset: -1px -5px;
 }
 
-.case-link--framed::after {
+.case-link--framed::after,
+.case-link--edge::after,
+.case-link--square::after {
   inset: -5px -1px;
 }
 
@@ -49,22 +52,6 @@
 
 .case-link--tight::after {
   inset: -7px -3px;
-}
-
-.case-link--edge::before {
-  inset: -1px -5px;
-}
-
-.case-link--edge::after {
-  inset: -5px -1px;
-}
-
-.case-link--square::before {
-  inset: -1px -5px;
-}
-
-.case-link--square::after {
-  inset: -5px -1px;
 }
 
 .case-link:focus-visible {

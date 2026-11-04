@@ -148,5 +148,3 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
   .roll-neighbors .roll-card:not([data-neighbor]) { display: none; }
   .roll-neighbors .roll-window { height: auto; }
 }
-
-[hidden] { display: none !important; }
