@@ -2,6 +2,7 @@
 // Plate I for a result whose front matter names a visual.
 import type { VisualKey } from '../../content/visuals';
 import CatalanBounds from './catalan-bounds/CatalanBounds.astro';
+import FractionRulers from './fraction-rulers/FractionRulers.astro';
 import FractionNets from './fraction-nets/FractionNets.astro';
 import PrimeWaves from './prime-waves/PrimeWaves.astro';
 import ThompsonBands from './thompson/ThompsonBands.astro';
@@ -17,6 +18,7 @@ const plates = {
   'catalan-bounds': CatalanBounds,
   'unit-ruler': UnitRuler,
   'thompson-bands': ThompsonBands,
+  'fraction-rulers': FractionRulers,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];

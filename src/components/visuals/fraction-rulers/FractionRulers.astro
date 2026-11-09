@@ -1,0 +1,198 @@
+---
+import Plate from '../../plate/Plate.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CONVERGENTS } from './approximations';
+import { CUES, FILM_DURATION, SCENES, formatTime } from './story';
+import './fraction-rulers.css';
+
+const formula = (source: string) => renderFormula(source, false);
+
+const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+function subtitle(text: string): string {
+  const sections = text.split('$');
+
+  return sections.map((section, index) => {
+    if (index % 2 === 0) {
+      return escape(index > 0 ? section.replace(/^\S+/, '') : section);
+    }
+
+    const attached = /^\S+/.exec(sections[index + 1] ?? '')?.[0] ?? '';
+
+    return `<span class="rfilm-attached">${formula(section)}${escape(attached)}</span>`;
+  }).join('');
+}
+
+type FormulaLabel = { id: string; tex: string; small?: true; large?: true; blue?: true; paper?: true };
+
+const labels: FormulaLabel[] = [
+  { id: 'pi', tex: String.raw`\pi`, blue: true },
+  { id: 'half-step', tex: String.raw`\frac1{2q}`, small: true, paper: true },
+  { id: 'error-rule', tex: String.raw`|\pi-p/q|=q^{-\nu}`, small: true, paper: true },
+  { id: 'nu', tex: String.raw`\nu`, blue: true },
+  { id: 'mu', tex: String.raw`\mu(\pi)`, paper: true },
+  { id: 'claim', tex: String.raw`\mu(\pi)=2`, blue: true, paper: true },
+  { id: 'q', tex: 'q', small: true, paper: true },
+  { id: 'threshold', tex: String.raw`Q(\nu)`, paper: true },
+  { id: 'sum', small: true, tex: String.raw`\sum_{n\ge1}\frac1{n^3\sin^2n}`, paper: true },
+  { id: 'multiple', tex: String.raw`113\pi`, blue: true, paper: true },
+  { id: 'det', tex: 'D', blue: true },
+  { id: 'floor', tex: String.raw`|D|\ge1`, small: true, paper: true },
+  { id: 'ceiling', tex: String.raw`|D|\le\varepsilon`, small: true, blue: true, paper: true },
+  { id: 'step-seven', tex: String.raw`\frac17`, small: true, paper: true },
+  { id: 'step-113', tex: String.raw`\frac1{113}`, small: true, paper: true },
+  { id: 'sevenths-21', tex: String.raw`\frac{21}{7}`, small: true, paper: true },
+  { id: 'sevenths-23', tex: String.raw`\frac{23}{7}`, small: true, paper: true },
+  { id: 'proof-hypothesis', tex: String.raw`|\pi-p/q|<q^{-\nu}`, small: true, paper: true },
+];
+
+for (const [index, fraction] of CONVERGENTS.entries()) {
+  labels.push({
+    id: `fraction-${index}`,
+    tex: String.raw`\frac{${fraction.numerator}}{${fraction.denominator}}`,
+    small: true,
+    paper: true,
+  });
+}
+
+// The no-JavaScript chart uses the same computed points as the running film.
+const chartX = (logQ: number) => 14 + logQ / 12.2 * 77;
+
+const chartY = (exponent: number) => 80 - (exponent - 1.8) / 6.2 * 33;
+
+const ceilingY = chartY(7.103);
+
+const dialY = chartY(2.15);
+
+const fraction113 = CONVERGENTS.find((fraction) => fraction.denominator === 113n);
+
+if (!fraction113) throw new Error('The opening ruler needs the convergent 355/113.');
+
+// Match the live ruler: the 0.34-wide sevenths view magnified 100,000 times.
+const rulerPiX = 46.8;
+
+const rulerFractionX = rulerPiX + fraction113.error / 0.0000034 * 80;
+---
+
+<Plate
+  caption="Fractions on a ruler, the exponent each one achieves, seventy years of ceilings for π, and the claim that the ceiling is 2."
+  leftOut="the paper's interpolation theorem, collision estimate and order of choices; the two follow-ups on logarithms; Bai's 2026 bound; the Lean formalization's details. The proof drawings are schematic."
+>
+  <uruk-fraction-rulers>
+    <div class="rfilm">
+      <div class="rfilm-screen" data-film-viewport>
+        <canvas
+          class="rfilm-canvas"
+          data-film-canvas
+          role="img"
+          aria-label="A film comparing fractions to pi on magnified rulers, then plotting their accuracy against their denominators. Historical upper bounds descend toward the claimed exponent two. The Flint Hills series and a schematic determinant argument follow. A complete text transcript is below."
+        ></canvas>
+
+        <div class="rfilm-still" aria-hidden="true">
+          <svg role="presentation">
+            <defs>
+              <pattern id="rfilm-still-hatch" width="7" height="7" patternUnits="userSpaceOnUse">
+                <path d="M0 7L7 0" stroke="var(--muted)" stroke-width=".5" />
+              </pattern>
+            </defs>
+            <line x1="10%" y1="22%" x2="90%" y2="22%" stroke="var(--ink)" />
+            <line x1="36%" y1="17%" x2={`${rulerPiX}%`} y2="18%" stroke="var(--blue)" stroke-width=".7" />
+            <line x1="64%" y1="17%" x2={`${rulerFractionX}%`} y2="18%" stroke="var(--muted)" stroke-width=".7" />
+            <line x1={`${rulerPiX}%`} y1="18%" x2={`${rulerPiX}%`} y2="27%" stroke="var(--blue)" stroke-width="1.5" />
+            <line x1={`${rulerFractionX}%`} y1="18%" x2={`${rulerFractionX}%`} y2="27%" stroke="var(--ink)" stroke-width="1.5" />
+            <line x1={`${rulerPiX}%`} y1="27%" x2={`${rulerFractionX}%`} y2="27%" stroke="var(--blue)" stroke-width="1.1" />
+            <circle cx={`${rulerPiX}%`} cy="22%" r="3" fill="var(--blue)" />
+            <circle cx={`${rulerFractionX}%`} cy="22%" r="3" fill="var(--ink)" />
+
+            <rect x="14%" y="47%" width="77%" height={`${ceilingY - 47}%`} fill="url(#rfilm-still-hatch)" opacity=".55" />
+            <line x1="14%" y1="47%" x2="14%" y2="80%" stroke="var(--muted)" />
+            <line x1="14%" y1="80%" x2="91%" y2="80%" stroke="var(--muted)" />
+            {[0, 4, 8, 12].map((logQ) => (
+              <line x1={`${chartX(logQ)}%`} y1="80%" x2={`${chartX(logQ)}%`} y2="81%" stroke="var(--muted)" />
+            ))}
+            <line x1="14%" y1={`${ceilingY}%`} x2="91%" y2={`${ceilingY}%`} stroke="var(--ink)" />
+            <line x1="14%" y1={`${chartY(2)}%`} x2="91%" y2={`${chartY(2)}%`} stroke="var(--ink)" />
+            <line x1="14%" y1={`${dialY}%`} x2="91%" y2={`${dialY}%`} stroke="var(--blue)" stroke-dasharray="4 3" />
+            {CONVERGENTS.map((fraction) => (
+              <>
+                <circle cx={`${chartX(fraction.logQ)}%`} cy={`${chartY(fraction.exponent)}%`} r="2" fill="var(--ink)" />
+                {fraction.exponent > 2.15 && <circle cx={`${chartX(fraction.logQ)}%`} cy={`${chartY(fraction.exponent)}%`} r="5" fill="none" stroke="var(--blue)" stroke-width="1.2" />}
+              </>
+            ))}
+          </svg>
+          <span class="rfilm-still__text rfilm-still__tag rfilm-still__magnification">MAGNIFIED ×100,000</span>
+          <span class="rfilm-still__text rfilm-still__blue rfilm-still__pi" set:html={formula(String.raw`\pi`)} />
+          <span class="rfilm-still__text rfilm-still__fraction" set:html={formula(String.raw`\frac{355}{113}`)} />
+          <span class="rfilm-still__text rfilm-still__miss">Misses by about 0.000000267</span>
+          <span class="rfilm-still__text rfilm-still__tag rfilm-still__title">EXPONENT ACHIEVED</span>
+          <span class="rfilm-still__text rfilm-still__ceiling">Known ceiling 7.103</span>
+          <span class="rfilm-still__text rfilm-still__floor">2</span>
+          {[{ exponent: 0, text: '1' }, { exponent: 4, text: '10⁴' }, { exponent: 8, text: '10⁸' }, { exponent: 12, text: '10¹²' }].map((tick) => (
+            <span class="rfilm-still__text rfilm-still__tick" style={`left: ${chartX(tick.exponent)}%`}>{tick.text}</span>
+          ))}
+          <span class="rfilm-still__text rfilm-still__blue rfilm-still__dial">Dial 2.15 · four points above</span>
+          <span class="rfilm-still__text rfilm-still__axis">Denominator, logarithmic scale</span>
+        </div>
+
+        <div class="rfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => (
+            <span
+              data-label={label.id}
+              class:list={['rfilm-label', { 'rfilm-label--small': label.small, 'rfilm-label--large': label.large, 'rfilm-label--blue': label.blue, 'rfilm-label--paper': label.paper }]}
+            >
+              <span set:html={formula(label.tex)} />
+            </span>
+          ))}
+          <span class="rfilm-label rfilm-status-label" data-label="status"><span>CLAIMED · UNREVIEWED</span></span>
+        </div>
+      </div>
+
+      <div class="rfilm-subtitles" aria-hidden="true">
+        {CUES.map((cue, index) => (
+          <p class:list={['rfilm-cue', { 'is-active': index === 0 }]} data-cue={index}>
+            <span set:html={subtitle(cue.text)} />
+            <span class="rfilm-citations"> {cue.sources.map((source) => `[${source}]`).join('')}</span>
+          </p>
+        ))}
+      </div>
+    </div>
+
+    <div class="rfilm-controls" data-script-only>
+      <button type="button" class="plate-button case-link case-link--tight" data-play><span data-play-label>Pause</span></button>
+      <p class="rfilm-clock"><span data-film-clock>0:00 / {formatTime(FILM_DURATION)}</span></p>
+      <button type="button" class="plate-button case-link case-link--tight" data-film-restart>Restart</button>
+      <label class="visually-hidden" for="rfilm-timeline">Film timeline. Arrow keys move one subtitle at a time.</label>
+      <input id="rfilm-timeline" class="rfilm-timeline" data-film-range type="range" min="0" max={FILM_DURATION} step="100" value="0" />
+      <div class="rfilm-steps">
+        <button type="button" class="plate-button case-link case-link--tight" data-film-previous>Previous</button>
+        <p>Step through without motion</p>
+        <button type="button" class="plate-button case-link case-link--tight" data-film-next>Next</button>
+      </div>
+    </div>
+    <p class="visually-hidden" data-film-status aria-live="polite" aria-atomic="true"></p>
+
+    <details class="rfilm-transcript">
+      <summary class="text-link">Read the film as text</summary>
+      <ol>
+        {SCENES.map((scene, index) => (
+          <li>
+            <h3>{scene.title}</h3>
+            {CUES.slice(scene.first, SCENES[index + 1]?.first ?? CUES.length).map((cue) => (
+              <p>
+                <span set:html={subtitle(cue.text)} />
+                {cue.sources.map((source) => <> <a class="citation text-link" href={`#source-${source}`}>[{source}]</a></>)}
+              </p>
+            ))}
+          </li>
+        ))}
+      </ol>
+      <p class="rfilm-method">How the film is made. π is computed to 300 decimal places using whole-number arithmetic and Machin's arctangent formula. The chart plots 22 continued-fraction convergents, with each error calculated before conversion to a double. The horizontal axis uses the logarithm of the denominator. The vertical coordinate is the exponent achieved by that fraction. The ceiling values come from the article. The ruler's magnification is measured against the sevenths ruler's interval of width 0.34.</p>
+      <p class="rfilm-method">The Flint Hills strip sums two million terms in a worker, with double-precision sine values in radians. At 355, the relative error in the sine is below one part in a billion. The running totals are sampled along a logarithmic horizontal axis, preserving the jump at 355. A finite plot establishes neither the absence of later exceptional fractions nor convergence of the infinite sum. The strip beyond the screen, the threshold's position, the supposed fractions, the determinant and its moving bound are schematic. The proof gives no effective way to calculate the threshold. The film describes the paper's claim; it does not verify its proof.</p>
+      <p class="rfilm-method">The cleared determinant is a nonzero Gaussian integer, <span set:html={formula(String.raw`D\in\mathbb Z[i]`)} />. Write it as <span set:html={formula('D=a+bi')} /> with integers <span set:html={formula('a,b')} />. Its squared modulus <span set:html={formula(String.raw`|D|^2=a^2+b^2`)} /> is a positive integer, so <span set:html={formula(String.raw`|D|\ge1`)} />. The gauge shows this bound on its size.</p>
+    </details>
+  </uruk-fraction-rulers>
+</Plate>
+
+<script>
+  import './element';
+</script>

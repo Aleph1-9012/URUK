@@ -9,6 +9,7 @@ checked: 2026-10-17
 papers:
   - preprints/The-irrationality-exponent-of-pi-is-2-September-24-2026/paper.pdf
 draft: false
+visual: fraction-rulers
 ---
 
 Most people learn $\tfrac{22}{7}$ at school, and some learn $\tfrac{355}{113}$, which is right to six decimal places. How good such fractions can get, measured against the size of their denominators, is captured by a single number attached to $\pi$, its irrationality exponent. Almost every real number has exponent $2$, and $\pi$ was expected to, but proving it is another matter. Kurt Mahler gave the first bound, $42$, in 1953, and in the words of Zeilberger and Zudilin it then "became a competitive sport to find lower and lower upper bounds". After seventy years the record stood at about $7.1$. On 24 September 2026 OpenAI posted a 23-page paper claiming the exact value, $2$, by a method unlike the ones that produced the records. A curious consequence settles a question from recreational mathematics: the series $\sum 1/(n^{3}\sin^{2}n)$, whose terms spike whenever a whole number lands close to a multiple of $\pi$, adds up to a finite number. [1][2][3]
