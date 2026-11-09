@@ -9,6 +9,7 @@ checked: 2026-10-15
 papers:
   - preprints/The-Unique-Games-Theorem-September-23-2026/paper.pdf
 draft: false
+visual: unique-rules
 ---
 
 In 2002 Subhash Khot proposed that a certain kind of labelling puzzle is hard to solve approximately, even when almost all of its rules can be satisfied. Over the next two decades his conjecture became the organizing hypothesis of approximation algorithms: if it were true, dozens of optimization problems would have known, exact limits on how well any fast algorithm can do. On 23 September 2026 OpenAI posted a proof. [1]

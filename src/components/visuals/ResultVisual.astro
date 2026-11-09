@@ -7,6 +7,7 @@ import FractionNets from './fraction-nets/FractionNets.astro';
 import PrimeWaves from './prime-waves/PrimeWaves.astro';
 import ThompsonBands from './thompson/ThompsonBands.astro';
 import CurveBudget from './curve-budget/CurveBudget.astro';
+import UniqueRules from './unique-rules/UniqueRules.astro';
 import UnitRuler from './unit-ruler/UnitRuler.astro';
 
 interface Props {
@@ -20,6 +21,7 @@ const plates = {
   'unit-ruler': UnitRuler,
   'thompson-bands': ThompsonBands,
   'fraction-rulers': FractionRulers,
+  'unique-rules': UniqueRules,
   'curve-budget': CurveBudget,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
