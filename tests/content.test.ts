@@ -63,3 +63,24 @@ test('invalid sections and disconnected references stop content rendering', () =
   expect(() => renderResult(body, 'https://example.com/missing')).toThrow('review link');
   expect(() => renderResult(body.replace('$x_1$', '$\\notARealCommand$'))).toThrow();
 });
+
+test('review destinations are checked before HTML escapes query parameters', () => {
+  const review = 'https://example.com/review?a=1&b=2';
+  const rendered = renderResult(body.replace('https://example.com/review', review), review);
+
+  expect(rendered.sources[1]?.html).toMatch(/href="https:\/\/example\.com\/review\?a=1(?:&amp;|&#x26;|&#38;)b=2"/);
+});
+
+test('Markdown reference destinations remain available across article sections and sources', () => {
+  const withReferences = body
+    .replace('Earlier work.', 'Earlier [work][review].')
+    .replace('The review. https://example.com/review', 'The [review][review].')
+    .concat('\n[review]: https://example.com/review\n');
+  const rendered = renderResult(withReferences, 'https://example.com/review');
+  const history = rendered.sections.find(({ key }) => key === 'history')?.html;
+
+  expect(rendered.sources[1]?.html).toContain('href="https://example.com/review"');
+  expect(history).toContain('href="https://example.com/review"');
+  expect(history).toContain('class="text-link"');
+  expect(() => renderResult(`${body}\n[unused]: https://example.com/missing\n`, 'https://example.com/missing')).toThrow('review link');
+});

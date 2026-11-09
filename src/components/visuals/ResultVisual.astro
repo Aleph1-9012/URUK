@@ -1,57 +1,31 @@
 ---
-// Plate I for a result whose front matter names a visual.
-import type { VisualKey } from '../../content/visuals';
-import CatalanBounds from './catalan-bounds/CatalanBounds.astro';
-import FractionRulers from './fraction-rulers/FractionRulers.astro';
-import FractionNets from './fraction-nets/FractionNets.astro';
-import PrimeWaves from './prime-waves/PrimeWaves.astro';
-import StandardMap from './standard-map/StandardMap.astro';
-import SwitchGroups from './switch-groups/SwitchGroups.astro';
-import ThompsonBands from './thompson/ThompsonBands.astro';
-import GapLadder from './gap-ladder/GapLadder.astro';
-import TrappedWaves from './trapped-waves/TrappedWaves.astro';
-import FiveColours from './five-colours/FiveColours.astro';
-import FairAverage from './fair-average/FairAverage.astro';
-import BoundarySphere from './boundary-sphere/BoundarySphere.astro';
-import CurveBudget from './curve-budget/CurveBudget.astro';
-import GridProducts from './grid-products/GridProducts.astro';
-import UniqueRules from './unique-rules/UniqueRules.astro';
-import UnitRuler from './unit-ruler/UnitRuler.astro';
-import UnitLinks from './unit-links/UnitLinks.astro';
-import FactorTwo from './factor-two/FactorTwo.astro';
-import MoatWalk from './moat-walk/MoatWalk.astro';
-import FewestCrossings from './fewest-crossings/FewestCrossings.astro';
-import CausticCollar from './caustic-collar/CausticCollar.astro';
+import type { AstroInstance } from 'astro';
+import { visualCatalog, type VisualKey } from '../../content/visuals';
 
 interface Props {
   visual: VisualKey;
 }
 
-const plates = {
-  'zero-free-strip': PrimeWaves,
-  'fraction-nets': FractionNets,
-  'catalan-bounds': CatalanBounds,
-  'standard-map': StandardMap,
-  'unit-ruler': UnitRuler,
-  'thompson-bands': ThompsonBands,
-  'switch-groups': SwitchGroups,
-  'fraction-rulers': FractionRulers,
-  'unique-rules': UniqueRules,
-  'grid-products': GridProducts,
-  'curve-budget': CurveBudget,
-  'boundary-sphere': BoundarySphere,
-  'fair-average': FairAverage,
-  'five-colours': FiveColours,
-  'trapped-waves': TrappedWaves,
-  'gap-ladder': GapLadder,
-  'unit-links': UnitLinks,
-  'factor-two': FactorTwo,
-  'moat-walk': MoatWalk,
-  'fewest-crossings': FewestCrossings,
-  'caustic-collar': CausticCollar,
-} satisfies Record<VisualKey, typeof PrimeWaves>;
+type VisualComponent = AstroInstance['default'];
 
-const Visual = plates[Astro.props.visual];
+const modules = import.meta.glob<{ default: VisualComponent }>('./*/*.astro', { eager: true });
+const plates = new Map<VisualKey, VisualComponent>();
+
+for (const { key, component } of visualCatalog) {
+  const loaded = modules[component];
+
+  if (!loaded) {
+    throw new Error(`Visual ${key} has no component at ${component}.`);
+  }
+
+  plates.set(key, loaded.default);
+}
+
+const Visual = plates.get(Astro.props.visual);
+
+if (!Visual) {
+  throw new Error(`Unregistered visual: ${Astro.props.visual}`);
+}
 ---
 
 <Visual />

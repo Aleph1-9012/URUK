@@ -4,11 +4,11 @@ import Roll from '../../components/roll/Roll.astro';
 import Icon from '../../components/icon/Icon.astro';
 import StatusSign from '../../components/status-sign/StatusSign.astro';
 import { SEAL_CREDIT } from '../../components/footer/credits';
-import { visibleResults, statusKind } from '../../content/results';
+import { visibleResults } from '../../content/results';
+import { reviewStatuses, statusKind } from '../../content/review-status';
 import '../../components/menu/menu.css';
 
 const results = await visibleResults();
-const filters = ['under-review', 'unreviewed', 'approved', 'disputed'] as const;
 ---
 
   <PageLayout title="All results · Uruk" active="results" showSearch showFooterOnPhone={false}>
@@ -23,15 +23,15 @@ const filters = ['under-review', 'unreviewed', 'approved', 'disputed'] as const;
         <div class="menu-filters" slot="controls" data-script-only role="group" aria-label="Filter by review status">
           <span>Show</span>
           <button class="case-link" type="button" data-filter="" aria-pressed="true"><span>All</span></button>
-          {filters.map((status) => (
+          {reviewStatuses.map(({ kind, label }) => (
             <button
               class="case-link"
               type="button"
-              data-filter={status}
+              data-filter={kind}
               aria-pressed="false"
-              disabled={!results.some(({ data }) => statusKind(data.status) === status)}
+              disabled={!results.some(({ data }) => data.status === label)}
             >
-              <StatusSign kind={status} /><span>{status.replace('-', ' ')}</span>
+              <StatusSign kind={kind} /><span>{label}</span>
             </button>
           ))}
         </div>

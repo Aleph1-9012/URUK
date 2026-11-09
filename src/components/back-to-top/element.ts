@@ -2,13 +2,13 @@ class UrukBackToTop extends HTMLElement {
   private controller: AbortController | undefined;
   private observer: IntersectionObserver | undefined;
   private footer: HTMLElement | null = null;
-  private roll: HTMLElement | null = null;
+  private roll: HTMLElementTagNameMap['uruk-roll'] | null = null;
 
   private readonly update = () => {
     // The phone menu has no footer box; read current bounds when switching layouts.
     const footerBounds = this.footer?.getBoundingClientRect();
     const footerAtEnd = footerBounds !== undefined && footerBounds.height > 0 && footerBounds.bottom <= window.innerHeight + 1;
-    const rollScrolled = this.roll !== null && this.roll.scrollTop > this.roll.clientHeight;
+    const rollScrolled = this.roll?.scrolledBeyondPage ?? false;
     const shouldFloat = (window.scrollY > window.innerHeight || rollScrolled) && !footerAtEnd;
 
     this.toggleAttribute('data-floating', shouldFloat);
@@ -17,15 +17,22 @@ class UrukBackToTop extends HTMLElement {
   connectedCallback(): void {
     this.controller = new AbortController();
     const { signal } = this.controller;
-    this.roll = this.closest('uruk-menu')?.querySelector<HTMLElement>('.roll-window') ?? null;
-    this.roll?.addEventListener('scroll', this.update, { passive: true, signal });
+    if (this.closest('uruk-menu')) {
+      void customElements.whenDefined('uruk-roll').then(() => {
+        if (signal.aborted) return;
+
+        this.roll = this.closest('uruk-menu')?.querySelector('uruk-roll') ?? null;
+        this.roll?.addEventListener('scroll', this.update, { capture: true, passive: true, signal });
+        this.update();
+      });
+    }
     this.addEventListener('click', (event) => {
       if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
         return;
       }
 
       if (event.target instanceof Element && event.target.closest('a[href="#top"]')) {
-        this.roll?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        this.roll?.scrollToStart();
       }
     }, { signal });
 

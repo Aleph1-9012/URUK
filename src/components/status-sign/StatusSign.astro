@@ -5,9 +5,10 @@ import DisputedSlash from '../../assets/status/disputed-slash.svg';
 import ReviewHalf from '../../assets/status/review-half.svg';
 import ReviewRing from '../../assets/status/review-ring.svg';
 import Unreviewed from '../../assets/status/unreviewed.svg';
+import type { ReviewStatusKind } from '../../content/review-status';
 
 interface Props {
-  kind: 'approved' | 'disputed' | 'under-review' | 'unreviewed';
+  kind: ReviewStatusKind;
 }
 
 const { kind } = Astro.props;

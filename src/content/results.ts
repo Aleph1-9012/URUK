@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
+import { validateResultIdentities } from './identity';
 
 export type ResultEntry = CollectionEntry<'results'>;
 
@@ -6,13 +7,10 @@ export const paperBase = 'https://github.com/openai/math/blob/4eaee87548250b2682
 
 export async function visibleResults(): Promise<ResultEntry[]> {
   const includeDrafts = import.meta.env.DEV || process.env.URUK_DRAFTS === '1';
-  const entries = await getCollection('results', ({ data }) => includeDrafts || !data.draft);
+  const entries = await getCollection('results');
+  validateResultIdentities(entries);
 
-  return entries.sort((a, b) => a.data.family.localeCompare(b.data.family));
-}
-
-export function statusKind(status: ResultEntry['data']['status']) {
-  return status === 'under review' ? 'under-review' : status;
+  return entries.filter(({ data }) => includeDrafts || !data.draft).sort((a, b) => a.data.family.localeCompare(b.data.family));
 }
 
 export function checkedDate(date: Date): string {

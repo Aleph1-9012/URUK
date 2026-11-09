@@ -10,14 +10,12 @@ uruk-roll { display: flex; flex-direction: column; min-width: 0; }
 .roll-sheet { isolation: isolate; position: relative; }
 uruk-roll[data-closed] .roll-sheet { width: calc(var(--roll-lead) + var(--count) * var(--card-width) + 40px); }
 
-/* A roller always sits under the sheet, so the sheet hides its inner half. */
 .roll-roller { bottom: -20px; left: -60px; position: absolute; top: -36px; width: 120px; z-index: 0; }
 .roll-roller span { border-image: var(--roller-desktop) 240 0 64 0 fill / 120px 0 32px; border-style: solid; border-width: 120px 0 32px; box-sizing: border-box; display: block; height: 100%; position: relative; }
 .roll-roller canvas { display: block; height: calc(100% + 152px); left: 0; position: absolute; top: -120px; width: 120px; }
 .roll-roller--end { display: none; left: auto; right: -60px; transform: scaleX(-1); }
 uruk-roll[data-closed] .roll-roller--end { display: block; }
 
-/* The sheet slides out from under the roller as the page loads; the roller turns with it in element.ts. */
 @keyframes roll-open {
   from { clip-path: inset(-2px -2px -2px 100%); transform: translateX(-100%); }
   to { clip-path: inset(-2px -2px -2px 0); transform: translateX(0); }
@@ -53,7 +51,6 @@ uruk-roll[data-closed] .roll-frame { margin-right: 40px; }
 uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 .roll-track::after { border-right: 1px solid var(--ink); content: ""; inset: 0 0 0 auto; pointer-events: none; position: absolute; }
 
-/* Every width below shows whole cards, and the last one ends on the window edge. */
 @container (min-width: 472px) { .roll-track { --slots: 2; } }
 @container (min-width: 708px) { .roll-track { --slots: 3; } }
 @container (min-width: 944px) { .roll-track { --slots: 4; } }
@@ -88,7 +85,6 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 .roll-arrow:disabled::before, .roll-arrow:disabled::after { display: none; }
 .roll-all { align-items: center; color: var(--muted); display: inline-flex; gap: 6px; white-space: nowrap; }
 
-/* Past the 1440 frame the sheet stops at the content edge, between two rollers, so the roll stays centred. */
 @media (min-width: 90.0625rem) {
   .roll-stage { padding-right: calc(var(--roll-inset) + 60px); }
   .roll-roller--end { display: block; }

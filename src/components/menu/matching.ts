@@ -1,3 +1,5 @@
+import { readStatusKind } from '../../content/review-status';
+
 type SearchItem = { family: string; topic: string; title: string; paperTitle: string; status: string };
 
 function queryWords(query: string): string[] {
@@ -16,7 +18,7 @@ export function readSearch(search: string) {
 
   return {
     query: parameters.get('q') ?? '',
-    status: ['approved', 'under-review', 'unreviewed', 'disputed'].includes(status) ? status : '',
+    status: readStatusKind(status),
   };
 }
 

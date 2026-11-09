@@ -1,6 +1,5 @@
 uruk-menu { display: block; }
 
-/* The page fills the window under the header, so the footer starts below it; the roll sits near the top and the index of all results fills the space under it. */
 .menu-page { display: flex; flex-direction: column; min-height: calc(100svh - 112px); padding-block: 72px 30px; position: relative; }
 
 .menu-search { align-items: center; border: 1px solid var(--ink); display: flex; gap: 11px; min-height: 38px; padding: 0 13px 0 12px; }

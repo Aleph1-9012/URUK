@@ -9,49 +9,17 @@ import bark from '../../assets/home/bark.webp?url';
 import lozenge from '../../assets/home/lozenge.webp?url';
 import slant from '../../assets/home/slant.webp?url';
 import zigzag from '../../assets/home/zigzag.webp?url';
-import { statusKind, visibleResults } from '../../content/results';
+import { visibleResults } from '../../content/results';
+import { statusKind } from '../../content/review-status';
+import { digResult } from './content';
 
-// The text of the approved 57a frames. It has no home in the results schema yet.
-const LAYERS = [
-  {
-    numeral: 'I',
-    question: 'What is the problem?',
-    answer: 'In 1965 Richard Thompson wrote down a group of simple-looking maps: stretch and squeeze a line piecewise, with every slope a power of two. One question about it became famous: does the group admit a fair way to average?',
-    pattern: bark,
-  },
-  {
-    numeral: 'II',
-    question: 'Why did it stay open?',
-    answer: "For fifty years nobody could decide. False proofs in both directions appeared, by one expert's count, about once a year, including a 2012 claim that its author withdrew after a competitor found the error.",
-    pattern: slant,
-  },
-  {
-    numeral: 'III',
-    question: 'Does it matter outside mathematics?',
-    answer: "No known direct application. Amenability underlies ergodic theory and the Banach-Tarski paradox, but Thompson's group is an object of pure mathematics.",
-    pattern: zigzag,
-  },
-  {
-    numeral: 'IV',
-    question: 'Have mathematicians approved the proof?',
-    answer: 'Yes. Sang-hyun Kim and Yash Lodha, two experts in exactly this area, rewrote the proof as their own and published it under their names. It is not a journal acceptance, and it is not a consensus.',
-    pattern: lozenge,
-  },
-];
-const OTHER_TRENCHES = [
-  { family: '158', question: 'How many colours does it take to paint the plane so that no two points one unit apart match?' },
-  { family: '003', question: 'How close can the zeros get to the edge?' },
-  { family: '102', question: 'Can you fix one rule without breaking another?' },
-  { family: '167', question: 'How many pairs of points can be exactly one unit apart?' },
-];
-
+const patterns = { bark, slant, zigzag, lozenge };
 const visible = await visibleResults();
 const allResults = await getCollection('results');
-// A draft has no page in a production build, so only results with a page get a link.
 const hasPage = (family: string) => visible.some((entry) => entry.data.family === family);
 const statusOf = (family: string) => allResults.find((entry) => entry.data.family === family)?.data.status;
-const digStatus = statusOf('248');
-const trenches = OTHER_TRENCHES.flatMap((trench) => {
+const digStatus = statusOf(digResult.family);
+const trenches = digResult.related.flatMap((trench) => {
   const status = statusOf(trench.family);
 
   return status !== undefined && hasPage(trench.family) ? [{ ...trench, status }] : [];
@@ -80,20 +48,20 @@ const moundSrcset = `${moundSmall} 716w, ${moundMedium} 1100w, ${moundLarge} 220
       height="575"
     />
     <div class="dig__layers">
-      {LAYERS.map((layer) => (
+      {digResult.layers.map((layer) => (
         <div class="dig__layer" data-dig-layer>
           <div class="dig__question">
             <p class="dig__label dig__label--muted">Layer {layer.numeral}</p>
             <h3 tabindex="-1">{layer.question}</h3>
           </div>
-          <div class="dig__trench" style={`--pattern: url("${layer.pattern}")`} aria-hidden="true" data-dig-buried></div>
+          <div class="dig__trench" style={`--pattern: url("${patterns[layer.pattern]}")`} aria-hidden="true" data-dig-buried></div>
           <div class="dig__answer" data-dig-buried>
             <p>{layer.answer}</p>
-            {layer.numeral === 'IV' && digStatus !== undefined && (
+            {layer.review && digStatus !== undefined && (
               <div class="dig__status">
                 <p class="dig__label dig__sign"><StatusSign kind={statusKind(digStatus)} /><span>{digStatus}</span></p>
-                {hasPage('248') && (
-                  <a class="dig__label dig__read case-link" href="/results/248/">
+                {hasPage(digResult.family) && (
+                  <a class="dig__label dig__read case-link" href={`/results/${digResult.family}/`}>
                     <span>Read the whole result</span>
                     <Icon name="right" />
                   </a>

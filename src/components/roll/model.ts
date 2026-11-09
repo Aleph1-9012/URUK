@@ -32,19 +32,16 @@ export function initialCardIndex(current: number, visible: number, total: number
   return Math.max(0, Math.min(current - Math.floor(visible / 2), total - visible));
 }
 
-// The card width when every card fits between the two rollers, or undefined when the roll must run on.
 export function closedCardWidth(count: number, available: number): number | undefined {
   const width = Math.min(CLOSED_CARD_WIDTH, (available - CLOSED_END_WIDTH) / Math.max(1, count));
 
   return width >= MIN_CARD_WIDTH ? width : undefined;
 }
 
-// The frieze is rescaled very slightly so that a whole number of seal rollings spans the sheet.
 export function wholeSealTile(length: number): number {
   return length / Math.max(1, Math.round(length / SEAL_TILE_WIDTH));
 }
 
-// How many whole rows the phone sheet shows. When the list scrolls, rows may grow to fill the sheet.
 export function sheetRows(available: number, rowHeight: number, total: number, stretch: boolean) {
   const rows = Math.max(1, Math.min(total, Math.floor(available / rowHeight)));
   const height = stretch && rows < total ? Math.max(rowHeight, available / rows) : rowHeight;
@@ -52,7 +49,6 @@ export function sheetRows(available: number, rowHeight: number, total: number, s
   return { rows, rowHeight: height };
 }
 
-// One card turns the roller a whole number of rulings, so it always comes to rest on the approved drawing.
 export function rollerTurn(offset: number, tile: number): number {
   return (offset / tile) * Math.round(tile / (ROLLER_RADIUS * RULING_ANGLE));
 }
@@ -86,7 +82,6 @@ export function rollerRulings(turn: number, direction: number) {
   return rulings;
 }
 
-// A column x of the cylinder shows this fraction of the seal tile. Turning by distance / radius wraps the sheet's frieze around it.
 export function friezeColumn(x: number, offset: number, tile: number, direction: number) {
   const angle = Math.asin(Math.max(-1, Math.min(1, (ROLLER_CENTRE - x) / ROLLER_RADIUS)));
   const position = offset - direction * (ROLLER_RADIUS * angle + FRIEZE_LEAD);
@@ -94,12 +89,10 @@ export function friezeColumn(x: number, offset: number, tile: number, direction:
   return { source: ((position % tile + tile) % tile) / tile, top: FRIEZE_TOP - FRIEZE_RISE * (1 - Math.cos(angle)) };
 }
 
-// The cap makes one whole turn per card, so it comes to rest exactly where it is drawn.
 export function capTurns(offset: number, tile: number, direction: number): number {
   return direction * (offset / tile) * Math.max(1, Math.round(tile / (2 * Math.PI * ROLLER_RADIUS)));
 }
 
-// Turns a point of the cap about its axis, seen at the drawing's slant, and returns it in CSS pixels.
 export function capPoint(column: number, row: number, turns: number) {
   const angle = turns * 2 * Math.PI;
   const across = column - CAP_AXIS;
@@ -111,7 +104,6 @@ export function capPoint(column: number, row: number, turns: number) {
   };
 }
 
-// The shading line slides in from the knob's shaded side and fades before it reaches the middle.
 export function knobRuling(turns: number) {
   const spacing = (2 * Math.PI) / KNOB_RULINGS;
   const sweep = ((turns * KNOB_RULINGS) % 1 + 1) % 1;

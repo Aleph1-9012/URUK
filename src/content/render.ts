@@ -4,7 +4,7 @@ import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
-import type { Parent, PhrasingContent, Root, RootContent } from 'mdast';
+import type { Definition, Parent, PhrasingContent, Root, RootContent } from 'mdast';
 import { renderFormula } from '../lib/formulas/render';
 import { resultSections, type SectionKey } from './sections';
 
@@ -68,7 +68,7 @@ function prepare(parent: Parent, total: number, cited: Set<number>, citations = 
       continue;
     }
 
-    if (node.type === 'link') {
+    if (node.type === 'link' || node.type === 'linkReference') {
       node.data = { hProperties: { className: ['text-link'] } };
     }
 
@@ -82,8 +82,34 @@ function prepare(parent: Parent, total: number, cited: Set<number>, citations = 
   parent.children = children;
 }
 
-function renderNodes(nodes: RootContent[], total: number, cited: Set<number>, citations = true): string {
-  const tree: Root = { type: 'root', children: structuredClone(nodes) };
+function collectDefinitions(parent: Parent, definitions: Map<string, Definition>): void {
+  for (const node of parent.children) {
+    if (node.type === 'definition' && !definitions.has(node.identifier)) {
+      definitions.set(node.identifier, node);
+    }
+
+    if ('children' in node) {
+      collectDefinitions(node, definitions);
+    }
+  }
+}
+
+function hasDestination(parent: Parent, destination: string, definitions: Map<string, Definition>): boolean {
+  return parent.children.some((node) => {
+    if (node.type === 'link') {
+      return node.url === destination;
+    }
+
+    if (node.type === 'linkReference') {
+      return definitions.get(node.identifier)?.url === destination;
+    }
+
+    return 'children' in node && hasDestination(node, destination, definitions);
+  });
+}
+
+function renderNodes(nodes: RootContent[], definitions: Map<string, Definition>, total: number, cited: Set<number>, citations = true): string {
+  const tree: Root = { type: 'root', children: structuredClone([...nodes, ...definitions.values()]) };
   prepare(tree, total, cited, citations);
 
   // Only our Temml renderer creates HTML nodes; authored HTML is rejected above.
@@ -92,12 +118,18 @@ function renderNodes(nodes: RootContent[], total: number, cited: Set<number>, ci
 
 export function renderResult(body: string, reviewLink?: string) {
   const tree = parser.parse(body);
+  const definitions = new Map<string, Definition>();
   const introduction: RootContent[] = [];
   const sections: Section[] = [];
   let current: Section | undefined;
   let previousIndex = -1;
+  collectDefinitions(tree, definitions);
 
   for (const node of tree.children) {
+    if (node.type === 'definition') {
+      continue;
+    }
+
     if (node.type === 'heading' && node.depth === 1) {
       throw new Error('The page title belongs in front matter, not the body.');
     }
@@ -150,24 +182,25 @@ export function renderResult(body: string, reviewLink?: string) {
   }
 
   const cited = new Set<number>();
+
+  if (reviewLink && !hasDestination(list, reviewLink, definitions)) {
+    throw new Error('The review link must appear in Sources.');
+  }
+
   const sources = list.children.map((item, index) => ({
     number: index + 1,
-    html: renderNodes(item.children, list.children.length, cited, false),
+    html: renderNodes(item.children, definitions, list.children.length, cited, false),
   }));
-  const intro = renderNodes(introduction, sources.length, cited);
+  const intro = renderNodes(introduction, definitions, sources.length, cited);
   const rendered = sections.map(({ nodes, ...section }) => ({
     ...section,
-    html: section.key === 'sources' ? '' : renderNodes(nodes, sources.length, cited),
+    html: section.key === 'sources' ? '' : renderNodes(nodes, definitions, sources.length, cited),
   }));
 
   for (const source of sources) {
     if (!cited.has(source.number)) {
       throw new Error(`Source ${source.number} is never cited.`);
     }
-  }
-
-  if (reviewLink && !sources.some((source) => source.html.includes(`href="${reviewLink}"`))) {
-    throw new Error('The review link must appear in Sources.');
   }
 
   return { introduction: intro, sections: rendered, sources };

@@ -10,6 +10,12 @@ const OPENING_TURNS = 1;
 // The closing roller needs room below the sheet; it may use the 16px above the credit line.
 const CLOSING_ROLLER = 44;
 
+type ResultFilter = {
+  active: boolean;
+  description: string;
+  emptyMessage: string;
+};
+
 class UrukRoll extends HTMLElement {
   private observer: ResizeObserver | undefined;
   private events: AbortController | undefined;
@@ -21,6 +27,7 @@ class UrukRoll extends HTMLElement {
   private sealOffset = 0;
   private drawnOffset: number | undefined;
   private turnFrame: number | undefined;
+  private unwritten: string | undefined;
 
   get cards(): HTMLAnchorElement[] {
     return Array.from(this.querySelectorAll<HTMLAnchorElement>('.roll-card'));
@@ -121,8 +128,43 @@ class UrukRoll extends HTMLElement {
     }
   }
 
-  refresh(): void {
+  get scrolledBeyondPage(): boolean {
+    const viewport = this.viewport;
+
+    return viewport !== null && viewport.scrollTop > viewport.clientHeight;
+  }
+
+  scrollToStart(): void {
     this.viewport?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }
+
+  filterResults(families: ReadonlySet<string>, filter: ResultFilter): void {
+    for (const card of this.cards) {
+      card.hidden = !families.has(card.dataset.family ?? '');
+    }
+
+    const count = families.size;
+    const slot = this.querySelector<HTMLElement>('[data-roll-slot]');
+    const note = this.querySelector<HTMLElement>('[data-roll-slot-note]');
+    const help = this.querySelector<HTMLElement>('[data-roll-help]');
+    this.unwritten ??= note?.textContent ?? '';
+
+    if (slot && note) {
+      slot.hidden = filter.active && count > 0;
+      note.textContent = count > 0 ? this.unwritten : filter.emptyMessage;
+    }
+
+    if (help) {
+      help.hidden = count === 0;
+      help.textContent = filter.active
+        ? 'Choose a result to read its page.'
+        : 'Drag the roll or scroll sideways. Results run in number order.';
+    }
+
+    this.toggleAttribute('data-filtered', filter.active);
+    this.toggleAttribute('data-empty', count === 0);
+    this.querySelector('[data-roll-heading]')?.replaceChildren(filter.description);
+    this.scrollToStart();
     this.measure();
   }
 
@@ -130,7 +172,6 @@ class UrukRoll extends HTMLElement {
     return matchMedia(REDUCED_MOTION).matches ? 'instant' : 'smooth';
   }
 
-  // Without this image, or with reduced motion, the roller stays as the still drawing.
   private loadSeal(signal: AbortSignal): void {
     const source = this.dataset.seal;
 
@@ -153,7 +194,6 @@ class UrukRoll extends HTMLElement {
     }
   }
 
-  // Runs until the sheet has opened and one still frame has followed the last movement.
   private turn(): void {
     this.turnFrame = undefined;
     const paper = this.querySelector<HTMLElement>('.roll-paper');
@@ -201,7 +241,6 @@ class UrukRoll extends HTMLElement {
     this.followScroll();
   }
 
-  // Filtered cards that fit stop at a second roller; otherwise the roll runs to the window edge.
   private closeSheet(): void {
     const stage = this.querySelector<HTMLElement>('.roll-stage');
     const frame = this.querySelector<HTMLElement>('.roll-frame');
@@ -223,7 +262,6 @@ class UrukRoll extends HTMLElement {
     this.toggleAttribute('data-closed', this.hasAttribute('data-filtered') && (this.phone || width !== undefined));
   }
 
-  // The phone sheet stays still and always ends on a whole row.
   private fitRows(viewport: HTMLElement): void {
     const items = this.items;
     const first = items[0];
@@ -276,7 +314,6 @@ class UrukRoll extends HTMLElement {
     }
   }
 
-  // The frieze moves one seal rolling per card, so it also rests whole at both edges.
   private followScroll(): void {
     const viewport = this.viewport;
 
