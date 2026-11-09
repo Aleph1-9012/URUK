@@ -1,0 +1,14 @@
+---
+// 63c: while a drawn visual is still being computed, Text 180's ones are pressed every 400 ms, three to a row; nine become a ten.
+import sign1 from '../../assets/tablet/sign-1.png';
+import sign10 from '../../assets/tablet/sign-10.png';
+
+const ones = Array.from({ length: 9 }, (_, index) => index + 1);
+---
+
+<div class="plate-loader" aria-hidden="true" data-plate-loader data-script-only>
+  <div class="plate-loader__ones">
+    {ones.map((one) => <img draggable="false" class={`plate-loader__one plate-loader__one--${one}`} src={sign1.src} alt="" width="39" height="31" />)}
+  </div>
+  <img draggable="false" class="plate-loader__ten" src={sign10.src} alt="" width="39" height="39" />
+</div>

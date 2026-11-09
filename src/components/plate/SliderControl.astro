@@ -1,0 +1,39 @@
+---
+// 61a: one hand-inked wedge line, heavier towards its far end, with one round sign to drag.
+import sign10 from '../../assets/tablet/sign-10.png';
+import PlateButtons from './PlateButtons.astro';
+
+interface Props {
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  label: string;
+  valueText: string;
+}
+
+const { min, max, step, value, label, valueText } = Astro.props;
+---
+
+<div class="plate-controls" data-plate-controls data-waiting inert data-script-only>
+  <p class="plate-readout" aria-hidden="true" data-readout><slot name="readout" /></p>
+  <div
+    class="plate-track"
+    role="slider"
+    tabindex="0"
+    aria-label={label}
+    aria-valuemin={min}
+    aria-valuemax={max}
+    aria-valuenow={value}
+    aria-valuetext={valueText}
+    style={`--value-at: ${(value - min) / (max - min)}`}
+    data-track
+    data-step={step}
+  >
+    <span class="plate-track__line" data-track-line></span>
+    <span class="plate-track__end plate-track__end--start" aria-hidden="true"><slot name="start" /></span>
+    <span class="plate-track__end plate-track__end--end" aria-hidden="true"><slot name="end" /></span>
+    <img draggable="false" class="plate-track__handle" src={sign10.src} alt="" width="22" height="22" />
+  </div>
+  <PlateButtons />
+</div>

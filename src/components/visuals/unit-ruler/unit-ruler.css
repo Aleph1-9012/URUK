@@ -1,0 +1,69 @@
+.unit-ruler__ruler {
+  outline: none;
+}
+
+.unit-ruler__focus {
+  fill: none;
+  stroke: var(--blue);
+  visibility: hidden;
+}
+
+.unit-ruler__ruler:focus-visible .unit-ruler__focus {
+  visibility: visible;
+}
+
+.unit-ruler__line,
+.unit-ruler__end,
+.unit-ruler__halo {
+  pointer-events: none;
+}
+
+.unit-ruler__halo {
+  fill: var(--paper);
+}
+
+.unit-ruler__grip {
+  cursor: grab;
+  fill: transparent;
+  stroke: transparent;
+  touch-action: none;
+}
+
+.unit-ruler__grip[data-grip="move"] {
+  fill: none;
+}
+
+uruk-unit-ruler[data-dragging] .unit-ruler__grip {
+  cursor: grabbing;
+}
+
+/* The readout: the pattern under each end, joined by the same wedge line as the slider. */
+.ruler-readout {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+}
+
+.ruler-readout__swatch {
+  color: var(--ink);
+  flex: none;
+  height: 30px;
+  margin-block: -8px;
+  position: relative;
+  width: 30px;
+  z-index: 1;
+}
+
+.ruler-readout__line {
+  flex: 0 1 202px;
+  margin-inline: -6px;
+  min-width: 36px;
+}
+
+.ruler-readout__note {
+  color: var(--muted);
+  font: 0.6875rem/14px var(--font-special-elite);
+  letter-spacing: 0.04em;
+  margin-left: 14px;
+  white-space: nowrap;
+}

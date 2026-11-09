@@ -1,0 +1,41 @@
+---
+// 62b: a ruler of numbered steps on Text 180's wedge line; a sign is pressed at each step passed.
+import sign10 from '../../assets/tablet/sign-10.png';
+import PlateButtons from './PlateButtons.astro';
+
+interface Props {
+  count: number;
+  value: number;
+  label: string;
+  valueText: string;
+}
+
+const { count, value, label, valueText } = Astro.props;
+const steps = Array.from({ length: count }, (_, index) => index + 1);
+---
+
+<div class="plate-controls" data-plate-controls data-waiting inert data-script-only>
+  <p class="plate-readout" aria-hidden="true" data-readout>Step {value} of {count}</p>
+  <div
+    class="plate-track"
+    role="slider"
+    tabindex="0"
+    aria-label={label}
+    aria-valuemin="1"
+    aria-valuemax={count}
+    aria-valuenow={value}
+    aria-valuetext={valueText}
+    style={`--value-at: ${(value - 1) / (count - 1)}`}
+    data-track
+  >
+    <span class="plate-track__line" data-track-line></span>
+    {steps.map((step) => (
+      <span class="plate-track__stop" style={`--at: ${(step - 1) / (count - 1)}`} data-track-stop data-passed={step < value ? '' : undefined}>
+        <img draggable="false" class="plate-track__pressed" src={sign10.src} alt="" width="12" height="12" />
+        <span class="plate-track__number" aria-hidden="true">{step}</span>
+      </span>
+    ))}
+    <img draggable="false" class="plate-track__handle" src={sign10.src} alt="" width="22" height="22" />
+  </div>
+  <PlateButtons />
+</div>

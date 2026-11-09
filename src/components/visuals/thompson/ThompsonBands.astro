@@ -1,0 +1,42 @@
+---
+// 248 · 62b step: each band carries the marks of the line above it through one of Thompson's maps.
+import Plate from '../../plate/Plate.astro';
+import StepControl from '../../plate/StepControl.astro';
+import { BAND_COUNT, BAND_HEIGHT, RULE_LEFT, RULE_RIGHT, VIEW, bands, ruleY } from './maps';
+import { describeStep, START_STEP } from './steps';
+import './thompson.css';
+
+const drawn = bands();
+---
+
+<Plate caption="Each band applies one of Thompson’s maps to the line above it. Every slope is a power of two." leftOut="amenability, the question the result answers.">
+  <uruk-thompson-bands>
+    <div class="plate__figure">
+      <svg viewBox={`0 0 ${VIEW.width} ${VIEW.height}`} role="img" aria-label="Thompson’s maps drawn as bands. Each band carries the marks on the line above it to the line below.">
+        <defs>
+          <pattern id="thompson-hatch" patternUnits="userSpaceOnUse" width="6" height="3">
+            <path d="M0 1.5H6" stroke="currentColor" stroke-width="1" />
+          </pattern>
+          {drawn.map((_, index) => (
+            <clipPath id={`thompson-reveal-${index + 1}`}>
+              <rect x="0" y={ruleY(index)} width={VIEW.width} height={BAND_HEIGHT + 2} data-reveal={index + 1} />
+            </clipPath>
+          ))}
+        </defs>
+        {drawn.map((band, index) => (
+          <g class="thompson-band" clip-path={`url(#thompson-reveal-${index + 1})`} data-band={index + 1} data-later={index + 1 > START_STEP ? '' : undefined}>
+            {band.pieces.map((points) => <polygon points={points} fill="url(#thompson-hatch)" />)}
+            <path d={band.strands.join('')} fill="none" stroke="currentColor" stroke-width="1" />
+            <path d={`M${RULE_LEFT} ${ruleY(index + 1)}H${RULE_RIGHT}`} stroke="currentColor" stroke-width="2" />
+          </g>
+        ))}
+        <path d={`M${RULE_LEFT} ${ruleY(0)}H${RULE_RIGHT}`} stroke="currentColor" stroke-width="2" />
+      </svg>
+    </div>
+    <StepControl count={BAND_COUNT} value={START_STEP} label="Bands shown" valueText={describeStep(START_STEP)} />
+  </uruk-thompson-bands>
+</Plate>
+
+<script>
+  import './element';
+</script>

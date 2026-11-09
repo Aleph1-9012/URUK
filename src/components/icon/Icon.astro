@@ -4,6 +4,7 @@ import closeUrl from '../../assets/icons/close.svg?url';
 import downUrl from '../../assets/icons/down.svg?url';
 import leftUrl from '../../assets/icons/left.svg?url';
 import openUrl from '../../assets/icons/open.svg?url';
+import resetUrl from '../../assets/icons/reset.svg?url';
 import rightUrl from '../../assets/icons/right.svg?url';
 import rollBackUrl from '../../assets/icons/roll-back.svg?url';
 import rollForwardUrl from '../../assets/icons/roll-forward.svg?url';
@@ -19,7 +20,8 @@ interface Props {
     | 'open'
     | 'close'
     | 'search'
-    | 'clear';
+    | 'clear'
+    | 'reset';
 }
 
 const { name } = Astro.props;
@@ -34,6 +36,7 @@ const icons = {
   close: closeUrl,
   search: searchUrl,
   clear: clearUrl,
+  reset: resetUrl,
 } as const;
 ---
 

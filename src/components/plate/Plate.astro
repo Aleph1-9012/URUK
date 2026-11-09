@@ -1,0 +1,20 @@
+---
+// Plate I with a working visual: the double-ruled frame, its label, the figure and controls (slot), the caption and what it leaves out.
+import './plate.css';
+
+interface Props {
+  caption: string;
+  leftOut: string;
+}
+
+const { caption, leftOut } = Astro.props;
+---
+
+<figure class="result-plate-one plate">
+  <p class="plate__label">Plate I</p>
+  <slot />
+  <figcaption class="plate__caption">
+    <p>Fig. 1. {caption}</p>
+    <p class="plate__left-out">Left out: {leftOut}</p>
+  </figcaption>
+</figure>

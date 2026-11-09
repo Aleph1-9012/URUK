@@ -5,6 +5,7 @@ import Section from '../../components/result/Section.astro';
 import Roll from '../../components/roll/Roll.astro';
 import Sources from '../../components/sources/Sources.astro';
 import StatusSign from '../../components/status-sign/StatusSign.astro';
+import ResultVisual from '../../components/visuals/ResultVisual.astro';
 import ornament from '../../assets/ornaments/ornament.svg?url';
 import { checkedDate, paperBase, statusKind, visibleResults } from '../../content/results';
 import { renderResult } from '../../content/render';
@@ -33,10 +34,14 @@ const content = renderResult(entry.body, data.link);
   <article class="folio-page result-page">
     <a class="result-breadcrumb case-link" href="/results/">All results / {data.family}</a>
     <div class="result-opening">
-      <figure class="result-plate-one">
-        <div class="result-visual"><span>No visual yet.</span></div>
-        <figcaption>Plate I. An interactive visual for this result will appear here.</figcaption>
-      </figure>
+      {data.visual ? (
+        <ResultVisual visual={data.visual} />
+      ) : (
+        <figure class="result-plate-one">
+          <div class="result-visual"><span>No visual yet.</span></div>
+          <figcaption>Plate I. An interactive visual for this result will appear here.</figcaption>
+        </figure>
+      )}
       <div class="result-introduction">
         <p class="result-label">{data.family} · {data.topic}</p>
         <h1>{data.title}</h1>

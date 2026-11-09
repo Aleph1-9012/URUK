@@ -1,0 +1,19 @@
+---
+// Plate I for a result whose front matter names a visual.
+import type { VisualKey } from '../../content/visuals';
+import ThompsonBands from './thompson/ThompsonBands.astro';
+import UnitRuler from './unit-ruler/UnitRuler.astro';
+
+interface Props {
+  visual: VisualKey;
+}
+
+const plates = {
+  'unit-ruler': UnitRuler,
+  'thompson-bands': ThompsonBands,
+} satisfies Record<VisualKey, typeof UnitRuler>;
+
+const Visual = plates[Astro.props.visual];
+---
+
+<Visual />

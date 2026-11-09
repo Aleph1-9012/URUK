@@ -1,0 +1,89 @@
+---
+// 158 · 62b drag: Isbell's seven-pattern tiling with a ruler one unit long; its two ends never land on the same pattern.
+import lineDesktop from '../../../assets/plate/ruler-line.png';
+import linePhone from '../../../assets/plate/ruler-line-phone.png';
+import sign10 from '../../../assets/tablet/sign-10.png';
+import Plate from '../../plate/Plate.astro';
+import PlateButtons from '../../plate/PlateButtons.astro';
+import { rulerParts } from './ruler-parts';
+import { describeEnds, swatchFill } from './readout';
+import { START_RULER, UNIT, VIEW, cellAt, patternOf, rulerEnd, tiles } from './tiling';
+import './unit-ruler.css';
+
+const GAP = 5.2;
+const SLANT = GAP * 1.1;
+const parts = rulerParts(1);
+const startPattern = patternOf(cellAt(START_RULER.start));
+const endPattern = patternOf(cellAt(rulerEnd(START_RULER)));
+const degrees = (START_RULER.angle * 180) / Math.PI;
+const lines = { desktop: lineDesktop.src, phone: linePhone.src };
+---
+
+<Plate caption="Seven patterns are enough: no two points one unit apart share one. Drag the ruler to try." leftOut="whether fewer patterns could do it.">
+  <uruk-unit-ruler data-line-desktop={lines.desktop} data-line-phone={lines.phone}>
+    <div class="plate__figure">
+      <svg viewBox={`0 0 ${VIEW.width} ${VIEW.height}`} data-ruler-plane>
+        <title>Isbell’s tiling of the plane by hexagons in seven patterns, with a ruler one unit long.</title>
+        <defs>
+          <pattern id="unit-ruler-h" patternUnits="userSpaceOnUse" width={GAP} height={GAP}>
+            <path d={`M0 ${GAP / 2}H${GAP}`} stroke="currentColor" stroke-width="0.55" />
+          </pattern>
+          <pattern id="unit-ruler-v" patternUnits="userSpaceOnUse" width={GAP} height={GAP}>
+            <path d={`M${GAP / 2} 0V${GAP}`} stroke="currentColor" stroke-width="0.55" />
+          </pattern>
+          <pattern id="unit-ruler-x" patternUnits="userSpaceOnUse" width={GAP} height={GAP}>
+            <path d={`M0 ${GAP / 2}H${GAP}M${GAP / 2} 0V${GAP}`} stroke="currentColor" stroke-width="0.55" />
+          </pattern>
+          <pattern id="unit-ruler-d" patternUnits="userSpaceOnUse" width={SLANT} height={SLANT}>
+            <path d={`M0 ${SLANT}L${SLANT} 0M-1 1L1 -1M${SLANT - 1} ${SLANT + 1}L${SLANT + 1} ${SLANT - 1}`} stroke="currentColor" stroke-width="0.55" />
+          </pattern>
+          <pattern id="unit-ruler-a" patternUnits="userSpaceOnUse" width={SLANT} height={SLANT}>
+            <path d={`M0 0L${SLANT} ${SLANT}M-1 ${SLANT - 1}L1 ${SLANT + 1}M${SLANT - 1} -1L${SLANT + 1} 1`} stroke="currentColor" stroke-width="0.55" />
+          </pattern>
+          <pattern id="unit-ruler-o" patternUnits="userSpaceOnUse" width={GAP} height={GAP * 2}>
+            <circle cx={GAP / 2} cy={GAP / 2} r="0.75" fill="currentColor" />
+            <circle cx="0" cy={GAP * 1.5} r="0.75" fill="currentColor" />
+            <circle cx={GAP} cy={GAP * 1.5} r="0.75" fill="currentColor" />
+          </pattern>
+        </defs>
+        <g class="unit-ruler__tiles" data-bleed>
+          {tiles().map((tile) => <polygon points={tile.points} fill={swatchFill(tile.pattern)} stroke="currentColor" stroke-width="0.9" />)}
+        </g>
+        <g
+          class="unit-ruler__ruler"
+          transform={`translate(${START_RULER.start.x} ${START_RULER.start.y}) rotate(${degrees})`}
+          tabindex="0"
+          role="group"
+          aria-roledescription="ruler"
+          aria-label="Ruler, one unit long"
+          aria-describedby="unit-ruler-help"
+          data-ruler
+        >
+          <rect class="unit-ruler__focus" x={parts.focus.x} y={parts.focus.y} width={parts.focus.width} height={parts.focus.height} rx={parts.focus.height / 2} stroke-width={parts.focus.stroke} data-ruler-focus />
+          <image class="unit-ruler__line" href={lines[parts.kind]} x={parts.line.x} y={parts.line.y} width={parts.line.width} height={parts.line.height} preserveAspectRatio="none" data-ruler-line />
+          {[0, UNIT].map((x) => <circle class="unit-ruler__halo" cx={x} cy="0" r={parts.halo} data-ruler-halo />)}
+          {[0, UNIT].map((x) => <image class="unit-ruler__end" href={sign10.src} x={x - parts.disc / 2} y={-parts.disc / 2} width={parts.disc} height={parts.disc} data-ruler-end={x} />)}
+          <line class="unit-ruler__grip" x1="0" y1="0" x2={UNIT} y2="0" stroke-width={parts.lineGrip} data-grip="move" />
+          <circle class="unit-ruler__grip" cx="0" cy="0" r={parts.endGrip} data-grip="start" />
+          <circle class="unit-ruler__grip" cx={UNIT} cy="0" r={parts.endGrip} data-grip="end" />
+        </g>
+      </svg>
+    </div>
+    <p class="visually-hidden" id="unit-ruler-help">Drag the ruler to move it, or drag one end to turn it. With the keyboard, the arrow keys move it, and Shift with an arrow key turns it.</p>
+    <div class="plate-controls" data-plate-controls data-waiting inert data-script-only>
+      <p class="plate-readout" aria-hidden="true">Ends on</p>
+      <p class="ruler-readout">
+        <svg class="ruler-readout__swatch" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14.5" fill={swatchFill(startPattern)} stroke="currentColor" data-swatch="start" /></svg>
+        <span class="ruler-readout__line" aria-hidden="true"></span>
+        <svg class="ruler-readout__swatch" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="14.5" fill={swatchFill(endPattern)} stroke="currentColor" data-swatch="end" /></svg>
+        <span class="ruler-readout__note" aria-hidden="true">never the same</span>
+        <span class="visually-hidden" aria-live="polite" data-ruler-status>{describeEnds(startPattern, endPattern)}</span>
+      </p>
+      <PlateButtons />
+    </div>
+  </uruk-unit-ruler>
+</Plate>
+
+<script>
+  import './element';
+</script>

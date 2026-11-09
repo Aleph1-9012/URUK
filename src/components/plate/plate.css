@@ -1,0 +1,295 @@
+/* Plate I with a visual, as on Approved section 17: 62b and 61a at 800 wide, their phone versions below 600.
+   The outer rule and padding come from .result-plate-one, the empty plate's frame. */
+.plate {
+  background: var(--paper);
+  container: plate / inline-size;
+  position: relative;
+}
+
+.plate::before {
+  border: 1px solid var(--ink);
+  content: "";
+  inset: 5px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.plate .plate__label {
+  font: 0.6875rem/15px var(--font-special-elite);
+  letter-spacing: 0.04em;
+  margin: 2px 0 15px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.plate__figure {
+  aspect-ratio: 760 / 560;
+  background: var(--paper);
+  border: 1px solid var(--muted);
+  position: relative;
+}
+
+.plate__figure > svg,
+.plate__figure > canvas {
+  color: var(--ink);
+  display: block;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.plate .plate__no-script {
+  display: grid;
+  font: italic 1rem/1.5 var(--font-alegreya);
+  inset: 0;
+  padding: 24px;
+  place-items: center;
+  position: absolute;
+  text-align: center;
+}
+
+.plate .plate__caption {
+  font: italic 1rem/1.5 var(--font-alegreya);
+  margin-top: 22px;
+  text-align: center;
+}
+
+/* The caption's two paragraphs take the caption's face, not the folio's body text. */
+.plate .plate__caption p {
+  font: inherit;
+  letter-spacing: inherit;
+}
+
+.plate__left-out {
+  color: var(--muted);
+}
+
+/* Controls: value on the left, the wedge line in the middle, Pause and Reset on the right. */
+.plate-controls {
+  align-items: start;
+  column-gap: 26px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  margin-top: 26px;
+  transition: opacity 200ms ease-out;
+}
+
+.plate-controls[data-waiting] {
+  opacity: 0.35;
+}
+
+.plate .plate-readout {
+  font: 0.6875rem/14px var(--font-special-elite);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.plate-readout sup,
+.plate-track__end sup {
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.plate-track {
+  cursor: pointer;
+  height: 36px;
+  margin-inline: 11px;
+  position: relative;
+  touch-action: pan-y;
+}
+
+.plate-track:focus-visible {
+  outline-offset: 8px;
+}
+
+/* Round 61's cut of the wedge line, its two ends kept whole and only the middle stretched. */
+.plate-track__line,
+.ruler-readout__line {
+  border-color: transparent;
+  border-image: url("../../assets/plate/track.png") 0 75 0 63 fill / 0 25px 0 21px stretch;
+  border-style: solid;
+  border-width: 0 25px 0 21px;
+  height: 14px;
+}
+
+.plate-track__line {
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.plate-track__handle,
+.plate-track__pressed {
+  display: block;
+  left: calc(var(--value-at, 0) * 100%);
+  pointer-events: none;
+  position: absolute;
+  top: 7px;
+  translate: -50% -50%;
+}
+
+.plate-track__handle {
+  height: 22px;
+  width: 22px;
+}
+
+.plate-track__stop {
+  left: calc(var(--at) * 100%);
+  position: absolute;
+  top: 0;
+}
+
+.plate-track__pressed {
+  height: 12px;
+  left: 0;
+  width: 12px;
+}
+
+.plate-track__stop:not([data-passed]) .plate-track__pressed {
+  visibility: hidden;
+}
+
+.plate-track__number,
+.plate-track__end {
+  color: var(--muted);
+  font: 0.625rem/1 var(--font-special-elite);
+  position: absolute;
+  top: 22px;
+  white-space: nowrap;
+}
+
+.plate-track__number {
+  left: 0;
+  translate: -50% 0;
+}
+
+.plate-track__end--start {
+  left: 0;
+  translate: -50% 0;
+}
+
+.plate-track__end--end {
+  right: 0;
+  translate: 50% 0;
+}
+
+.plate-buttons {
+  display: flex;
+  gap: 20px;
+  justify-self: end;
+}
+
+.plate-button {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  font: 0.6875rem/14px var(--font-special-elite);
+  gap: 7px;
+  letter-spacing: 0.04em;
+  margin-block: -5px;
+  padding: 5px 0;
+  text-transform: uppercase;
+}
+
+/* Phone order: value and the buttons share the first row, the line takes the whole second row. */
+@container plate (max-width: 599.98px) {
+  .plate-controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-top: 18px;
+    row-gap: 22px;
+  }
+
+  .plate-controls > .plate-track,
+  .plate-controls > .ruler-readout {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .plate-controls > .plate-buttons {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .plate .plate__caption {
+    margin-top: 18px;
+  }
+}
+
+/* 63c: ones pressed every 400 ms, three to a row; after nine, a ten. */
+.plate-loader {
+  display: grid;
+  inset: 0;
+  place-items: center;
+  pointer-events: none;
+  position: absolute;
+}
+
+.plate-loader__ones {
+  display: grid;
+  gap: 8px 13px;
+  grid-template-columns: repeat(3, 39px);
+}
+
+.plate-loader__ones,
+.plate-loader__ten {
+  grid-area: 1 / 1;
+}
+
+.plate-loader__one,
+.plate-loader__ten {
+  display: block;
+  mix-blend-mode: multiply;
+  opacity: 0;
+}
+
+.plate-loader__one {
+  height: 31px;
+  width: 39px;
+}
+
+.plate-loader__ten {
+  animation: plate-ten 4800ms step-end infinite;
+  height: 39px;
+  width: 39px;
+}
+
+.plate-loader__one--1 { animation: plate-one-1 4800ms step-end infinite; }
+.plate-loader__one--2 { animation: plate-one-2 4800ms step-end infinite; }
+.plate-loader__one--3 { animation: plate-one-3 4800ms step-end infinite; }
+.plate-loader__one--4 { animation: plate-one-4 4800ms step-end infinite; }
+.plate-loader__one--5 { animation: plate-one-5 4800ms step-end infinite; }
+.plate-loader__one--6 { animation: plate-one-6 4800ms step-end infinite; }
+.plate-loader__one--7 { animation: plate-one-7 4800ms step-end infinite; }
+.plate-loader__one--8 { animation: plate-one-8 4800ms step-end infinite; }
+.plate-loader__one--9 { animation: plate-one-9 4800ms step-end infinite; }
+
+@keyframes plate-one-1 { 0% { opacity: 0; } 8.333% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-2 { 0% { opacity: 0; } 16.667% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-3 { 0% { opacity: 0; } 25% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-4 { 0% { opacity: 0; } 33.333% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-5 { 0% { opacity: 0; } 41.667% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-6 { 0% { opacity: 0; } 50% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-7 { 0% { opacity: 0; } 58.333% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-8 { 0% { opacity: 0; } 66.667% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-one-9 { 0% { opacity: 0; } 75% { opacity: 1; } 83.333% { opacity: 0; } }
+@keyframes plate-ten { 0% { opacity: 0; } 83.333% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .plate-loader__one,
+  .plate-loader__ten {
+    animation: none;
+  }
+
+  .plate-loader__one--1,
+  .plate-loader__one--2,
+  .plate-loader__one--3 {
+    opacity: 1;
+  }
+
+  .plate-controls {
+    transition: none;
+  }
+}

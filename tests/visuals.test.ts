@@ -1,0 +1,97 @@
+import { expect, test } from 'bun:test';
+import { apply, bandMaps, trackLines, x0, x0Inverse, x1 } from '../src/components/visuals/thompson/maps';
+import { FILM_PERIOD, START_STEP, describeStep, stepAt, timeOfStep } from '../src/components/visuals/thompson/steps';
+import { START_RULER, UNIT, cellAt, fits, patternOf, rulerEnd, tiles } from '../src/components/visuals/unit-ruler/tiling';
+import { WANDER_PERIOD, between, rulerAt } from '../src/components/visuals/unit-ruler/wander';
+
+// A fixed sequence, so a failure can be replayed.
+function seeded(seed: number): () => number {
+  let state = seed;
+
+  return () => {
+    state = (state * 1664525 + 1013904223) % 4294967296;
+
+    return state / 4294967296;
+  };
+}
+
+test('158: the two ends of a unit ruler never land on the same pattern', () => {
+  const random = seeded(158);
+
+  for (let trial = 0; trial < 20000; trial += 1) {
+    const start = { x: random() * 2000 - 1000, y: random() * 2000 - 1000 };
+    const angle = random() * 2 * Math.PI;
+    const end = rulerEnd({ start, angle });
+
+    expect(Math.hypot(end.x - start.x, end.y - start.y)).toBeCloseTo(UNIT, 9);
+    expect(patternOf(cellAt(end))).not.toBe(patternOf(cellAt(start)));
+  }
+});
+
+test('158: every pattern appears on the plate', () => {
+  const seen = new Set(tiles().map((tile) => tile.pattern));
+
+  expect(seen.size).toBe(7);
+});
+
+test('248: each map fixes 0 and 1, rises, and has power-of-two slopes and dyadic breakpoints', () => {
+  for (const map of [x0, x1, x0Inverse]) {
+    expect(apply(map, 0)).toBe(0);
+    expect(apply(map, 1)).toBe(1);
+
+    for (let index = 1; index < map.from.length; index += 1) {
+      const start = map.from[index - 1] ?? 0;
+      const end = map.from[index] ?? 0;
+      const slope = ((map.to[index] ?? 0) - (map.to[index - 1] ?? 0)) / (end - start);
+
+      expect(slope).toBeGreaterThan(0);
+      expect(Number.isInteger(Math.log2(slope))).toBe(true);
+      expect(Number.isInteger(end * 2 ** 10)).toBe(true);
+    }
+  }
+});
+
+test('248: x₀ then its inverse puts every mark back', () => {
+  for (let index = 0; index <= 32; index += 1) {
+    expect(apply(x0Inverse, apply(x0, index / 32))).toBeCloseTo(index / 32, 12);
+  }
+});
+
+test('248: the marks keep their order through all eight bands', () => {
+  const lines = trackLines();
+
+  expect(lines).toHaveLength(bandMaps.length + 1);
+
+  for (const line of lines) {
+    expect(line[0]).toBe(0);
+    expect(line.at(-1)).toBe(1);
+    expect(line.every((mark, index) => index === 0 || mark > (line[index - 1] ?? 1))).toBe(true);
+  }
+
+  expect(describeStep(2)).toStartWith('Step 2 of 8');
+});
+
+test('248 film: starts on the still picture, draws every band, rests on all eight', () => {
+  expect(stepAt(timeOfStep(START_STEP))).toBe(START_STEP);
+  expect(stepAt(0)).toBe(1);
+  expect(stepAt(FILM_PERIOD - 1)).toBe(8);
+  expect(stepAt(FILM_PERIOD)).toBe(1);
+});
+
+test('158 film: the wandering ruler starts where the HTML puts it and never leaves the plate', () => {
+  const first = rulerAt(0);
+
+  expect(first.start.x).toBeCloseTo(START_RULER.start.x, 9);
+  expect(first.start.y).toBeCloseTo(START_RULER.start.y, 9);
+  expect(first.angle).toBeCloseTo(START_RULER.angle, 9);
+
+  for (let time = 0; time < WANDER_PERIOD; time += 20) {
+    expect(fits(rulerAt(time))).toBe(true);
+  }
+
+  const halfway = between({ start: { x: 0, y: 0 }, angle: 3 }, { start: { x: 10, y: 0 }, angle: -3 }, 0.5);
+
+  expect(halfway.start.x).toBeCloseTo(5, 9);
+  // From 3 to −3 radians the short way round is through π, not through 0.
+  expect(Math.abs(halfway.angle)).toBeCloseTo(Math.PI, 9);
+});

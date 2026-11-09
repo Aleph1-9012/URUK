@@ -1,4 +1,5 @@
 import { z } from 'astro/zod';
+import { visualKeys } from './visuals';
 
 export const result = z.strictObject({
   family: z.string().regex(/^\d{3}$/),
@@ -10,7 +11,7 @@ export const result = z.strictObject({
   checked: z.coerce.date().max(new Date()),
   link: z.url({ protocol: /^https$/ }).optional(),
   papers: z.array(z.string().regex(/^preprints\/.+\.pdf$/)).min(1),
-  visual: z.string().optional(),
+  visual: z.enum(visualKeys).optional(),
   draft: z.boolean().default(true),
 }).refine((page) => page.link !== undefined || page.status === 'under review' || page.status === 'unreviewed', {
   path: ['link'],
