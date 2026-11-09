@@ -4,9 +4,10 @@ import type { FilmTimeline } from './timeline';
 interface Props {
   id: string;
   timeline: FilmTimeline;
+  step?: number;
 }
 
-const { id, timeline } = Astro.props;
+const { id, timeline, step = 100 } = Astro.props;
 ---
 
 <div class="film-controls" data-script-only>
@@ -16,7 +17,7 @@ const { id, timeline } = Astro.props;
     <button class="plate-button case-link case-link--tight" type="button" data-film-restart>Restart</button>
   </div>
   <label class="visually-hidden" for={id}>Film timeline. Arrow keys move one subtitle at a time.</label>
-  <input id={id} class="film-timeline" data-film-range type="range" min="0" max={timeline.duration} step="100" value="0" />
+  <input id={id} class="film-timeline" data-film-range type="range" min="0" max={timeline.duration} step={step} value="0" />
   <div class="film-steps">
     <button class="plate-button case-link case-link--tight" type="button" data-film-previous>Previous</button>
     <p>Step through without motion</p>

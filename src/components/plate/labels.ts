@@ -32,7 +32,10 @@ export class FilmLabels {
 
   endFrame(): void {
     for (const [id, element] of this.elements) {
-      if (!this.visible.has(id)) element.style.visibility = 'hidden';
+      if (!this.visible.has(id)) {
+        element.style.visibility = 'hidden';
+        element.style.opacity = '0';
+      }
     }
   }
 
