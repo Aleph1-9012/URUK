@@ -1,6 +1,7 @@
 ---
 // Plate I for a result whose front matter names a visual.
 import type { VisualKey } from '../../content/visuals';
+import PrimeWaves from './prime-waves/PrimeWaves.astro';
 import ThompsonBands from './thompson/ThompsonBands.astro';
 import UnitRuler from './unit-ruler/UnitRuler.astro';
 
@@ -9,9 +10,10 @@ interface Props {
 }
 
 const plates = {
+  'zero-free-strip': PrimeWaves,
   'unit-ruler': UnitRuler,
   'thompson-bands': ThompsonBands,
-} satisfies Record<VisualKey, typeof UnitRuler>;
+} satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];
 ---

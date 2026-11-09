@@ -10,6 +10,7 @@ link: https://arxiv.org/abs/2610.15483
 papers:
   - preprints/The-Quasi-Riemann-Hypothesis-September-30-2026/paper.pdf
   - preprints/The-Quasi-Riemann-Hypothesis-October-5-2026/paper2.pdf
+visual: zero-free-strip
 draft: false
 ---
 
