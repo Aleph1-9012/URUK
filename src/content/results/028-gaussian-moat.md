@@ -9,6 +9,7 @@ checked: 2026-11-02
 papers:
   - preprints/Bounded-Step-Walks-on-Gaussian-Primes-September-26-2026/paper.pdf
 draft: false
+visual: moat-walk
 ---
 
 Plot the Gaussian primes, the prime numbers of the complex plane, and they form a lattice of dots with eightfold symmetry, dense near the origin and thinning outward. In 1962 Basil Gordon asked, at the International Congress in Stockholm, whether one can walk from the origin to infinity stepping only on these dots, with every step shorter than some fixed length. Along the real axis the answer is no, because ordinary primes have arbitrarily long gaps; in the plane a walker can go around a gap, and the question stayed open for sixty-four years, with computer searches showing only that steps up to length $6$ do not get far. On 26 September 2026 OpenAI posted a paper claiming that for every fixed step length the walk is trapped, and more: the dots that can be reached from one another with steps of length at most $D$ come in finite clusters whose size is bounded by a number depending only on $D$. [1][2][3]

@@ -1,0 +1,153 @@
+---
+import Plate from '../../plate/Plate.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { nearbyClusters } from './math';
+import { CUES, FILM_DURATION, formatTime } from './story';
+import './moat-walk.css';
+
+const formula = (tex: string) => renderFormula(tex, false);
+
+const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+function subtitle(text: string): string {
+  const pieces: string[] = [];
+  let position = 0;
+
+  for (const match of text.matchAll(/\$([^$\n]+)\$/g)) {
+    pieces.push(escape(text.slice(position, match.index)));
+    pieces.push(`<span class="mwfilm-phrase">${formula(match[1] ?? '')}</span>`);
+    position = match.index + match[0].length;
+  }
+
+  pieces.push(escape(text.slice(position)));
+
+  return pieces.join('');
+}
+
+const labels = [
+  { id: 'gaussian-one', tex: String.raw`1+i` },
+  { id: 'gaussian-factors5', tex: String.raw`5=(2+i)(2-i)` },
+  { id: 'gaussian-factors13', tex: String.raw`13=(3+2i)(3-2i)` },
+  { id: 'factorial-gap', tex: String.raw`5!+2,\ldots,5!+5` },
+  { id: 'period-q', tex: String.raw`Q=5\times13=65` },
+  { id: 'period-bound', tex: String.raw`65^2=4{,}225` },
+  { id: 'step-count', tex: String.raw`K_D` },
+  { id: 'cluster-bound', tex: String.raw`B_D` },
+  { id: 'budget-capacity', tex: String.raw`\log K_D` },
+  { id: 'scale-cost', tex: String.raw`\ge c/\log T` },
+  { id: 'thinning-law', tex: String.raw`\propto1/\log r` },
+];
+
+const islands = nearbyClusters(100, 150);
+const stillPoints: { x: number; y: number }[] = [];
+const stillSegments: string[] = [];
+
+for (let index = 0; index < islands.parents.length; index++) {
+  const real = islands.coords[index * 2] ?? 0;
+  const imaginary = islands.coords[index * 2 + 1] ?? 0;
+
+  if (real * real + imaginary * imaginary > 10000) continue;
+
+  const x = 165 + real * 1.15;
+  const y = 137 - imaginary * 1.15;
+  stillPoints.push({ x, y });
+  const parent = islands.parents[index] ?? -1;
+
+  if (parent < 0) continue;
+
+  const fromReal = islands.coords[parent * 2] ?? 0;
+  const fromImaginary = islands.coords[parent * 2 + 1] ?? 0;
+
+  if (fromReal * fromReal + fromImaginary * fromImaginary > 10000) continue;
+
+  stillSegments.push(`M${165 + fromReal * 1.15} ${137 - fromImaginary * 1.15}L${x} ${y}`);
+}
+
+const stillLinks = stillSegments.join('');
+
+const computedRows = ['√2 · 100 · 11.7', '2 · 720 · 45.3', '√8 · 2,996 · 93.5', '√10 · 249,508 · 1,024'];
+---
+
+<Plate
+  caption="Gaussian primes with walks of bounded steps: computed moats for steps up to √10, a prime-free disk that a walk goes around, every cluster near the origin, the paper's periodic sieve computed for unit steps, and the claimed theorem that every cluster is finite."
+  leftOut="the withdrawn 2019 and 2024 claims; Erdős's 1977 attribution to Motzkin; the actual moats at √26 and 6, which are cited; Theorem 1.2 in full; the entropy enrichment, coverage transfer, common schedule, increment words and telescoping bound of Sections 4 to 8; Tao's entropy decrement; Eisenstein primes; the formal-conjectures note on norms versus distances. The information-budget drawing is schematic."
+>
+  <uruk-moat-walk>
+    <div class="mwfilm">
+      <div class="mwfilm-stage" data-film-viewport>
+        <canvas class="mwfilm-canvas" data-film-canvas role="img" aria-label="A film of Gaussian primes and bounded-step walks. Computed floods from one prime stop at moats, and a periodic sieve blocks unit-step walks. A separate dashed claim concerns every step length and every starting prime. Its status is unreviewed. A complete text transcript follows."></canvas>
+        <div class="mwfilm-still" aria-hidden="true">
+          <div class="mwfilm-still-field">
+            <svg viewBox="0 0 330 292" role="presentation">
+              <text x="165" y="16" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="16">GAUSSIAN PRIMES · STEP AT MOST 2</text>
+              <line x1="43" y1="137" x2="287" y2="137" stroke="var(--muted)" stroke-width=".5" />
+              <line x1="165" y1="20" x2="165" y2="254" stroke="var(--muted)" stroke-width=".5" />
+              <path d={stillLinks} fill="none" stroke="var(--ink)" stroke-width=".4" stroke-opacity=".5" />
+              {stillPoints.map((point) => <circle cx={point.x} cy={point.y} r=".52" fill="var(--ink)" />)}
+              <text x="165" y="272" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="14">{islands.count} CLUSTERS MEET RADIUS 100</text>
+              <text x="165" y="290" text-anchor="middle" fill="var(--muted)" font-family="var(--font-alegreya)" font-size="15">A computed window, not the whole plane.</text>
+            </svg>
+          </div>
+          <div class="mwfilm-still-dial">
+            <svg viewBox="0 0 100 145" role="presentation">
+              <text x="50" y="18" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="17">STEP</text>
+              <text x="50" y="38" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="17">AT MOST</text>
+              <circle cx="50" cy="83" r="32" fill="none" stroke="var(--blue)" stroke-width="1.4" stroke-dasharray="4 3" />
+              <text x="50" y="89" text-anchor="middle" fill="var(--blue)" font-family="var(--font-special-elite)" font-size="17">ANY D</text>
+              <text x="50" y="137" text-anchor="middle" fill="var(--blue)" font-family="var(--font-special-elite)" font-size="14">CLAIMED</text>
+            </svg>
+          </div>
+          <div class="mwfilm-still-ledger">
+            <svg viewBox="0 0 220 178" role="presentation">
+              <text x="110" y="14" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="14">FROM 1+i · COMPUTED</text>
+              <text x="110" y="32" text-anchor="middle" fill="var(--muted)" font-family="var(--font-special-elite)" font-size="12">STEP · PRIMES · REACH</text>
+              {computedRows.map((row, index) => <text x="110" y={50 + index * 17} text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="14">{row}</text>)}
+              <text x="110" y="121" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="13">√26 · 1998 · CITED</text>
+              <text x="110" y="137" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="13">6 · 2005 · CITED</text>
+              <rect x="12" y="145" width="196" height="31" fill="none" stroke="var(--blue)" stroke-width=".8" stroke-dasharray="3 2" />
+              <text x="110" y="157" text-anchor="middle" fill="var(--blue)" font-family="var(--font-special-elite)" font-size="12">EVERY D · EVERY START</text>
+              <text x="110" y="171" text-anchor="middle" fill="var(--blue)" font-family="var(--font-special-elite)" font-size="12">≤ B_D · HOW MANY: NOT GIVEN</text>
+            </svg>
+          </div>
+        </div>
+        <div class="mwfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => <span class="mwfilm-label mwfilm-label--data" data-label={label.id}><span set:html={formula(label.tex)} /></span>)}
+        </div>
+      </div>
+      <div class="mwfilm-subtitles" aria-hidden="true">
+        {CUES.map((cue, index) => <p class:list={['mwfilm-cue', { 'is-active': index === CUES.length - 1 }]} data-cue={index}><span set:html={subtitle(cue.text)} /><span class="mwfilm-citations"> {cue.sources.map((source) => `[${source}]`).join('')}</span></p>)}
+      </div>
+    </div>
+    <div class="mwfilm-controls" data-script-only>
+      <div class="mwfilm-buttons">
+        <button class="plate-button case-link case-link--tight" type="button" data-play><span data-play-label>Pause</span></button>
+        <p class="mwfilm-clock"><span data-film-clock>0:00 / {formatTime(FILM_DURATION)}</span></p>
+        <button class="plate-button case-link case-link--tight" type="button" data-film-restart>Restart</button>
+      </div>
+      <label class="visually-hidden" for="mwfilm-timeline">Film timeline. Arrow keys move one subtitle at a time.</label>
+      <input id="mwfilm-timeline" class="mwfilm-timeline" data-film-range type="range" min="0" max={FILM_DURATION} step="100" value="0" />
+      <div class="mwfilm-steps">
+        <button class="plate-button case-link case-link--tight" type="button" data-film-previous>Previous</button>
+        <p>Step through without motion</p>
+        <button class="plate-button case-link case-link--tight" type="button" data-film-next>Next</button>
+      </div>
+    </div>
+    <p class="visually-hidden" data-film-status aria-live="polite" aria-atomic="true"></p>
+    <details class="mwfilm-transcript">
+      <summary class="text-link">Read the film as text</summary>
+      <ol>{CUES.map((cue) => <li><h3>{cue.title}</h3><p><span set:html={subtitle(cue.text)} /> {cue.sources.map((source) => <> <a class="citation text-link" href={`#source-${source}`}>[{source}]</a></>)}</p></li>)}</ol>
+      <p class="mwfilm-method">How the film is made. A sieve of ordinary primes decides which lattice points are Gaussian primes. Away from the axes, a + bi is Gaussian prime exactly when a² + b² is ordinary prime. On an axis, the nonzero coordinate's absolute value must be an ordinary prime congruent to 3 modulo 4. Radius 40 contains 980 Gaussian primes: four of norm 2, 24 on the axes and 952 of the split kind. Every plotted prime is computed.</p>
+      <p class="mwfilm-method">The floods are breadth-first searches from 1 + i, joining primes at distance at most D. The first flood follows graph-distance layers from 1 + i. When D grows, a second breadth-first order expands from the previously reached cluster, so the visible flood resumes at its edge. These are graph layers, rather than circular distance fronts. The drawn links are search-tree edges; the search checks every allowed neighbour. Its closure establishes that no allowed step leaves the cluster. The drawing does not invent a circular prime-free annulus from its outer radius. Steps √2, 2 and √8 reach 100, 720 and 2,996 primes, with farthest radii about 11.70, 45.31 and 93.47. Step √10 reaches 249,508 primes with farthest radius about 1,024.35. The larger computation runs in a worker. Its binary lattice stipple follows the search order and is displayed without smoothing. Later frames show a computing state until their data arrives. Missing data is never replaced with an invented cluster. These are computations from one starting point. The √26 and 6 results are cited historical searches, not calculations made by this film.</p>
+      <p class="mwfilm-method">The prime-free disk is centred at 45 + 45i. Its nearest primes are at distance √13. A computed loop of Gaussian primes winds once around it using steps at most √8, demonstrating why a disk does not trap all walks. The real-axis example marks 122 through 125, which are 5! + 2 through 5! + 5, all composite. The later D = 2 field includes 833 closed clusters meeting radius 100. They close within radius 145; the picture is a finite window. The no-JavaScript still draws their spanning-tree links inside radius 100.</p>
+      <p class="mwfilm-method">The large flood is a binary lattice image. Each displayed device pixel samples the lattice point under it, using its search-arrival index. Occupied samples are opaque ink, shown without smoothing. Caching the periodic pattern and its fixed search trees keeps the sieve scene from rebuilding thousands of marks every frame.</p>
+      <p class="mwfilm-method">The thinning strip measures the share of lattice points that are Gaussian prime in first-quadrant annuli of width 100. The comparison curve is 2/(π ln r), labelled proportional to 1/log r. The measurements illustrate the density heuristic. They do not justify treating the primes as random, and do not prove that all walks stop.</p>
+      <p class="mwfilm-method">The periodic sieve is computed for unit steps using the ordinary primes 5 and 13 and both of their Gaussian factors. Divisibility by c ± di is tested by ac ± bd modulo c² + d². The kept lattice repeats with period 65, retaining 2,304 of the 4,225 points in each tile. A search on the torus tracks an integer lift of each residue. Reaching a residue at a different lift would detect an unbounded component; that never happens here. There are 243 clusters per tile and the largest has 580 points. Its period translates remain separate.</p>
+      <p class="mwfilm-method">Adding back the 16 Gaussian-prime associates excluded by this sieve gives Proposition 2.1's loose uniform bound 16 + 4 × 16 × 65² = 270,416. The true largest Gaussian-prime cluster for unit steps has only three points, which also follows from parity. This explicit small sieve works for unit steps; it is not the unknown sieve for every D asserted by the paper. The information-budget drawing, its fixed walk, sample times, jar and cost blocks are schematic, with no invented constants. The walk is fixed; randomness in the argument comes from sampled times and factor choices. Its claimed nonexplicit bound has no displayed numerical value.</p>
+      <p class="mwfilm-method">The ending follows the article's dated review evidence. MathWorld and the Erdős Problems wiki record the result as solved on formal evidence. Uruk's unreviewed label records that no named mathematician has said they checked the paper, and no outside replay is recorded. The finite computations shown here do not verify the claimed information argument.</p>
+    </details>
+  </uruk-moat-walk>
+</Plate>
+
+<script>
+  import './element';
+</script>

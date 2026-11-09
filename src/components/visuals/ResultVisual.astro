@@ -19,6 +19,7 @@ import UniqueRules from './unique-rules/UniqueRules.astro';
 import UnitRuler from './unit-ruler/UnitRuler.astro';
 import UnitLinks from './unit-links/UnitLinks.astro';
 import FactorTwo from './factor-two/FactorTwo.astro';
+import MoatWalk from './moat-walk/MoatWalk.astro';
 
 interface Props {
   visual: VisualKey;
@@ -43,6 +44,7 @@ const plates = {
   'gap-ladder': GapLadder,
   'unit-links': UnitLinks,
   'factor-two': FactorTwo,
+  'moat-walk': MoatWalk,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];
