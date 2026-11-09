@@ -11,10 +11,10 @@ const results = await visibleResults();
 const filters = ['under-review', 'unreviewed', 'approved', 'disputed'] as const;
 ---
 
-  <PageLayout title="All results · Uruk" active="results" showSearch showFooterOnPhone={false} floatingBackToTop={false}>
+  <PageLayout title="All results · Uruk" active="results" showSearch showFooterOnPhone={false}>
     <div class="menu-search case-link case-link--framed" slot="search" data-script-only>
       <span class="menu-icon menu-icon--search"><Icon name="search" /></span>
-      <input type="search" aria-label="Search results" placeholder="Search results" data-search autocomplete="off" />
+      <input type="search" aria-label="Search by paper title, topic or result number" placeholder="Search papers" data-search data-scroller autocomplete="off" />
       <button type="button" aria-label="Clear search" data-clear hidden><span class="menu-icon"><Icon name="clear" /></span></button>
     </div>
     <div class="menu-page">
@@ -37,23 +37,23 @@ const filters = ['under-review', 'unreviewed', 'approved', 'disputed'] as const;
         </div>
       </Roll>
       <p class="visually-hidden" role="status" aria-live="polite" data-result-count></p>
-      <section class="menu-index" data-result-index data-script-only>
-        <h2 data-result-count>{results.length} {results.length === 1 ? 'result' : 'results'}</h2>
-        {results.map(({ data }) => (
-          <div class="menu-index__row case-link case-link--row" data-index-family={data.family}>
-            <button type="button" class="menu-index__wind" data-wind>
-              <span class="menu-index__number">{data.family}</span>
-              <span class="menu-index__title" data-highlight>{data.title}</span>
-              <span class="menu-index__leader"></span>
-            </button>
-            <span class="menu-index__status"><StatusSign kind={statusKind(data.status)} />{data.status}</span>
-            <a class="menu-index__read" href={`/results/${data.family}/`} aria-label={`Read ${data.family}`}>Read <span class="menu-icon"><Icon name="right" /></span></a>
-          </div>
-        ))}
-      </section>
       <section class="menu-empty" data-no-results hidden>
-        <h2 data-result-count>No results</h2>
-        <p>Try a word from a question, a number or a field, or clear the search to unroll all {results.length}.</p>
+        <h2 data-result-count>No matching results</h2>
+        <p>Try another search or review status. To see all {results.length} results, clear the search and choose All.</p>
+      </section>
+      <section class="menu-index" data-result-index aria-labelledby="results-index-title">
+        <h2 id="results-index-title" data-result-count>All {results.length} {results.length === 1 ? 'result' : 'results'}</h2>
+        {results.map(({ data }) => (
+          <a class="menu-index__row case-link case-link--row" data-index-family={data.family} href={`/results/${data.family}/`}>
+            <span class="menu-index__label">
+              <span class="menu-index__number">{data.family}</span>
+              <span class="menu-index__title" data-highlight>{data.paperTitle}</span>
+              <span class="menu-index__leader"></span>
+            </span>
+            <span class="menu-index__status"><StatusSign kind={statusKind(data.status)} />{data.status}</span>
+            <span class="menu-index__read">Read <span class="menu-icon"><Icon name="right" /></span></span>
+          </a>
+        ))}
       </section>
       <p class="menu-phone-credit" data-roll-footnote>Seal impression along the roll: {SEAL_CREDIT.text}</p>
     </div>

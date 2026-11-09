@@ -175,7 +175,15 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
   }
 
   @media (max-width: 47.999rem) {
-    .site-footer--hidden-on-phone {
+    /* Keep the floating control available when the menu's footer content is hidden. */
+    .site-footer--hidden-on-phone,
+    .site-footer--hidden-on-phone .site-footer__bottom {
+      display: contents;
+    }
+
+    .site-footer--hidden-on-phone > :not(.site-footer__bottom),
+    .site-footer--hidden-on-phone .site-footer__bottom > img,
+    .site-footer--hidden-on-phone :global(.back-to-top__rest) {
       display: none;
     }
 

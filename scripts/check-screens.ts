@@ -23,7 +23,7 @@ const PREVIEW_HOST = '127.0.0.1';
 const CHROMIUM_PATH = '/usr/bin/chromium';
 
 type LayoutFailure = {
-  check: 'A' | 'B' | 'C' | 'D';
+  check: 'A' | 'B' | 'C' | 'D' | 'E';
   path: string;
   sizes: string;
 };
@@ -350,6 +350,21 @@ async function inspectPage(page: Page): Promise<LayoutResult> {
           check: 'C',
           path: selectorPath(element),
           sizes: `rect=${rect.left.toFixed(1)}..${rect.right.toFixed(1)} window=${window.innerWidth} size=${rect.width.toFixed(1)}x${rect.height.toFixed(1)}`,
+        });
+      }
+    }
+
+    const menu = document.querySelector('uruk-menu');
+
+    if (menu) {
+      const cards = Array.from(menu.querySelectorAll<HTMLElement>('.roll-card:not([hidden])'), (node) => node.dataset.family);
+      const rows = Array.from(menu.querySelectorAll<HTMLElement>('[data-index-family]:not([hidden])'), (node) => node.dataset.indexFamily);
+
+      if (cards.join(',') !== rows.join(',')) {
+        failures.push({
+          check: 'E',
+          path: 'uruk-menu [data-result-index]',
+          sizes: `Filter mismatch: roll=${cards.join(',')} index=${rows.join(',')}`,
         });
       }
     }

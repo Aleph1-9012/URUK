@@ -9,10 +9,23 @@ test('the current result is centred where possible and clamped at both ends', ()
   expect(initialCardIndex(1, 5, 2)).toBe(0);
 });
 
-test('shared menu links retain query and status and match all query words', () => {
-  const item = { family: '158', topic: 'Chromatic number of the plane', title: 'How many colours?', status: 'under-review' };
+test('search matches paper titles, questions, topics and numbers while retaining review filters', () => {
+  const item = {
+    family: '158',
+    topic: 'Chromatic number of the plane',
+    title: 'How many colours?',
+    paperTitle: 'The Euclidean plane is not five-colorable',
+    status: 'under-review',
+  };
+
   expect(readSearch('?q=158+COLOUR&status=under-review')).toEqual({ query: '158 COLOUR', status: 'under-review' });
+  expect(readSearch('?q=Euclidean+plane&status=under-review')).toEqual({ query: 'Euclidean plane', status: 'under-review' });
+  expect(matches(item, item.paperTitle, '')).toBe(true);
+  expect(matches(item, 'EUCLIDEAN 158', 'under-review')).toBe(true);
+  expect(matches(item, 'chromatic', '')).toBe(true);
   expect(matches(item, '158 COLOUR', 'under-review')).toBe(true);
+  expect(matches(item, 'Euclidean collatz', '')).toBe(false);
+  expect(matches(item, 'Euclidean', 'approved')).toBe(false);
   expect(matches(item, 'colour collatz', '')).toBe(false);
   expect(matches(item, 'colour', 'approved')).toBe(false);
   expect(readSearch('?status=made-up').status).toBe('');

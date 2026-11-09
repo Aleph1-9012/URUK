@@ -22,20 +22,18 @@ uruk-menu { display: block; }
 .menu-filters button:disabled::before, .menu-filters button:disabled::after { display: none; }
 
 .menu-index, .menu-empty { padding: 56px var(--content-left) 18px calc(var(--roll-inset) + 60px + var(--roll-lead)); }
+.menu-index { padding-right: max(var(--content-left), 120px); }
 .menu-index h2, .menu-empty h2 { color: var(--muted); font: .6875rem/1.2 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
 .menu-index h2 { margin-bottom: 8px; }
 .menu-index__row { align-items: center; color: var(--ink); display: flex; flex-wrap: wrap; font: .75rem/1.2 var(--font-special-elite); gap: 4px 16px; padding: 9px 0; }
-.menu-index__wind { align-items: center; background: transparent; border: 0; color: inherit; cursor: pointer; display: flex; flex: 1 1 320px; font: inherit; gap: 16px; min-width: 0; padding: 0; text-align: left; }
-.menu-index__wind:focus-visible, .menu-index__read:focus-visible { outline: none; }
+.menu-index__label { align-items: center; display: flex; flex: 1 1 320px; gap: 16px; min-width: 0; }
 .menu-index__number { color: var(--muted); flex: none; width: 40px; }
 .menu-index__title { font: italic 1.25rem/1.35 var(--font-alegreya); min-width: 0; overflow-wrap: anywhere; }
 .menu-index__leader { align-self: flex-end; border-bottom: 1px dashed var(--muted); flex: 1 1 8px; margin-bottom: 6px; min-width: 8px; }
 .menu-index__status, .menu-index__read { align-items: center; color: var(--ink); display: inline-flex; flex: none; text-decoration: none; text-transform: uppercase; }
 .menu-index__status { gap: 8px; margin-left: auto; }
 .menu-index__read { gap: 6px; }
-.menu-index__row:has(:focus-visible)::before { border-color: var(--blue); border-width: 2px; transform: scaleX(1); transition: none; }
-.menu-index__row:has(:focus-visible)::after { border-color: var(--blue); border-width: 2px; transform: scaleY(1); transition: none; }
-.menu-index__read:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+.menu-index__row:focus-visible .menu-index__read { text-decoration: underline; text-underline-offset: 3px; }
 
 .menu-empty h2 { margin-bottom: 8px; }
 .menu-empty p { color: var(--muted); font: italic 1.25rem/1.45 var(--font-alegreya); }
@@ -49,5 +47,5 @@ mark { background: transparent; color: var(--blue); text-decoration: underline; 
   .menu-index { display: none; }
   .menu-empty { padding: 28px 24px 24px; }
   .menu-empty p { font-size: 1.125rem; line-height: 1.4375rem; }
-  .menu-phone-credit { color: var(--muted); display: block; font: .6875rem/1.4 var(--font-special-elite); margin-top: auto; padding: 16px 24px 7px; }
+  .menu-phone-credit { color: var(--muted); display: block; font: .6875rem/1.4 var(--font-special-elite); margin-top: auto; padding: 16px 84px 7px 24px; }
 }

@@ -126,15 +126,6 @@ class UrukRoll extends HTMLElement {
     this.measure();
   }
 
-  reveal(family: string): void {
-    const card = this.cards.find((item) => item.dataset.family === family);
-
-    if (card && !card.hidden) {
-      card.scrollIntoView({ block: 'nearest', inline: 'start', behavior: this.behavior() });
-      card.focus({ preventScroll: true });
-    }
-  }
-
   private behavior(): ScrollBehavior {
     return matchMedia(REDUCED_MOTION).matches ? 'instant' : 'smooth';
   }

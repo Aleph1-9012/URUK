@@ -1,11 +1,11 @@
-type SearchItem = { family: string; topic: string; title: string; status: string };
+type SearchItem = { family: string; topic: string; title: string; paperTitle: string; status: string };
 
 function queryWords(query: string): string[] {
   return query.toLocaleLowerCase('en').trim().split(/\s+/u).filter(Boolean);
 }
 
 export function matches(item: SearchItem, query: string, status: string): boolean {
-  const text = `${item.family} ${item.topic} ${item.title}`.toLocaleLowerCase('en');
+  const text = `${item.family} ${item.topic} ${item.title} ${item.paperTitle}`.toLocaleLowerCase('en');
 
   return (status === '' || status === item.status) && queryWords(query).every((word) => text.includes(word));
 }

@@ -1,7 +1,7 @@
 import { highlight, matches, readSearch } from './matching';
 
 const ROLL_HELP = 'Drag the roll or scroll sideways. Results run in number order.';
-const INDEX_HELP = 'Choose a line to wind the roll to it.';
+const INDEX_HELP = 'Choose a result to read its page.';
 
 class UrukMenu extends HTMLElement {
   private events: AbortController | undefined;
@@ -28,9 +28,11 @@ class UrukMenu extends HTMLElement {
     const buttons = this.querySelectorAll<HTMLButtonElement>('[data-filter]');
     const cards = roll.cards.map((node) => ({
       node,
+      indexRow: this.querySelector<HTMLElement>(`[data-index-family="${node.dataset.family}"]`),
       family: node.dataset.family ?? '',
       topic: node.dataset.topic ?? '',
       title: node.dataset.title ?? '',
+      paperTitle: node.dataset.paperTitle ?? '',
       status: node.dataset.status ?? '',
     }));
     const highlights = Array.from(this.querySelectorAll<HTMLElement>('[data-highlight]'), (node) => ({ node, text: node.textContent ?? '' }));
@@ -49,14 +51,12 @@ class UrukMenu extends HTMLElement {
       for (const item of cards) {
         item.node.hidden = !matches(item, state.query, state.status);
 
-        if (!item.node.hidden) {
-          count += 1;
+        if (item.indexRow) {
+          item.indexRow.hidden = item.node.hidden;
         }
 
-        const row = this.querySelector<HTMLElement>(`[data-index-family="${item.family}"]`);
-
-        if (row) {
-          row.hidden = item.node.hidden;
+        if (!item.node.hidden) {
+          count += 1;
         }
       }
 
@@ -71,8 +71,8 @@ class UrukMenu extends HTMLElement {
       }
 
       const found = `${count} ${count === 1 ? 'result' : 'results'}`;
-      const scope = query ? `for “${query}”` : status;
-      const description = count === 0 ? `No results ${scope}` : active ? `${found} ${scope}` : found;
+      const scope = `${status}${query ? ` for “${query}”` : ''}`.trim();
+      const description = count === 0 ? `No matching results ${scope}` : active ? `${found} ${scope}` : `All ${found}`;
 
       for (const label of this.querySelectorAll<HTMLElement>('[data-result-count]')) {
         label.textContent = description;
@@ -80,14 +80,14 @@ class UrukMenu extends HTMLElement {
 
       if (slot && slotNote) {
         slot.hidden = active && count > 0;
-        slotNote.textContent = count > 0 ? unwritten : query ? `Nothing on the roll asks about “${query}”.` : `Nothing on the roll is ${status}.`;
+        slotNote.textContent = count > 0 ? unwritten : query ? `No papers on the roll match “${query}”.` : `Nothing on the roll is ${status}.`;
       }
 
       roll.toggleAttribute('data-filtered', active);
       roll.toggleAttribute('data-empty', count === 0);
       roll.querySelector('[data-roll-heading]')?.replaceChildren(description);
-      this.querySelector('[data-result-index]')?.toggleAttribute('hidden', count === 0);
       this.querySelector('[data-no-results]')?.toggleAttribute('hidden', count !== 0);
+      this.querySelector('[data-result-index]')?.toggleAttribute('hidden', count === 0);
       this.querySelector('[data-clear]')?.toggleAttribute('hidden', state.query === '');
 
       const help = roll.querySelector<HTMLElement>('[data-roll-help]');
@@ -129,10 +129,6 @@ class UrukMenu extends HTMLElement {
         state.status = button.dataset.filter ?? '';
         update();
       }, { signal });
-    }
-
-    for (const row of this.querySelectorAll<HTMLElement>('[data-index-family]')) {
-      row.querySelector('[data-wind]')?.addEventListener('click', () => roll.reveal(row.dataset.indexFamily ?? ''), { signal });
     }
 
     window.addEventListener('popstate', () => {

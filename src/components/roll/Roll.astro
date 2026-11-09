@@ -37,12 +37,13 @@ const images = `--seal: url('${seal.src}'); --roller-desktop: url('${desktopRoll
                   data-status={statusKind(data.status)}
                   data-topic={data.topic}
                   data-title={data.title}
+                  data-paper-title={data.paperTitle}
                   data-neighbor={Math.abs(index - currentIndex) <= 1 ? '' : undefined}
                   aria-current={data.family === current ? 'page' : undefined}
                 >
                   <span class="roll-card__topic" data-highlight>{data.family} · {data.topic}</span>
                   <span class="roll-card__number" aria-hidden="true">{data.family}</span>
-                  <span class="roll-card__question" data-highlight>{data.title}</span>
+                  <span class="roll-card__title" data-highlight>{data.paperTitle}</span>
                   <span class="roll-card__status"><StatusSign kind={statusKind(data.status)} />{data.status}</span>
                   <span class="roll-card__read">
                     {current && index === currentIndex - 1 && <span class="roll-icon"><Icon name="left" /></span>}
