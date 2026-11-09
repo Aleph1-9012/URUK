@@ -10,6 +10,7 @@ papers:
   - preprints/The-complete-Crouzeix-theorem-September-23-2026/paper.pdf
   - preprints/A-direct-proof-of-the-complete-Crouzeix-inequality-September-26-2026/paper.pdf
 draft: false
+visual: factor-two
 ---
 
 Every square matrix comes with a region of the complex plane called its numerical range. In 2004 Michel Crouzeix conjectured that this region controls the size of any polynomial in the matrix, to within a factor of two. Twenty-two years later, in the summer of 2026, that conjecture was proved, more than once, by people working with AI models, and the first of those proofs has been checked by Crouzeix himself. The complete Crouzeix conjecture is the stronger statement that the same factor two survives when the polynomial's coefficients are matrices too, in any dimension. That is what OpenAI claimed on 23 September 2026, in two papers with different proofs, and extended from matrices to bounded operators on arbitrary Hilbert spaces. [1][2][9]

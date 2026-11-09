@@ -1,0 +1,76 @@
+uruk-factor-two { display: block; }
+
+.result-opening:has(uruk-factor-two) {
+  grid-template-columns: minmax(0, 920fr) minmax(0, 368fr);
+  gap: 32px;
+}
+
+.ftfilm { border: 1px solid var(--muted); background: var(--paper); }
+.ftfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.ftfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-factor-two[data-ready] .ftfilm-canvas { visibility: visible; }
+.ftfilm-formulas { position: absolute; inset: 0; pointer-events: none; }
+.ftfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
+.ftfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+
+.ftfilm-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
+.plate .ftfilm-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
+.ftfilm-cue.is-active { visibility: visible; }
+.ftfilm-phrase { white-space: nowrap; }
+.ftfilm-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
+
+.ftfilm-controls { padding-top: 16px; }
+uruk-factor-two:not([data-ready]) .ftfilm-controls { display: none; }
+.ftfilm-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.plate .ftfilm-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
+.ftfilm-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; }
+.ftfilm-timeline::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.ftfilm-timeline::-moz-range-thumb { width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.ftfilm-timeline:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.ftfilm-steps { display: none; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; }
+.plate .ftfilm-steps p { margin: 0; color: var(--muted); font: italic .875rem/1.4 var(--font-alegreya); text-align: center; }
+.ftfilm-controls button:disabled { opacity: .45; cursor: default; }
+
+.ftfilm-transcript { margin-top: 18px; }
+.ftfilm-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
+.ftfilm-transcript ol { padding-left: 22px; margin-top: 20px; }
+.ftfilm-transcript li + li { margin-top: 20px; }
+.plate .ftfilm-transcript h3 { margin-bottom: 8px; font: italic 1.25rem/1.35 var(--font-alegreya); }
+.plate .ftfilm-transcript p { font: 1rem/1.55 var(--font-alegreya); }
+.plate .ftfilm-transcript p + p { margin-top: 8px; }
+.plate .ftfilm-method { margin-top: 20px; color: var(--muted); }
+
+
+.ftfilm-still { position: absolute; inset: 3% 4%; display: grid; grid-template-columns: 1.1fr 1fr; grid-template-rows: minmax(0, 62fr) minmax(0, 38fr); align-items: center; gap: 8px 18px; }
+uruk-factor-two[data-ready] .ftfilm-still { display: none; }
+.ftfilm-still-plane { grid-row: 1 / 3; }
+.ftfilm-still-plane, .ftfilm-still-stretch, .ftfilm-still-scale { min-width: 0; min-height: 0; height: 100%; }
+.ftfilm-still svg { display: block; width: 100%; height: 100%; }
+.ftfilm-label--matrix { font-size: 1.0625rem; }
+.ftfilm-label--wide { font-size: .9375rem; }
+
+@media (max-width: 74.999rem) {
+  .result-opening:has(uruk-factor-two) { grid-template-columns: minmax(0, 1fr); }
+  .result-opening:has(uruk-factor-two) .result-introduction { max-width: 800px; }
+}
+
+@container plate (max-width: 599px) {
+  .ftfilm-stage { aspect-ratio: 4 / 5; }
+  .ftfilm-subtitles { padding: 12px 14px 16px; }
+  .plate .ftfilm-cue { font-size: 1.0625rem; }
+  .ftfilm-label { font-size: .9375rem; }
+  .ftfilm-still { inset: 2% 4%; grid-template-columns: 1fr; grid-template-rows: 45% 30% 25%; gap: 0; }
+  .ftfilm-still-plane { grid-row: auto; }
+  .ftfilm-label--matrix { font-size: .8125rem; }
+  .ftfilm-label--wide { font-size: .8125rem; }
+  .ftfilm-still svg { height: 100%; }
+}
+
+@media (max-width: 47.999rem) {
+  .result-opening:has(uruk-factor-two) .result-introduction > .folio-top__copy { order: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  uruk-factor-two [data-play] { display: none; }
+  .ftfilm-steps { display: flex; }
+}
