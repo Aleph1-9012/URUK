@@ -1,0 +1,121 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { BOUND_EXPONENTS, ETA, parabolaMinimum, parabolaPoints, type Point } from './math';
+import { CUES, TIMELINE } from './story';
+import './smallest-triangles.css';
+
+const labels = [
+  { id: 'column-area', tex: String.raw`\operatorname{Area}=\frac{|\det A|}{2A_{31}A_{32}A_{33}}` },
+  { id: 'claim', tex: String.raw`\text{CLAIMED}\quad c\,n^{-2+\eta}` },
+  { id: 'eta-value', tex: String.raw`\eta=3.18\times10^{-236}` },
+  { id: 'zoom-10', tex: String.raw`\text{ZOOM }\times10^{10}` },
+  { id: 'zoom-100', tex: String.raw`\text{ZOOM }\times10^{100}` },
+  { id: 'zoom-200', tex: String.raw`\text{ZOOM }\times10^{200}` },
+  { id: 'eta-digits', tex: String.raw`n^{\eta}=2\ \text{needs about }10^{235}\ \text{digits}` },
+];
+
+const parabola = parabolaPoints();
+
+const minimum = parabolaMinimum();
+
+function stillPoint(point: Point): Point {
+  return { x: 38 + point.x * 332, y: 40 + (1 - point.y) * 332 };
+}
+
+const points = parabola.map(stillPoint);
+
+const triangle = minimum.triple.map((index) => {
+  const point = points[index];
+
+  if (!point) throw new Error('A minimum triangle refers to three parabola points.');
+
+  return point;
+});
+
+const trianglePath = triangle.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x} ${point.y}`).join('') + 'Z';
+
+const centre = {
+  x: triangle.reduce((sum, point) => sum + point.x, 0) / 3,
+  y: triangle.reduce((sum, point) => sum + point.y, 0) / 3,
+};
+
+const rulerX = (exponent: number) => 32 + (exponent + 2) * 450;
+---
+
+<Plate
+  caption="Thirteen points placed at random, on a grid, by deleting from 26 random points, and on Erdős's parabola, with the smallest triangle found each time; the exponent ruler with forty years of bounds and the claim's invisible η; and the integer-column and finite-field ideas of the proof on the same parabola."
+  leftOut="the field norm, base-B digits and carries of Lemma 3.3; the special-linear mixing and lattice counts of Sections 2 and 4; the quadratic surface at the prime q of Section 5; the collinear count of Proposition 7.1; the parameter bookkeeping and interpolation to every n; the Ellmann and Agama preprints; exact values of Δ(n) for small n; applications. The second-prime and repeated-label drawings, and the magnifier's scale, are schematic."
+>
+  <uruk-smallest-triangles class="film-host">
+    <div class="stfilm">
+      <div class="stfilm-stage" data-film-viewport>
+        <canvas class="stfilm-canvas" data-film-canvas role="img" aria-label="Thirteen points move between random, grid, deletion and finite-field parabola placements while their smallest triangle is recomputed. An exponent ruler compares known bounds with an unreviewed claimed improvement too small to separate from minus two at the illustrated scales. A full text transcript follows."></canvas>
+        <div class="stfilm-still" aria-hidden="true">
+          <div class="stfilm-still-square">
+            <svg viewBox="0 0 420 420" role="presentation">
+              <defs>
+                <pattern id="stfilm-still-sliver" patternUnits="userSpaceOnUse" width="5" height="5"><path d="M0 5L5 0" stroke="var(--ink)" stroke-width=".8" /></pattern>
+              </defs>
+              <text x="210" y="23" text-anchor="middle" font-size="24">PARABOLA MOD 13</text>
+              <rect x="38" y="40" width="332" height="332" fill="none" stroke="var(--ink)" stroke-width="1.4" />
+              <path d={trianglePath} fill="url(#stfilm-still-sliver)" stroke="var(--ink)" stroke-width="1.3" />
+              {points.map((point, index) => <g><circle cx={point.x} cy={point.y} r={minimum.triple.includes(index) ? 4.1 : 3.1} fill="var(--ink)" />{minimum.triple.includes(index) && <text x={point.x - 10} y={point.y + 21} text-anchor="end" font-size="23">{index}</text>}</g>)}
+              <path d={`M${centre.x} ${centre.y}L165 395H187`} fill="none" stroke="var(--muted)" stroke-width="1.1" />
+              <text x="195" y="404" font-size="24">Δ = {minimum.numerator}/{minimum.denominator}</text>
+            </svg>
+          </div>
+          <div class="stfilm-still-readout">
+            <svg viewBox="0 0 520 100" role="presentation">
+              <text x="260" y="22" text-anchor="middle" font-size="22">SMALLEST TRIPLE: {minimum.triple.join(', ')}</text>
+              <text x="260" y="52" text-anchor="middle" font-size="23">Δ = 1/338 = 1/(2·13²)</text>
+              <text x="260" y="84" text-anchor="middle" font-size="21">INTEGER DETERMINANTS: |DET| ≥ 1</text>
+            </svg>
+          </div>
+          <div class="stfilm-still-ruler">
+            <svg viewBox="0 0 520 190" role="presentation">
+              <defs>
+                <pattern id="stfilm-still-open" patternUnits="userSpaceOnUse" width="8" height="8"><path d="M0 8L8 0" stroke="var(--ink)" stroke-width=".6" stroke-opacity=".24" /></pattern>
+              </defs>
+              <text x="260" y="21" text-anchor="middle" font-size="20">EXPONENT x IN Δ(n) ≈ n^x</text>
+              <rect x="32" y="52" width={rulerX(BOUND_EXPONENTS.cpz2025) - 32} height="29" fill="url(#stfilm-still-open)" />
+              <path d="M32 81H482" fill="none" stroke="var(--ink)" stroke-width="1.3" />
+              <rect x="154" y="49" width="134" height="25" fill="var(--paper)" /><text x="221" y="68" text-anchor="middle" font-size="19">OPEN RANGE</text>
+              {[BOUND_EXPONENTS.heilbronn, BOUND_EXPONENTS.cpz2025, BOUND_EXPONENTS.roth].map((exponent) => <line x1={rulerX(exponent)} x2={rulerX(exponent)} y1="74" y2="91" stroke="var(--ink)" stroke-width="1.4" />)}
+              <path d="M32 62V95" stroke="var(--blue)" stroke-width="1.8" stroke-dasharray="4 3" />
+              <text x="32" y="116" text-anchor="middle" font-size="22">−2</text>
+              <text x={rulerX(BOUND_EXPONENTS.cpz2025)} y="116" text-anchor="middle" font-size="22">−7/6</text>
+              <text x="482" y="116" text-anchor="middle" font-size="22">−1</text>
+              <text x="32" y="139" font-size="17">× log n · 1982</text>
+              <text x="32" y="162" class="stfilm-still-claim" font-size="20">CLAIMED: c n^(−2+η)</text>
+              <text x="32" y="185" class="stfilm-still-claim" font-size="17">η ≈ 3.18 × 10⁻²³⁶ · TICK REMAINS AT −2</text>
+            </svg>
+          </div>
+        </div>
+        <div class="stfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => <span class="stfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="stfilm-timeline" timeline={TIMELINE} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The opening coordinates are the full-precision output of Python random.Random(191). The twenty-six-point alteration pool instead uses random.Random(192). The original thirteen points move into that second pool's first thirteen positions before another thirteen arrive. They do not remain at the opening random coordinates. The mathematical data and independent reference calculations are in 191-checks/heilbronn.py.</p>
+      <p class="film-method">Every displayed minimum is recomputed from the actual point positions during motion. Only points inside the unit square are active; deleted points in the tray are excluded. The algorithm checks every active triple by its signed determinant and takes half its absolute value. Three collinear points give area zero. The opening minimum is about 0.000222 on points 0, 10 and 12. The grid minimum is exactly zero.</p>
+      <p class="film-method">The alteration threshold is 1/(2·13²) = 1/338. The twenty-six-point pool has 78 triples below it. The reference deletion scans the original lexicographic list of those triples. For each first unhit triple, it chooses among that triple's three vertices using incidence counts in the original full bad-triple list, breaking a tie by the higher index. Those counts are not updated after a deletion. Thirteen points are removed and thirteen remain, with minimum about 0.003157. The final arithmetic-sampling picture reuses this deletion only as an illustration; the paper samples its columns differently.</p>
+      <p class="film-method">The parabola has points (i, i² mod 13)/13 for i from 0 through 12. Its determinants are calculated on the integer coordinates before scaling, so exact ties do not depend on floating-point subtraction. Every integer determinant is nonzero, with absolute values from 1 to 139. The signed determinant on the first minimum triple 0, 1, 4 is −1, congruent to (1 − 0)(4 − 0)(4 − 1) = 12 modulo 13. Thus the minimum area is exactly 1/338. The displayed field of thirteen illustrates the idea, while the paper uses a field with r⁴¹ elements and a norm-and-digit construction that is omitted.</p>
+      <p class="film-method">The integer columns (3, 5, 13), (7, 2, 17) and (11, 9, 20) project to their first two coordinates divided by their positive third coordinate. Their determinant is 429 and their triangle area is 429/(2·13·17·20) = 33/680. The third coordinates lie between N and 2N for N = 13. This exact example explains the area formula, not the paper's arithmetic sampling estimates. A repeated field label is an exceptional condition that permits a bad triple; it does not make every such triple bad. The separate prime for determinant zero is schematic.</p>
+      <p class="film-method">The exponent ruler is linear from −2 to −1. The 1982 logarithmic factor stays attached to −2 because it changes no fixed exponent. The 2023 step of 1/2000 is shown in its own disclosed inset. The exact BigInt parameters give η ≈ {ETA.value.toExponential(3)}. Adding η to −2 rounds to −2 in ordinary floating-point arithmetic, and even the illustrated magnifications cannot separate the two marks. The magnifier's scale is schematic; no visible gap is invented. The factor n^η reaches two only when n has about {ETA.digitsForTwo.toExponential(1)} decimal digits, roughly 10²³⁵.</p>
+      <p class="film-method">The thirteen-point constructions do not supply the theorem's unknown constant c or its sufficiently-large threshold. The claimed lower bound concerns every sufficiently large n and is not a practical improvement for the points drawn here. The second-prime icon and repeated-label link are schematic. The film omits the mixing, lattice counts, determinant-zero estimate and interpolation and does not verify the claimed proof.</p>
+      <p class="film-method">Review statements follow the article's dated evidence. The 68-line Lean comparator concerns an unbounded sequence of sizes, a weaker scope than the paper's statement for every sufficiently large n. It is not in the release's catalogue. A formal statement or kernel check is not counted as independent human approval.</p>
+    </FilmTranscript>
+  </uruk-smallest-triangles>
+</Plate>
+
+<script>
+  import './element';
+</script>

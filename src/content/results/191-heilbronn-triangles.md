@@ -9,6 +9,7 @@ checked: 2026-11-02
 papers:
   - preprints/A-power-improvement-in-the-Heilbronn-triangle-lower-bound-September-25-2026/main.pdf
 draft: false
+visual: smallest-triangles
 ---
 
 Put $n$ points in a unit square. Some three of them form the smallest triangle; call its area $\Delta$. Hans Heilbronn asked, around 1950, how large $\Delta$ can be made by placing the points well. A grid wastes points on straight lines, where the area is zero. Random placement gives about $1/n^{2}$, and a trick with primes does the same; Heilbronn conjectured that nothing does better by more than a constant factor. In 1982 Komlós, Pintz and Szemerédi beat that by a factor of $\log n$, and for forty years the belief was that this was the truth up to such slow factors: $\Delta$ could not exceed $n^{-2+\epsilon}$ for any fixed $\epsilon>0$. On 25 September 2026 OpenAI posted a paper claiming that this belief is wrong: there is a fixed power saving, points can be placed so that every triangle has area at least $c\,n^{-2+\eta}$ for an absolute $\eta>0$. The paper calls $\eta$ "fixed but extremely small", and it is: about $3\times10^{-236}$. [1][2][3]
