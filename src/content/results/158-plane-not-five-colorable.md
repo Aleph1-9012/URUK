@@ -8,6 +8,7 @@ status: under review
 checked: 2026-10-17
 papers:
   - preprints/The-Euclidean-plane-is-not-five-colorable-September-23-2026/paper.pdf
+visual: five-colours
 draft: false
 ---
 
