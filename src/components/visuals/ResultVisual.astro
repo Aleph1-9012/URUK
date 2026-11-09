@@ -17,6 +17,7 @@ import CurveBudget from './curve-budget/CurveBudget.astro';
 import GridProducts from './grid-products/GridProducts.astro';
 import UniqueRules from './unique-rules/UniqueRules.astro';
 import UnitRuler from './unit-ruler/UnitRuler.astro';
+import UnitLinks from './unit-links/UnitLinks.astro';
 
 interface Props {
   visual: VisualKey;
@@ -39,6 +40,7 @@ const plates = {
   'five-colours': FiveColours,
   'trapped-waves': TrappedWaves,
   'gap-ladder': GapLadder,
+  'unit-links': UnitLinks,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];

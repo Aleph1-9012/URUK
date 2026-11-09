@@ -9,6 +9,7 @@ checked: 2026-10-15
 papers:
   - preprints/A-power-saving-for-planar-unit-distances-September-23-2026/paper.pdf
 draft: false
+visual: unit-links
 ---
 
 Paul Erdős asked this in 1946, and it became one of the best known problems in combinatorial geometry: simple to state, open for eighty years, with a \$500 prize attached. The upper bound of Spencer, Szemerédi and Trotter from 1984, that the count is at most a constant times $n^{4/3}$, was never improved, and there was a known reason why the standard methods could not improve it. In May 2026 an OpenAI model produced a construction that overturned Erdős's own guess about the answer, a result nine mathematicians then checked and wrote up. On 23 September 2026 OpenAI posted a separate paper claiming the other direction: that the exponent $\tfrac43$ can be lowered by some fixed amount. [1][2][3]

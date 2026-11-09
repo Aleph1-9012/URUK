@@ -1,0 +1,74 @@
+uruk-unit-links { display: block; }
+
+.result-opening:has(uruk-unit-links) {
+  grid-template-columns: minmax(0, 920fr) minmax(0, 368fr);
+  gap: 32px;
+}
+
+.ulfilm { border: 1px solid var(--muted); background: var(--paper); }
+.ulfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.ulfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-unit-links[data-ready] .ulfilm-canvas { visibility: visible; }
+.ulfilm-formulas { position: absolute; inset: 0; pointer-events: none; }
+.ulfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
+.ulfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.ulfilm-label--blue { color: var(--blue); }
+.ulfilm-label--small { font-size: .9375rem; }
+
+.ulfilm-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
+.plate .ulfilm-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
+.ulfilm-cue.is-active { visibility: visible; }
+.ulfilm-phrase { white-space: nowrap; }
+.ulfilm-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
+
+.ulfilm-controls { padding-top: 16px; }
+uruk-unit-links:not([data-ready]) .ulfilm-controls { display: none; }
+.ulfilm-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.plate .ulfilm-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
+.ulfilm-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; }
+.ulfilm-timeline::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.ulfilm-timeline::-moz-range-thumb { width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.ulfilm-timeline:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.ulfilm-steps { display: none; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; }
+.plate .ulfilm-steps p { margin: 0; color: var(--muted); font: italic .875rem/1.4 var(--font-alegreya); text-align: center; }
+.ulfilm-controls button:disabled { opacity: .45; cursor: default; }
+
+.ulfilm-transcript { margin-top: 18px; }
+.ulfilm-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
+.ulfilm-transcript ol { padding-left: 22px; margin-top: 20px; }
+.ulfilm-transcript li + li { margin-top: 20px; }
+.plate .ulfilm-transcript h3 { margin-bottom: 8px; font: italic 1.25rem/1.35 var(--font-alegreya); }
+.plate .ulfilm-transcript p { font: 1rem/1.55 var(--font-alegreya); }
+.plate .ulfilm-transcript p + p { margin-top: 8px; }
+.plate .ulfilm-method { margin-top: 20px; color: var(--muted); }
+
+
+.ulfilm-still { position: absolute; inset: 4% 4%; display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: 18px; }
+uruk-unit-links[data-ready] .ulfilm-still { display: none; }
+.ulfilm-still-sheet, .ulfilm-still-exponent { min-width: 0; }
+.ulfilm-still svg { display: block; width: 100%; height: auto; }
+
+@media (max-width: 74.999rem) {
+  .result-opening:has(uruk-unit-links) { grid-template-columns: minmax(0, 1fr); }
+  .result-opening:has(uruk-unit-links) .result-introduction { max-width: 800px; }
+}
+
+@container plate (max-width: 599px) {
+  .ulfilm-stage { aspect-ratio: 4 / 5; }
+  .ulfilm-subtitles { padding: 12px 14px 16px; }
+  .plate .ulfilm-cue { font-size: 1.0625rem; }
+  .ulfilm-label { font-size: .9375rem; }
+  .ulfilm-label--small { font-size: .8125rem; }
+  .ulfilm-still { inset: 2% 4%; grid-template-columns: 1fr; grid-template-rows: 57% 43%; gap: 0; }
+  .ulfilm-still-sheet, .ulfilm-still-exponent { height: 100%; }
+  .ulfilm-still svg { height: 100%; }
+}
+
+@media (max-width: 47.999rem) {
+  .result-opening:has(uruk-unit-links) .result-introduction > .folio-top__copy { order: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  uruk-unit-links [data-play] { display: none; }
+  .ulfilm-steps { display: flex; }
+}
