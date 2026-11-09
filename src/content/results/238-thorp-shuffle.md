@@ -10,6 +10,7 @@ papers:
   - preprints/Optimal-order-mixing-of-the-Thorp-shuffle-September-26-2026/paper.pdf
   - preprints/Random-coordinate-frames-and-partial-permutation-laws-September-26-2026/main.pdf
 draft: false
+visual: thorp-cube
 ---
 
 Cut a deck into two equal halves. Take the top card of each half; flip a coin to decide which goes down first, then the other. Repeat with the next pair, and the next, until the deck is reassembled. This is the Thorp shuffle, introduced by Edward Thorp in 1973 while studying how imperfect shuffles leak information to card players, and it is one of the most natural shuffles there is: each step uses only a fair coin per pair of cards. For a deck of $n=2^{d}$ cards, a single tracked card is at a uniformly random position after just $d$ shuffles. But a deck is random only when the whole arrangement is, and the joint order of all $n$ cards is a far harder question. Ben Morris proved in 2005 that a polynomial number of shuffles in $d$ suffices, $O(d^{44})$; Montenegro and Tetali brought it to $O(d^{29})$; Morris then reached $O(d^{3})$ for dyadic decks in 2013. The conjecture, discussed in Jonasson's survey, was that the truth is $O(d)$, matching the trivial lower bound. On 26 September 2026 OpenAI posted twelve papers claiming it, by several different routes. [1][2][3]

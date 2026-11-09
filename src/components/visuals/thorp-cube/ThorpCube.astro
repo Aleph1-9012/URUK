@@ -1,0 +1,125 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { COUNTING_THRESHOLDS, DECK_LAW, ONE_CARD_TV } from './data';
+import { sampleDeckAt } from './motion';
+import { CUES, TIMELINE } from './story';
+import './thorp-cube.css';
+
+const labels = [
+  { id: 'decksize', tex: String.raw`n=2^{d}` },
+  { id: 'counting', tex: String.raw`1-2^{tn/2}/n!` },
+  { id: 'energy', tex: String.raw`E_t=\sum_{j=1}^{d}2^{-j}b_{t-j}` },
+];
+
+const stillDeck = sampleDeckAt(56000);
+
+function curve(values: readonly number[], x: number, y: number, width: number, height: number): string {
+  return values.map((value, index) => `${index === 0 ? 'M' : 'L'}${x + index * width / 12} ${y - value * height}`).join('');
+}
+
+const deckDistances = DECK_LAW.map(({ tv }) => tv);
+
+const countingBounds = DECK_LAW.map(({ countingBound }) => countingBound);
+
+const thresholdX = (d: number) => 44 + d * 21.6;
+
+const thresholdY = (t: number) => 146 - t * 2.5;
+---
+
+<Plate
+  caption="Eight cards Thorp-shuffled: one card's law, the whole deck's exact distance from uniform, the counting bound and its slope of two, the claim of order d, and the proof's cube of switches with one card's leftover noise."
+  leftOut="Czumaj and Vöcking's fraction-of-cards result; Morris's chameleon process and the sequential total-variation lemma; the Hoeffding–Azuma bound and the constants β = 1/16 and η; representation degrees and the hook-length formula; the coset trimming and the eight-block Fourier bound in detail; the Diaconis–Shahshahani bound; the eleven companions' routes and constants 32800d, 512d, 2048d and an absolute number of sweeps; format-preserving encryption; non-dyadic decks. The seven-card rings and eight-block drawing are schematic."
+>
+  <uruk-thorp-cube class="film-host">
+    <div class="tcfilm">
+      <div class="tcfilm-stage" data-film-viewport>
+        <canvas class="tcfilm-canvas" data-film-canvas role="img" aria-label="Eight cards are cut, paired and reassembled by fair coins. Exact probability laws compare one card with the whole deck, then positions become a cube of switches for a conditional-flow example. Dashed blue marks show the unreviewed asymptotic claim. A full text transcript follows."></canvas>
+        <div class="tcfilm-still" aria-hidden="true">
+          <div class="tcfilm-still-deck">
+            <svg viewBox="0 0 520 150" role="presentation">
+              <text x="260" y="22" text-anchor="middle" font-size="21">EIGHT CARDS · ONE SAMPLE</text>
+              {stillDeck.map((card, slot) => <g><rect x={23 + slot * 60} y="38" width="53" height="64" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5" /><text x={49.5 + slot * 60} y="81" text-anchor="middle" font-size="36">{card}</text></g>)}
+              <text x="260" y="132" text-anchor="middle" font-size="20">THE CHARTS SHOW LAWS, NOT THIS SAMPLE</text>
+            </svg>
+          </div>
+          <div class="tcfilm-still-chart tcfilm-still-chart--wide">
+            <svg viewBox="0 0 360 390" role="presentation">
+              <text x="180" y="23" text-anchor="middle" font-size="14">DISTANCE FROM UNIFORM</text>
+              <text x="180" y="43" text-anchor="middle" font-size="13">8 CARDS · EXACT LAWS</text>
+              <path d="M44 64H70" stroke="var(--ink)" stroke-width="2.2" /><text x="81" y="68" font-size="13">WHOLE DECK</text>
+              <path d="M44 85H70" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="5 4" /><text x="81" y="89" font-size="13">ONE CARD</text>
+              <path d="M44 106H70" stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="1 3" /><text x="81" y="110" font-size="13">COUNTING LOWER BOUND</text>
+              <path d="M44 136V316H332M44 271H332" fill="none" stroke="var(--muted)" stroke-width=".8" />
+              <path d={curve(deckDistances, 44, 316, 288, 180)} fill="none" stroke="var(--ink)" stroke-width="2.2" />
+              <path d={curve(ONE_CARD_TV, 44, 316, 288, 180)} fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="5 4" />
+              <path d={curve(countingBounds, 44, 316, 288, 180)} fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="1 3" />
+              {[0, 3, 5, 12].map((t) => <text x={44 + t * 24} y="339" text-anchor="middle" font-size="14">{t}</text>)}
+              <text x="32" y="141" text-anchor="end" font-size="14">1</text>
+              <text x="32" y="276" text-anchor="end" font-size="14">¼</text>
+              <text x="32" y="320" text-anchor="end" font-size="14">0</text>
+              <text x="188" y="364" text-anchor="middle" font-size="14">COMPLETE SHUFFLES</text>
+              <text x="188" y="387" text-anchor="middle" font-size="12">WHOLE DECK: BELOW ¼ AT 5</text>
+            </svg>
+          </div>
+          <div class="tcfilm-still-chart tcfilm-still-chart--tall">
+            <svg viewBox="0 0 520 236" role="presentation">
+              <text x="260" y="20" text-anchor="middle" font-size="20">DISTANCE FROM UNIFORM · 8 CARDS</text>
+              <path d="M25 44H47" stroke="var(--ink)" stroke-width="2.5" /><text x="56" y="50" font-size="18">WHOLE DECK</text>
+              <path d="M212 44H234" stroke="var(--ink)" stroke-width="1.8" stroke-dasharray="5 4" /><text x="243" y="50" font-size="18">ONE CARD</text>
+              <path d="M373 44H395" stroke="var(--ink)" stroke-width="1.7" stroke-dasharray="1 3" /><text x="404" y="50" font-size="18">COUNTING</text>
+              <path d="M42 72V179H498M42 152.25H498" fill="none" stroke="var(--muted)" stroke-width=".9" />
+              <path d={curve(deckDistances, 42, 179, 456, 107)} fill="none" stroke="var(--ink)" stroke-width="2.5" />
+              <path d={curve(ONE_CARD_TV, 42, 179, 456, 107)} fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-dasharray="5 4" />
+              <path d={curve(countingBounds, 42, 179, 456, 107)} fill="none" stroke="var(--ink)" stroke-width="1.7" stroke-dasharray="1 3" />
+              {[0, 3, 5, 12].map((t) => <text x={42 + t * 38} y="204" text-anchor="middle" font-size="20">{t}</text>)}
+              <text x="28" y="78" text-anchor="end" font-size="20">1</text>
+              <text x="28" y="159" text-anchor="end" font-size="20">¼</text>
+              <text x="28" y="184" text-anchor="end" font-size="20">0</text>
+              <text x="270" y="233" text-anchor="middle" font-size="20">COMPLETE SHUFFLES</text>
+            </svg>
+          </div>
+          <div class="tcfilm-still-threshold">
+            <svg viewBox="0 0 520 214" role="presentation">
+              <text x="260" y="20" text-anchor="middle" font-size="20">COUNTING: t ≥ 2d − 2 FOR d ≥ 3</text>
+              <text x="476" y="43" text-anchor="end" font-size="17">SHUFFLES t</text>
+              <path d="M44 46V146H476" fill="none" stroke="var(--muted)" stroke-width=".9" />
+              <path d={`M${thresholdX(3)} ${thresholdY(4)}L${thresholdX(20)} ${thresholdY(38)}`} fill="none" stroke="var(--ink)" stroke-width="1.4" />
+              {COUNTING_THRESHOLDS.map((t, index) => <circle cx={thresholdX(index + 1)} cy={thresholdY(t)} r="2.8" fill="var(--ink)" />)}
+              <path d={`M44 146L${thresholdX(40 / 1600)} 46M${thresholdX(40 / 1600) - 5} 54L${thresholdX(40 / 1600)} 46L${thresholdX(40 / 1600) + 5} 54`} fill="none" stroke="var(--blue)" stroke-width="1.8" stroke-dasharray="5 4" />
+              <text x="72" y="57" font-size="20">1600d</text><text class="tcfilm-still-claim" x="158" y="57" font-size="20">CLAIMED</text>
+              <text x="72" y="81" font-size="18">AS d GROWS</text>
+              <text x="32" y="52" text-anchor="end" font-size="20">40</text>
+              <text x="32" y="152" text-anchor="end" font-size="20">0</text>
+              {[0, 10, 20].map((d) => <text x={thresholdX(d)} y="173" text-anchor="middle" font-size="20">{d}</text>)}
+              <text x="260" y="208" text-anchor="middle" font-size="20">DIMENSION d · ONLY 2^d-CARD DECKS</text>
+            </svg>
+          </div>
+        </div>
+        <div class="tcfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => <span class="tcfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="tcfilm-timeline" timeline={TIMELINE} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. Every exact example uses eight cards, d = 3. One step is one complete physical shuffle, using four independent fair coins. Coin zero puts the top-half card before its partner. The opening coins 1, 0, 0, 1 turn the deck 1 through 8 into 5, 1, 2, 6, 3, 7, 8, 4. Later sample coins come from a fixed linear-congruential generator seeded with 238. The moving deck is one reproducible sample. The probability strips, mass dots and distance curves are laws over all relevant coin outcomes, not empirical frequencies in that sample.</p>
+      <p class="film-method">The whole-deck curve enumerates all 40,320 permutations. Its exact eight-card law is summarized in the shipped data; displayed distances are rounded. The one-card law is computed separately from its starting slot. Its distance reaches zero after three complete shuffles. The whole-deck distance first falls below one quarter at five. The support grid has one cell per order and fills 16, 256, 4,096, 18,688 and 40,320 cells after shuffles 1 through 5. Cell order is an enumeration, not a geometric property of the permutations.</p>
+      <p class="film-method">The counting lower bound is the maximum of zero and 1 − 2^(4t)/8! in the eight-card chart. It occupies exactly the same coordinates as the whole-deck curve for the first three shuffles; it is not offset for visibility. The threshold inset finds the least integer t with 2^(tn/2) ≥ 3n!/4 for n = 2ᵈ. Its points are 1, 3 and then 2d − 2 for dimensions 3 through 20. Both axes in that inset are linear. The dashed blue ray has slope 1600 on the same axes, so it leaves through the top almost immediately. It represents the paper's asymptotic claim, not an eight-card measurement or a proposed sharp constant.</p>
+      <p class="film-method">The cube's labels are positions in a rotated frame, not permanent physical slot names. At shuffle s, a physical slot x is labelled by rotating its d binary digits right s times. The active bit is (−s − 1) mod d, giving bits 2, 1 and 0 for three successive shuffles when the rightmost printed digit is bit zero. The film resets that clock at the 59.5-second row-to-cube transition, so the initial vertex labels agree with the physical slots there. The law-sweep replay separately starts its mass at 000. It averages every starting law to uniform after one full sweep; it does not infer a law from one deterministic deck.</p>
+      <p class="film-method">The conditional-flow example exposes one card starting at slot 0, with coins 0, 1, 1, 0, 1, 0, and tags a second card starting at slot 4. Its laws are computed exactly after conditioning on that exposed path. Unvisited time-edge coins remain independent and fair. A switch with two free positions averages the incoming masses. If one position is occupied by the exposed card, its partner's entire tagged mass travels to the uniquely free output. It does not split or enter the occupied output. Centering subtracts 1/7 at each of the seven free positions and leaves zero at the exposed position.</p>
+      <p class="film-method">The energy chart averages the squared centered law over the exposed card's coin paths. The displayed one-sweep identity uses bₛ equal to the expected squared centered input on the one-free-position switches. The newly created noise has half that energy; the coefficients 2⁻ʲ include this factor. The split-cube picture explains independence of the two intervening coin arrays conditional on the history d − 1 steps earlier. Flow and availability within one half need not be independent. The geometric separation of faces is schematic.</p>
+      <p class="film-method">The 200d, 7n/8 and 1600d statements concern growing d in the paper. The fixed eight-card curves and energy example do not test those asymptotic guarantees. The seven rings and eight single-card blocks are schematic. The proof first controls a uniformly chosen ordered list of 7n/8 labels, then uses a partition into eight label blocks, a common trimming and a Fourier bound. Those eight label blocks and the eight consecutive time intervals of 200d are different objects, even though both appear in the final picture.</p>
+      <p class="film-method">The independent reference is 238-checks/thorp.py. The film omits the detailed probability estimates and Fourier argument and does not verify the claimed proof. Review statements follow the article's dated evidence. The release has thirteen comparator statements across the twelve papers; four are catalogued, while the headline paper's own comparator is not. Lean statements are not counted as independent human approval.</p>
+    </FilmTranscript>
+  </uruk-thorp-cube>
+</Plate>
+
+<script>
+  import './element';
+</script>
