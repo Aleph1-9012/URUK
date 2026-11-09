@@ -7,6 +7,7 @@ import FractionNets from './fraction-nets/FractionNets.astro';
 import PrimeWaves from './prime-waves/PrimeWaves.astro';
 import StandardMap from './standard-map/StandardMap.astro';
 import ThompsonBands from './thompson/ThompsonBands.astro';
+import TrappedWaves from './trapped-waves/TrappedWaves.astro';
 import FiveColours from './five-colours/FiveColours.astro';
 import FairAverage from './fair-average/FairAverage.astro';
 import BoundarySphere from './boundary-sphere/BoundarySphere.astro';
@@ -33,6 +34,7 @@ const plates = {
   'boundary-sphere': BoundarySphere,
   'fair-average': FairAverage,
   'five-colours': FiveColours,
+  'trapped-waves': TrappedWaves,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];

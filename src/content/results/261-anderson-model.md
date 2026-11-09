@@ -10,6 +10,7 @@ papers:
   - preprints/Absolutely-Continuous-Spectrum-for-Weak-Disorder-Anderson-Models-in-Dimensions-at-Least-Three-September-23-2026/paper.pdf
   - preprints/Pure-Point-Spectrum-for-the-Two-Dimensional-Anderson-Model-at-Every-Positive-Disorder-September-23-2026/paper.pdf
 draft: false
+visual: trapped-waves
 ---
 
 In a perfect crystal an electron moves freely; the material conducts. Add random impurities and, Philip Anderson argued in 1958, the electron's wave can get trapped in a small region and never leave; the material insulates. This is Anderson localization, and it earned him a share of the 1977 Nobel Prize. Physicists then worked out when it should happen. In one and two dimensions, any disorder at all should trap everything. In three dimensions and above, weak disorder should leave some electrons free to travel, with trapped and free states separated by an energy called the mobility edge. Mathematicians could prove the trapping at strong disorder and at extreme energies in any dimension, but never the two headline predictions: trapping at every disorder in two dimensions, and free states at weak disorder in three. Barry Simon listed both in 2000 as the first two of his fifteen problems for the century. On 23 September 2026 OpenAI posted two papers claiming both. [1][2][4][5][6]
