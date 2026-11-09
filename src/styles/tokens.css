@@ -42,9 +42,6 @@
   --folio-part-line-height: clamp(1.75rem, calc(1.657143rem + 0.380952vw), 2rem);
   --folio-part-letter-spacing: 0em;
 
-  --folio-theorem-font-size: clamp(1.25rem, calc(1.180357rem + 0.285714vw), 1.4375rem);
-  --folio-theorem-line-height: clamp(1.8125rem, calc(1.719643rem + 0.380952vw), 2.0625rem);
-
   --folio-step-font-size: clamp(1.1875rem, calc(1.141071rem + 0.190476vw), 1.3125rem);
   --folio-step-line-height: clamp(1.6875rem, calc(1.617857rem + 0.285714vw), 1.875rem);
 

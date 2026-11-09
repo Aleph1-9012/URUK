@@ -256,12 +256,6 @@
   text-decoration: none;
 }
 
-.folio-page a.case-link--tight {
-  text-decoration: underline;
-  text-decoration-color: var(--blue);
-  text-underline-offset: 3px;
-}
-
 @media (min-width: 48rem) and (max-width: 74.999rem) {
   .folio-top,
   .folio-section__heading,

@@ -428,7 +428,7 @@ async function runScreenChecks(): Promise<void> {
   discoveredPaths.push(...EXTRA_URLS);
 
   const pagePaths = selectPagePaths(discoveredPaths, process.argv.slice(2));
-  const server = await preview({ root: REPO_ROOT, server: { host: PREVIEW_HOST, port: 0 }, logLevel: 'error' });
+  const server = await preview({ root: REPO_ROOT, server: { host: PREVIEW_HOST }, logLevel: 'error' });
   const port = server.port;
   let browser: Browser | undefined;
 

@@ -2,6 +2,11 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   output: 'static',
+  server: { host: '127.0.0.1', port: 4321 },
+  vite: {
+    server: { strictPort: true },
+    preview: { strictPort: true },
+  },
   devToolbar: { enabled: false },
   build: { inlineStylesheets: 'always' },
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
