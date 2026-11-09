@@ -1,4 +1,7 @@
 import { expect, test } from 'bun:test';
+import { swingAt, swingPeriod, swingTimeOf } from '../src/components/plate/player';
+import { formatK } from '../src/components/visuals/standard-map/labels';
+import { FILM as MAP_FILM, K_START, drawOrbits, step } from '../src/components/visuals/standard-map/orbits';
 import { apply, bandMaps, trackLines, x0, x0Inverse, x1 } from '../src/components/visuals/thompson/maps';
 import { FILM_PERIOD, START_STEP, describeStep, stepAt, timeOfStep } from '../src/components/visuals/thompson/steps';
 import { START_RULER, UNIT, cellAt, fits, patternOf, rulerEnd, tiles } from '../src/components/visuals/unit-ruler/tiling';
@@ -69,6 +72,50 @@ test('248: the marks keep their order through all eight bands', () => {
   }
 
   expect(describeStep(2)).toStartWith('Step 2 of 8');
+});
+
+test('146: the standard map stays on the torus', () => {
+  const random = seeded(146);
+
+  for (let trial = 0; trial < 1000; trial += 1) {
+    const [x, y] = step(random(), random(), random());
+
+    expect(x).toBeGreaterThanOrEqual(0);
+    expect(x).toBeLessThan(1);
+    expect(y).toBeGreaterThanOrEqual(0);
+    expect(y).toBeLessThan(1);
+  }
+
+  expect(formatK(0.2)).toBe('0.2');
+  expect(formatK(0.150000001)).toBe('0.15');
+  expect(formatK(1)).toBe('1');
+});
+
+test('146: a picture has one ink dot or more and only ink and nothing', () => {
+  const pixels = drawOrbits(0.2, { width: 76, height: 56, dot: 1 }, { starts: 40, classifySteps: 50, orderlyEvery: 2, orderlySteps: 60, chaoticSteps: 8 });
+  let inked = 0;
+
+  expect(pixels).toHaveLength(76 * 56 * 4);
+
+  for (let index = 3; index < pixels.length; index += 4) {
+    inked += pixels[index] === 0 ? 0 : 1;
+  }
+
+  expect(inked).toBeGreaterThan(0);
+});
+
+test('films: a swing rests low, climbs, rests high and comes back', () => {
+  for (const film of [MAP_FILM]) {
+    const period = swingPeriod(film);
+
+    expect(swingAt(film, 0)).toBe(film.low);
+    expect(swingAt(film, film.hold + film.travel / 2)).toBeCloseTo((film.low + film.high) / 2, 9);
+    expect(swingAt(film, 2 * film.hold + film.travel - 1)).toBe(film.high);
+    expect(swingAt(film, period - film.travel / 2)).toBeCloseTo((film.low + film.high) / 2, 9);
+    expect(swingAt(film, period)).toBe(film.low);
+  }
+
+  expect(swingAt(MAP_FILM, swingTimeOf(MAP_FILM, K_START))).toBeCloseTo(K_START, 9);
 });
 
 test('248 film: starts on the still picture, draws every band, rests on all eight', () => {

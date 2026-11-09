@@ -8,6 +8,7 @@ status: unreviewed
 checked: 2026-10-17
 papers:
   - preprints/Positive-Metric-Entropy-for-the-Standard-Map-at-Large-Parameters-September-23-2026/paper.pdf
+visual: standard-map
 draft: false
 ---
 

@@ -1,0 +1,27 @@
+---
+// 146 · 61a slider: orbits of the standard map for a kick strength k the reader sets. The picture is computed, so 63c shows while it is drawn.
+import PlateLoader from '../../plate/PlateLoader.astro';
+import Plate from '../../plate/Plate.astro';
+import SliderControl from '../../plate/SliderControl.astro';
+import { K_MAX, K_MIN, K_START } from './orbits';
+import { describeK, formatK } from './labels';
+---
+
+<Plate caption="The standard map. Closed curves are orderly orbits; the dust around them is the chaotic sea. Drag the line to change the kick k." leftOut="the theorem’s k, which is larger than this line reaches and which the paper never computes; and whether the dust covers any area, which no picture can show.">
+  <uruk-standard-map>
+    <div class="plate__figure" data-map-figure>
+      <canvas role="img" aria-label={`Orbits of the standard map at k = ${formatK(K_START)}.`} data-map-canvas></canvas>
+      <PlateLoader />
+      <noscript><p class="plate__no-script">This plate is drawn by JavaScript, which is turned off in this browser.</p></noscript>
+    </div>
+    <SliderControl min={K_MIN} max={K_MAX} step={0.01} value={K_START} label="Kick strength k" valueText={describeK(K_START)}>
+      <Fragment slot="readout">k = {formatK(K_START)}</Fragment>
+      <Fragment slot="start">0</Fragment>
+      <Fragment slot="end">1</Fragment>
+    </SliderControl>
+  </uruk-standard-map>
+</Plate>
+
+<script>
+  import './element';
+</script>
