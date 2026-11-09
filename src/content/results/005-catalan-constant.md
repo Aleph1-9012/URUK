@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/Catalans-constant-is-irrational-September-24-2026/paper.pdf
 draft: false
+visual: catalan-bounds
 ---
 
 Add the reciprocals of the odd squares with alternating signs: $1-\tfrac19+\tfrac1{25}-\tfrac1{49}+\cdots=0.9159655\ldots$ This is Catalan's constant $G$, named for Eugène Catalan who studied it in the 1860s. It appears in combinatorics, in the volume of hyperbolic solids and in the physics of crystals, and it is among the most famous numbers not known to be irrational. The sum without the signs, $1+\tfrac19+\tfrac1{25}+\cdots$, equals $\pi^{2}/8$ and is irrational since Lambert; Apéry proved in 1978 that $\zeta(3)=1+\tfrac18+\tfrac1{27}+\cdots$ is irrational in a result that shocked the field; but $G$ resisted every attempt. Rivoal and Zudilin showed in 2003 that infinitely many of the related alternating sums are irrational, and that at least one of $G$ and its cousins up to $\beta(14)$ is, without being able to say which. On 3 September 2026 Zhi-Wei Sun of Nanjing University posted a claimed proof that $G$ is irrational; two weeks later a note reported a numerical discrepancy in its final estimate. On 24 September 2026 OpenAI posted its own proof, by a different method, saying it uses nothing from Sun's. [1][3][4][5][6]
