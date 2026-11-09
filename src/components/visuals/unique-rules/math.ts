@@ -54,7 +54,6 @@ export const WALK_LABELS = walkLabels(BAD_EDGES);
 
 export type BestLabelling = { labels: readonly number[]; kept: number };
 
-// All 128 labellings are examined. A preferred optimum keeps the same lamps through a scene change.
 export function bestLabelling(edges: readonly Edge[], preferred: readonly number[] = HIDDEN_LABELS): BestLabelling {
   let best: BestLabelling = { labels: [...preferred], kept: keptCount(preferred, edges) };
 

@@ -75,5 +75,4 @@ export const LOWER_BOUND = -2.29084;
 
 export const UPPER_BOUND = -2.290939875;
 
-// Subtract the quoted decimal bounds as integers before returning to the plotted scale.
 export const BOUND_GAP = (-2290840000 - -2290939875) / 1_000_000_000;

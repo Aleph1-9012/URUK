@@ -1,8 +1,6 @@
 import { axisPrimes, createPrimeField, densitySamples, diskLoop, gaussianFlood, gaussianPrimeCoords, nearbyClusters, periodicSieve, type FloodSeed } from './math';
 import type { InitialMoatData, MoatWorkerMessage } from './data';
 
-export type { MoatWorkerMessage } from './data';
-
 function compute(): void {
   const field = createPrimeField(1600);
   const data: InitialMoatData = {
@@ -20,8 +18,6 @@ function compute(): void {
 
   for (const stepSquared of [2, 4, 8, 10]) {
     const flood = gaussianFlood(stepSquared, 1100, previous, field);
-    // Retain only the old coordinates needed to seed the next flood. Transfer
-    // the full current arrays so the main thread receives them without copying.
     previous = { count: flood.count, coords: flood.coords.slice() };
     postMessage({ kind: 'flood', flood } satisfies MoatWorkerMessage, { transfer: [
       flood.coords.buffer, flood.parents.buffer, flood.depth.buffer, flood.layerOffsets.buffer,

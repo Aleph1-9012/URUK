@@ -1,3 +1,6 @@
+import { smoothStep as span } from '../../../lib/animation';
+import { createTimeline } from '../../plate/timeline';
+
 // The 003 film's timeline: subtitles, transcript scenes, and where each drawing sits on the frame. Times are milliseconds.
 // Subtitles are written from the article; $…$ marks a formula, set with Temml on the page.
 
@@ -25,7 +28,8 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
-// Groups of cues, for the transcript's headings.
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 250);
+
 export const SCENES = [
   { title: 'The primes and their count', first: 0 },
   { title: 'The gap', first: 3 },
@@ -37,46 +41,6 @@ export const SCENES = [
   { title: 'Where it stands', first: 16 },
 ] as const;
 
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-// A settled picture for each cue, for stepping through without motion: just before the next cue begins.
-export function stillTime(index: number): number {
-  const end = cueEnd(index);
-
-  return index === CUES.length - 1 ? end : end - 250;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.min(FILM_DURATION, Math.max(0, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-// 0 before `start`, 1 after `end`, eased in between.
-export function span(time: number, start: number, end: number): number {
-  if (end <= start) return time >= end ? 1 : 0;
-
-  const linear = Math.min(1, Math.max(0, (time - start) / (end - start)));
-
-  return linear * linear * (3 - 2 * linear);
-}
-
-// Up over [inStart, inEnd], down over [outStart, outEnd].
-export function fade(time: number, inStart: number, inEnd: number, outStart = Infinity, outEnd = Infinity): number {
-  return Math.min(span(time, inStart, inEnd), 1 - span(time, outStart, outEnd));
-}
 
 export type Layout = 'wide' | 'tall';
 
@@ -90,21 +54,17 @@ export type Panel = 'chart' | 'plane' | 'cousin' | 'lattice' | 'device';
 
 type Move = { from: number; to: number; wide?: Box; tall?: Box; view?: View };
 
-// Where each drawing starts, then each move it makes. A move eases from where the drawing was to where it goes.
 const PANELS: Record<Panel, { wide: Box; tall: Box; view: View; moves: readonly Move[] }> = {
-  // The number line, the staircase and the curve; later one zero's wave. Each draws to its own scale, so the chart has no moving view.
   chart: {
     wide: { x: 0.08, y: 0.1, w: 0.84, h: 0.42 },
     tall: { x: 0.08, y: 0.12, w: 0.76, h: 0.36 },
     view: { left: 0, right: 100, bottom: 0, top: 30 },
     moves: [
-      // The number line starts at mid-height and lowers as the staircase begins to climb.
       { from: 5500, to: 7300, wide: { x: 0.08, y: 0.1, w: 0.84, h: 0.76 }, tall: { x: 0.08, y: 0.12, w: 0.76, h: 0.7 } },
       { from: 25500, to: 28000, wide: { x: 0.06, y: 0.12, w: 0.44, h: 0.72 }, tall: { x: 0.09, y: 0.04, w: 0.76, h: 0.32 } },
       { from: 60500, to: 63000, wide: { x: 0.07, y: 0.2, w: 0.34, h: 0.56 }, tall: { x: 0.09, y: 0.04, w: 0.76, h: 0.3 } },
     ],
   },
-  // ζ over the plane: its map, its zeros, the fences. Tall boxes leave room below for the marks and tags at the foot.
   plane: {
     wide: { x: 0.64, y: 0.14, w: 0.32, h: 0.76 },
     tall: { x: 0.2, y: 0.56, w: 0.6, h: 0.36 },
@@ -205,7 +165,6 @@ export function classicalWidth(height: number): number {
 
 export const CLAIMED_EDGE = 7 / 8;
 
-// How many of the hundred tabled zeros have added their waves, with a fraction for the one coming in.
 export function zerosUsed(time: number): number {
   return 100 * span(time, 41000, 46000) ** 1.7;
 }

@@ -1,3 +1,6 @@
+import { smoothStep as span, crossfade as fade, progress as share } from '../../../lib/animation';
+import { createTimeline } from '../../plate/timeline';
+
 // The 004 film's timeline (v2, "nets and shadows"): subtitles, transcript scenes, the plane's camera, the nets, and where
 // each part sits on the frame. Times are milliseconds. Subtitles are written from the article; $…$ marks a formula.
 import { CIRCLE_TOP, CUBIC_NET } from './nets';
@@ -25,7 +28,8 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
-// Groups of cues, for the transcript's headings.
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 250);
+
 export const SCENES = [
   { title: 'Nets of fractions', first: 0 },
   { title: 'None yet, or none ever', first: 3 },
@@ -36,81 +40,27 @@ export const SCENES = [
   { title: 'Where it stands', first: 15 },
 ] as const;
 
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-// A settled picture for each cue, for stepping through without motion: just before the next cue begins.
-export function stillTime(index: number): number {
-  const end = cueEnd(index);
-
-  return index === CUES.length - 1 ? end : end - 250;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.min(FILM_DURATION, Math.max(0, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-// 0 before `start`, 1 after `end`, eased in between.
-export function span(time: number, start: number, end: number): number {
-  if (end <= start) return time >= end ? 1 : 0;
-
-  const linear = Math.min(1, Math.max(0, (time - start) / (end - start)));
-
-  return linear * linear * (3 - 2 * linear);
-}
-
-// Up over [inStart, inEnd], down over [outStart, outEnd].
-export function fade(time: number, inStart: number, inEnd: number, outStart = Infinity, outEnd = Infinity): number {
-  return Math.min(span(time, inStart, inEnd), 1 - span(time, outStart, outEnd));
-}
-
-// Linear share of [start, end], for counters and reveals that must not ease.
-export function share(time: number, start: number, end: number): number {
-  return Math.min(1, Math.max(0, (time - start) / (end - start)));
-}
 
 export type Layout = 'wide' | 'tall';
 
 // A part's place on the frame, as shares of the frame's width and height.
 export type Box = { x: number; y: number; w: number; h: number };
 
-// The part of the plane the camera shows.
 export type View = { left: number; right: number; bottom: number; top: number };
 
 export type Panel = 'plane' | 'line' | 'tests' | 'side' | 'chart';
 
 type Move = { from: number; to: number; wide?: Box; tall?: Box };
 
-// Where each part sits, then each move it makes. A move eases from where the part was to where it goes.
-// The line and the test row are drawn at their box's top edge, across its width.
 const PANELS: Record<Panel, { wide: Box; tall: Box; moves: readonly Move[] }> = {
-  // The plane: every curve and net. It fills most of the frame for the nets, then gives up room when the line comes in under it.
   plane: {
     wide: { x: 0.03, y: 0.03, w: 0.6, h: 0.86 },
     tall: { x: 0.04, y: 0.02, w: 0.92, h: 0.74 },
-    // On a wide frame it spans the whole width for the whole numbers and the curve, then gives the right side to the
-    // side panel for the multiples. Its height sets the scale, so the scale holds while its width changes.
-    // On a phone it shrinks for the written multiples, and later fades for the chart.
     moves: [
       { from: 38500, to: 40500, wide: { x: 0.03, y: 0.03, w: 0.94, h: 0.66 }, tall: { x: 0.04, y: 0.02, w: 0.92, h: 0.6 } },
       { from: 92500, to: 94500, wide: { x: 0.03, y: 0.03, w: 0.52, h: 0.66 }, tall: { x: 0.04, y: 0.02, w: 0.92, h: 0.36 } },
     ],
   },
-  // The line under the plane, on the plane's own scale, so the plane's points drop their shadows straight onto it.
-  // On a phone the line and the tests rise to make room for the written multiples, and settle back under the chart.
   line: {
     wide: { x: 0.03, y: 0.765, w: 0.94, h: 0 },
     tall: { x: 0.03, y: 0.66, w: 0.94, h: 0 },
@@ -128,7 +78,6 @@ const PANELS: Record<Panel, { wide: Box; tall: Box; moves: readonly Move[] }> = 
       { from: 103000, to: 104500, tall: { x: 0.03, y: 0.756, w: 0.94, h: 0.03 } },
     ],
   },
-  // Typed matter: the net's name, the remainders, the multiples written out.
   side: {
     wide: { x: 0.67, y: 0.06, w: 0.3, h: 0.62 },
     tall: { x: 0.05, y: 0.79, w: 0.9, h: 0.19 },
@@ -178,9 +127,6 @@ export function panelAt(panel: Panel, time: number, layout: Layout): Box {
   return box;
 }
 
-// The plane's camera. It starts on the whole picture and closes in while the nets get finer. It pulls back to the whole
-// picture while the circle is drawn, closes in again for the circle's nets, pulls back to both curves, then pulls back
-// further for the whole numbers and the example curve.
 export const FULL_VIEW: View = { left: -2.6, right: 2.6, bottom: -2.6, top: 2.6 };
 
 export const FAR_VIEW: View = { left: -7.5, right: 8.5, bottom: -8, top: 8 };
@@ -197,17 +143,14 @@ export const NET_RUNS = [
   { start: 19600, end: 24200, first: CUBIC_NET + 1, last: CIRCLE_TOP, power: 1, from: [-ROOT, ROOT], centre: [-ROOT, ROOT], reach: { wide: 32, tall: 22 } },
 ] as const;
 
-// Where the circle's verdict is pinned: the middle of its window, on the circle.
 export const CIRCLE_MARK = [-ROOT, ROOT] as const;
 
 type NetRun = (typeof NET_RUNS)[number];
 
-// How far a run has got, as a continuous net number: the net shown is its whole part.
 export function netProgress(run: NetRun, time: number): number {
   return run.first + (run.last - run.first + 1) * share(time, run.start, run.end) ** run.power;
 }
 
-// When net c of a run first shows.
 export function netStart(run: NetRun, c: number): number {
   return run.start + (run.end - run.start) * ((c - run.first) / (run.last - run.first + 1)) ** (1 / run.power);
 }
@@ -236,7 +179,6 @@ export function cameraAt(time: number, layout: Layout): View {
   return blendView(FULL_VIEW, FAR_VIEW, span(time, 39000, 41500));
 }
 
-// The net on screen: which run, which net, and how far it has faded in and out. The last net of each run holds, then goes.
 export const NET_HOLDS = [{ until: 15000, gone: 15800 }, { until: 24600, gone: 25300 }] as const;
 
 export function netAt(time: number): { run: NetRun; c: number; alpha: number; previous: number } | undefined {
@@ -254,14 +196,12 @@ export function netAt(time: number): { run: NetRun; c: number; alpha: number; pr
   return undefined;
 }
 
-// The proof's schematic pieces: the tests, the two searches, the stretched line and the solution that comes home.
 export const TESTS = { drawn: 69800, searchStart: 76500, searchEnd: 83000, allPass: 87000 } as const;
 
 export const STRETCH = { start: 88000, end: 90500 } as const;
 
 export const STAR_RETURN = { start: 109500, end: 111500 } as const;
 
-// The multiples written out, one line each, and when each starts typing.
 export const WRITTEN = [
   { n: 1, at: 95800 },
   { n: 2, at: 96600 },

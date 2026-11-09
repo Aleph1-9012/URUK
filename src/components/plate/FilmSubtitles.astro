@@ -1,0 +1,18 @@
+---
+import { renderFilmText, type FilmCue } from './text';
+
+interface Props {
+  cues: readonly FilmCue[];
+}
+
+const { cues } = Astro.props;
+---
+
+<div class="film-subtitles" aria-hidden="true">
+  {cues.map((cue, index) => (
+    <p class:list={['film-cue', { 'is-active': index === 0 }]} data-cue={index}>
+      <span set:html={renderFilmText(cue.text)} />
+      {cue.sources.length > 0 && <span class="film-citations"> {cue.sources.map((source) => `[${source}]`).join('')}</span>}
+    </p>
+  ))}
+</div>

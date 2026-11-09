@@ -1,13 +1,10 @@
 /* 378's Plate I film: switches, the cost of one more, and the claimed proof. The plate takes the wide column; below 75rem it spans the page above the introduction. */
-uruk-switch-film { display: block; }
-.result-opening:has(uruk-switch-film) { grid-template-columns: minmax(0, 920fr) minmax(0, 368fr); gap: 32px; }
 
 .swf { border: 1px solid var(--muted); background: var(--paper); }
 .swf-screen { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
 .swf-canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
 [data-ready] .swf-canvas { opacity: 1; }
 
-/* Without JavaScript: the switches in their groups and the chart, drawn at build time. */
 .swf-still { position: absolute; inset: 0; color: var(--ink); }
 .swf-still svg { display: block; width: 100%; height: 100%; }
 .swf-still__tag { font: 11px var(--font-special-elite); fill: var(--ink); }
@@ -16,7 +13,6 @@ uruk-switch-film { display: block; }
 .swf-still__pin { font: 10px var(--font-special-elite); fill: var(--ink); }
 [data-ready] .swf-still { display: none; }
 
-/* Formulas pinned over the drawing; the script moves each one every frame. */
 .swf-labels { position: absolute; inset: 0; pointer-events: none; }
 .swf-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1.0625rem; line-height: 1.2; white-space: nowrap; }
 .swf-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 1px 4px; }
@@ -24,54 +20,11 @@ uruk-switch-film { display: block; }
 .swf-label--small { font-size: .875rem; }
 .swf-label--large { font-size: 1.375rem; }
 
-/* All subtitles share one cell, so the frame never changes height. */
-.swf-subtitles { display: grid; align-items: center; padding: 12px 28px 18px; }
-.swf-cue { grid-area: 1 / 1; visibility: hidden; max-width: 46rem; margin-inline: auto; text-align: center; text-wrap: balance; }
-.plate .swf-cue { font: 1.1875rem/1.5 var(--font-alegreya); }
-.swf-cue.is-active { visibility: visible; }
-.swf-nowrap { white-space: nowrap; }
-.swf-cue__sources { color: var(--muted); font-size: .8125em; white-space: nowrap; }
-
-.swf-controls { padding-block: 16px 4px; }
-uruk-switch-film:not([data-ready]) .swf-controls { display: none; }
-.swf-control-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.plate .swf-clock { font: .6875rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
-.swf-range { appearance: none; display: block; width: 100%; height: 32px; margin: 12px 0 0; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; cursor: pointer; }
-.swf-range::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: none; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
-.swf-range::-moz-range-thumb { width: 22px; height: 22px; border: none; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
-.swf-range:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
-.swf-steps { display: none; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 2px; }
-.plate .swf-steps p { font: italic .875rem/1.4 var(--font-alegreya); color: var(--muted); text-align: center; }
-.swf-controls button:disabled { opacity: .5; cursor: default; }
-
-.swf-transcript { margin-top: 18px; text-align: left; }
-.swf-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
-.swf-transcript ol { padding-left: 24px; margin-top: 22px; }
-.swf-transcript li + li { margin-top: 22px; }
-.plate .swf-transcript h3 { font: italic 1.25rem/1.4 var(--font-alegreya); margin-bottom: 6px; }
-.plate .swf-transcript p { font: 1rem/1.55 var(--font-alegreya); }
-.plate .swf-transcript p + p { margin-top: 6px; }
-.plate .swf-transcript__note { margin-top: 22px; color: var(--muted); font-style: italic; }
-
-@media (max-width: 74.999rem) {
-  .result-opening:has(uruk-switch-film) { grid-template-columns: minmax(0, 1fr); }
-  .result-opening:has(uruk-switch-film) .result-introduction { max-width: 800px; }
-}
 
 @container plate (max-width: 599px) {
   .swf-screen { aspect-ratio: 4 / 5; }
-  .swf-subtitles { padding: 10px 16px 14px; }
-  .plate .swf-cue { font-size: 1.0625rem; }
+
   .swf-label { font-size: .9375rem; }
   .swf-label--small { font-size: .8125rem; }
   .swf-label--large { font-size: 1.125rem; }
-}
-
-@media (max-width: 47.999rem) {
-  .result-opening:has(uruk-switch-film) .result-introduction > .folio-top__copy { order: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  uruk-switch-film [data-play] { display: none; }
-  .swf-steps { display: flex; }
 }

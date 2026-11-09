@@ -1,4 +1,6 @@
-// The 005 film: the alternating sum, denominator cost, and the claimed incompatible bounds.
+import { progress as share, smooth as span, mix } from '../../../lib/animation';
+import { createTimeline } from '../../plate/timeline';
+
 export type Cue = { at: number; text: string; sources: readonly number[] };
 
 export const CUES = [
@@ -20,6 +22,8 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 250);
+
 export const SCENES = [
   { title: 'A sum that settles down', first: 0 },
   { title: 'The cost of clearing denominators', first: 3 },
@@ -29,51 +33,8 @@ export const SCENES = [
   { title: 'Where it stands', first: 13 },
 ] as const;
 
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-export function stillTime(index: number): number {
-  return index === CUES.length - 1 ? FILM_DURATION : cueEnd(index) - 250;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.min(FILM_DURATION, Math.max(0, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-export function share(time: number, start: number, end: number): number {
-  return Math.min(1, Math.max(0, (time - start) / (end - start)));
-}
-
-export function span(time: number, start: number, end: number): number {
-  const value = share(time, start, end);
-
-  return value * value * (3 - 2 * value);
-}
-
-export function fade(time: number, start: number, end: number, outStart = Infinity, outEnd = Infinity): number {
-  return span(time, start, end) * (outStart === Infinity ? 1 : 1 - span(time, outStart, outEnd));
-}
-
-export function mix(from: number, to: number, amount: number): number {
-  return from + (to - from) * amount;
-}
-
 export type Layout = 'wide' | 'tall';
 
-// A persistent measuring line; the initial camera zoom is logarithmic in its width.
 export function geometryAt(time: number, layout: Layout): { lineY: number; lineLeft: number; lineRight: number; viewLeft: number; viewRight: number } {
   const zoom = span(time, 7600, 12500);
   const width = 1.14 * (0.12 / 1.14) ** zoom;
@@ -89,7 +50,6 @@ export function geometryAt(time: number, layout: Layout): { lineY: number; lineL
   };
 }
 
-// Four slow steps first; then twenty further terms converge while the camera moves in.
 export function termsAt(time: number): number {
   if (time <= 7000) return 4 * share(time, 500, 6200);
 

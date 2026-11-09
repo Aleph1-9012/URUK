@@ -2,9 +2,7 @@ import { expect, test } from 'bun:test';
 import {
   BOUND_GAP, CATALAN, EXAMPLES, LOWER_BOUND, SUMS, UPPER_BOUND, partialSums,
 } from '../src/components/visuals/catalan-bounds/catalan';
-import {
-  CUES, FILM_DURATION, cueAt, cueEnd, geometryAt, stillTime, termsAt,
-} from '../src/components/visuals/catalan-bounds/story';
+import { CUES, FILM_DURATION, geometryAt, termsAt, TIMELINE } from '../src/components/visuals/catalan-bounds/story';
 
 test('005 maths: the accelerated constant and the exact fractions agree with known values', () => {
   expect(CATALAN).toBeCloseTo(0.915965594177219015, 14);
@@ -81,19 +79,18 @@ test('005 film: subtitles remain ordered and allow seventeen characters per seco
   expect(CUES[0]?.at).toBe(0);
 
   for (const [index, cue] of CUES.entries()) {
-    const shown = cueEnd(index) - cue.at;
+    const shown = TIMELINE.cueEnd(index) - cue.at;
     const letters = cue.text.replace(/\$[^$]*\$/g, 'xxxxx').length;
 
     expect(shown).toBeGreaterThan(0);
 
-    // The final subtitle remains visible after playback ends.
     if (index < CUES.length - 1) expect(shown).toBeGreaterThanOrEqual(letters * 1000 / 17 - 200);
 
-    expect(cueAt(cue.at)).toBe(index);
-    expect(cueAt(stillTime(index))).toBe(index);
+    expect(TIMELINE.cueAt(cue.at)).toBe(index);
+    expect(TIMELINE.cueAt(TIMELINE.stillTime(index))).toBe(index);
   }
 
-  expect(cueAt(FILM_DURATION + 5000)).toBe(CUES.length - 1);
+  expect(TIMELINE.cueAt(FILM_DURATION + 5000)).toBe(CUES.length - 1);
 });
 
 test('005 film: the measuring line moves and zooms continuously in both layouts', () => {
@@ -133,7 +130,6 @@ test('005 film: the opening finishes four visible steps before revealing the con
 
     expect(current).toBeGreaterThanOrEqual(previous);
     expect(current).toBeLessThanOrEqual(SUMS.length);
-    // The current endpoint remains on its step when scrubbing across a cue boundary.
     expect(current - previous).toBeLessThan(0.2);
     previous = current;
   }

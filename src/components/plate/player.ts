@@ -1,5 +1,3 @@
-// Plate I's clock stops while its drawing is off screen or its tab is hidden.
-// Existing plates loop; explanatory films can hold their last frame instead.
 export type PlayerOptions = {
   // The film's duration, in milliseconds.
   period: number;
@@ -16,7 +14,6 @@ export type Player = {
   destroy: () => void;
 };
 
-// A busy frame never skips a long stretch of the explanation.
 const LONGEST_STEP = 100;
 
 export function createPlayer(root: HTMLElement, options: PlayerOptions): Player {
@@ -150,38 +147,4 @@ export function createPlayer(root: HTMLElement, options: PlayerOptions): Player 
       motion.removeEventListener('change', onMotionChange);
     },
   };
-}
-
-export type Swing = { low: number; high: number; travel: number; hold: number };
-
-// low, held; up to high over `travel`; held; back down. One loop is 2 × (travel + hold).
-export function swingPeriod(swing: Swing): number {
-  return 2 * (swing.travel + swing.hold);
-}
-
-export function swingAt(swing: Swing, time: number): number {
-  const { low, high, travel, hold } = swing;
-  const at = time % swingPeriod(swing);
-
-  if (at < hold) {
-    return low;
-  }
-
-  if (at < hold + travel) {
-    return low + ((at - hold) / travel) * (high - low);
-  }
-
-  if (at < 2 * hold + travel) {
-    return high;
-  }
-
-  return high - ((at - 2 * hold - travel) / travel) * (high - low);
-}
-
-// Resume a looping visual on the ascending part of its path after a reader seeks.
-export function swingTimeOf(swing: Swing, value: number): number {
-  const { low, high, travel, hold } = swing;
-  const share = Math.min(1, Math.max(0, (value - low) / (high - low)));
-
-  return hold + share * travel;
 }

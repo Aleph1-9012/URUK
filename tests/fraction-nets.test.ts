@@ -3,9 +3,7 @@ import {
   CIRCLE_TOP, CUBIC_KNOTS, CUBIC_NET, NET_REACH, SQUARE_REMAINDERS, cubicY, exactMultiples, firstCatch, floatMultiples, fractionText,
   nearestMiss, onCircle, onCubic, onExampleCurve,
 } from '../src/components/visuals/fraction-nets/nets';
-import {
-  CUES, FAR_VIEW, FILM_DURATION, NET_RUNS, SCENES, cameraAt, cueAt, cueEnd, netAt, netStart, panelAt, stillTime, type Panel,
-} from '../src/components/visuals/fraction-nets/story';
+import { CUES, FAR_VIEW, FILM_DURATION, NET_RUNS, SCENES, cameraAt, netAt, netStart, panelAt, type Panel, TIMELINE } from '../src/components/visuals/fraction-nets/story';
 
 test('004 nets: the net of 21sts is the first to catch x³ + y³ = 6, and no net up to 60 catches x² + y² = 3', () => {
   expect(firstCatch(60, onCubic)).toEqual([...CUBIC_KNOTS]);
@@ -87,15 +85,15 @@ test('004 film: between 45 and 120 seconds, subtitles in order, each long enough
   expect(FILM_DURATION).toBeLessThanOrEqual(120000);
 
   for (const [index, cue] of CUES.entries()) {
-    const shown = cueEnd(index) - cue.at;
+    const shown = TIMELINE.cueEnd(index) - cue.at;
     const letters = cue.text.replace(/\$[^$]*\$/g, 'xxxxx').length;
 
     expect(shown).toBeGreaterThan(0);
     // About seventeen characters a second; the last subtitle stays after the film stops.
     if (index < CUES.length - 1) expect(shown).toBeGreaterThanOrEqual(letters * 1000 / 17 - 200);
 
-    expect(cueAt(cue.at)).toBe(index);
-    expect(cueAt(stillTime(index))).toBe(index);
+    expect(TIMELINE.cueAt(cue.at)).toBe(index);
+    expect(TIMELINE.cueAt(TIMELINE.stillTime(index))).toBe(index);
   }
 
   expect(SCENES.every((scene, index) => index === 0 || scene.first > (SCENES[index - 1]?.first ?? 0))).toBe(true);

@@ -1,28 +1,15 @@
 ---
 import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
 import { renderFormula } from '../../../lib/formulas/render';
 import { graphState, pointOnEdge, Z } from './math';
-import { CUES, FILM_DURATION, formatTime } from './story';
+import { CUES, TIMELINE, FILM_DURATION } from './story';
 import './fewest-crossings.css';
 
 const formula = (tex: string) => renderFormula(tex, false);
-
-const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-
-function subtitle(text: string): string {
-  const pieces: string[] = [];
-  let position = 0;
-
-  for (const match of text.matchAll(/\$([^$\n]+)\$/g)) {
-    pieces.push(escape(text.slice(position, match.index)));
-    pieces.push(`<span class="xcfilm-phrase">${formula(match[1] ?? '')}</span>`);
-    position = match.index + match[0].length;
-  }
-
-  pieces.push(escape(text.slice(position)));
-
-  return pieces.join('');
-}
 
 const labels = [
   { id: 'z-formula-wide', tex: String.raw`Z(n)=\tfrac14\lfloor\tfrac n2\rfloor\lfloor\tfrac{n-1}2\rfloor\lfloor\tfrac{n-2}2\rfloor\lfloor\tfrac{n-3}2\rfloor` },
@@ -55,7 +42,7 @@ const formulaRow = Array.from({ length: 10 }, (_, index) => ({ n: index + 3, val
   caption="Turán's brickyard and the complete graph: drawings counted crossing by crossing, the two-page drawing that hits the Harary–Hill formula, eighty years of partial proofs, and the claimed proofs' idea, signed crossings of closed curves adding to zero."
   leftOut="Hill's cylindrical drawing; Guy's 1960 bound; semidefinite programming; the 2018 claimed proof; the normalization appendix; the full cycle pairing and its half-order terms; the Lagrange weights and polynomial cycle tests; the even-node detector and injectivity descent; the diagonal form and isotropy; the bipartite subspace intersection bound, rank detector and block relation; crossing-number variants and the rectilinear crossing number. The proof's spoke correction and dimension pairing are schematic."
 >
-  <uruk-fewest-crossings>
+  <uruk-fewest-crossings class="film-host">
     <div class="xcfilm">
       <div class="xcfilm-stage" data-film-viewport>
         <canvas class="xcfilm-canvas" data-film-canvas role="img" aria-label="A film counting crossings in graph drawings. Turán's brickyard moves into Zarankiewicz's drawing; two-page drawings match the Harary–Hill formula. Separate proof gauges compare known lower bounds with OpenAI's unreviewed claims. Signed closed curves illustrate the proof idea. A complete text transcript follows."></canvas>
@@ -99,35 +86,17 @@ const formulaRow = Array.from({ length: 10 }, (_, index) => ({ n: index + 3, val
           {labels.map((label) => <span class="xcfilm-label xcfilm-label--formula" data-label={label.id}><span set:html={formula(label.tex)} /></span>)}
         </div>
       </div>
-      <div class="xcfilm-subtitles" aria-hidden="true">
-        {CUES.map((cue, index) => <p class:list={['xcfilm-cue', { 'is-active': index === CUES.length - 1 }]} data-cue={index}><span set:html={subtitle(cue.text)} /><span class="xcfilm-citations"> {cue.sources.map((source) => `[${source}]`).join('')}</span></p>)}
-      </div>
+      <FilmSubtitles cues={CUES} />
     </div>
-    <div class="xcfilm-controls" data-script-only>
-      <div class="xcfilm-buttons">
-        <button class="plate-button case-link case-link--tight" type="button" data-play><span data-play-label>Pause</span></button>
-        <p class="xcfilm-clock"><span data-film-clock>0:00 / {formatTime(FILM_DURATION)}</span></p>
-        <button class="plate-button case-link case-link--tight" type="button" data-film-restart>Restart</button>
-      </div>
-      <label class="visually-hidden" for="xcfilm-timeline">Film timeline. Arrow keys move one subtitle at a time.</label>
-      <input id="xcfilm-timeline" class="xcfilm-timeline" data-film-range type="range" min="0" max={FILM_DURATION} step="100" value="0" />
-      <div class="xcfilm-steps">
-        <button class="plate-button case-link case-link--tight" type="button" data-film-previous>Previous</button>
-        <p>Step through without motion</p>
-        <button class="plate-button case-link case-link--tight" type="button" data-film-next>Next</button>
-      </div>
-    </div>
-    <p class="visually-hidden" data-film-status aria-live="polite" aria-atomic="true"></p>
-    <details class="xcfilm-transcript">
-      <summary class="text-link">Read the film as text</summary>
-      <ol>{CUES.map((cue) => <li><h3>{cue.title}</h3><p><span set:html={subtitle(cue.text)} /> {cue.sources.map((source) => <> <a class="citation text-link" href={`#source-${source}`}>[{source}]</a></>)}</p></li>)}</ol>
-      <p class="xcfilm-method">How the film is made. Every live crossing count is computed from the geometry currently drawn. A crossing is an interior transverse intersection of two edges, with a common endpoint excluded. The count is of crossing points, not just edge pairs. The slight general-position spacing of the spine vertices keeps unrelated crossings from coinciding. Crossing rings mark the computed intersection positions.</p>
-      <p class="xcfilm-method">The opening drawing has three kilns and four yards with twelve rails in two rows. It has 18 crossings. Moving the vertices into Zarankiewicz's cross leaves two. The count is recomputed while they move. The curved rail illustrates permitted routes; its tally follows the actual curve, rather than assuming that every curved drawing has a prescribed count. The small complete graphs use a triangle with interior points, giving zero crossings for K₄ and one for K₅. The bipartite cross gives one for K₃,₃.</p>
-      <p class="xcfilm-method">In the two-page drawing, vertices are labelled 0 through n − 1 on one line. The edge joining i and j lies above the line exactly when (i + j) modulo n is less than floor(n/2); otherwise it lies below. Same-page arcs cross once exactly when their endpoints alternate. The film computes the crossings and compares them with Z(n) for each size. The formula row is an upper bound supplied by this particular construction. Establishing that no drawing does better is a separate lower-bound problem, recorded in the proof gauge.</p>
-      <p class="xcfilm-method">The nine-dot drift is an invertible shear of the plane. It moves the curved drawing and its crossing points while preserving its 36 crossings. It illustrates how edges can leave the book-drawing form; it is not a proof of optimality. The later seven-dot drawing has nine crossings. The oriented triangle 1–2–5 and four-cycle 0–3–6–4 cross with signs +1, −1, −1 and +1, summing to zero. Signs use the ordered tangent directions along the cycles. The shared-vertex correction and the leaders from the basis grid are schematic.</p>
-      <p class="xcfilm-method">For n = 7, the basis exponent pairs for each endpoint pair are (0, 0), (0, 1) and (1, 1). Choosing one pair for each of two edges gives a dimension of 3 × 3 = 9, equal to Z(7). The paper's set of crossing pairs is ordered, so half its size counts unordered pairs. Each such pair requires at least one crossing point; in the displayed two-page drawing it crosses exactly once. The film shows this dimension count and inequality pattern, while leaving the injectivity, isotropy and interpolation arguments out.</p>
-      <p class="xcfilm-method">The proof gauge records cited small cases and asymptotic lower-bound ratios. A counted drawing alone supplies no lower bound for every other drawing. The dashed blue marks at one are the papers' claims, not computed universal minima. The ending follows the article's dated unreviewed status. Its Lean statements have not been audited here, and no outside replay is recorded.</p>
-    </details>
+    <FilmControls id="xcfilm-timeline" timeline={TIMELINE} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. Every live crossing count is computed from the geometry currently drawn. A crossing is an interior transverse intersection of two edges, with a common endpoint excluded. The count is of crossing points, not just edge pairs. The slight general-position spacing of the spine vertices keeps unrelated crossings from coinciding. Crossing rings mark the computed intersection positions.</p>
+      <p class="film-method">The opening drawing has three kilns and four yards with twelve rails in two rows. It has 18 crossings. Moving the vertices into Zarankiewicz's cross leaves two. The count is recomputed while they move. The curved rail illustrates permitted routes; its tally follows the actual curve, rather than assuming that every curved drawing has a prescribed count. The small complete graphs use a triangle with interior points, giving zero crossings for K₄ and one for K₅. The bipartite cross gives one for K₃,₃.</p>
+      <p class="film-method">In the two-page drawing, vertices are labelled 0 through n − 1 on one line. The edge joining i and j lies above the line exactly when (i + j) modulo n is less than floor(n/2); otherwise it lies below. Same-page arcs cross once exactly when their endpoints alternate. The film computes the crossings and compares them with Z(n) for each size. The formula row is an upper bound supplied by this particular construction. Establishing that no drawing does better is a separate lower-bound problem, recorded in the proof gauge.</p>
+      <p class="film-method">The nine-dot drift is an invertible shear of the plane. It moves the curved drawing and its crossing points while preserving its 36 crossings. It illustrates how edges can leave the book-drawing form; it is not a proof of optimality. The later seven-dot drawing has nine crossings. The oriented triangle 1–2–5 and four-cycle 0–3–6–4 cross with signs +1, −1, −1 and +1, summing to zero. Signs use the ordered tangent directions along the cycles. The shared-vertex correction and the leaders from the basis grid are schematic.</p>
+      <p class="film-method">For n = 7, the basis exponent pairs for each endpoint pair are (0, 0), (0, 1) and (1, 1). Choosing one pair for each of two edges gives a dimension of 3 × 3 = 9, equal to Z(7). The paper's set of crossing pairs is ordered, so half its size counts unordered pairs. Each such pair requires at least one crossing point; in the displayed two-page drawing it crosses exactly once. The film shows this dimension count and inequality pattern, while leaving the injectivity, isotropy and interpolation arguments out.</p>
+      <p class="film-method">The proof gauge records cited small cases and asymptotic lower-bound ratios. A counted drawing alone supplies no lower bound for every other drawing. The dashed blue marks at one are the papers' claims, not computed universal minima. The ending follows the article's dated unreviewed status. Its Lean statements have not been audited here, and no outside replay is recorded.</p>
+    </FilmTranscript>
   </uruk-fewest-crossings>
 </Plate>
 

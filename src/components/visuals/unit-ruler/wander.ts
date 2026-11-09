@@ -3,7 +3,6 @@ import { START_RULER, UNIT, rulerEnd, type Point, type Ruler } from './tiling';
 // The film: the ruler's middle traces a figure of eight over the tiles while the ruler turns once, every 24 seconds.
 export const WANDER_PERIOD = 24000;
 
-// After the reader has moved the ruler, Play brings it back to the path over this long.
 export const RETURN_TIME = 700;
 
 const TAU = 2 * Math.PI;
@@ -15,14 +14,12 @@ function aboutMiddle(middle: Point, angle: number): Ruler {
   return { start: { x: middle.x - (UNIT / 2) * Math.cos(angle), y: middle.y - (UNIT / 2) * Math.sin(angle) }, angle };
 }
 
-// At time 0 this is the ruler the HTML already shows.
 export function rulerAt(time: number): Ruler {
   const phase = (TAU * time) / WANDER_PERIOD;
 
   return aboutMiddle({ x: MIDDLE.x + REACH.x * Math.sin(phase), y: MIDDLE.y + REACH.y * Math.sin(2 * phase) }, START_RULER.angle + phase);
 }
 
-// Part of the way from one ruler to another, eased, turning the short way round.
 export function between(from: Ruler, to: Ruler, share: number): Ruler {
   const eased = share * share * (3 - 2 * share);
   const turn = Math.atan2(Math.sin(to.angle - from.angle), Math.cos(to.angle - from.angle));

@@ -1,5 +1,6 @@
+import { smooth } from '../../../lib/animation';
 import { OPENING, SQUARE, latticeLinkClasses, circlePoints, unitPairs, type Point } from './math';
-import { layout, smooth, type Box } from './story';
+import { layout, type Box } from './story';
 import { jumpDialAt } from './exponent';
 
 type Ink = 'ink' | 'blue' | 'muted' | 'paper';

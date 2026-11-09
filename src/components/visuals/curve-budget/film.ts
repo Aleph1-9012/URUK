@@ -1,5 +1,7 @@
+import { FilmLabels } from '../../plate/labels';
+import { smooth, fade } from '../../../lib/animation';
 import { MINIMUM_DEGREES, coefficientCount, pointCost } from './math';
-import { smooth, fade } from './story';
+
 import { drawCurvePlane } from './plane';
 
 type Tone = 'ink' | 'blue' | 'muted' | 'paper';
@@ -13,14 +15,10 @@ export class CurveBudgetFilm {
   private tall = false;
   private time = 0;
   private colors: Record<Tone, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly sizes = new Map<string, Point>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (label.dataset.label) this.labels.set(label.dataset.label, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -34,33 +32,22 @@ export class CurveBudgetFilm {
 
     for (const key of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.sizes.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.sizes.set(id, { x: rect?.width ?? 0, y: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     this.time = time;
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawCurvePlane(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.label(id, x, y, alpha));
+    drawCurvePlane(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
     this.plot();
     this.triangle();
     this.lens();
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
   private line(a: Point, b: Point, tone: Tone = 'ink', alpha = 1, weight = 1): void {
@@ -129,18 +116,6 @@ export class CurveBudgetFilm {
     this.pen.globalAlpha = 1;
   }
 
-  private label(id: string, x: number, y: number, alpha = 1): void {
-    const label = this.labels.get(id);
-
-    if (!label || alpha < .005) return;
-
-    const size = this.sizes.get(id) ?? { x: 0, y: 0 };
-    label.style.transform = `translate(${Math.max(size.x / 2 + 7, Math.min(this.width - size.x / 2 - 7, x))}px,${Math.max(size.y / 2 + 6, Math.min(this.height - size.y / 2 - 6, y))}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(alpha);
-    this.visible.add(id);
-  }
-
   private plot(): void {
     const t = this.time;
     const w = this.width;
@@ -196,9 +171,6 @@ export class CurveBudgetFilm {
       const radius = this.tall ? 2.6 : 3.3;
       this.dot(at, radius, 'ink', alpha);
 
-      // A dot that clears the line by less than its own radius would look as if it touched it, so the gap is
-      // written beside it (16 > 15.81 at m = 5) while the dots are first shown, before "Suppose a curve here" takes that corner.
-      // The words end just above and left of the dot, so they belong to it at every width.
       if (margin < .25) {
         const gap = `${degree} > ${(degree - margin).toFixed(2)}`;
         const size = this.tall ? 10 : 11;
@@ -214,8 +186,8 @@ export class CurveBudgetFilm {
 
     for (let m = 1; m <= 2; m++) this.dot(point(m, 4 * m), 5, 'blue', square, true);
 
-    this.label('line', right - (this.tall ? 28 : 48), top + (this.tall ? 14 : 25), visible * (1 - visitor) * (1 - nine) * (1 - square) * (1 - history) * (1 - lensLabels));
-    this.label('nine', (left + right) / 2, top + 20, nine);
+    this.labels.place('line', right - (this.tall ? 28 : 48), top + (this.tall ? 14 : 25), visible * (1 - visitor) * (1 - nine) * (1 - square) * (1 - history) * (1 - lensLabels));
+    this.labels.place('nine', (left + right) / 2, top + 20, nine);
     this.words(square > .5 ? '√16 = 4: HITS GRID POINTS' : 'r = 10 · √10 IS IRRATIONAL', (left + right) / 2, top + (this.tall ? 16 : 22), right - left, history);
     this.words('SOLVED AT THESE PINS · m = 1…8', (left + right) / 2, top - 18, right - left + 20, solving);
     const hypothesis = fade(t, 74000, 76000, 96000, 98000);
@@ -242,7 +214,7 @@ export class CurveBudgetFilm {
 
     this.words('EVERY r ≥ 10 · EVERY m\nUNEQUAL MULTIPLICITIES TOO', (left + right) / 2, h * (this.tall ? .46 : .16), right - left + 15, claim, 'blue');
     this.words('TEVELEV · 21 OCT 2026\nREWORKED IN LECTURE NOTES', (left + right) / 2, h * (this.tall ? .46 : .16), right - left + 15, fade(t, 97500, 99000, 105500, 107000));
-    this.label('status', (left + right) / 2, h * (this.tall ? .46 : .16), smooth(t, 106000, 108000));
+    this.labels.place('status', (left + right) / 2, h * (this.tall ? .46 : .16), smooth(t, 106000, 108000));
     this.words('COMPANIONS: UNREVIEWED', (left + right) / 2, h * (this.tall ? .46 : .16) + 30, right - left + 15, smooth(t, 108000, 110000), 'muted');
   }
 
@@ -298,7 +270,6 @@ export class CurveBudgetFilm {
       if (costs > .01) {
         for (let m = 1; m <= 4; m++) {
           const cx = center + (m - 2.5) * w * (this.tall ? .20 : .09);
-          // On desktop the row hangs below the triangle's note, clear of it at every frame size.
           const cy = this.tall ? h * .78 : bottom + 82;
           this.words(`m = ${m}`, cx, cy - 22, w * .17, costs);
 

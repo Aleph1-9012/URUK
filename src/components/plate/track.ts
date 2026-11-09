@@ -1,5 +1,3 @@
-// The wedge-line control under a plate: a slider for continuous values (61a) or a ruler of steps (62b).
-// The track element is the ARIA slider; pointer, arrow keys, Page Up/Down, Home and End all move it.
 export type TrackOptions = {
   min: number;
   max: number;
@@ -13,7 +11,6 @@ export type TrackOptions = {
 
 export type Track = {
   set: (value: number) => void;
-  // For a playing film: the handle moves smoothly, while the value read out stays on a step.
   glide: (position: number) => void;
   destroy: () => void;
 };
@@ -35,7 +32,6 @@ export function bindTrack(track: HTMLElement, options: TrackOptions): Track {
     track.setAttribute('aria-valuenow', String(value));
     track.setAttribute('aria-valuetext', options.describe(value));
 
-    // A step's sign stays pressed once the ruler has passed it.
     stops.forEach((stop, index) => {
       stop.toggleAttribute('data-passed', options.min + index * options.step < position);
     });
@@ -136,7 +132,6 @@ export function bindTrack(track: HTMLElement, options: TrackOptions): Track {
   };
 }
 
-// Controls stay faded and inert in the HTML until their visual's script has taken them over.
 export function wake(root: HTMLElement): void {
   for (const controls of root.querySelectorAll<HTMLElement>('[data-plate-controls]')) {
     controls.inert = false;

@@ -1,5 +1,5 @@
 // The primes up to 100, the count π(x), the smooth curve Li(x), and Riemann's exact formula that rebuilds π(x) from the zeros of ζ.
-import type { Complex } from '../zeta-map/lfunctions';
+import type { Complex } from './zeta/lfunctions';
 
 export const CHART_END = 100;
 
@@ -65,7 +65,6 @@ export function offsetLi(x: number): number {
   return li(x) - li(2);
 }
 
-// Complex arithmetic for the exponential integral.
 const multiply = (a: Complex, b: Complex): Complex => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re });
 const divide = (a: Complex, b: Complex): Complex => {
   const size = b.re * b.re + b.im * b.im;

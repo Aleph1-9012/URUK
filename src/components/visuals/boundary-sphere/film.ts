@@ -1,5 +1,7 @@
+import { FilmLabels } from '../../plate/labels';
+import { smooth, fade } from '../../../lib/animation';
 import { crumple, gridCost, exponentialCost, quadraticCost } from './math';
-import { smooth, fade } from './story';
+
 import { drawBoundaryDisk } from './disk';
 
 type Tone = 'ink' | 'blue' | 'muted' | 'paper';
@@ -13,14 +15,10 @@ export class BoundarySphereFilm {
   private tall = false;
   private time = 0;
   private colors: Record<Tone, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly sizes = new Map<string, Point>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (label.dataset.label) this.labels.set(label.dataset.label, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -34,26 +32,17 @@ export class BoundarySphereFilm {
 
     for (const key of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.sizes.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.sizes.set(id, { x: rect?.width ?? 0, y: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     this.time = time;
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawBoundaryDisk(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.label(id, x, y, alpha));
+    drawBoundaryDisk(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
     this.squareGrid(fade(time, 1000, 3500, 19000, 23000), true);
     this.globe(Math.max(fade(time, 25000, 28000, 51500, 55000), smooth(time, 101500, 104000)));
     this.squareGrid(fade(time, 49500, 55000, 93000, 94500), false);
@@ -61,12 +50,10 @@ export class BoundarySphereFilm {
     this.growth();
     const final = smooth(time, 109000, 111000);
     const x = this.width * (this.tall ? .5 : .75);
-    this.label('status', x, this.height * (this.tall ? .87 : .77), final);
+    this.labels.place('status', x, this.height * (this.tall ? .87 : .77), final);
     this.words('MARIO BONK · 22 OCT 2026\n“SEEMS TO BE CORRECT”', x, this.height * (this.tall ? .96 : .87), this.width * (this.tall ? .88 : .42), final, 'muted');
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
   private line(points: readonly Point[], tone: Tone = 'ink', alpha = 1, weight = 1): void {
@@ -125,18 +112,6 @@ export class BoundarySphereFilm {
     this.pen.globalAlpha = 1;
   }
 
-  private label(id: string, x: number, y: number, alpha = 1): void {
-    const label = this.labels.get(id);
-
-    if (!label || alpha < .005) return;
-
-    const size = this.sizes.get(id) ?? { x: 0, y: 0 };
-    label.style.transform = `translate(${Math.max(size.x / 2 + 7, Math.min(this.width - size.x / 2 - 7, x))}px,${Math.max(size.y / 2 + 6, Math.min(this.height - size.y / 2 - 6, y))}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(alpha);
-    this.visible.add(id);
-  }
-
   private globe(alpha: number): void {
     if (alpha < .005) return;
 
@@ -174,7 +149,7 @@ export class BoundarySphereFilm {
         }
       }
 
-      this.label('radius', center.x, center.y + radius + 48, covers);
+      this.labels.place('radius', center.x, center.y + radius + 48, covers);
     }
   }
 
@@ -256,7 +231,7 @@ export class BoundarySphereFilm {
       this.words('0', left - 14, top, 25, alpha, 'blue');
       this.words('1', left - 14, top + size, 25, alpha, 'blue');
       this.words('0 AT TOP · 1 AT BOTTOM', center, top + size + 24, w * (this.tall ? .88 : .4), alpha * (this.tall ? smooth(t, 85500, 86200) : 1));
-      this.label('energy', center, top + size + 48, alpha * smooth(t, 86000, 87500));
+      this.labels.place('energy', center, top + size + 48, alpha * smooth(t, 86000, 87500));
       const copies = smooth(t, 89500, 92000);
       if (copies > .01) {
         const copyW = w * (this.tall ? .28 : .12);

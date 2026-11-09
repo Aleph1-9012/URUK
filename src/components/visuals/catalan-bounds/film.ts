@@ -1,5 +1,6 @@
+import { fade, mix, progress as share, smooth as span } from '../../../lib/animation';
 import { CATALAN, EXAMPLES, SUMS, LOWER_BOUND, UPPER_BOUND } from './catalan';
-import { fade, geometryAt, mix, share, span, termsAt, type Layout } from './story';
+import { geometryAt, termsAt, type Layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 
@@ -11,7 +12,6 @@ type Align = 'left' | 'center' | 'right';
 
 const ALIGN_SHIFT: Record<Align, number> = { left: 0.5, center: 0, right: -0.5 };
 
-// The first two hops carry their terms, so the arcs read as the series written above them.
 const HOP_TERMS = ['+1', '−1/9'];
 
 export class CatalanFilm {
@@ -64,7 +64,6 @@ export class CatalanFilm {
     this.integerGap();
     this.construction();
     this.bounds();
-    // These two objects carry the assumption and construction across the change of scene.
     this.label('rational', 0.5, mix(0.17, this.layout === 'tall' ? 0.12 : 0.14, span(time, 73500, 76300)), fade(time, 66400, 68000, 101500, 102500));
     this.label('determinant', 0.5, mix(0.69, 0.38, span(time, 67900, 71300)), fade(time, 68800, 70800, 74800, 75800));
 
@@ -114,7 +113,6 @@ export class CatalanFilm {
     context.globalAlpha = 1;
   }
 
-  // A filled arrowhead whose tip is the given point.
   private head(tip: Point, direction: -1 | 1, color: string, alpha: number): void {
     if (alpha <= 0) return;
 
@@ -181,7 +179,6 @@ export class CatalanFilm {
     return box.width / 2 / this.width;
   }
 
-  // Slanted shading marks a stretch of a line that nothing may occupy.
   private shade(left: number, right: number, top: number, bottom: number, tone: keyof Colors, alpha: number): void {
     if (alpha <= 0 || right <= left) return;
 
@@ -236,7 +233,6 @@ export class CatalanFilm {
     const gx = x(CATALAN);
     this.line([[gx, lineY - 0.1], [gx, lineY + 0.03]], this.colors.blue, alpha * settled);
     const half = this.label('g', gx, lineY - 0.14, wording * settled);
-    // The value joins G once the camera has stopped, so it never slides across the letter.
     this.text('= 0.9159655…', gx + half + 0.008, lineY - 0.14, wording * span(time, 12400, 13400), 'blue', 'number', 'left');
     const context = this.context;
     context.save();
@@ -286,7 +282,6 @@ export class CatalanFilm {
 
       for (const [index, sum] of SUMS.slice(0, 6).entries()) {
         const shown = ledger * span(time, 15700 + index * 250, 16500 + index * 250);
-        // Each written sum is numbered at its own stop on the line; later stops sit further out because they crowd.
         const side = index % 2 === 0 ? -1 : 1;
         const reach = index >= 4 ? 0.085 : 0.045;
         const place = x(sum.value);
@@ -317,7 +312,6 @@ export class CatalanFilm {
     const title = (plot: Plot) => plot.y - (tall ? 0.105 : 0.12);
     const centre = first.x + first.w / 2;
     this.label('approximation', 0.5, tall ? 0.07 : 0.085, alpha);
-    // Each chart is named in words first; the formula under the name says the same thing exactly.
     this.text('ERROR', centre, title(first), named * before, 'muted', 'tag');
     this.label('error', centre, first.y - 0.055, named * before);
     this.text('Multiplying by q', centre, first.y - 0.06, alpha * fade(time, 32300, 33300, 36100, 36600), 'blue');
@@ -331,14 +325,12 @@ export class CatalanFilm {
 
     if (!last || time < 26300) return;
 
-    // The sixth values are read off at their own points.
     const value = last.error * Number(last.denominator) ** multiply;
     const shown = value < 1 ? value.toFixed(4) : Math.round(value).toLocaleString('en-US');
     this.text(shown, errorEnd[0] + 0.015, errorEnd[1] - 0.05, named, multiply > 0 ? 'blue' : 'ink', 'number', 'right');
     this.text(Number(last.denominator).toLocaleString('en-US'), denominatorEnd[0] + 0.015, denominatorEnd[1] - 0.05, named, 'ink', 'number', 'right');
   }
 
-  // Draws one chart and returns where its sixth point stands.
   private logPlot(plot: Plot, low: number, high: number, denominators: boolean, multiply: number, alpha: number): Point {
     const x = (index: number) => plot.x + index / 5 * plot.w;
     const y = (log: number) => plot.y + plot.h * (1 - (log - low) / (high - low));
@@ -363,7 +355,6 @@ export class CatalanFilm {
     const points: Point[] = [];
     const ghosts: Point[] = [];
     const revealed = 5 * share(this.time, 23700, 26700);
-    // While the errors are multiplied, their old places stay faintly behind them.
     const ghost = alpha * Math.min(1, multiply * 4) * 0.55;
 
     for (const [index, sum] of EXAMPLES.entries()) {
@@ -409,7 +400,6 @@ export class CatalanFilm {
     const left = mix(tall ? 0.2 : 0.13, 0.12, enter);
     const right = mix(tall ? 0.85 : 0.45, 0.88, enter);
     const at = (value: number) => mix(left, right, value / 4);
-    // The words wait until the charts' own words have gone.
     const wording = alpha * span(time, 41200, 42400) * (1 - span(time, 48800, 49900));
     this.text('SUPPOSE', 0.5, 0.1, wording, 'muted', 'tag');
     this.label('rational', 0.5, 0.18, wording);
@@ -457,7 +447,6 @@ export class CatalanFilm {
     this.text('CLAIMED CONSTRUCTION · SCHEMATIC', 0.5, 0.06, wording, 'muted', 'tag');
     this.label('matrix-size', 0.5, 0.17, wording * (1 - contact));
     this.label('rational', 0.5, 0.17, wording * span(time, 66400, 68000));
-    // One entry is ringed; its formula hangs from it.
     const cell = this.matrix(0.5, y, size, alpha * (1 - collapse), span(time, 50600, 54900), entry, rational);
     this.label('determinant', 0.5, mix(0.69, 0.38, collapse), wording * (1 - contact * (1 - span(time, 68800, 70800))));
     this.text('A square array gives one number.', 0.5, 0.83, wording * (1 - contact));
@@ -471,7 +460,6 @@ export class CatalanFilm {
     this.text('Rational entries. Rational determinant.', 0.5, 0.79, wording * span(time, 70600, 71800));
   }
 
-  // Two expressions that begin the same way: they share their start and slope, and only part later.
   private beginnings(alpha: number): void {
     if (alpha <= 0) return;
 
@@ -499,7 +487,6 @@ export class CatalanFilm {
     this.text('Matching the beginnings', 0.5, tall ? 0.93 : 0.92, alpha);
   }
 
-  // Draws the schematic array and returns the centre of its ringed entry.
   private matrix(x: number, y: number, size: number, alpha: number, fill = 1, ring = 0, rational = 0): Point {
     const halfWidth = size / 2;
     const halfHeight = size * this.width / this.height / 2;
@@ -528,7 +515,6 @@ export class CatalanFilm {
     return ringed;
   }
 
-  // A tiny fraction sign: a bar between two dots.
   private fraction(x: number, y: number, half: number, color: string, alpha: number): void {
     const px = half / this.width;
     const py = half * 1.3 / this.height;
@@ -537,7 +523,6 @@ export class CatalanFilm {
     this.dot(x, y + py, 1.3, color, alpha);
   }
 
-  // One line for the scaled size of the determinant: a floor from the denominators, a ceiling from the integral.
   private bounds(): void {
     const time = this.time;
     const alpha = span(time, 74200, 76300);
@@ -565,7 +550,6 @@ export class CatalanFilm {
     this.label('normalized', 0.5, tall ? 0.205 : 0.24, alpha);
     this.text(tall ? 'SIZE OF THE DETERMINANT, LOG SCALE' : 'THE SIZE OF THE DETERMINANT, ON A LOG SCALE', 0.5, tall ? 0.28 : 0.31, alpha, 'muted', 'tag');
 
-    // The axis: smaller determinants to the left, larger to the right.
     this.line([[left, lineY], [right, lineY]], this.colors.muted, alpha * 0.8, 1);
 
     for (let tick = 0; tick <= 5; tick += 1) {
@@ -576,14 +560,12 @@ export class CatalanFilm {
     this.text('← SMALLER', left, lineY + 0.04, alpha, 'muted', 'tag', 'left');
     this.text('LARGER →', right, lineY + 0.04, alpha, 'muted', 'tag', 'right');
 
-    // The floor: from the threshold, every later value lies to the right.
     const floorEnd = mix(floorX, right, floorIn);
     this.line([[floorX, lineY - 0.035], [floorX, lineY + 0.035]], this.colors.ink, alpha * span(time, 76000, 76600), 2);
     this.line([[floorX, lineY], [floorEnd, lineY]], this.colors.ink, alpha, 4);
     this.head([floorEnd + 0.004, lineY], 1, this.colors.ink, alpha * span(time, 76800, 77400));
     this.label('lower', tall ? 0.5 : (floorX + right) / 2, tall ? mix(0.53, 0.45, finale) : 0.51, alpha * span(time, 77000, 78500));
 
-    // The ceiling: from the threshold, every later value lies to the left.
     const ceilingStart = mix(ceilingX, left, ceilingIn);
     this.line([[ceilingX, lineY - 0.035], [ceilingX, lineY + 0.035]], this.colors.blue, alpha * span(time, 94000, 94700), 2);
     this.line([[ceilingStart, lineY], [ceilingX, lineY]], this.colors.blue, alpha, 4);
@@ -592,7 +574,6 @@ export class CatalanFilm {
 
     this.proofSources(alpha * (1 - retire), tall);
 
-    // Between the two thresholds there is no room.
     const gap = alpha * span(time, 104000, 105300);
     const gapY = lineY - 0.045;
     this.shade(ceilingX + 0.006, floorX - 0.006, lineY - 0.022, lineY + 0.022, 'muted', gap * 0.7);
@@ -603,7 +584,6 @@ export class CatalanFilm {
     this.text('The paper claims G is irrational.', 0.5, tall ? 0.86 : 0.88, alpha * status);
   }
 
-  // What each bound stands on, shown beside the line while its subtitle plays.
   private proofSources(alpha: number, tall: boolean): void {
     if (alpha <= 0) return;
 
@@ -629,7 +609,6 @@ export class CatalanFilm {
     const half = this.label('zero', zeroX, zeroY, zero * (1 - span(time, 88600, 89200)));
     this.line([[zeroX - half - 0.006, zeroY], [zeroX - half - 0.006 + struck * (2 * half + 0.012), zeroY]], this.colors.blue, zero * (1 - span(time, 88600, 89200)), 1.8);
     this.label('nonzero', zeroX, zeroY, zero * span(time, 88800, 89600));
-    // The matrices point at the case they rule out.
     const pointer = zero * span(time, 86400, 87200);
     const direction = tall ? 1 : -1;
     const from = matricesX + direction * (tall ? 0.17 + 0.06 : 0.1 + 0.035);

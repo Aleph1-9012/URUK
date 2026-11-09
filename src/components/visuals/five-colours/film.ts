@@ -1,5 +1,7 @@
+import { FilmLabels } from '../../plate/labels';
+import { smooth } from '../../../lib/animation';
 import { SPINDLE, SPINDLE_EDGES, SPINDLE_ANGLE, PALETTE, FORCED_COLOURS, hexTiles, hexVertices, classAt, rulerAt, type Point } from './math';
-import { smooth } from './story';
+
 import { drawColourLedger, spindleCardPose } from './ledger';
 import { drawColourFields, focusPose } from './fields';
 
@@ -28,14 +30,10 @@ export class FiveColoursFilm {
   private colors: Record<Ink, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
   private readonly pigments: string[] = [];
   private readonly patterns = new Map<number, CanvasPattern>();
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly sizes = new Map<string, Point>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (label.dataset.label) this.labels.set(label.dataset.label, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -95,21 +93,12 @@ export class FiveColoursFilm {
       if (pattern) this.patterns.set(entry.id, pattern);
     }
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.sizes.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.sizes.set(id, { x: rect?.width ?? 0, y: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     this.time = time;
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
@@ -128,7 +117,7 @@ export class FiveColoursFilm {
       this.pen.beginPath();
       this.pen.rect(box.x, box.y, box.w * wipe, box.h);
       this.pen.clip();
-      drawColourFields(this.pen, box, Math.min(time, 114999), this.colors, (path, id, alpha) => this.fillClass(path, id, alpha), (id, x, y, alpha) => this.label(id, x, y, alpha));
+      drawColourFields(this.pen, box, Math.min(time, 114999), this.colors, (path, id, alpha) => this.fillClass(path, id, alpha), (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
       this.pen.restore();
     }
 
@@ -143,12 +132,10 @@ export class FiveColoursFilm {
 
     this.ruler(box);
     this.pen.restore();
-    drawColourLedger(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.label(id, x, y, alpha));
+    drawColourLedger(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
     this.spindle(box);
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
   private sheet(): Box {
@@ -237,18 +224,6 @@ export class FiveColoursFilm {
     }
   }
 
-  private label(id: string, x: number, y: number, alpha = 1): void {
-    const label = this.labels.get(id);
-
-    if (!label || alpha < .005) return;
-
-    const size = this.sizes.get(id) ?? { x: 0, y: 0 };
-    label.style.transform = `translate(${Math.max(size.x / 2 + 7, Math.min(this.width - size.x / 2 - 7, x))}px,${Math.max(size.y / 2 + 6, Math.min(this.height - size.y / 2 - 6, y))}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(alpha);
-    this.visible.add(id);
-  }
-
   private disc(point: Point, id: number, radius: number, numeral = true): void {
     this.pen.beginPath();
     this.pen.arc(point.x, point.y, radius, 0, Math.PI * 2);
@@ -324,8 +299,8 @@ export class FiveColoursFilm {
       }
 
       this.words('WITHIN ONE HEXAGON', box.x + box.w * .72, box.y + box.h - 63, box.w * .54);
-      this.label('diameter', box.x + box.w * .72, box.y + box.h - 43);
-      this.label('gap', box.x + box.w / 2, box.y + box.h - 12);
+      this.labels.place('diameter', box.x + box.w * .72, box.y + box.h - 43);
+      this.labels.place('gap', box.x + box.w / 2, box.y + box.h - 12);
     }
   }
 

@@ -1,10 +1,3 @@
-uruk-trapped-waves { display: block; }
-
-.result-opening:has(uruk-trapped-waves) {
-  grid-template-columns: minmax(0, 920fr) minmax(0, 368fr);
-  gap: 32px;
-}
-
 .twfilm { border: 1px solid var(--muted); background: var(--paper); }
 .twfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
 .twfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
@@ -16,34 +9,6 @@ uruk-trapped-waves[data-ready] .twfilm-canvas { visibility: visible; }
 .twfilm-label--small { font-size: .9375rem; }
 .twfilm-status > span { padding: 5px 8px; border: 1px solid var(--blue); color: var(--blue); font: .6875rem/1.4 var(--font-special-elite); }
 
-.twfilm-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
-.plate .twfilm-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
-.twfilm-cue.is-active { visibility: visible; }
-.twfilm-phrase { white-space: nowrap; }
-.twfilm-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
-
-.twfilm-controls { padding-top: 16px; }
-uruk-trapped-waves:not([data-ready]) .twfilm-controls { display: none; }
-.twfilm-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.plate .twfilm-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
-.twfilm-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; }
-.twfilm-timeline::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
-.twfilm-timeline::-moz-range-thumb { width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
-.twfilm-timeline:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
-.twfilm-steps { display: none; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; }
-.plate .twfilm-steps p { margin: 0; color: var(--muted); font: italic .875rem/1.4 var(--font-alegreya); text-align: center; }
-.twfilm-controls button:disabled { opacity: .45; cursor: default; }
-
-.twfilm-transcript { margin-top: 18px; }
-.twfilm-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
-.twfilm-transcript ol { padding-left: 22px; margin-top: 20px; }
-.twfilm-transcript li + li { margin-top: 20px; }
-.plate .twfilm-transcript h3 { margin-bottom: 8px; font: italic 1.25rem/1.35 var(--font-alegreya); }
-.plate .twfilm-transcript p { font: 1rem/1.55 var(--font-alegreya); }
-.plate .twfilm-transcript p + p { margin-top: 8px; }
-.plate .twfilm-method { margin-top: 20px; color: var(--muted); }
-
-
 .twfilm-still { position: absolute; inset: 4% 4%; display: grid; grid-template-columns: 1.15fr 1fr; align-items: center; gap: 20px; }
 uruk-trapped-waves[data-ready] .twfilm-still { display: none; }
 .twfilm-still-grid, .twfilm-still-map { min-width: 0; }
@@ -51,28 +16,13 @@ uruk-trapped-waves[data-ready] .twfilm-still { display: none; }
 .twfilm-still-map { align-self: stretch; display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); min-height: 0; }
 .twfilm-still-map svg { display: block; width: 100%; height: 100%; }
 
-@media (max-width: 74.999rem) {
-  .result-opening:has(uruk-trapped-waves) { grid-template-columns: minmax(0, 1fr); }
-  .result-opening:has(uruk-trapped-waves) .result-introduction { max-width: 800px; }
-}
-
 @container plate (max-width: 599px) {
   .twfilm-stage { aspect-ratio: 4 / 5; }
-  .twfilm-subtitles { padding: 12px 14px 16px; }
-  .plate .twfilm-cue { font-size: 1.0625rem; }
+
   .twfilm-label { font-size: .9375rem; }
   .twfilm-label--small { font-size: .8125rem; }
   .twfilm-still { inset: 2% 4%; grid-template-columns: 1fr; grid-template-rows: 49% 51%; gap: 0; }
   .twfilm-still-grid { height: 100%; }
   .twfilm-still-grid svg { height: 100%; }
   .twfilm-still-map { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); }
-}
-
-@media (max-width: 47.999rem) {
-  .result-opening:has(uruk-trapped-waves) .result-introduction > .folio-top__copy { order: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  uruk-trapped-waves [data-play] { display: none; }
-  .twfilm-steps { display: flex; }
 }

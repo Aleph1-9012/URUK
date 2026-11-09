@@ -1,10 +1,3 @@
-uruk-fewest-crossings { display: block; }
-
-.result-opening:has(uruk-fewest-crossings) {
-  grid-template-columns: minmax(0, 920fr) minmax(0, 368fr);
-  gap: 32px;
-}
-
 .xcfilm { border: 1px solid var(--muted); background: var(--paper); }
 .xcfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
 .xcfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
@@ -13,34 +6,6 @@ uruk-fewest-crossings[data-ready] .xcfilm-canvas { visibility: visible; }
 .xcfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
 .xcfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
 
-.xcfilm-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
-.plate .xcfilm-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
-.xcfilm-cue.is-active { visibility: visible; }
-.xcfilm-phrase { white-space: nowrap; }
-.xcfilm-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
-
-.xcfilm-controls { padding-top: 16px; }
-uruk-fewest-crossings:not([data-ready]) .xcfilm-controls { display: none; }
-.xcfilm-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.plate .xcfilm-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
-.xcfilm-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; }
-.xcfilm-timeline::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
-.xcfilm-timeline::-moz-range-thumb { width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
-.xcfilm-timeline:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
-.xcfilm-steps { display: none; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; }
-.plate .xcfilm-steps p { margin: 0; color: var(--muted); font: italic .875rem/1.4 var(--font-alegreya); text-align: center; }
-.xcfilm-controls button:disabled { opacity: .45; cursor: default; }
-
-.xcfilm-transcript { margin-top: 18px; }
-.xcfilm-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
-.xcfilm-transcript ol { padding-left: 22px; margin-top: 20px; }
-.xcfilm-transcript li + li { margin-top: 20px; }
-.plate .xcfilm-transcript h3 { margin-bottom: 8px; font: italic 1.25rem/1.35 var(--font-alegreya); }
-.plate .xcfilm-transcript p { font: 1rem/1.55 var(--font-alegreya); }
-.plate .xcfilm-transcript p + p { margin-top: 8px; }
-.plate .xcfilm-method { margin-top: 20px; color: var(--muted); }
-
-
 .xcfilm-still { position: absolute; inset: 3% 4%; display: grid; grid-template-columns: minmax(0, 58fr) minmax(0, 42fr); grid-template-rows: minmax(0, 48fr) minmax(0, 52fr); align-items: center; gap: 8px 18px; }
 uruk-fewest-crossings[data-ready] .xcfilm-still { display: none; }
 .xcfilm-still-sheet { grid-row: 1 / 3; }
@@ -48,27 +13,12 @@ uruk-fewest-crossings[data-ready] .xcfilm-still { display: none; }
 .xcfilm-still svg { display: block; width: 100%; height: 100%; }
 .xcfilm-label--formula { font-size: .9375rem; }
 
-@media (max-width: 74.999rem) {
-  .result-opening:has(uruk-fewest-crossings) { grid-template-columns: minmax(0, 1fr); }
-  .result-opening:has(uruk-fewest-crossings) .result-introduction { max-width: 800px; }
-}
-
 @container plate (max-width: 599px) {
   .xcfilm-stage { aspect-ratio: 4 / 5; }
-  .xcfilm-subtitles { padding: 12px 14px 16px; }
-  .plate .xcfilm-cue { font-size: 1.0625rem; }
+
   .xcfilm-label { font-size: .9375rem; }
   .xcfilm-still { inset: 2% 4%; grid-template-columns: 1fr; grid-template-rows: minmax(0, 55fr) minmax(0, 20fr) minmax(0, 25fr); gap: 0; }
   .xcfilm-still-sheet { grid-row: auto; }
   .xcfilm-label--formula { font-size: .75rem; }
   .xcfilm-still svg { height: 100%; }
-}
-
-@media (max-width: 47.999rem) {
-  .result-opening:has(uruk-fewest-crossings) .result-introduction > .folio-top__copy { order: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  uruk-fewest-crossings [data-play] { display: none; }
-  .xcfilm-steps { display: flex; }
 }

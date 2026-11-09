@@ -3,9 +3,7 @@ import {
   CEILINGS, CONVERGENTS, PI_DIGITS, PI_SCALE, PI_SCALED, continuedFraction, scaledPi,
 } from '../src/components/visuals/fraction-rulers/approximations';
 import { computeSeries } from '../src/components/visuals/fraction-rulers/series';
-import {
-  CUES, FILM_DURATION, cueAt, cueEnd, sceneAt, stillTime,
-} from '../src/components/visuals/fraction-rulers/story';
+import { CUES, FILM_DURATION, sceneAt, TIMELINE } from '../src/components/visuals/fraction-rulers/story';
 
 test('017 maths: Machin arithmetic agrees at 120 and 300 digits and yields the known continued fraction', () => {
   expect(PI_DIGITS).toBe(300);
@@ -143,18 +141,18 @@ test('017 film: the ordered subtitles fit the reading time and reduced-motion st
   expect(CUES[0]?.at).toBe(0);
 
   for (const [index, cue] of CUES.entries()) {
-    const duration = cueEnd(index) - cue.at;
+    const duration = TIMELINE.cueEnd(index) - cue.at;
     const letters = cue.text.replace(/\$[^$]*\$/g, 'xxxxx').length;
 
     expect(duration).toBeGreaterThan(0);
 
     if (index < CUES.length - 1) expect(duration).toBeGreaterThanOrEqual(letters * 1000 / 17 - 200);
 
-    expect(cueAt(cue.at)).toBe(index);
-    expect(cueAt(stillTime(index))).toBe(index);
+    expect(TIMELINE.cueAt(cue.at)).toBe(index);
+    expect(TIMELINE.cueAt(TIMELINE.stillTime(index))).toBe(index);
   }
 
-  expect(cueAt(FILM_DURATION + 5000)).toBe(CUES.length - 1);
+  expect(TIMELINE.cueAt(FILM_DURATION + 5000)).toBe(CUES.length - 1);
 });
 
 test('017 film: ruler zoom and chart bounds move continuously in both layouts', () => {

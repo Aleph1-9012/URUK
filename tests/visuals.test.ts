@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { swingAt, swingPeriod, swingTimeOf } from '../src/components/plate/player';
+import { swingAt, swingPeriod, swingTimeOf } from '../src/components/plate/swing';
 import { formatK } from '../src/components/visuals/standard-map/labels';
 import { FILM as MAP_FILM, K_START, drawOrbits, step } from '../src/components/visuals/standard-map/orbits';
 import { apply, bandMaps, trackLines, x0, x0Inverse, x1 } from '../src/components/visuals/thompson/maps';
@@ -7,7 +7,6 @@ import { FILM_PERIOD, START_STEP, describeStep, stepAt, timeOfStep } from '../sr
 import { START_RULER, UNIT, cellAt, fits, patternOf, rulerEnd, tiles } from '../src/components/visuals/unit-ruler/tiling';
 import { WANDER_PERIOD, between, rulerAt } from '../src/components/visuals/unit-ruler/wander';
 
-// A fixed sequence, so a failure can be replayed.
 function seeded(seed: number): () => number {
   let state = seed;
 

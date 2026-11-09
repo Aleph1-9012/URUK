@@ -1,4 +1,4 @@
-import { smooth } from './story';
+import { smooth } from '../../../lib/animation';
 
 export type Matrix2 = readonly [number, number, number, number];
 

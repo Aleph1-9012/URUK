@@ -104,8 +104,6 @@ export type Field = (x: number, y: number) => number;
 
 export const PLANE_BOUND = 1.08;
 
-// The centre sign resolves the two ambiguous saddle cases. Adjacent cells share
-// the same sampled endpoints, so the cached real zero sets join without cracks.
 export function marchingSquares(field: Field, resolution = 160, bound = PLANE_BOUND): Segment[] {
   const segments: Segment[] = [];
   const step = 2 * bound / resolution;
@@ -165,7 +163,6 @@ export const CURVE_SEGMENTS = {
   nodal: marchingSquares((x, y) => evaluate(CURVES.nodal, x, y)),
 };
 
-// Joins the unordered marching-squares segments into ordered pieces. Open pieces start at a loose end.
 function chains(segments: readonly Segment[]): Point[][] {
   const key = (point: Point) => `${Math.round(point.x * 1e6)},${Math.round(point.y * 1e6)}`;
   const ends = new Map<string, number[]>();
@@ -233,8 +230,6 @@ export function curveRun(points: readonly Point[]): CurveRun {
   return { points, lengths };
 }
 
-// How each piece of a curve is drawn in: it starts at the first pin on it, then runs once round a closed
-// piece towards its next pin, or both ways out to the frame on an open piece.
 export function growthRuns(segments: readonly Segment[], pins: readonly Point[]): CurveRun[][] {
   return chains(segments).map((points) => {
     const first = points[0];
@@ -292,8 +287,6 @@ function root(epsilon: number, left: number, right: number): number {
   return (lo + hi) / 2;
 }
 
-// Analytic branches remain continuous while the oval meets the other branch at
-// the node. A cosine sample crowds points near the oval's vertical tangencies.
 export function pinchBranches(progress: number, samples = 100): PinchBranches {
   const epsilon = -.06 * (1 - Math.max(0, Math.min(1, progress)));
   const left = epsilon === 0 ? -1 : root(epsilon, -1, -2 / 3);

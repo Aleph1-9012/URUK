@@ -55,7 +55,6 @@
   text-align: center;
 }
 
-/* The caption's two paragraphs take the caption's face, not the folio's body text. */
 .plate .plate__caption p {
   font: inherit;
   letter-spacing: inherit;
@@ -65,7 +64,6 @@
   color: var(--muted);
 }
 
-/* Controls: value on the left, the wedge line in the middle, Pause and Reset on the right. */
 .plate-controls {
   align-items: start;
   column-gap: 26px;
@@ -194,7 +192,6 @@
   text-transform: uppercase;
 }
 
-/* Phone order: value and the buttons share the first row, the line takes the whole second row. */
 @container plate (max-width: 599.98px) {
   .plate-controls {
     grid-template-columns: minmax(0, 1fr) auto;

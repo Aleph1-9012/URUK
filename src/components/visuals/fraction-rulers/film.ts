@@ -1,12 +1,12 @@
+import { fade, mix, smooth as span } from '../../../lib/animation';
 import { CEILINGS, CONVERGENTS, PI_SCALED, PI_SCALE, type Convergent } from './approximations';
 import type { SeriesData } from './series';
-import { ceilingAt, fade, mix, sceneAt, span, type Box, type Layout } from './story';
+import { ceilingAt, sceneAt, type Box, type Layout } from './story';
 
 type Ink = 'ink' | 'blue' | 'muted' | 'paper';
 
 type XY = readonly [number, number];
 
-// Signed misses are subtracted as integers before becoming drawing coordinates.
 function miss(fraction: Convergent): number {
   return fraction.numerator * PI_SCALE > PI_SCALED * fraction.denominator ? fraction.error : -fraction.error;
 }
@@ -558,7 +558,6 @@ export class FractionRulersFilm {
     }
   }
 
-
   private proof(): void {
     const time = this.time;
     const tall = this.layout === 'tall';
@@ -642,7 +641,6 @@ export class FractionRulersFilm {
     this.path([[gauge.x - 0.045, floor + gap * 0.75], [gauge.x + 0.005, floor + gap * 0.25]], 'blue', alpha * contradiction, 1.5);
     this.words('BOTH CANNOT HOLD', chart.x + chart.w / 2, chart.y - 0.065, chart.w, alpha * contradiction * (1 - span(time, 112600, 113200)), 'blue', true);
 
-    // Moving proof links pass behind the axis lettering, like the other plot lines.
     if (tall) {
       const compact = span(time, 96800, 99500);
       const lettering = 1 - fade(time, 79500, 80700, 98600, 99600);

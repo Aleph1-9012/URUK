@@ -4,7 +4,6 @@ import { lValue, minusFour, principal, type Character, type Complex } from './lf
 
 export type MapId = 'zeta' | 'minus-four';
 
-// Phase lines cut into horizontal bands, so a frame draws only the bands it shows. `bottom` and `top` bound every point.
 export type Band = Lines & { bottom: number; top: number };
 
 export type MapData = {
@@ -35,7 +34,6 @@ export const PLANS: Record<MapId, Plan> = {
 
 type Bucket = { lines: number[][]; bottom: number; top: number };
 
-// Cuts each polyline where it passes from one band into the next; the point where it crosses ends one piece and begins the next.
 export function bandsOf(grid: Grid, lines: Lines): Band[] {
   const buckets: Bucket[] = [];
   const bandOf = (y: number) => Math.max(0, Math.floor((y - grid.bottom) / BAND_HEIGHT));

@@ -1,4 +1,4 @@
-import { patterns, type Pattern } from '../unit-ruler/tiling';
+import { patterns, type Pattern } from '../../../lib/engraving-patterns';
 
 export type Point = { x: number; y: number };
 

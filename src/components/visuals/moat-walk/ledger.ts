@@ -1,5 +1,6 @@
+import { smooth } from '../../../lib/animation';
 import type { MoatData } from './data';
-import { layout, smooth, type Box } from './story';
+import { layout, type Box } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

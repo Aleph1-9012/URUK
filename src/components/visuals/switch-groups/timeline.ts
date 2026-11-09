@@ -1,4 +1,6 @@
-// The 378 film's timeline: subtitles, scenes, easing, and the moving parts that tests check for jumps. No DOM here.
+import { progress, smooth as ease, mix as between } from '../../../lib/animation';
+import { createTimeline } from '../../plate/timeline';
+
 import { settingOf } from './sat';
 
 export type Cue = { at: number; text: string; sources: readonly number[] };
@@ -22,6 +24,8 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 300);
+
 export const SCENES = [
   { title: 'Counting the settings', first: 0 },
   { title: 'What each switch costs', first: 3 },
@@ -30,51 +34,6 @@ export const SCENES = [
   { title: 'Where it stands', first: 13 },
 ] as const;
 
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-// The settled picture of a subtitle: its last moment, or the film's end for the last one.
-export function stillTime(index: number): number {
-  return index === CUES.length - 1 ? FILM_DURATION : cueEnd(index) - 300;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.min(FILM_DURATION, Math.max(0, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-// Linear progress from 0 to 1 between two moments.
-export function progress(time: number, from: number, to: number): number {
-  return Math.min(1, Math.max(0, (time - from) / (to - from)));
-}
-
-// The same progress, eased at both ends.
-export function ease(time: number, from: number, to: number): number {
-  const value = progress(time, from, to);
-
-  return value * value * (3 - 2 * value);
-}
-
-// Rises over [inFrom, inTo] and, if given, falls over [outFrom, outTo].
-export function presence(time: number, inFrom: number, inTo: number, outFrom = Infinity, outTo = Infinity): number {
-  return ease(time, inFrom, inTo) * (1 - (outFrom === Infinity ? 0 : ease(time, outFrom, outTo)));
-}
-
-export function between(from: number, to: number, amount: number): number {
-  return from + (to - from) * amount;
-}
 
 export type Layout = 'wide' | 'tall';
 
@@ -87,10 +46,8 @@ export function boxesFor(layout: Layout): { board: Box; panel: Box } {
     : { board: { x: 0.04, y: 0.02, w: 0.92, h: 0.4 }, panel: { x: 0.04, y: 0.45, w: 0.92, h: 0.53 } };
 }
 
-// When each of the first six switches is on the board, and when the board regroups into twelve.
 export const ADDED = [0, 0, 0, 16000, 19600, 21200] as const;
 
-// The tree of choices: when each of its rows (switches 1 to 4) starts to grow.
 export const TREE_ROWS = [7400, 8400, 9400, 16600] as const;
 
 // The eight walks down the tree, one per setting, in the order of `LEDGER`; the first is slow.
@@ -100,10 +57,8 @@ export const WALKS = Array.from({ length: 8 }, (_, leaf) => {
   return { start, end: start + (leaf === 0 ? 900 : 300) };
 });
 
-// The walks set the board's first three switches from the first walk until the next subtitle.
 export const WALKING = { from: 10300, to: 15600 } as const;
 
-// The walk now on the tree, or -1 outside the walks.
 export function walkAt(time: number): number {
   if (time < WALKING.from || time >= WALKING.to) return -1;
 
@@ -153,7 +108,6 @@ export function arrivalOf(time: number, index: number): number {
 // Where switch `index` sits on the board, in the board's own shares.
 export function pinPlace(time: number, index: number): { u: number; v: number } {
   const regroup = ease(time, REGROUP.from, REGROUP.to);
-  // The row of the opening widens by one switch at a time and stays centred.
   let count = 0;
 
   for (let earlier = 0; earlier < 6; earlier += 1) {

@@ -355,7 +355,6 @@ export function kochOutline(level = 3): Point[] {
 
 export const KOCH = kochOutline();
 
-// Same perimeter parameter on the circle and Koch polygon; endpoints are matched.
 export function crumple(amount: number): Point[] {
   return KOCH.map((point, index) => {
     const angle = -Math.PI / 2 + index * TAU / KOCH.length;

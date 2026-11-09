@@ -1,8 +1,6 @@
+import { mix as between, smooth as ease, fade as presence } from '../../../lib/animation';
 import { BENT_COEFFICIENTS, BETTER_METHODS, CROSSING_RULES, GROUP_COUNTS, GROUP_RULES, GROUP_SIZE, LEDGER, OPENING_COUNT, STOP_DATA, SWITCHES, TRUE_COUNT, evaluate, nodeOf, settingOf } from './sat';
-import {
-  ADDED, BREAK_U, GROUP_STEP, REGROUP, THRESHOLD_U, TREE_ROWS, WALKS, arrivalOf, bendAt, between, boxesFor, depthOf, dialAt, ease, pinPlace, presence, walkAt, walkedOn,
-  type Box, type Layout,
-} from './timeline';
+import { ADDED, BREAK_U, GROUP_STEP, REGROUP, THRESHOLD_U, TREE_ROWS, WALKS, arrivalOf, bendAt, boxesFor, depthOf, dialAt, pinPlace, walkAt, walkedOn, type Box, type Layout } from './timeline';
 
 type Tone = 'ink' | 'blue' | 'muted' | 'paper';
 
@@ -47,10 +45,8 @@ const CURVE_LOW = 600;
 
 const CURVE_HIGH = 1000;
 
-// The moments the groups count alone, once at each stop of the dial.
 const COUNTING = [[91600, 92500], [93100, 94000], [94600, 95300]] as const;
 
-// Each crossing rule is drawn over, and assigned to, one group.
 const ASSIGNED = [0, 1, 2] as const;
 
 // The claimed curve's fall from ×2 toward ×1, with t running 0 to 1 past the bend (schematic).
@@ -58,7 +54,6 @@ function descentAt(t: number): number {
   return 2 - 0.94 * (3 * t * t - 2 * t * t * t);
 }
 
-// How far along the fall (0 to 1) the curve reaches the given multiplier; it only falls, so halving works.
 function reach(level: number): number {
   let low = 0;
   let high = 1;
@@ -102,7 +97,6 @@ class Pen {
     context.globalAlpha = 1;
   }
 
-  // A hairline never wider than one device pixel.
   hairline(points: readonly Point[], tone: Tone, alpha: number): void {
     this.stroke(points, tone, alpha, Math.min(1, 1 / this.ratio));
   }
@@ -154,7 +148,6 @@ class Pen {
     context.globalAlpha = 1;
   }
 
-  // The Uruk case: a ruled box whose rules run 4 px past its corners.
   cased(left: number, top: number, right: number, bottom: number, tone: Tone, alpha: number): void {
     const x0 = left * this.width;
     const x1 = right * this.width;
@@ -173,7 +166,6 @@ class Pen {
     }
   }
 
-  // Slanted rules on one grid for the whole frame, so a growing fill never shimmers.
   hatch(left: number, top: number, right: number, bottom: number, tone: Tone, alpha: number): void {
     if (alpha <= 0.003 || right <= left || bottom <= top) return;
 
@@ -221,7 +213,6 @@ class Pen {
     context.globalAlpha = 1;
   }
 
-  // A tick for a setting that obeys the rules, or a cross for one that breaks one.
   mark(center: Point, size: number, good: boolean, alpha: number): void {
     const dx = size / this.width;
     const dy = size / this.height;
@@ -289,7 +280,6 @@ class Pen {
 export class SwitchFilm {
   private readonly pen: Pen;
   private readonly shown = new Set<string>();
-  // The style each label was last given, so unchanged labels are not restyled every frame.
   private readonly styled = new Map<string, string>();
   private readonly sizes = new Map<string, { width: number; height: number }>();
   private readonly context: CanvasRenderingContext2D;
@@ -369,7 +359,6 @@ export class SwitchFilm {
     return this.onPanel(PLOT.u + u * PLOT.w, PLOT.v + PLOT.h * (1 - (m - 1) / (TOP_MULTIPLIER - 1)));
   }
 
-  // A point on the bar chart of settings to try.
   private onBars(u: number, count: number): Point {
     return this.onPanel(PLOT.u + u * PLOT.w, PLOT.v + PLOT.h * (1 - count / BAR_TOP));
   }
@@ -397,7 +386,6 @@ export class SwitchFilm {
     return this.sizeOf(id).width / 2 / this.pen.width;
   }
 
-  // Pins a formula over the canvas, centred on the point and kept inside the frame.
   private place(id: string, at: Point, alpha: number): void {
     const element = this.labels.get(id);
 
@@ -466,7 +454,6 @@ export class SwitchFilm {
     }
   }
 
-  // The first two rules, written out and tied to the three switches; a rule is struck while the setting breaks it.
   private drawOpening(): void {
     const time = this.time;
     const leave = 1 - ease(time, 69000, 70000);
@@ -474,13 +461,10 @@ export class SwitchFilm {
     if (leave <= 0) return;
 
     const tall = this.tall;
-    // The rules in symbols wait until the reader knows what they say.
     const symbols = presence(time, 24400, 25300) * leave;
     const [centre, formulaY] = this.onBoard(0.5, 0.05);
 
     if (tall) {
-      // On phones the first rule sits just under the formula, so the note stands to its left,
-      // and only where both fit across the frame.
       const note = 'IN SYMBOLS';
       const noteWidth = this.pen.measure(note, 'tag');
       const gap = 10 / this.pen.width;
@@ -495,9 +479,7 @@ export class SwitchFilm {
       this.place('formula', [centre, formulaY], symbols);
       this.pen.write('THE TWO RULES IN SYMBOLS', this.nudge([centre, formulaY], 0, 20), { kind: 'tag', tone: 'muted', alpha: symbols });
     }
-    // The problem's name takes the key's place once the key is no longer needed.
     this.pen.write(tall ? '3-SAT: RULES OF THREE SWITCHES' : 'THIS IS 3-SAT: EVERY RULE NAMES THREE SWITCHES', this.onBoard(0.5, 0.9), { kind: 'tag', tone: 'blue', alpha: presence(time, 24400, 25300) * leave });
-    // A rule is struck from the moment a walk reaches a setting that breaks it until the next walk starts.
     const leaf = walkAt(time);
     const reached = leaf >= 0 && time >= (WALKS[leaf]?.end ?? Infinity);
     const broken = reached ? LEDGER[leaf]?.broken ?? -1 : -1;
@@ -528,7 +510,6 @@ export class SwitchFilm {
       if (struck) this.pen.stroke([[at[0] - half - 2 / this.pen.width, at[1]], [at[0] + half + 2 / this.pen.width, at[1]]], 'blue', alpha, 1.8);
     }
 
-    // A key for the switches.
     const key = presence(time, 800, 1800, 23600, 24300);
     const keyY = 0.9;
     this.pen.disc(this.onBoard(0.36, keyY), 5, 'blue', key);
@@ -537,7 +518,6 @@ export class SwitchFilm {
     this.pen.write('OFF', this.nudge(this.onBoard(0.6, keyY), 10, 0), { kind: 'tag', alpha: key, align: 'left' });
   }
 
-  // Twelve switches in three groups, the rules inside each group, then the rules that cross, and their summaries.
   private drawGroups(): void {
     const time = this.time;
 
@@ -557,7 +537,6 @@ export class SwitchFilm {
       const right = centre + 1.5 * step + 0.55 * step;
       this.pen.cased(this.board.x + left * this.board.w, this.onBoard(0, 0.41)[1], this.board.x + right * this.board.w, this.onBoard(0, 0.86)[1], 'muted', cases);
 
-      // The three rules inside the group, as knots tied to their switches.
       const knots = ease(time, 73400 + group * 400, 74400 + group * 400);
 
       for (const [index, rule] of (GROUP_RULES[group] ?? []).entries()) {
@@ -596,7 +575,6 @@ export class SwitchFilm {
     const reroute = ease(time, 88800, 90800);
     const fixed = ease(time, 90800, 91600);
 
-    // Each group's summary box, fed by its four switches.
     for (let group = 0; group < 3; group += 1) {
       const box = this.boxOf(group);
 
@@ -617,7 +595,6 @@ export class SwitchFilm {
       }
     }
 
-    // The crossing rules: tied to a switch in every group at T = 0; from T = 1 on, to the other groups' summaries only.
     for (const [index, rule] of CROSSING_RULES.entries()) {
       const home = ASSIGNED[index] ?? 0;
       const knot = this.onBoard(this.groupCentre(home) - 0.95 * GROUP_STEP, 0.2);
@@ -635,7 +612,6 @@ export class SwitchFilm {
           if (group === home) continue;
         }
 
-        // The tie lifts into an arc over the board and lands on the other group's summary.
         const box = this.boxOf(group);
         const side = group > home ? 1 : -1;
         const landing: Point = [box.centre[0] - side * box.half * 0.4, box.top];
@@ -668,8 +644,6 @@ export class SwitchFilm {
     return this.onPanel(TREE.left + ((index + 0.5) / 2 ** row) * TREE.width, TREE_ROWS_V[this.layout][row] ?? 0);
   }
 
-  // The tree of choices: a row per switch, OFF to the left and ON to the right. Each setting is
-  // walked from the start to its end, and then the ends drop into the first two bars.
   private drawTree(): void {
     const time = this.time;
 
@@ -677,7 +651,6 @@ export class SwitchFilm {
 
     const tall = this.tall;
     const rowsV = TREE_ROWS_V[this.layout];
-    // The lines, counts and labels fade back while the ends of rows 3 and 4 pour into the bars.
     const fade = 1 - ease(time, 17800, 18400);
     const begun = ease(time, 7000, 7600) * fade;
     const root = this.nodeAt(0, 0);
@@ -696,7 +669,6 @@ export class SwitchFilm {
         this.pen.stroke([parent, [between(parent[0], child[0], grow), between(parent[1], child[1], grow)]], 'ink', fade * 0.7, row === 4 ? 0.7 : 1);
       }
 
-      // Each row starts at a copy of its switch and ends with the number of ways so far.
       const labels = ease(time, start + 300, start + 800) * fade;
       const rowV = rowsV[row] ?? 0;
       const pin = this.onPanel(0.04, rowV);
@@ -708,7 +680,6 @@ export class SwitchFilm {
       if (row > 1) this.pen.write('×2', this.onPanel(0.98, ((rowsV[row - 1] ?? 0) + rowV) / 2), { kind: 'number', tone: 'blue', alpha: labels, align: 'right' });
     }
 
-    // The two sides, named once on the first split.
     const sides = ease(time, 7900, 8500) * fade;
     this.pen.write('OFF', this.nudge(this.nodeAt(1, 0), -12, 0), { kind: 'tag', alpha: sides, align: 'right' });
     this.pen.write('ON', this.nudge(this.nodeAt(1, 1), 12, 0), { kind: 'tag', tone: 'blue', alpha: sides, align: 'left' });
@@ -730,7 +701,6 @@ export class SwitchFilm {
           continue;
         }
 
-        // The ends pour into their bar one after another, shrinking to its cells.
         const leave = 18000 + node * (row === 3 ? 70 : 35);
         const fly = ease(time, leave, leave + 650);
         const cell = this.cellOf(row, node);
@@ -739,7 +709,6 @@ export class SwitchFilm {
       }
     }
 
-    // Each end gets its verdict when its walk arrives; the two broken ones say which rule.
     const kept = 1 - ease(time, 16000, 16500);
 
     for (const [leaf, entry] of LEDGER.entries()) {
@@ -750,14 +719,12 @@ export class SwitchFilm {
       if (entry.broken < 0) continue;
 
       const left = leaf < LEDGER.length / 2;
-      // On phones the two notes take two lines each, so they never run into one another.
       this.pen.write(`BREAKS${tall ? '\n' : ' '}RULE ${entry.broken + 1}`, this.nudge(end, left ? -8 : 8, 32), { kind: 'tag', alpha: ease(time, arrival + 100, arrival + 600) * kept, align: left ? 'left' : 'right' });
     }
 
     this.pen.write(`${LEDGER.length} SETTINGS · ${OPENING_COUNT} OBEY BOTH RULES`, this.onPanel(0.5, TALLY_V[this.layout]), { kind: 'tag', tone: 'blue', alpha: presence(time, 14600, 15200, 16000, 16500) });
   }
 
-  // The walk now under way: its path in blue down to an arrowhead, kept whole once it has arrived.
   private drawWalk(): void {
     const leaf = walkAt(this.time);
 
@@ -783,7 +750,6 @@ export class SwitchFilm {
     this.pen.stroke(points, 'blue', 1, 2.2);
   }
 
-  // Where node `index` of row n lands in the bar for n switches, one cell per setting.
   private cellOf(n: number, index: number): Point {
     const [x] = this.onBars(this.slot(n), 0);
     const [, y] = this.onBars(0, index + 0.5);
@@ -791,7 +757,6 @@ export class SwitchFilm {
     return [x, y];
   }
 
-  // The chart's place for the bar of n switches.
   private slot(n: number): number {
     return 0.13 + (n - 3) * 0.25;
   }
@@ -818,7 +783,6 @@ export class SwitchFilm {
     this.pen.stroke([bottom, [between(bottom[0], end[0], ease(time, 18300, 19100)), end[1]]], 'muted', axes, 1);
     this.pen.head(this.nudge(end, 8, 0), 0, 'muted', multiplier, 7);
 
-    // The y axis is renamed when the bars give way to the cost of one more switch.
     const titleAt = this.onPanel(0.02, 0.035);
     const tries = presence(time, 18500, 19300, 26000, 26700) * alpha;
     const titleWidth = this.pen.write('SETTINGS TO TRY', titleAt, { kind: 'tag', alpha: tries, align: 'left' });
@@ -829,7 +793,6 @@ export class SwitchFilm {
 
     this.pen.write('×1', this.nudge(this.onChart(0, 1), -8, 0), { kind: 'number', alpha: multiplier, align: 'right' });
     this.pen.write('×2', this.nudge(this.onChart(0, 2), -8, 0), { kind: 'number', alpha: multiplier, align: 'right' });
-    // The axis is counted in digits only once the curve has moved past the threshold.
     const digits = ease(time, 62400, 63200);
     const axisTitle = this.nudge(this.onChart(1, 1), 0, tall ? 30 : 34);
     this.pen.write('NUMBER OF SWITCHES n', axisTitle, { kind: 'tag', alpha: multiplier * (1 - ease(time, 62000, 62400)), align: 'right' });
@@ -857,7 +820,6 @@ export class SwitchFilm {
 
     for (let n = 3; n <= 6; n += 1) {
       const value = 2 ** n;
-      // The bars for 3 and 4 switches fill as the tree's ends land in them.
       const grow = n <= 4 ? ease(time, 18900, 19500) : ease(time, (ADDED[n - 1] ?? 0) + 300, (ADDED[n - 1] ?? 0) + 1100);
 
       if (grow <= 0) continue;
@@ -868,7 +830,6 @@ export class SwitchFilm {
       const [, topY] = this.onBars(u, value * grow);
       this.pen.stroke([[left, base], [left, topY], [right, topY], [right, base]], 'ink', bars, 1);
 
-      // One cell per setting where they are tall enough to see; otherwise a hatch.
       if (perSetting >= 3.5) {
         for (let cell = 1; cell < value * grow; cell += 1) {
           const [, y] = this.onBars(u, cell);
@@ -882,12 +843,10 @@ export class SwitchFilm {
       this.pen.write(String(n), this.nudge([(left + right) / 2, base], 0, tall ? 11 : 13), { kind: 'number', tone: 'muted', alpha: bars * grow });
       const topPoint: Point = [(left + right) / 2, topY];
 
-      // Each new bar is twice the last: an arc from top to top, carrying ×2.
       if (previousTop && n > 3) {
         const apexU = (this.slot(n - 1) + this.slot(n)) / 2;
         const control: Point = [(previousTop[0] + topPoint[0]) / 2, Math.min(previousTop[1], topPoint[1]) - (tall ? 30 : 38) / this.pen.height];
         const points: Point[] = [];
-        // The arc runs from above one bar's number to above the next one's.
         const clear = 24 / this.pen.height;
 
         for (let sample = 0; sample <= 16; sample += 1) {
@@ -900,26 +859,21 @@ export class SwitchFilm {
 
         this.pen.stroke(points, 'blue', bars * grow, 1.2);
         this.pen.head(points[points.length - 1] ?? topPoint, Math.PI / 2.4, 'blue', bars * grow, 6);
-        // The ×2 then moves onto the new chart's ×2 level, where the flat line will be drawn through it.
         const from: Point = [control[0], control[1] + 4 / this.pen.height];
         const to = this.nudge(this.onChart(apexU, 2), 0, -12);
         const at: Point = [between(from[0], to[0], toLine), between(from[1], to[1], toLine)];
         const carried = grow * alpha * (1 - ease(time, 29500, 30500));
         this.pen.write('×2', at, { kind: 'number', tone: 'blue', alpha: carried });
-        // The dot is set once its ×2 has passed over it.
         this.pen.disc(this.onChart(apexU, 2), 3.2, 'blue', carried * ease(time, 27900, 28400));
       }
 
       previousTop = topPoint;
     }
 
-    // 2ⁿ names the bars, then the flat line it becomes.
     const half = this.halfOf('power');
-    // It moves while the axis has no title, so it never crosses one.
     const moved = ease(time, 26000, 27000);
     const near: Point = [titleAt[0] + titleWidth + half + 10 / this.pen.width, titleAt[1]];
     const far = this.nudge(this.onChart(1, 2), 0, -14);
-    // It gives way to the threshold, which is named on the same line.
     const kept = presence(time, 18800, 19600, 63600, 64600);
     this.place('power', [between(near[0], far[0] - half, moved), between(near[1], far[1], moved)], kept * alpha);
   }
@@ -932,12 +886,10 @@ export class SwitchFilm {
       const start = 34000 + index * 1400;
       const reveal = ease(time, start, start + 1200);
       this.pen.stroke([this.onChart(0, method.multiplier), this.onChart(reveal, method.multiplier)], 'ink', alpha * (reveal > 0 ? 1 : 0), 1);
-      // The three names stand above the right end of their lines, which nearly coincide.
       const line = this.nudge(this.onChart(1, 4 / 3), 0, -(tall ? 18 : 22) - (2 - index) * (tall ? 13 : 15));
       this.pen.write(`${method.name}  ${method.shown}`, line, { kind: 'tag', alpha: alpha * presence(time, start + 300, start + 1000, 42000, 43000), align: 'right' });
     }
 
-    // At the left end, clear of the names and of where the claimed curve will fall.
     this.place('better', this.nudge(this.onChart(0.16, 4 / 3), 0, tall ? -16 : -18), alpha * ease(time, 38000, 39000));
   }
 
@@ -980,7 +932,6 @@ export class SwitchFilm {
     }
 
     this.pen.stroke(points, 'blue', alpha, 2.2);
-    // The claim stands left of the descent, then, as the bend moves out, left of the bend, where the threshold's guide will rise.
     const level = tall ? 1.7 : 1.68;
     const [descentX, levelY] = this.onChart(bend + reach(level) * (1 - bend), level);
     const [bendX] = this.onChart(bend, level);
@@ -1015,7 +966,6 @@ export class SwitchFilm {
     this.pen.write('3.3 BILLION', this.nudge([thresholdX, axisY], 0, tall ? 12 : 14), { kind: 'number', alpha: shown });
     const guide = ease(time, 63600, 64600) * alpha;
     this.pen.stroke([[thresholdX, axisY], this.onChart(THRESHOLD_U, 2)], 'muted', guide, 1, [3, 4]);
-    // The threshold is named where the guide meets the ×2 line and the claimed curve leaves it.
     this.place('threshold', this.nudge(this.onChart(THRESHOLD_U, 2), 0, -this.sizeOf('threshold').height / 2 - 5), guide);
   }
 
@@ -1033,7 +983,6 @@ export class SwitchFilm {
     const names = ['SUMMARIES', 'ONE GROUP', 'SLOPES'];
 
     for (const [index, name] of names.entries()) {
-      // On the tall chart the three start closer together, above ≈1.33ⁿ.
       const start = this.onChart(0.44, (tall ? [1.92, 1.8, 1.68] : [1.93, 1.77, 1.61])[index] ?? 1.7);
       const points: Point[] = [];
 
@@ -1044,26 +993,21 @@ export class SwitchFilm {
       }
 
       this.pen.stroke(points, 'muted', shown * 0.9, 1);
-      // The names give way to the stamp.
       const named = presence(time, 106600 + index * 400, 107400 + index * 400, 112000, 112600);
       this.pen.write(name, this.nudge(start, -6, 0), { kind: 'tag', tone: 'muted', alpha: shown * named, align: 'right' });
     }
 
-    // The merged cost names the claimed curve, just right of where it leaves ×2.
     const level = 1.85;
     const named = this.onChart(THRESHOLD_U + reach(level) * (1 - THRESHOLD_U), level);
     this.place('subexp', this.nudge(named, this.halfOf('subexp') + (tall ? 6 : 8), 0), alpha * ease(time, 109200, 110200));
-    // The status, stamped on the chart.
     const stamp = ease(time, 112400, 113400) * alpha;
     const at = this.onChart(tall ? 0.39 : 0.42, 1.74);
-    // Shorter on the tall chart, so the case stays between the axis and the threshold's guide.
     const status = tall ? 'CLAIM UNDER REVIEW' : 'CLAIMED · UNDER REVIEW';
     const half = this.pen.measure(status, 'tag') / 2;
     this.pen.write(status, at, { kind: 'tag', tone: 'blue', alpha: stamp });
     this.pen.cased(at[0] - half - 8 / this.pen.width, at[1] - 11 / this.pen.height, at[0] + half + 8 / this.pen.width, at[1] + 11 / this.pen.height, 'blue', stamp);
   }
 
-  // The panel during the proof: the product of the group counts, the true count, the dial T and the bent count.
   private drawProof(): void {
     const time = this.time;
 
@@ -1097,7 +1041,6 @@ export class SwitchFilm {
 
   private drawDial(): void {
     const time = this.time;
-    // It leaves before the chart comes back, so the two never show at once.
     const shown = presence(time, 82500, 83500, 104500, 105300);
 
     if (shown <= 0) return;
@@ -1123,7 +1066,6 @@ export class SwitchFilm {
     this.place('dial-stops', this.nudge(this.trackAt(2), 0, tall ? -22 : -26), stops);
     this.pen.stroke([this.nudge(this.trackAt(1), 0, -10), this.nudge(this.trackAt(1), 0, -13), this.nudge(this.trackAt(3), 0, -13), this.nudge(this.trackAt(3), 0, -10)], 'muted', stops, 1);
 
-    // Each stop is marked once its groups are counted, and its dot then rises to the value of the bent count there.
     const plot = ease(time, 96000, 97200);
     const [axisX, axisBottom] = this.trackAt(0);
     const [, axisTop] = this.onPanel(0, 0.1);
@@ -1137,7 +1079,6 @@ export class SwitchFilm {
       const onCurve = this.trackAt(stop.t, this.curveV(stop.value));
       const at: Point = [onTrack[0], between(onTrack[1], onCurve[1], rise)];
       this.pen.disc(at, tall ? 3.5 : 4, 'blue', shown * counted);
-      // The slope: a short stroke along the curve's tangent there.
       const tangent = ease(time, 98000 + index * 600, 98600 + index * 600) * shown;
       const dx = ((TRACK.to - TRACK.from) / TRACK.last) * this.panel.w * this.pen.width;
       const dy = (-stop.slope * 0.68 / (CURVE_HIGH - CURVE_LOW)) * this.panel.h * this.pen.height;
@@ -1146,12 +1087,10 @@ export class SwitchFilm {
       this.pen.stroke([this.nudge(onCurve, -dx * half, -dy * half), this.nudge(onCurve, dx * half, dy * half)], 'blue', tangent, 2);
     }
 
-    // On the tall panel the notes take two lines, clear of H(T).
     const right = this.onPanel(0.98, tall ? 0.07 : 0.04);
     this.pen.write(tall ? 'VALUE AND SLOPE\nAT EACH STOP' : 'VALUE AND SLOPE AT EACH STOP', right, { kind: 'tag', alpha: shown * presence(time, 98000, 98800, 102000, 102600), align: 'right' });
     this.pen.write(tall ? 'EXACT RULE\nSCHEMATIC CURVE' : 'EXACT RULE · SCHEMATIC CURVE', right, { kind: 'tag', tone: 'muted', alpha: shown * ease(time, 102600, 103300), align: 'right' });
 
-    // The curve threads the stops and runs back to T = 0, where it lands on the count.
     const back = ease(time, 99800, 102300);
     const points: Point[] = [];
 

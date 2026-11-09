@@ -1,5 +1,5 @@
+import { fade, smooth } from '../../../lib/animation';
 import { CLAIM, RECORDS, WALL, crossingLog, dialAt, lowerLog, upperLog } from './math';
-import { fade, smooth } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

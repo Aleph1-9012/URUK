@@ -1,7 +1,7 @@
+import { smooth } from '../../../lib/animation';
 import type { MoatData, SieveData } from './data';
 import { UNIT_SIEVE_BOUND } from './math';
 import { fieldView, fieldWords, fieldLine, type FieldColors, type FieldLabel, type FieldPoint } from './field';
-import { smooth } from './story';
 
 type SievePaths = { all: Path2D; largest: Path2D };
 

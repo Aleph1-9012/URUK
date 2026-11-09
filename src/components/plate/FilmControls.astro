@@ -1,0 +1,26 @@
+---
+import type { FilmTimeline } from './timeline';
+
+interface Props {
+  id: string;
+  timeline: FilmTimeline;
+}
+
+const { id, timeline } = Astro.props;
+---
+
+<div class="film-controls" data-script-only>
+  <div class="film-buttons">
+    <button class="plate-button case-link case-link--tight" type="button" data-play><span data-play-label>Pause</span></button>
+    <p class="film-clock"><span data-film-clock>0:00 / {timeline.formatTime(timeline.duration)}</span></p>
+    <button class="plate-button case-link case-link--tight" type="button" data-film-restart>Restart</button>
+  </div>
+  <label class="visually-hidden" for={id}>Film timeline. Arrow keys move one subtitle at a time.</label>
+  <input id={id} class="film-timeline" data-film-range type="range" min="0" max={timeline.duration} step="100" value="0" />
+  <div class="film-steps">
+    <button class="plate-button case-link case-link--tight" type="button" data-film-previous>Previous</button>
+    <p>Step through without motion</p>
+    <button class="plate-button case-link case-link--tight" type="button" data-film-next>Next</button>
+  </div>
+</div>
+<p class="visually-hidden" data-film-status aria-live="polite" aria-atomic="true"></p>

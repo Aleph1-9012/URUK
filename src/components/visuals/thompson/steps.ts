@@ -9,7 +9,6 @@ export function describeStep(step: number): string {
   return `Step ${step} of ${BAND_COUNT}: ${maps}`;
 }
 
-// The film draws one band at a time, then rests on all eight before it starts again from the first.
 const BAND_TIME = 1100;
 const REST = 2600;
 

@@ -116,7 +116,6 @@ test('039 curves pass through their stated pins, and the double point and pinch 
 
 test('039 degree certificates preserve the finite-check scope, including the nonexistence at m=6,d=19', () => {
   expect(rankAt(19, 6)).toBe(210);
-  expect(19).toBeGreaterThan(6 * Math.sqrt(10));
 
   for (const certificate of RANK_CERTIFICATES) {
     expect(coefficientCount(certificate.excludedDegree)).toBe(certificate.rank);

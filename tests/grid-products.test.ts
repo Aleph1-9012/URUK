@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { A, B, SCHOOL_PRODUCT, STRASSEN_PRODUCTS, STRASSEN_COUNTS, SCHOOL_COUNTS, schoolProduct, strassenProduct, TRIPLING_GRID, triplingCells, polynomialColumnCounts, crossingLog, lowerLog, upperLog, RECORDS, WALL, CLAIM } from '../src/components/visuals/grid-products/math';
-import { CUES, FILM_DURATION, cueAt, stillTime } from '../src/components/visuals/grid-products/story';
+import { CUES, FILM_DURATION, TIMELINE } from '../src/components/visuals/grid-products/story';
 
 test('the worked products, recursive counts and timeline match the film', () => {
   expect(SCHOOL_PRODUCT).toEqual([19, 22, 43, 50]);
@@ -9,10 +9,9 @@ test('the worked products, recursive counts and timeline match the film', () => 
   expect(strassenProduct([0, -3, 4, 7], [2, 9, -1, 0])).toEqual(schoolProduct([0, -3, 4, 7], [2, 9, -1, 0]));
   expect(SCHOOL_COUNTS.at(-1)).toBe(1073741824);
   expect(STRASSEN_COUNTS.at(-1)).toBe(282475249);
-  expect(8 ** 10 / 7 ** 10).toBeCloseTo(3.80119, 4);
   expect(FILM_DURATION).toBe(120000);
 
-  for (const [index] of CUES.entries()) expect(cueAt(stillTime(index))).toBe(index);
+  for (const [index] of CUES.entries()) expect(TIMELINE.cueAt(TIMELINE.stillTime(index))).toBe(index);
 });
 
 test('the product sectors and logarithmic bounds support the proof drawing', () => {

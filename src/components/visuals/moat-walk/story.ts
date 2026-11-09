@@ -1,3 +1,5 @@
+import { createTimeline } from '../../plate/timeline';
+
 // Claude's Gaussian moat storyboard, with its original cues and timings.
 export const CUES = [
   {"at": 0, "title": "The Gaussian primes", "text": "Plot the Gaussian primes, the primes of the complex plane: dots with eightfold symmetry, dense near the origin and thinning outward.", "sources": [1]},
@@ -18,6 +20,8 @@ export const CUES = [
 ] as const;
 
 export const FILM_DURATION = 116000;
+
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 180);
 
 export interface Box {
   x: number;
@@ -64,38 +68,4 @@ export function stepSquared(time: number): 1 | 2 | 4 | 8 | 10 {
   if (time < 97500) return 1;
 
   return 4;
-}
-
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-export function stillTime(index: number): number {
-  return index === CUES.length - 1 ? FILM_DURATION : cueEnd(index) - 180;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.max(0, Math.min(FILM_DURATION, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-export function span(time: number, start: number, end: number): number {
-  return Math.min(1, Math.max(0, (time - start) / (end - start)));
-}
-
-export function smooth(time: number, start: number, end: number): number {
-  const amount = span(time, start, end);
-
-  return amount * amount * (3 - 2 * amount);
 }

@@ -1,4 +1,3 @@
-// The 378 film's exact mathematics: rules on switches, counts by trying every setting, and the polynomial the dial bends.
 
 // A literal names a switch, 1-based; a negative number asks for that switch to be off.
 export type Rule = readonly [number, number, number];
@@ -6,7 +5,6 @@ export type Rule = readonly [number, number, number];
 // The opening: at least one switch on, and at least one switch off.
 export const OPENING: readonly Rule[] = [[1, 2, 3], [-1, -2, -3]];
 
-// Twelve switches in three groups of four, three rules inside each group.
 export const GROUP_RULES: readonly (readonly Rule[])[] = [
   [[1, 2, 3], [-2, 3, 4], [-1, -3, -4]],
   [[5, -6, 7], [6, 7, 8], [-5, -7, -8]],
@@ -41,7 +39,6 @@ export function countSettings(rules: readonly Rule[], switches: number): number 
   return count;
 }
 
-// Counts one group alone, its four switches renumbered from 1.
 export function countGroup(group: number): number {
   const offset = group * GROUP_SIZE;
   const shift = (literal: number) => Math.sign(literal) * (Math.abs(literal) - offset);

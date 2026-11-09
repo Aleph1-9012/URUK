@@ -1,16 +1,11 @@
-// Draws one frame of the 004 film (v2, "nets and shadows") for a given time. Every frame is a function of the time alone,
-// so scrubbing lands on the same picture. Three places stay on screen: the plane, the line under it and a side panel.
+import { crossfade as fade, progress as share, smoothStep as span } from '../../../lib/animation';
 import {
   CUBIC_KNOTS, CUBIC_NET, SQUARE_REMAINDERS, TORSION, cubicY, curvePieces, exactMultiples, floatMultiples, fractionText, nearestMiss,
 } from './nets';
-import {
-  BOUND_SLOPE, CIRCLE_MARK, MULTIPLES_SHOWN, NET_RUNS, STAR_RETURN, STRETCH, TESTS, WRITTEN, cameraAt, fade, netAt, netStart, panelAt, share,
-  span, type Box, type Layout, type Panel, type View,
-} from './story';
+import { BOUND_SLOPE, CIRCLE_MARK, MULTIPLES_SHOWN, NET_RUNS, STAR_RETURN, STRETCH, TESTS, WRITTEN, cameraAt, netAt, netStart, panelAt, type Box, type Layout, type Panel, type View } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 
-// `clear` lays paper under the text, so it reads over knots, hatching and lines.
 type TextStyle = { size: number; color: string; alpha: number; align?: CanvasTextAlign; italic?: boolean; typewriter?: boolean; clear?: boolean };
 
 // A drawing placed on the frame: its box in pixels, the part of its plane it shows, and how a point of the plane lands on the frame.
@@ -48,10 +43,8 @@ const GROWTH = MULTIPLES.reduce((sum, multiple) => sum + multiple.digits * multi
 
 const CROSSING = BOUND_SLOPE / GROWTH;
 
-// When the net of 21sts lands, and the cubic's two knots turn blue.
 const CAUGHT = netStart(NET_RUNS[0], CUBIC_NET);
 
-// The multiples written out in the side panel: "3P  x = −2439844/5094049".
 const WRITTEN_LINES = WRITTEN.map(({ n, at }) => {
   const multiple = MULTIPLES[n - 1];
   const name = n === 1 ? 'P' : `${n}P`;
@@ -59,7 +52,6 @@ const WRITTEN_LINES = WRITTEN.map(({ n, at }) => {
   return { n, at, text: multiple ? `${name}  x = ${fractionText(multiple.point.x)}` : name, digits: multiple?.digits ?? 0 };
 });
 
-// The multiples drawn and named on the curve: those inside the far view.
 const NAMED = [
   { n: 3, id: 'p3', at: 97500 },
   { n: 4, id: 'p4', at: 98500 },
@@ -68,8 +60,6 @@ const NAMED = [
 
 const TYPING_STEP = 16;
 
-// Slides a box [left, left + size] inside [margin, extent − margin] while its anchor is inside the frame.
-// Once the anchor crosses the margin the box leaves with it, so a label never jumps during a move.
 function keepInside(left: number, size: number, anchor: number, extent: number, margin: number): number {
   const highest = Math.max(extent - margin, anchor);
   const lowest = Math.min(margin, anchor);
@@ -77,7 +67,6 @@ function keepInside(left: number, size: number, anchor: number, extent: number, 
   return Math.max(lowest, Math.min(left, highest - size));
 }
 
-// The name of the net of c: "whole numbers", "halves", "thirds", "quarters", then "5ths", "21sts", "22nds", "23rds".
 function netName(c: number): string {
   const names = ['', 'whole numbers', 'halves', 'thirds', 'quarters'];
   const named = names[c];
@@ -100,8 +89,6 @@ export class FractionNetsFilm {
   private readonly shown = new Set<string>();
   private readonly visible = new Set<string>();
   private readonly boxes = new Map<string, LabelBox>();
-  // One knot of a net, drawn small and repeated as a pattern: a net is a lattice, so it fills in one call. Patterns are
-  // kept by tile size and knot size, so a net that holds still reuses its tile.
   private readonly tile = document.createElement('canvas');
   private readonly patterns = new Map<string, CanvasPattern>();
   private colors: Colors = { ink: '#1c1a17', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
@@ -155,7 +142,6 @@ export class FractionNetsFilm {
     this.settleLabels();
   }
 
-  // Placing drawings. `even` keeps one unit the same length across and up, so circles stay round.
 
   private frame(panel: Panel): { left: number; top: number; width: number; height: number } {
     const box: Box = panelAt(panel, this.time, this.layout);
@@ -195,7 +181,6 @@ export class FractionNetsFilm {
     return [this.px(placed, x), this.py(placed, y)];
   }
 
-  // The plane's values at the edges of its box, which shows more than the camera's view across or up.
   private reach(placed: Placed): View {
     return {
       left: (placed.left - placed.originX) / placed.scaleX,
@@ -205,7 +190,6 @@ export class FractionNetsFilm {
     };
   }
 
-  // Pen and type.
 
   private stroke(path: Path2D, color: string, width: number, alpha: number, dash: readonly number[] = []): void {
     if (alpha <= 0) return;
@@ -263,7 +247,6 @@ export class FractionNetsFilm {
     this.stroke(path, color, width, alpha);
   }
 
-  // Many dots of one size and colour, filled at once.
   private dots(points: readonly Point[], radius: number, color: string, alpha: number): void {
     if (alpha <= 0 || points.length === 0) return;
 
@@ -281,7 +264,6 @@ export class FractionNetsFilm {
     context.globalAlpha = 1;
   }
 
-  // Canvas text stays inside the frame: a line that would run off it breaks at its middle space, then slides in.
   private text(value: string, x: number, y: number, style: TextStyle): void {
     if (style.alpha <= 0 || value.length === 0) return;
 
@@ -312,7 +294,6 @@ export class FractionNetsFilm {
     context.globalAlpha = 1;
   }
 
-  // A line break in the text is kept; a single line that would run off the frame breaks at its middle space.
   private lines(value: string, x: number, anchor: number): string[] {
     if (value.includes('\n')) return value.split('\n');
 
@@ -342,7 +323,6 @@ export class FractionNetsFilm {
     this.context.letterSpacing = '0px';
   }
 
-  // How wide a one-line tag is.
   private tagWidth(value: string): number {
     const context = this.context;
     context.font = `${this.tagSize()}px ${TYPEWRITER}`;
@@ -353,7 +333,6 @@ export class FractionNetsFilm {
     return width;
   }
 
-  // A tag struck through from left to right as `amount` goes from 0 to 1, for something ruled out.
   private struckTag(value: string, { x, y, align }: { x: number; y: number; align: CanvasTextAlign }, alpha: number, amount: number): void {
     this.tag(value, x, y, alpha, align);
 
@@ -364,7 +343,6 @@ export class FractionNetsFilm {
     this.line([[left - 3, y], [left - 3 + (width + 6) * amount, y]], this.colors.ink, 1.4, alpha);
   }
 
-  // A stamp: typewriter capitals in a ruled box on paper, set a little askew.
   private stamp(value: string, x: number, y: number, alpha: number, color: string): void {
     if (alpha <= 0) return;
 
@@ -393,7 +371,6 @@ export class FractionNetsFilm {
     context.restore();
   }
 
-  // A ledger line in typewriter type.
   private typed(value: string, x: number, y: number, alpha: number, color = this.colors.ink, align: CanvasTextAlign = 'left', size = this.typedSize()): void {
     this.text(value, x, y, { size, color, alpha, align, typewriter: true });
   }
@@ -402,17 +379,14 @@ export class FractionNetsFilm {
     return this.width < 480 ? 11.5 : 13;
   }
 
-  // The written multiples: a little smaller on a phone, so the longest still wrap onto a few rows.
   private writtenSize(): number {
     return this.width < 480 ? 10 : 13;
   }
 
-  // Where the first written row sits under the panel's tag.
   private writtenFirst(): number {
     return this.layout === 'wide' ? 30 : 22;
   }
 
-  // The part of `value` typed by now, one letter every `step` ms from `start`.
   private typing(value: string, start: number, step = 30): string {
     return value.slice(0, Math.max(0, Math.floor((this.time - start) / step)));
   }
@@ -421,7 +395,6 @@ export class FractionNetsFilm {
     return this.width < 480 ? size - 1 : size;
   }
 
-  // Horizontal ruling, like an engraver's hatch, inside a closed path. The rules sit on one grid for the whole frame.
   private hatch(clip: Path2D, top: number, bottom: number, left: number, right: number, color: string, alpha: number, gap = 4): void {
     if (alpha <= 0 || right <= left) return;
 
@@ -448,7 +421,6 @@ export class FractionNetsFilm {
     context.clip();
   }
 
-  // Formula labels, set with Temml in the page and pinned here.
 
   private label(id: string, x: number, y: number, alpha: number): void {
     const element = this.labels.get(id);
@@ -502,11 +474,9 @@ export class FractionNetsFilm {
     }
   }
 
-  // The plane: axes, nets, the two opening curves, the whole numbers, the example curve and its multiples.
 
   private drawPlane(): void {
     const time = this.time;
-    // On a phone the chart takes the plane's place for the last scenes.
     const alpha = this.layout === 'tall' ? 1 - span(time, 103000, 104000) : 1;
 
     if (alpha <= 0) return;
@@ -518,7 +488,6 @@ export class FractionNetsFilm {
     this.clipTo(placed);
     this.line([this.at(placed, [reach.left, 0]), this.at(placed, [reach.right, 0])], muted, 0.9, alpha * 0.7);
     this.line([this.at(placed, [0, reach.bottom]), this.at(placed, [0, reach.top])], muted, 0.9, alpha * 0.7);
-    // Numbers on the axis while the whole picture shows; the line under the plane takes them over later.
     const numbers = alpha * Math.min(1, Math.max(0, (size - 4) / 1.2)) * (1 - span(time, 38500, 39200));
 
     for (const value of [-2, -1, 1, 2]) {
@@ -534,13 +503,11 @@ export class FractionNetsFilm {
     this.drawPlaneNotes(placed, alpha);
   }
 
-  // The net on screen, the one before it fading out, and on the circle the knot that comes closest.
   private drawNets(placed: Placed, reach: View, alpha: number): void {
     const net = netAt(this.time);
 
     if (!net) return;
 
-    // The knots (a/c, b/c) in reach, as a block of tiles, each tile one spacing wide with its knot in the middle.
     const knots = (c: number, shown: number) => {
       if (shown <= 0) return;
 
@@ -573,12 +540,9 @@ export class FractionNetsFilm {
     this.ring(this.px(placed, miss.a / miss.c), this.py(placed, miss.b / miss.c), 6, this.colors.muted, alpha * net.alpha, 1.3);
   }
 
-  // A pattern of knots `spacing` apart with a knot at (left + spacing/2, top + spacing/2). The tile is drawn at device
-  // resolution, rounded up to whole pixels, and scaled back to the exact spacing so the knots don't drift.
   private knotPattern(spacing: number, radius: number, left: number, top: number): CanvasPattern | null {
     const size = Math.max(2, Math.ceil(spacing * this.ratio));
     const scale = size / spacing;
-    // The knot's radius in tile pixels, to a quarter pixel.
     const dot = Math.round(radius * scale * 4) / 4;
     const key = `${size} ${dot} ${this.colors.ink}`;
     let pattern = this.patterns.get(key) ?? null;
@@ -608,7 +572,6 @@ export class FractionNetsFilm {
     return pattern;
   }
 
-  // On the circle's nets, the knot nearest the circle in the middle of the window, away from the frame's edges.
   private nearestMiss(placed: Placed, c: number): ReturnType<typeof nearestMiss> {
     const { left, right, bottom, top } = placed.view;
     const inset = (right - left) * 0.2;
@@ -616,11 +579,9 @@ export class FractionNetsFilm {
     return nearestMiss(c, left + inset, right - inset, bottom + inset, top - inset);
   }
 
-  // x³ + y³ = 6 with its two caught knots, then the circle x² + y² = 3 that no net catches.
   private drawOpeningCurves(placed: Placed, alpha: number): void {
     const time = this.time;
     const { ink, blue } = this.colors;
-    // The cubic leaves for the circle, then both come back faint when the camera pulls back.
     const cubic = alpha * Math.max(fade(time, 0, 400, 18200, 18900), 0.45 * fade(time, 31500, 32500, 38500, 39500));
     const written = Math.round(span(time, 500, 4500) * (CUBIC.length - 1));
     this.line(CUBIC.slice(0, written + 1).map((point) => this.at(placed, point)), ink, 1.8, cubic);
@@ -633,7 +594,6 @@ export class FractionNetsFilm {
       this.stroke(path, ink, 1.8, circle);
     }
 
-    // The caught knots leave with the cubic while the circle's nets run, and come back with it.
     const caught = alpha * Math.max(fade(time, CAUGHT + 200, CAUGHT + 500, 18200, 18900), fade(time, 31500, 32500, 38500, 39500));
 
     for (const knot of CUBIC_KNOTS) {
@@ -644,7 +604,6 @@ export class FractionNetsFilm {
     }
   }
 
-  // Scene 3: the whole-number knots, their shadow falling onto the line, and the uprights of the wanted equation.
   private drawWholeNumbers(placed: Placed, reach: View, alpha: number): void {
     const time = this.time;
     const shown = alpha * fade(time, 39200, 40700, 54500, 55500);
@@ -671,7 +630,6 @@ export class FractionNetsFilm {
     }
   }
 
-  // Scene 4 on: y² = x³ − 25x. Its fraction points arrive, the gaps fill into two pieces; later P and its multiples.
   private drawExampleCurve(placed: Placed, alpha: number): void {
     const time = this.time;
     const { ink, blue } = this.colors;
@@ -694,7 +652,6 @@ export class FractionNetsFilm {
     const branch = Math.round(span(time, 60200, 61400) * (PIECES.branch.length - 1));
     this.line(PIECES.oval.slice(0, oval + 1).map((point) => this.at(placed, point)), ink, 1.8, pieces);
     this.line(PIECES.branch.slice(0, branch + 1).map((point) => this.at(placed, point)), ink, 1.8, pieces);
-    // Scene 6: P, then the multiples that fall inside the picture, as they are written out.
     const first = MULTIPLES[0];
 
     if (first) this.dot(this.px(placed, first.x), this.py(placed, first.y), 4.5, blue, alpha * fade(time, 95300, 95700));
@@ -706,24 +663,20 @@ export class FractionNetsFilm {
     }
   }
 
-  // Labels, tags and stamps on the plane, drawn outside its clip so they can't be cut.
   private drawPlaneNotes(placed: Placed, alpha: number): void {
     const time = this.time;
     const { blue, ink } = this.colors;
     const size = placed.view.right - placed.view.left;
-    // The opening curve's name over its left arm; once the circle is beside it, against its lower arm, clear of the circle.
     this.label('cubic', this.px(placed, -1.55) + 8, this.py(placed, cubicY(-1.55)) - 16, alpha * fade(time, 1200, 1800, 6800, 7600));
     const lowArm = Math.cbrt(6 + 2.15 ** 3);
     const cubicName = alpha * fade(time, 33300, 34000, 38500, 39200);
     this.label('cubic', this.px(placed, lowArm) - this.labelWidth('cubic') - 10, this.py(placed, -2.15), cubicName);
-    // The caught point's sum, in the open space under the curve in the last net's window.
     const upper = CUBIC_KNOTS[0];
     const upperX = this.px(placed, upper.a / upper.c);
     const upperY = this.py(placed, upper.b / upper.c);
     const window = NET_RUNS[0].reach[this.layout] / CUBIC_NET;
     const corner = NET_RUNS[0].centre[0] - window / 2;
     this.label('found', this.px(placed, corner + 0.05 * window), this.py(placed, corner + 0.3 * window), alpha * fade(time, 13300, 13900, 16300, 17000));
-    // The circle's name: outside the arc while the camera is close, then inside the circle once it pulls back.
     const close = alpha * fade(time, 19000, 19600, 31500, 32200);
     const far = alpha * fade(time, 33300, 34000, 38500, 39200);
     const middleX = (placed.view.left + placed.view.right) / 2;
@@ -735,7 +688,6 @@ export class FractionNetsFilm {
       this.label('circle', this.px(placed, -0.62), this.py(placed, -1.05), far);
     }
 
-    // The knot nearest the circle, named once.
     const net = netAt(time);
     const missNote = alpha * fade(time, 20200, 20800, 23600, 24200);
 
@@ -744,12 +696,10 @@ export class FractionNetsFilm {
       this.tag('close, not on it', this.px(placed, miss.a / miss.c), this.py(placed, miss.b / miss.c) + 18, missNote);
     }
 
-    // The circle's verdict, pinned where the camera looked, and what each curve's answer needed.
     const onCircle = this.at(placed, CIRCLE_MARK);
     this.stamp('none, ever', onCircle[0], onCircle[1], alpha * fade(time, 27000, 27400, 38500, 39200), ink);
     this.tag('only an argument can say this', onCircle[0], onCircle[1] + 24, alpha * fade(time, 34600, 35200, 38500, 39200));
     this.tag('a search can say this', upperX, upperY - 18, alpha * fade(time, 34000, 34600, 38500, 39200), 'center', blue);
-    // The wanted equation, struck once Mazur's pieces rule it out; then the paper's claim.
     const wanted = alpha * fade(time, 51000, 51800, 86500, 87500);
     const [first, second, third] = [this.note(0), this.note(1), this.note(2)];
     this.struckTag('wanted: an equation with this shadow', first, wanted, span(time, 65000, 65600));
@@ -758,8 +708,6 @@ export class FractionNetsFilm {
     this.drawCurveNotes(placed, alpha);
   }
 
-  // Where the story's notes go, one per row: on a wide frame in the empty top right, past the curve's branch; on a phone
-  // under the test row.
   private note(row: number): { x: number; y: number; align: CanvasTextAlign } {
     if (this.layout === 'wide') return { x: this.width - EDGE, y: this.frame('plane').top + 12 + 16 * row, align: 'right' };
 
@@ -768,7 +716,6 @@ export class FractionNetsFilm {
 
   private drawCurveNotes(placed: Placed, alpha: number): void {
     const time = this.time;
-    // On a phone the plane shrinks for the written multiples, so the curve's name leaves first, and P takes its place.
     const curve = alpha * (this.layout === 'wide' ? fade(time, 59800, 60400) : fade(time, 59800, 60400, 92500, 93300));
     // Above the oval's top (y ≈ 6.94), ending just short of the branch, which crosses y = 7.6 at x ≈ 5.9.
     this.label('curve', this.px(placed, 5.9) - 10 - this.labelWidth('curve'), this.py(placed, 7.6), curve);
@@ -787,7 +734,6 @@ export class FractionNetsFilm {
 
     const example = alpha * fade(time, 96000, 96600);
 
-    // On a phone there is no room beside the oval, so the note goes under the tests, where "suppose every test passes" was.
     if (this.layout === 'wide') {
       this.tag('points: a small example', placed.left + 4, placed.top + placed.height - 8, example, 'left');
     } else {
@@ -796,15 +742,12 @@ export class FractionNetsFilm {
     }
   }
 
-  // The line under the plane: the whole numbers' shadow, the curve's two stretches, a search, and the larger number system.
 
   private lineMap(): { y: number; left: number; right: number; cut: number; toX: (value: number) => number; fromX: (x: number) => number } {
     const placed = this.plane();
     const { left, top: y, width } = this.frame('line');
     const right = left + width;
-    // Stretching: the ordinary numbers close up towards the left, leaving room for the larger system past a break.
     const squeeze = 1 - 0.5 * span(this.time, STRETCH.start, STRETCH.end);
-    // A phone gives the larger system half the line, so its name and the solution's tag fit side by side.
     const cut = right - (right - left) * (this.layout === 'wide' ? 0.42 : 0.5) * span(this.time, STRETCH.start, STRETCH.end);
 
     return {
@@ -824,7 +767,6 @@ export class FractionNetsFilm {
     const { y, left, right, cut, toX, fromX } = this.lineMap();
     const end = Math.min(cut, left + (right - left) * drawn);
     this.line([[left, y], [end, y]], ink, 1.2, 1);
-    // Whole numbers: blue dots, swept in from the left as the knots' shadows land.
     const first = Math.ceil(fromX(left + 4));
     const last = Math.floor(fromX(cut - 8));
 
@@ -849,7 +791,6 @@ export class FractionNetsFilm {
     this.tag('endlessly many separate points', left + 4, y + 40, fade(time, 62000, 62600, 69000, 69800), 'left', blue);
   }
 
-  // Scene 3: copies of the whole-number knots fall straight down onto the line, row by row from the bottom.
   private drawFalling(lineY: number): void {
     const time = this.time;
 
@@ -875,7 +816,6 @@ export class FractionNetsFilm {
     this.dots(points, this.layout === 'wide' ? 2.2 : 1.8, this.colors.blue, 0.8);
   }
 
-  // Scene 4: the curve's two pieces drop their shadows, two hatched stretches just above the line.
   private drawShadows(y: number, right: number, toX: (value: number) => number): void {
     const time = this.time;
     const shown = fade(time, 61400, 61800, 86500, 87500);
@@ -906,20 +846,17 @@ export class FractionNetsFilm {
     this.tag('2 pieces, 2 stretches', toX(2.5), y + 26, fade(time, 62300, 62900, 69000, 69800));
   }
 
-  // Scene 5: a search along the whole numbers, one at a time, beside the search through the tests.
   private drawSearchOnLine(y: number, right: number, toX: (value: number) => number, fromX: (x: number) => number): void {
     const time = this.time;
     const shown = fade(time, TESTS.searchStart, TESTS.searchStart + 300, TESTS.searchEnd, TESTS.searchEnd + 500);
 
     if (shown <= 0) return;
 
-    // It tries 0, 1, 2… up to the last whole number on screen.
     const last = Math.min(13, Math.floor(fromX(right - 12)));
     const step = Math.min(last, Math.floor(share(time, TESTS.searchStart, TESTS.searchEnd) * (last + 1)));
     this.ring(toX(step), y, 6.5, this.colors.ink, shown, 1.4);
   }
 
-  // Scene 5: the larger number system past a break, its supposed solution, and the solution coming home.
   private drawLarger(y: number, right: number, cut: number, toX: (value: number) => number): void {
     const time = this.time;
     const shown = fade(time, STRETCH.start + 1200, STRETCH.end + 400);
@@ -937,13 +874,10 @@ export class FractionNetsFilm {
       this.dot(x, y, 2.2, ink, shown);
     }
 
-    // Its name and the solution's tag sit under the line, where nothing of the plane reaches. A phone has no room for
-    // a second row there; the tests' own tag says they are schematic.
     this.label('zstar', start + 2, y + 15, shown);
 
     if (this.layout === 'wide') this.tag('schematic', right, y + 28, shown * (1 - span(time, 103000, 103600)), 'right');
 
-    // The supposed solution: hollow out in the larger system, blue once it is ordinary.
     const far = start + (right - start) * 0.75;
     const home = toX(2);
     const back = span(time, STAR_RETURN.start, STAR_RETURN.end);
@@ -951,7 +885,6 @@ export class FractionNetsFilm {
     const lift = Math.sin(Math.PI * back) * 22;
     const star = fade(time, 91000, 91800);
     this.dot(x, y - lift, 5, back >= 1 ? blue : ink, star, back < 1);
-    // Centred under the solution, or flush with the line's end when that is too close.
     const named = Math.min(far + this.tagWidth('a solution') / 2, right);
     this.tag('a solution', named, y + 14, star * (1 - span(time, STAR_RETURN.start, STAR_RETURN.start + 400)), 'right');
     this.tag('ordinary after all', home, y + (this.layout === 'wide' ? 26 : 15), fade(time, STAR_RETURN.end - 300, STAR_RETURN.end + 300), 'center', blue);
@@ -963,14 +896,12 @@ export class FractionNetsFilm {
     return this.layout === 'wide' ? 12 : 10;
   }
 
-  // Where the names under the test row sit.
   private testsFoot(): number {
     return this.frame('tests').top + this.testBox() + 11;
   }
 
   private drawTests(): void {
     const time = this.time;
-    // On a phone the row steps out while it moves back down past the written multiples, and comes back under the line.
     const away = this.layout === 'tall' ? 1 - fade(time, 103000, 103300, 104200, 104600) : 1;
     const drawn = away * span(time, TESTS.drawn, TESTS.drawn + 2000);
 
@@ -1007,7 +938,6 @@ export class FractionNetsFilm {
     this.typed('…', end, top + size / 2, drawn, muted);
     const below = this.testsFoot();
     const stamped = fade(time, 83500, 83900, 86500, 87000);
-    // On a phone the stamp reaches down to the row's name, which steps aside while the stamp shows.
     const named = away * fade(time, TESTS.drawn + 1200, TESTS.drawn + 1800, 112500, 113000) * (this.layout === 'tall' ? 1 - stamped : 1);
     this.tag('tests (schematic)', left, below, named, 'left');
     this.tag('one of them would finish', left + width, below, fade(time, 78000, 78600, 83300, 83800), 'right');
@@ -1015,7 +945,6 @@ export class FractionNetsFilm {
     this.stamp('impossible (1970)', left + width / 2, top + size / 2, stamped, ink);
   }
 
-  // The side panel: the net's name, the remainder table, and the multiples written out in full.
 
   private drawSide(): void {
     const time = this.time;
@@ -1034,13 +963,11 @@ export class FractionNetsFilm {
       this.tag(name, left, top + 6, net.alpha, 'left', found ? blue : this.colors.muted);
     }
 
-    // The remainders that settle x² + y² = 3, once the last net has gone.
     const table = fade(time, 25200, 25700, 31500, 32300);
 
     if (table > 0) {
       const height = this.typedSize() * 1.5;
       this.tag('remainders on division by 3', left, top + 6, table, 'left');
-      // The row names in one column, the digits in another, so the digits line up whatever the names' glyphs.
       const names = ['n', 'n² leaves'];
       this.context.font = `${this.typedSize()}px ${TYPEWRITER}`;
       const digits = left + Math.max(...names.map((name) => this.context.measureText(name).width)) + 12;
@@ -1057,8 +984,6 @@ export class FractionNetsFilm {
     this.drawWritten(left, top, width, this.frame('side').height, ink);
   }
 
-  // Each written line wraps to the panel's width; its rows, and its total length, say how big the fraction is. Rows
-  // past the panel's foot are left out, and the last one that fits ends in "…" (a phone has room for about seven).
   private writtenRows(width: number, height: number): { rows: { part: string; start: number; cut: boolean }[]; length: number; n: number; at: number; digits: number; text: string; top: number }[] {
     const context = this.context;
     context.font = `${this.writtenSize()}px ${TYPEWRITER}`;
@@ -1096,7 +1021,6 @@ export class FractionNetsFilm {
 
     for (const block of this.writtenRows(width, height)) {
       const typed = this.typing(block.text, block.at, TYPING_STEP);
-      // Each line goes as its bar sets off for the chart.
       const leaving = 103300 + block.n * 120;
       const shown = fade(time, block.at, block.at + 100, leaving - 100, leaving + 200);
 
@@ -1108,7 +1032,6 @@ export class FractionNetsFilm {
     }
   }
 
-  // The size chart: digits of x(nP) against n, the bound a constant times n (schematic), and where both can hold.
 
   private chartPlaced(): Placed {
     return this.place('chart', { left: 0, right: 12.5, bottom: 0, top: 130 }, false);
@@ -1161,7 +1084,6 @@ export class FractionNetsFilm {
       this.dot(this.px(placed, multiple.n), this.py(placed, multiple.digits), 2.6, ink, alpha * fade(time, at, at + 200));
     }
 
-    // The parabola, written from the left, then the bound.
     const parabola = span(time, 106000, 107300);
     const growth: Point[] = [];
 
@@ -1176,7 +1098,6 @@ export class FractionNetsFilm {
     this.label('bound', this.px(placed, 10.6), this.py(placed, 46), alpha * fade(time, 108000, 108600));
   }
 
-  // Each written line shrinks to a dot at its length: a bar from the line's extent to the chart's dot for (n, digits).
   private drawMorph(placed: Placed): void {
     const time = this.time;
 
@@ -1201,7 +1122,6 @@ export class FractionNetsFilm {
     }
   }
 
-  // The last scene: the two unchecked papers pinned to what they hold up, and the status.
 
   private drawStatus(): void {
     const time = this.time;
@@ -1213,12 +1133,10 @@ export class FractionNetsFilm {
     const tests = this.frame('tests');
     const size = this.layout === 'wide' ? 12 : 10;
     this.tag('parity step: pointwise 2-converse · unchecked', tests.left, tests.top + size + 11, shown, 'left');
-    // The bound's paper, in the chart's empty top left where "only ordinary B fit" stood.
     const chart = this.chartPlaced();
     this.tag('the bound: Fontaine–Mazur\nat 2 · unchecked', this.px(chart, 0.3), this.py(chart, 105), shown, 'left');
     const stamp = fade(time, 114300, 114800);
 
-    // The status, between the chart and the line.
     if (this.layout === 'wide') {
       this.stamp('claimed · unreviewed', chart.left + chart.width / 2, this.frame('line').top - 32, stamp, blue);
     } else {

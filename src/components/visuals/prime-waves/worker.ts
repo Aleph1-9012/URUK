@@ -1,6 +1,5 @@
-// The heavy sums run off the page's thread, in the order the film needs them: ζ's map, Riemann's waves, then the cousin's map.
-import { computeMap, type MapData } from '../zeta-map/maps';
-import { zeroHeights } from '../zeta-map/zeros';
+import { computeMap, type MapData } from './zeta/maps';
+import { zeroHeights } from './zeta/zeros';
 import { waveTable, type WaveTable } from './primes';
 import { DIAL_FROM, DIAL_TO, FIRST_HEIGHT } from './story';
 

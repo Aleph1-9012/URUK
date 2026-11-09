@@ -1,5 +1,7 @@
+import { FilmLabels } from '../../plate/labels';
+import { smooth, fade } from '../../../lib/animation';
 import { freeBall, leftMultiply, diskMap, FIXED_POINT, integerShare, freeShare } from './math';
-import { smooth, fade } from './story';
+
 import { drawThompsonGraph } from './graph';
 
 type Tone = 'ink' | 'blue' | 'muted' | 'paper';
@@ -40,14 +42,10 @@ export class FairAverageFilm {
   private tall = false;
   private time = 0;
   private colors: Record<Tone, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly sizes = new Map<string, Point>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (label.dataset.label) this.labels.set(label.dataset.label, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -61,26 +59,17 @@ export class FairAverageFilm {
 
     for (const key of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.sizes.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.sizes.set(id, { x: rect?.width ?? 0, y: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     this.time = time;
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawThompsonGraph(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.label(id, x, y, alpha));
+    drawThompsonGraph(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
     this.sets();
     this.history();
     this.colorDisk();
@@ -88,9 +77,7 @@ export class FairAverageFilm {
     this.gauge();
     this.ending();
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
   private line(points: readonly Point[], tone: Tone = 'ink', alpha = 1, weight = 1): void {
@@ -163,18 +150,6 @@ export class FairAverageFilm {
     this.pen.globalAlpha = 1;
   }
 
-  private label(id: string, x: number, y: number, alpha = 1): void {
-    const label = this.labels.get(id);
-
-    if (!label || alpha < .005) return;
-
-    const size = this.sizes.get(id) ?? { x: 0, y: 0 };
-    label.style.transform = `translate(${Math.max(size.x / 2 + 7, Math.min(this.width - size.x / 2 - 7, x))}px,${Math.max(size.y / 2 + 6, Math.min(this.height - size.y / 2 - 6, y))}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(alpha);
-    this.visible.add(id);
-  }
-
   private arrow(from: Point, to: Point, tone: Tone, alpha = 1): void {
     this.line([from, to], tone, alpha, 1.2);
     const angle = Math.atan2(to.y - from.y, to.x - from.x);
@@ -226,7 +201,7 @@ export class FairAverageFilm {
     }
 
     this.words(integers > .5 ? `ONLY TWO ENDS DIFFER · 2/${n}` : translated > .5 ? '18 OF 17 CHANGE · BLUE = MOVED SET' : '17 ELEMENTS · RADIUS 2', center.x, this.tall ? this.height * .685 : center.y + radius + 19, this.width * (this.tall ? .9 : .43), alpha, translated > .5 || integers > .5 ? 'blue' : 'muted');
-    this.label('share', this.width * (this.tall ? .85 : .75), this.height * (this.tall ? .57 : .63), fade(t, 30500, 31000, 32000, 33000));
+    this.labels.place('share', this.width * (this.tall ? .85 : .75), this.height * (this.tall ? .57 : .63), fade(t, 30500, 31000, 32000, 33000));
     const iconX = this.width * (this.tall ? .79 : .91);
     const iconR = this.tall ? 7 : 12;
     this.dot({ x: iconX, y: center.y - 25 }, iconR, 'ink', paradox, true);
@@ -250,7 +225,7 @@ export class FairAverageFilm {
     this.words('CONTAINS A NONABELIAN FREE GROUP?  ×', x, y, span, alpha * routes);
     this.words('BUILT FROM FINITE + ABELIAN PIECES?  ×', x, y + 33, span, alpha * routes, 'muted');
     const tower = fade(t, 41500, 43000, 47500, 48700);
-    this.label('tower', x, y, tower);
+    this.labels.place('tower', x, y, tower);
     this.words('MOORE 2013 · IF F PASSED\nSETS AT LEAST THIS LARGE · SCHEMATIC', x, y + (this.tall ? 40 : 75), span, tower, 'muted');
     const timeline = smooth(t, 48000, 49300);
     const left = x - span * .43;
@@ -307,9 +282,9 @@ export class FairAverageFilm {
     const image = { x: average.x + reached, y: average.y + reached * .25 };
     this.arrow(average, image, 'blue', alpha * smooth(t, 70500, 73000));
     this.words(t >= 94500 ? 'DISTANCE AT LEAST 1/2' : 'm ≈ f(m)', center.x, this.tall && t >= 94500 ? this.height * .61 : center.y + radius + 18, this.width * (this.tall ? .88 : .4), alpha * smooth(t, 70500, 73000) * (this.tall ? 1 - fade(t, 71000, 72500, 77000, 78200) : 1), 'blue');
-    this.label('colors', center.x - (this.tall ? 55 : 75), this.tall ? this.height * .70 : center.y + radius + 45, fade(t, 71000, 72500, 77000, 78200));
-    this.label('mean', center.x + (this.tall ? 56 : 95), this.tall ? this.height * .70 : center.y + radius + 45, fade(t, 71000, 72500, 77000, 78200));
-    this.label('floor', center.x, this.tall ? this.height * .70 : center.y + radius + 53, fade(t, 95500, 97000, 102500, 103500));
+    this.labels.place('colors', center.x - (this.tall ? 55 : 75), this.tall ? this.height * .70 : center.y + radius + 45, fade(t, 71000, 72500, 77000, 78200));
+    this.labels.place('mean', center.x + (this.tall ? 56 : 95), this.tall ? this.height * .70 : center.y + radius + 45, fade(t, 71000, 72500, 77000, 78200));
+    this.labels.place('floor', center.x, this.tall ? this.height * .70 : center.y + radius + 53, fade(t, 95500, 97000, 102500, 103500));
   }
 
   private fixedPoints(): void {
@@ -395,7 +370,7 @@ export class FairAverageFilm {
     const alpha = smooth(this.time, 102500, 104500);
     const x = this.width * (this.tall ? .5 : .75);
     const y = this.height * (this.tall ? .51 : .22);
-    this.label('status', x, y, alpha);
+    this.labels.place('status', x, y, alpha);
     this.words('KIM & LODHA · 13 OCT 2026\nTHEIR OWN TWO-PAGE PROOF · NO AI', x, y + (this.tall ? 44 : 64), this.width * (this.tall ? .92 : .43), alpha);
     this.words('MOORE’S COGNAC: STILL CLOSED', x, this.tall ? this.height * .72 : y + 108, this.width * (this.tall ? .92 : .43), smooth(this.time, 110000, 112000), 'muted');
   }

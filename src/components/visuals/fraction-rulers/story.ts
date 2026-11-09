@@ -1,3 +1,6 @@
+import { smooth as span, mix } from '../../../lib/animation';
+import { createTimeline } from '../../plate/timeline';
+
 // Claude's 017 storyboard, 8 November 2026. Times are milliseconds.
 export const CUES = [
   { at: 0, text: 'Most people learn $\\tfrac{22}{7}$ at school, and some learn $\\tfrac{355}{113}$, which is right to six decimal places.', sources: [4] },
@@ -19,6 +22,8 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 200);
+
 export const SCENES = [
   { title: 'Fractions on a ruler', first: 0 },
   { title: 'A height for each approximation', first: 3 },
@@ -29,45 +34,6 @@ export const SCENES = [
   { title: 'Where it stands', first: 14 },
 ] as const;
 
-export function cueAt(time: number): number {
-  let found = 0;
-
-  for (const [index, cue] of CUES.entries()) {
-    if (time >= cue.at) found = index;
-  }
-
-  return found;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-export function stillTime(index: number): number {
-  return cueEnd(index) - (index === CUES.length - 1 ? 0 : 200);
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.min(FILM_DURATION, Math.max(0, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-export function span(time: number, start: number, end: number): number {
-  const part = Math.min(1, Math.max(0, (time - start) / (end - start)));
-
-  return part * part * (3 - 2 * part);
-}
-
-export function fade(time: number, start: number, end: number, outStart = Infinity, outEnd = Infinity): number {
-  return span(time, start, end) * (outStart === Infinity ? 1 : 1 - span(time, outStart, outEnd));
-}
-
-export function mix(first: number, last: number, part: number): number {
-  return first + (last - first) * part;
-}
-
-// Ease the logarithmic zoom with a bounded middle speed and still endpoints.
 function zoomProgress(time: number, start: number, end: number): number {
   const u = Math.min(1, Math.max(0, (time - start) / (end - start)));
 

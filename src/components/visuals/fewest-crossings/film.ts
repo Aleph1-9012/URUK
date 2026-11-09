@@ -1,26 +1,19 @@
+import { FilmLabels } from '../../plate/labels';
 import { graphState } from './math';
 import { drawGraph } from './graph';
 import { drawGauge } from './gauge';
 
 type Tone = 'ink' | 'blue' | 'muted' | 'paper';
 
-type Extent = { width: number; height: number };
-
 export class FewestCrossingsFilm {
   private width = 1;
   private height = 1;
   private density = 1;
   private readonly colors: Record<Tone, string> = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly extents = new Map<string, Extent>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      const id = label.dataset.label;
-
-      if (id) this.labels.set(id, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 6, vertical: 5 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -35,44 +28,20 @@ export class FewestCrossingsFilm {
       this.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || this.colors[tone];
     }
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.extents.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.extents.set(id, { width: rect?.width ?? 0, height: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     const state = graphState(time);
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawGraph(this.pen, this.width, this.height, time, this.colors, this.label, state);
-    drawGauge(this.pen, this.width, this.height, time, this.colors, this.label, state);
+    drawGraph(this.pen, this.width, this.height, time, this.colors, this.labels.place, state);
+    drawGauge(this.pen, this.width, this.height, time, this.colors, this.labels.place, state);
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
-  private readonly label = (id: string, x: number, y: number, opacity = 1): void => {
-    const label = this.labels.get(id);
-
-    if (!label || opacity < .005) return;
-
-    const extent = this.extents.get(id) ?? { width: 0, height: 0 };
-    const left = Math.max(extent.width / 2 + 6, Math.min(this.width - extent.width / 2 - 6, x));
-    const top = Math.max(extent.height / 2 + 5, Math.min(this.height - extent.height / 2 - 5, y));
-    label.style.transform = `translate(${left}px,${top}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(opacity);
-    this.visible.add(id);
-  };
 }

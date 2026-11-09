@@ -29,7 +29,6 @@ class UrukThompsonBands extends HTMLElement {
       page: 1,
       value: START_STEP,
       describe: describeStep,
-      // The reader has taken over: the film stops on the step they chose.
       onInput: (step) => {
         this.player?.pause();
         this.player?.seek(timeOfStep(step));

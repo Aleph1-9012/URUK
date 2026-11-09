@@ -3,7 +3,7 @@ import {
   AGREE_CROSSING, AGREE_GAMMA, BAD_EDGES, BEST_LABELS, CUT_EDGES, CUT_LABELS, EDGES,
   HIDDEN_LABELS, WALK_LABELS, agreement, bestLabelling, keptCount, keepsRule, walkLabels,
 } from '../src/components/visuals/unique-rules/math';
-import { CUES, FILM_DURATION, cueAt, stillTime } from '../src/components/visuals/unique-rules/story';
+import { CUES, FILM_DURATION, TIMELINE } from '../src/components/visuals/unique-rules/story';
 
 test('102 wheel: exhaustive optima and the misleading walk match the displayed counts', () => {
   expect(EDGES.length).toBe(12);
@@ -40,7 +40,7 @@ test('102 timeline: each subtitle has time to read and a settled reduced-motion 
     const letters = cue.text.replace(/\$[^$]*\$/g, 'xxxxx').length;
 
     expect(next).toBeGreaterThan(cue.at);
-    expect(cueAt(stillTime(index))).toBe(index);
+    expect(TIMELINE.cueAt(TIMELINE.stillTime(index))).toBe(index);
 
     if (index < CUES.length - 1) expect(next - cue.at).toBeGreaterThanOrEqual(letters / 17 * 1000 - 200);
   }

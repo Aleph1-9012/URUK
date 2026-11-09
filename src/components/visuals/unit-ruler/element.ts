@@ -26,7 +26,6 @@ class UrukUnitRuler extends HTMLElement {
   private status: HTMLElement | null = null;
   private observer: ResizeObserver | undefined;
   private player: Player | undefined;
-  // Set while the reader holds the ruler; the next frame of the film then starts a glide back to the path.
   private takenOver = false;
   private returning: Return | undefined;
 
@@ -59,7 +58,6 @@ class UrukUnitRuler extends HTMLElement {
     if (grip === 'move') {
       const dx = point.x - from.x;
       const dy = point.y - from.y;
-      // Against an edge the ruler slides along it instead of stopping dead.
       this.place(
         { start: { x: ruler.start.x + dx, y: ruler.start.y + dy }, angle: ruler.angle },
         { start: { x: ruler.start.x + dx, y: ruler.start.y }, angle: ruler.angle },
@@ -68,7 +66,6 @@ class UrukUnitRuler extends HTMLElement {
     } else if (grip === 'end') {
       this.place({ start: ruler.start, angle: Math.atan2(point.y - ruler.start.y, point.x - ruler.start.x) });
     } else {
-      // Dragging the first end turns the ruler about the other one.
       const pivot = rulerEnd(ruler);
       const angle = Math.atan2(pivot.y - point.y, pivot.x - point.x);
       this.place({ start: { x: pivot.x - UNIT * Math.cos(angle), y: pivot.y - UNIT * Math.sin(angle) }, angle });
@@ -101,7 +98,6 @@ class UrukUnitRuler extends HTMLElement {
     this.takeOver();
 
     if (event.shiftKey) {
-      // Shift turns the ruler about its middle: right and down clockwise, left and up the other way.
       const turn = move.x + move.y > 0 ? TURN : -TURN;
       const end = rulerEnd(this.ruler);
       const middle = { x: (this.ruler.start.x + end.x) / 2, y: (this.ruler.start.y + end.y) / 2 };
@@ -155,7 +151,6 @@ class UrukUnitRuler extends HTMLElement {
     this.player?.destroy();
   }
 
-  // The reader has taken the ruler: the film stops where they leave it.
   private takeOver(): void {
     this.takenOver = true;
     this.returning = undefined;
@@ -200,7 +195,6 @@ class UrukUnitRuler extends HTMLElement {
     return { x: point.x, y: point.y };
   }
 
-  // Takes the first candidate that keeps both ends on the plate; if none does, the ruler stays where it is.
   private place(...candidates: Ruler[]): void {
     const next = candidates.find(fits);
 
@@ -215,7 +209,6 @@ class UrukUnitRuler extends HTMLElement {
     this.querySelector('[data-swatch="end"]')?.setAttribute('fill', swatchFill(patternOf(cellAt(rulerEnd(next)))));
   }
 
-  // Only the reader's own moves are spoken, and only when a pattern changes, never the film's.
   private announce(): void {
     const text = describeEnds(patternOf(cellAt(this.ruler.start)), patternOf(cellAt(rulerEnd(this.ruler))));
 

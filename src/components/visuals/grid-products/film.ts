@@ -1,10 +1,10 @@
+import { FilmLabels } from '../../plate/labels';
+import { smooth, fade } from '../../../lib/animation';
 import { A, B, SCHOOL_PRODUCT, STRASSEN_PRODUCTS, RECOMBINATIONS, POLYNOMIAL_GRID, TRIPLING_GRID } from './math';
-import { smooth, fade } from './story';
+
 import { drawRecordChart } from './chart';
 
 type Tone = 'ink' | 'blue' | 'muted' | 'paper';
-
-type Point = { x: number; y: number };
 
 export class GridProductsFilm {
   private width = 1;
@@ -13,14 +13,10 @@ export class GridProductsFilm {
   private tall = false;
   private time = 0;
   private colors: Record<Tone, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly sizes = new Map<string, Point>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (label.dataset.label) this.labels.set(label.dataset.label, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -36,21 +32,12 @@ export class GridProductsFilm {
       this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
     }
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.sizes.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.sizes.set(id, { x: rect?.width ?? 0, y: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     this.time = time;
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
@@ -60,11 +47,9 @@ export class GridProductsFilm {
     this.characters(fade(time, 65500, 67700, 79000, 80000));
     this.polynomials(fade(time, 80000, 81500, 88000, 89000));
     this.tripling(fade(time, 88000, 89500, 103500, 105000));
-    drawRecordChart(this.pen, this.width, this.height, time, this.colors, (id, x, y, opacity) => this.label(id, x, y, opacity));
+    drawRecordChart(this.pen, this.width, this.height, time, this.colors, (id, x, y, opacity) => this.labels.place(id, x, y, opacity));
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
   private line(x1: number, y1: number, x2: number, y2: number, tone: Tone = 'ink', opacity = 1, width = 1): void {
@@ -117,18 +102,6 @@ export class GridProductsFilm {
     }
 
     this.pen.globalAlpha = 1;
-  }
-
-  private label(id: string, x: number, y: number, opacity = 1): void {
-    const label = this.labels.get(id);
-
-    if (!label || opacity < .005) return;
-
-    const size = this.sizes.get(id) ?? { x: 0, y: 0 };
-    label.style.transform = `translate(${Math.max(size.x / 2 + 7, Math.min(this.width - size.x / 2 - 7, x))}px,${Math.max(size.y / 2 + 6, Math.min(this.height - size.y / 2 - 6, y))}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(opacity);
-    this.visible.add(id);
   }
 
   private grid(x: number, y: number, size: number, values: readonly number[], shown: number, blocks: number, highlight: readonly number[], opacity: number): void {
@@ -238,7 +211,7 @@ export class GridProductsFilm {
       this.words(`SCHOOL  ${school.toLocaleString('en-US')}`, center, under + 29, boardW, opacity, 'ink', false);
       this.words(`STRASSEN  ${strassen.toLocaleString('en-US')}`, center, under + 56, boardW, opacity, 'blue', false);
       this.words(level === 10 ? '3.8 TIMES FEWER · THE GAP KEEPS GROWING' : '×8 EACH LEVEL       ×7 EACH LEVEL', center, under + 85, boardW, opacity);
-      this.label('recursion', center, under + (this.tall ? 120 : 130), opacity * smooth(t, 30000, 31000));
+      this.labels.place('recursion', center, under + (this.tall ? 120 : 130), opacity * smooth(t, 30000, 31000));
     } else {
       this.words('STRASSEN: SEVEN BLOCK PRODUCTS', center, under + 9, boardW, opacity);
       this.words('16 ENTRIES TO WRITE', center, under + 39, boardW, opacity, 'blue');
@@ -271,8 +244,8 @@ export class GridProductsFilm {
     this.words('VALUES ADD', x1, y + size + 25, w * .34, opacity);
     this.words('VALUES MULTIPLY', x2, y + size + 25, w * .34, opacity);
     this.words('METERS · SCHEMATIC', w * .42, y + size + 64, w * .65, opacity * (1 - count), 'muted');
-    this.label('blocks', w * .42, y + size + (this.tall ? 77 : 85), opacity * count);
-    this.label('character', w * .42, y + size + (this.tall ? 127 : 145), opacity * count);
+    this.labels.place('blocks', w * .42, y + size + (this.tall ? 77 : 85), opacity * count);
+    this.labels.place('character', w * .42, y + size + (this.tall ? 127 : 145), opacity * count);
     this.words('ANY m × m JOB', w * .42, y + size + (this.tall ? 102 : 115), w * .5, opacity * count);
   }
 
@@ -308,7 +281,7 @@ export class GridProductsFilm {
 
     this.words('16 PRODUCTS · 7 ANSWER COEFFICIENTS', this.width * .42, base + 30, this.width * .76, opacity);
     this.words('EVALUATE AT 7 POINTS', this.width * .42, base + 57, this.width * .72, opacity * points, 'blue');
-    this.label('points', this.width * .42, base + 90, opacity * points);
+    this.labels.place('points', this.width * .42, base + 90, opacity * points);
   }
 
   private tripling(opacity: number): void {
@@ -347,7 +320,7 @@ export class GridProductsFilm {
 
     const below = top + size * 8 + 25;
     this.words('6 PRODUCTS IN EACH · 6 CROSSED OUT', center, below, size * 10 + 10, opacity * (1 - shrinking));
-    this.label('tripling', center, below + 35, opacity * smooth(this.time, 93500, 95000) * (1 - shrinking));
+    this.labels.place('tripling', center, below + 35, opacity * smooth(this.time, 93500, 95000) * (1 - shrinking));
     this.words('P: MEASURE OF THE PRODUCT', center, below + 65, size * 10 + 20, opacity * smooth(this.time, 93500, 95000) * (1 - shrinking));
   }
 }

@@ -1,4 +1,3 @@
-// Keep the original TeX slices intact; only top-level relations may start a new row.
 export function splitFormula(tex: string): string[] {
   const parts: string[] = [];
   let depth = 0;

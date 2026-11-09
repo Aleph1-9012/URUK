@@ -80,7 +80,6 @@ function endKey(x: number, y: number): number {
   return Math.round(x * 1e6) * 2e8 + Math.round(y * 1e6);
 }
 
-// Joins one field's pieces (x₁, y₁, x₂, y₂ each) end to end into polylines; a closed line ends where it began.
 function join(segments: readonly number[]): number[][] {
   const count = segments.length / 4;
   const ends = new Map<number, number[]>();
@@ -96,7 +95,6 @@ function join(segments: readonly number[]): number[][] {
   }
 
   const used = new Uint8Array(count);
-  // From the point (x, y), follow unused pieces and add each far end to `out`.
   const follow = (x: number, y: number, out: number[]) => {
     let key = endKey(x, y);
 
@@ -189,7 +187,6 @@ function thin(line: readonly number[], cellX: number, cellY: number): number[] {
   return kept;
 }
 
-// The zero line of one field, joined and thinned, added to `lines`.
 function trace(grid: Grid, field: Float64Array, lines: number[][]): void {
   const segments: number[] = [];
   march(grid, field, segments);

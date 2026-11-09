@@ -18,7 +18,6 @@ function offsetsChanged(
   return false;
 }
 
-// Most rows hold still from one frame to the next, so only the rows that moved are redrawn.
 function drawOffsetRuns(
   context: CanvasRenderingContext2D,
   surface: HTMLCanvasElement,

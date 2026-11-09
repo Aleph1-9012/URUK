@@ -3,14 +3,11 @@ import { latticePoints } from '../src/components/visuals/prime-waves/film';
 import {
   CHART_END, PRIMES, li, offsetLi, primeCount, smoothPart, waveSize, waveTable, zeroWave,
 } from '../src/components/visuals/prime-waves/primes';
-import {
-  CLAIMED_EDGE, CUES, DIAL_FROM, DIAL_TO, FILM_DURATION, FIRST_HEIGHT, SCENES, classicalWidth, cueAt, cueEnd, dialAt, panelAt,
-  stillTime, zerosUsed, type Panel,
-} from '../src/components/visuals/prime-waves/story';
-import { phaseLines, sample, type Grid } from '../src/components/visuals/zeta-map/contours';
-import { lValue, minusFour, principal } from '../src/components/visuals/zeta-map/lfunctions';
-import { ZETA_GRID, computeMap } from '../src/components/visuals/zeta-map/maps';
-import { zeroHeights } from '../src/components/visuals/zeta-map/zeros';
+import { CLAIMED_EDGE, CUES, DIAL_FROM, DIAL_TO, FILM_DURATION, FIRST_HEIGHT, SCENES, classicalWidth, dialAt, panelAt, zerosUsed, type Panel, TIMELINE } from '../src/components/visuals/prime-waves/story';
+import { phaseLines, sample, type Grid } from '../src/components/visuals/prime-waves/zeta/contours';
+import { lValue, minusFour, principal } from '../src/components/visuals/prime-waves/zeta/lfunctions';
+import { ZETA_GRID, computeMap } from '../src/components/visuals/prime-waves/zeta/maps';
+import { zeroHeights } from '../src/components/visuals/prime-waves/zeta/zeros';
 
 const size = ({ re, im }: { re: number; im: number }) => Math.hypot(re, im);
 
@@ -114,18 +111,18 @@ test('003 film: between 45 and 120 seconds, subtitles in order, each long enough
   expect(FILM_DURATION).toBeLessThanOrEqual(120000);
 
   for (const [index, cue] of CUES.entries()) {
-    const shown = cueEnd(index) - cue.at;
+    const shown = TIMELINE.cueEnd(index) - cue.at;
     const letters = cue.text.replace(/\$[^$]*\$/g, 'xxxxx').length;
 
     expect(shown).toBeGreaterThan(0);
     // About seventeen characters a second; the last subtitle stays after the film stops.
     if (index < CUES.length - 1) expect(shown).toBeGreaterThanOrEqual(letters * 1000 / 17 - 200);
 
-    expect(cueAt(cue.at)).toBe(index);
-    expect(cueAt(stillTime(index))).toBe(index);
+    expect(TIMELINE.cueAt(cue.at)).toBe(index);
+    expect(TIMELINE.cueAt(TIMELINE.stillTime(index))).toBe(index);
   }
 
-  expect(cueAt(FILM_DURATION + 5000)).toBe(CUES.length - 1);
+  expect(TIMELINE.cueAt(FILM_DURATION + 5000)).toBe(CUES.length - 1);
   expect(SCENES.every((scene, index) => index === 0 || scene.first > (SCENES[index - 1]?.first ?? 0))).toBe(true);
 });
 

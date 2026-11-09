@@ -1,5 +1,6 @@
+import { smooth } from '../../../lib/animation';
 import { Z, type GraphState } from './math';
-import { layout, smooth } from './story';
+import { layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

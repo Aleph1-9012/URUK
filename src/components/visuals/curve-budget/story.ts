@@ -1,3 +1,5 @@
+import { createTimeline } from '../../plate/timeline';
+
 export const CUES = [
   {"at": 0, "title": "Curves through pins", "text": "Mark points in the plane and look for a curve through all of them. Five points lie on a conic, and nine points lie on a cubic.", "sources": [1]},
   {"at": 7500, "title": "Coefficients to spend", "text": "A curve of degree $d$ has about $d^2/2$ free coefficients, and making it pass through a point uses some of them up.", "sources": [1]},
@@ -18,36 +20,4 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-export function stillTime(index: number): number {
-  return index === CUES.length - 1 ? FILM_DURATION : cueEnd(index) - 250;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.max(0, Math.min(FILM_DURATION, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-export function smooth(time: number, start: number, end: number): number {
-  const progress = Math.max(0, Math.min(1, (time - start) / (end - start)));
-
-  return progress * progress * (3 - 2 * progress);
-}
-
-export function fade(time: number, start: number, end: number, leave = Infinity, gone = Infinity): number {
-  return smooth(time, start, end) * (leave === Infinity ? 1 : 1 - smooth(time, leave, gone));
-}
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 250);

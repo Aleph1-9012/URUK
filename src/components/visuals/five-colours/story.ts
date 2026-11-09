@@ -1,3 +1,5 @@
+import { createTimeline } from '../../plate/timeline';
+
 // Claude's approved 158 storyboard, revised 8 November 2026. Times are milliseconds.
 export const CUES = [
   { at: 0, title: 'One unit apart', text: 'Colour every point of a sheet, with one rule: two points exactly one unit apart must never share a colour. How few colours will do?', sources: [1] },
@@ -18,37 +20,4 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-export function stillTime(index: number): number {
-  return index === CUES.length - 1 ? FILM_DURATION : cueEnd(index) - 200;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.max(0, Math.min(FILM_DURATION, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-export function smooth(time: number, start: number, end: number): number {
-  const amount = Math.min(1, Math.max(0, (time - start) / (end - start)));
-
-  return amount * amount * (3 - 2 * amount);
-}
-
-// Reserved for emphasis within a drawing, not for dissolving between scenes or changing tags.
-export function fade(time: number, start: number, end: number, outStart = Infinity, outEnd = Infinity): number {
-  return smooth(time, start, end) * (outStart === Infinity ? 1 : 1 - smooth(time, outStart, outEnd));
-}
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 200);

@@ -1,4 +1,4 @@
-import type { Swing } from '../../plate/player';
+import type { Swing } from '../../plate/swing';
 
 // The standard map on the torus, the 146 page's Plate I: f(x, y) = (x + y + k sin 2πx, y + k sin 2πx), both mod 1.
 // Orbits are sorted by a finite-time stretch rate, as in the Round 61 drawing: orderly ones are drawn long, so their
@@ -11,13 +11,11 @@ export const K_MAX = 1;
 
 export const K_START = 0.2;
 
-// The film turns k up from 0 to 1 and back, resting at each end.
 export const FILM: Swing = { low: K_MIN, high: K_MAX, travel: 16000, hold: 2000 };
 
 export type Quality = {
   starts: number;
   classifySteps: number;
-  // Only every so-many orderly orbits is drawn, or their curves would fill the plate.
   orderlyEvery: number;
   orderlySteps: number;
   chaoticSteps: number;
@@ -25,13 +23,11 @@ export type Quality = {
 
 export const fullQuality: Quality = { starts: 2600, classifySteps: 800, orderlyEvery: 9, orderlySteps: 1800, chaoticSteps: 28 };
 
-// While the slider moves: a fifth of the work, enough to follow the change.
 export const draftQuality: Quality = { starts: 1300, classifySteps: 200, orderlyEvery: 6, orderlySteps: 700, chaoticSteps: 16 };
 
 // Matches --ink in tokens.css.
 const INK = [0x1c, 0x1a, 0x17] as const;
 
-// A fixed seed, so the same k always draws the same picture.
 function random(seed: number): () => number {
   let state = seed >>> 0;
 
@@ -78,7 +74,6 @@ export function stretchRate(x: number, y: number, k: number, steps: number): num
       product = 1;
     }
 
-    // The map, written out: this loop runs millions of times per picture.
     py = wrap(py + k * Math.sin(TAU * px));
     px = wrap(px + py);
   }
@@ -93,7 +88,6 @@ export function orderlyLimit(steps: number): number {
 
 export type Canvas = { width: number; height: number; dot: number };
 
-// Ink pixels for one picture, ready for putImageData. The y axis is moved by half a turn, so the main island is centred.
 export function drawOrbits(k: number, canvas: Canvas, quality: Quality): Uint8ClampedArray<ArrayBuffer> {
   const { width, height, dot } = canvas;
   const pixels = new Uint8ClampedArray(width * height * 4);

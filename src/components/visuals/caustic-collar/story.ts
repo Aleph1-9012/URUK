@@ -1,3 +1,5 @@
+import { createTimeline } from '../../plate/timeline';
+
 // Claude's near-boundary billiard storyboard, with its original cues and timings.
 export const CUES = [
   {"at": 0, "title": "A shallow shot in an ellipse", "text": "Roll a ball inside an elliptical table and launch it at a shallow angle. It never crosses a smaller ellipse with the same two foci.", "sources": [1]},
@@ -17,6 +19,8 @@ export const CUES = [
 ] as const;
 
 export const FILM_DURATION = 108000;
+
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 180);
 
 export interface Box {
   x: number;
@@ -50,38 +54,4 @@ export function layout(width: number, height: number): Layout {
     ledger: { x: width * .55, y: height * .59, w: width * .42, h: height * .35 },
     tall,
   };
-}
-
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function cueEnd(index: number): number {
-  return CUES[index + 1]?.at ?? FILM_DURATION;
-}
-
-export function stillTime(index: number): number {
-  return index === CUES.length - 1 ? FILM_DURATION : cueEnd(index) - 180;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.max(0, Math.min(FILM_DURATION, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-export function span(time: number, start: number, end: number): number {
-  return Math.min(1, Math.max(0, (time - start) / (end - start)));
-}
-
-export function smooth(time: number, start: number, end: number): number {
-  const amount = span(time, start, end);
-
-  return amount * amount * (3 - 2 * amount);
 }

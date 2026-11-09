@@ -1,6 +1,7 @@
+import { smooth } from '../../../lib/animation';
 import { dimensionBasis, graphState, pointOnEdge, type Edge, type GraphState, type Point } from './math';
 import { tallyTarget } from './gauge';
-import { layout, smooth } from './story';
+import { layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

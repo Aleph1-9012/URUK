@@ -1,29 +1,17 @@
 ---
-// Plate I for 003: a film from the primes to the paper's claimed fence. The HTML holds the opening still, every subtitle and the transcript.
 import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
 import { renderFormula } from '../../../lib/formulas/render';
 import { CHART_END, PRIMES, offsetLi } from './primes';
-import { CUES, FILM_DURATION, SCENES, formatTime } from './story';
+import { CUES, TIMELINE, SCENES } from './story';
 import './prime-film.css';
 
 const math = (tex: string) => renderFormula(tex, false);
-const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
-// Subtitle text with $…$ formulas, as HTML. A formula keeps the word fixed to it, as in "L-function", on its line.
-const rich = (text: string) => {
-  const parts = text.split('$');
-
-  return parts.map((part, index) => {
-    if (index % 2 === 0) return escape(index > 0 && /^\S/.test(part) ? part.replace(/^\S+/, '') : part);
-
-    const attached = /^\S+/.exec(parts[index + 1] ?? '')?.[0];
-
-    return attached ? `<span class="pfilm-nowrap">${math(part)}${escape(attached)}</span>` : math(part);
-  }).join('');
-};
-
 type Anchor = 'above' | 'right';
 
-// `halo` clears the hatching behind a label that can land on it.
 const labels: { id: string; tex: string; anchor: Anchor; tone?: 'blue'; size?: 'large' | 'small'; halo?: true }[] = [
   { id: 'pi', tex: String.raw`\pi(x)`, anchor: 'right' },
   { id: 'li', tex: String.raw`\mathrm{Li}(x)`, anchor: 'right' },
@@ -37,7 +25,6 @@ const labels: { id: string; tex: string; anchor: Anchor; tone?: 'blue'; size?: '
   { id: 'reciprocal', tex: String.raw`1/\zeta\ \text{large}`, anchor: 'right', halo: true },
 ];
 
-// The opening still, for readers without JavaScript: the count of primes and the smooth curve, to scale.
 const x = (value: number) => 90 + 640 * value / CHART_END;
 const y = (count: number) => 440 - 360 * count / 30;
 let level = 0;
@@ -60,7 +47,7 @@ const curve = Array.from({ length: 80 }, (_, index) => {
   caption="A film from the primes to the paper's claim: their count, the waves from the zeros of ζ that rebuild it, the claimed fence at 7/8 and the shape of the proof."
   leftOut="the waves use only the first hundred zeros, and the maps stop at height 64; the proof's estimates; the separate Siegel-zero proof. The supposed zero, the squeeze and the two rows of arrows are schematic."
 >
-  <uruk-prime-film>
+  <uruk-prime-film class="film-host film-host--classic">
     <div class="pfilm">
       <div class="pfilm-screen" data-film-viewport>
         <canvas
@@ -93,48 +80,14 @@ const curve = Array.from({ length: 80 }, (_, index) => {
         </div>
       </div>
 
-      <div class="pfilm-subtitles" aria-hidden="true">
-        {CUES.map((cue, index) => (
-          <p class:list={['pfilm-cue', { 'is-active': index === 0 }]} data-cue={index}>
-            <span set:html={rich(cue.text)} />{cue.sources.length > 0 && <span class="pfilm-cue__sources"> {cue.sources.map((source) => `[${source}]`).join('')}</span>}
-          </p>
-        ))}
-      </div>
+      <FilmSubtitles cues={CUES} />
     </div>
 
-    <div class="pfilm-controls" data-script-only>
-      <div class="pfilm-control-row">
-        <button type="button" class="plate-button case-link case-link--tight" data-play><span data-play-label>Pause</span></button>
-        <p class="pfilm-clock"><span data-film-clock>0:00 / {formatTime(FILM_DURATION)}</span></p>
-        <button type="button" class="plate-button case-link case-link--tight" data-film-restart>Restart</button>
-      </div>
-      <label class="visually-hidden" for="pfilm-timeline">Film timeline. The arrow keys move one subtitle at a time.</label>
-      <input id="pfilm-timeline" class="pfilm-range" type="range" min="0" max={FILM_DURATION} step="100" value="0" data-film-range />
-      <div class="pfilm-step-controls">
-        <button type="button" class="plate-button case-link case-link--tight" data-film-previous>Previous</button>
-        <p>Step through without motion</p>
-        <button type="button" class="plate-button case-link case-link--tight" data-film-next>Next</button>
-      </div>
-    </div>
-    <p class="visually-hidden" aria-live="polite" aria-atomic="true" data-film-status></p>
+    <FilmControls id="pfilm-timeline" timeline={TIMELINE} />
 
-    <details class="pfilm-transcript">
-      <summary class="text-link">Read the film as text</summary>
-      <ol>
-        {SCENES.map((scene, index) => (
-          <li>
-            <h3>{scene.title}</h3>
-            {CUES.slice(scene.first, SCENES[index + 1]?.first ?? CUES.length).map((cue) => (
-              <p>
-                <span set:html={rich(cue.text)} />
-                {cue.sources.map((source) => <> <a class="citation text-link" href={`#source-${source}`}>[{source}]</a></>)}
-              </p>
-            ))}
-          </li>
-        ))}
-      </ol>
-      <p class="pfilm-transcript__note">How the film is made. The staircase counts the primes up to 100, and the dashed curve is Li(x), the integral of 1/log t from 2. The blue curve is Riemann's explicit formula: a smooth part (li(x) with its corrections from x^(1/2), x^(1/3), …, and two small constants) plus one wave for each pair of zeros among the first hundred of Odlyzko's table [5]. The waves add to that smooth part, not to Li(x) itself, which is why the rebuilt curve lands on the staircase. The single wave is the first zero's, moved across the strip to show what its real part does; no zero is known off the line ½. The maps are computed by Euler–Maclaurin sums for ζ and for L(s, χ₋₄), drawn as lines where the value points in one of eight directions, so eight lines meet at every zero. The rings around ζ's zeros are where |ζ| is small, so 1/ζ is large. The grid is the Eisenstein integers a + bω, with the norms 1, 3, 4 and 7 circled. The supposed zero, the squeeze and the rows of arrows are schematic.</p>
-    </details>
+    <FilmTranscript cues={CUES} scenes={SCENES}>
+      <p class="film-method">How the film is made. The staircase counts the primes up to 100, and the dashed curve is Li(x), the integral of 1/log t from 2. The blue curve is Riemann's explicit formula: a smooth part (li(x) with its corrections from x^(1/2), x^(1/3), …, and two small constants) plus one wave for each pair of zeros among the first hundred of Odlyzko's table [5]. The waves add to that smooth part, not to Li(x) itself, which is why the rebuilt curve lands on the staircase. The single wave is the first zero's, moved across the strip to show what its real part does; no zero is known off the line ½. The maps are computed by Euler–Maclaurin sums for ζ and for L(s, χ₋₄), drawn as lines where the value points in one of eight directions, so eight lines meet at every zero. The rings around ζ's zeros are where |ζ| is small, so 1/ζ is large. The grid is the Eisenstein integers a + bω, with the norms 1, 3, 4 and 7 circled. The supposed zero, the squeeze and the rows of arrows are schematic.</p>
+    </FilmTranscript>
   </uruk-prime-film>
 </Plate>
 

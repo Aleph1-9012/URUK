@@ -1,3 +1,5 @@
+import { patterns, type Pattern } from '../../../lib/engraving-patterns';
+
 // Isbell's seven-colouring of the plane, the 158 page's Plate I, with each colour drawn as an engraving pattern.
 // The paper's version: hexagons of circumradius 2/5 of the unit, colours assigned by an index-seven sublattice of the centres.
 export const VIEW = { width: 760, height: 560 } as const;
@@ -5,20 +7,6 @@ export const VIEW = { width: 760, height: 560 } as const;
 export const RADIUS = 46;
 
 export const UNIT = 2.5 * RADIUS;
-
-export const patterns = ['blank', 'h', 'd', 'o', 'v', 'a', 'x'] as const;
-
-export type Pattern = (typeof patterns)[number];
-
-export const patternNames: Record<Pattern, string> = {
-  blank: 'plain paper',
-  h: 'level lines',
-  d: 'rising lines',
-  o: 'dots',
-  v: 'upright lines',
-  a: 'falling lines',
-  x: 'a grid',
-};
 
 // Where hexagon (0, 0) sits, so the plate opens on the same crop as the approved drawing.
 const ORIGIN = { x: -120, y: -30 } as const;
@@ -74,7 +62,6 @@ function corners(cell: Cell): Point[] {
 
 export type Tile = { cell: Cell; pattern: Pattern; points: string };
 
-// Every hexagon that shows inside the frame.
 export function tiles(): Tile[] {
   const found: Tile[] = [];
 

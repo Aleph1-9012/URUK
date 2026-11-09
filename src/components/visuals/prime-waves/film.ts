@@ -1,17 +1,13 @@
-// Draws one frame of the 003 film for a given time. Every frame is a function of the time alone, so scrubbing lands on the same picture.
-import type { Complex } from '../zeta-map/lfunctions';
-import type { Lines } from '../zeta-map/contours';
-import type { MapData, MapId } from '../zeta-map/maps';
-import { zeroHeights } from '../zeta-map/zeros';
+import { crossfade as fade, smoothStep as span } from '../../../lib/animation';
+import type { Complex } from './zeta/lfunctions';
+import type { Lines } from './zeta/contours';
+import type { MapData, MapId } from './zeta/maps';
+import { zeroHeights } from './zeta/zeros';
 import { CHART_END, PRIMES, offsetLi, primeCount, waveSize, type WaveTable } from './primes';
-import {
-  CLAIMED_EDGE, FIRST_HEIGHT, SUPPOSED, classicalWidth, dialAt, fade, panelAt, span, zerosUsed,
-  type Layout, type Panel, type View,
-} from './story';
+import { CLAIMED_EDGE, FIRST_HEIGHT, SUPPOSED, classicalWidth, dialAt, panelAt, zerosUsed, type Layout, type Panel, type View } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 
-// `clear` lays paper under the text, so it reads over hatching and map lines.
 type TextStyle = { size: number; color: string; alpha: number; align?: CanvasTextAlign; italic?: boolean; typewriter?: boolean; clear?: boolean };
 
 // A drawing placed on the frame: its box in pixels and the part of its plane it shows.
@@ -24,7 +20,6 @@ const WAVE_RANGE = 3.4;
 
 const COUNT_TOP = 30;
 
-// The opening's close view of the number line: up to 30 on a wide frame, 12 on a tall one, every number written.
 const OPENING_END: Record<Layout, number> = { wide: 31, tall: 13 };
 
 const ANCHOR_SHARE: Record<CanvasTextAlign, number> = { left: 0, start: 0, center: 0.5, right: 1, end: 1 };
@@ -38,8 +33,6 @@ const POISSON_ROW = [0.74, 0.11, 0.07, 0.05, 0.03];
 
 const OMEGA = { re: -0.5, im: Math.sqrt(3) / 2 };
 
-// Slides a box [left, left + size] inside [margin, extent − margin] while its anchor is inside the frame.
-// Once the anchor crosses the margin the box leaves with it, so a label never jumps during a move.
 function keepInside(left: number, size: number, anchor: number, extent: number, margin: number): number {
   const highest = Math.max(extent - margin, anchor);
   const lowest = Math.min(margin, anchor);
@@ -83,7 +76,6 @@ export function latticePoints(radius: number): { x: number; y: number; norm: num
 
 const LATTICE = latticePoints(3.05);
 
-// The smooth curve Li(x) from 2 to the chart's end, sampled once.
 const LI_CURVE = Array.from({ length: 160 }, (_, index) => {
   const x = 2 + (CHART_END - 2) * index / 159;
 
@@ -93,7 +85,6 @@ const LI_CURVE = Array.from({ length: 160 }, (_, index) => {
 export class PrimeFilm {
   private readonly context: CanvasRenderingContext2D;
   private readonly maps = new Map<MapId, DrawnMap>();
-  // The last composed path of each map, reused while its drawing holds still.
   private readonly mapPaths = new Map<MapId, { key: string; path: Path2D }>();
   private readonly shown = new Set<string>();
   private readonly visible = new Set<string>();
@@ -161,7 +152,6 @@ export class PrimeFilm {
     this.settleLabels();
   }
 
-  // Placing drawings.
 
   private place(panel: Panel): Placed {
     const { box, view } = panelAt(panel, this.time, this.layout);
@@ -177,7 +167,6 @@ export class PrimeFilm {
     return placed.top + (view.top - y) / (view.top - view.bottom) * placed.height;
   }
 
-  // Pen and type.
 
   private stroke(path: Path2D, color: string, width: number, alpha: number): void {
     if (alpha <= 0) return;
@@ -227,7 +216,6 @@ export class PrimeFilm {
     context.globalAlpha = 1;
   }
 
-  // Canvas text stays inside the frame: a line that would run off it breaks at its middle space, then slides in.
   private text(value: string, x: number, y: number, style: TextStyle): void {
     if (style.alpha <= 0) return;
 
@@ -258,7 +246,6 @@ export class PrimeFilm {
     context.globalAlpha = 1;
   }
 
-  // A line break in the text is kept; a single line that would run off the frame breaks at its middle space.
   private lines(value: string, x: number, share: number): string[] {
     if (value.includes('\n')) return value.split('\n');
 
@@ -292,8 +279,6 @@ export class PrimeFilm {
     return this.width < 480 ? size - 1 : size;
   }
 
-  // Horizontal ruling, like an engraver's hatch, across a box of the frame in pixels; `clip` narrows it to a shape inside the box.
-  // The rules sit on one grid for the whole frame, so a growing fill adds rules without moving the ones already drawn.
   private hatch(box: { left: number; right: number; top: number; bottom: number }, color: string, alpha: number, gap = 4, clip?: Path2D): void {
     if (alpha <= 0 || box.right <= box.left) return;
 
@@ -325,7 +310,6 @@ export class PrimeFilm {
     context.clip();
   }
 
-  // Formula labels, set with Temml in the page and pinned here.
 
   private label(id: string, x: number, y: number, alpha: number): void {
     const element = this.labels.get(id);
@@ -412,7 +396,6 @@ export class PrimeFilm {
     context.restore();
   }
 
-  // I–III. The primes on a number line, their count, the smooth curve, the gap; then Riemann's waves rebuilding the count.
   private drawChart(): void {
     const time = this.time;
     const shown = fade(time, -1, 0, 83500, 85500);
@@ -430,17 +413,14 @@ export class PrimeFilm {
   private drawCount(placed: Placed, alpha: number): void {
     const time = this.time;
     const { ink, blue, muted } = this.colors;
-    // The film opens close on the first numbers, every one written, then pulls back to 100.
     const opening = OPENING_END[this.layout];
     const right = opening + (CHART_END - opening) * span(time, 5000, 7000);
     const view: View = { left: 0, right, bottom: 0, top: COUNT_TOP };
     const x = (value: number) => this.px(placed, value, view);
     const y = (value: number) => this.py(placed, value, view);
     const size = this.small(11);
-    // While the waves rebuild the count, the staircase steps back so the blue curve can be followed.
     const behind = 1 - 0.65 * span(time, 40500, 41500);
 
-    // The number line, its whole numbers and their tens.
     const drawn = right * span(time, 0, 1200);
     this.line([[x(0), y(0)], [x(drawn), y(0)]], ink, 1, alpha);
     const ticks = new Path2D();
@@ -465,8 +445,6 @@ export class PrimeFilm {
       this.text(String(n), x(n), y(0) + 15, { size, color: muted, alpha: far, typewriter: true });
     }
 
-    // The primes in the close view are marked one by one; the rest as the line pulls back to show them.
-    // Then each rises to the corner of its step as the staircase passes it.
     const rise = (prime: number) => 7300 + 4000 * prime / CHART_END;
 
     for (const [index, prime] of PRIMES.entries()) {
@@ -477,7 +455,6 @@ export class PrimeFilm {
       this.dot(x(prime), y((index + 1) * lifted), close ? 3 + 1.5 * (1 - span(time, 5000, 7000)) : 3, blue, alpha * appear * behind);
     }
 
-    // The count, π(x): a staircase drawn from the left at a steady pace, reaching each prime as its dot rises.
     const reach = CHART_END * Math.min(1, Math.max(0, (time - 7300) / 4000));
     const counted = alpha * span(time, 7000, 7400);
 
@@ -496,7 +473,6 @@ export class PrimeFilm {
 
       stairs.lineTo(x(reach), y(level));
       this.stroke(stairs, ink, 1.6, counted * behind);
-      // Kept at least a label's height below Li(x)'s label, which ends four counts higher.
       this.label('pi', x(CHART_END) + 6, Math.max(y(primeCount(CHART_END)), y(offsetLi(CHART_END)) + 19), counted * span(time, 11000, 11800));
 
       for (let count = 5; count <= 25; count += 5) {
@@ -504,7 +480,6 @@ export class PrimeFilm {
       }
     }
 
-    // The smooth curve Li(x), dashed: a guess that follows the count.
     const curve = alpha * span(time, 12800, 13300);
 
     if (curve > 0) {
@@ -522,7 +497,6 @@ export class PrimeFilm {
       this.label('li', x(CHART_END) + 6, y(offsetLi(CHART_END)), curve * span(time, 15000, 15800) * faint);
     }
 
-    // The gap between them, hatched in blue.
     const gap = alpha * fade(time, 20000, 21500, 40500, 41500);
 
     if (gap > 0) {
@@ -591,7 +565,6 @@ export class PrimeFilm {
       this.text(String(n), x(n), y(-WAVE_RANGE) + 12, { size: this.small(11), color: muted, alpha, typewriter: true });
     }
 
-    // Envelopes for a zero on the line, on the edge, and at the claimed fence.
     const envelope = (re: number, sign: number): [number, number][] => {
       const points: [number, number][] = [];
 
@@ -612,7 +585,6 @@ export class PrimeFilm {
       this.line(envelope(CLAIMED_EDGE, sign), blue, 1.4, claim);
     }
 
-    // Beyond the claimed fence: ruled off.
     if (claim > 0) {
       for (const sign of [1, -1]) {
         const region = new Path2D();
@@ -662,7 +634,6 @@ export class PrimeFilm {
     this.tag(`β = ${beta.toFixed(2)}`, placed.left + 4, placed.top + 20, alpha * (1 - span(time, 60500, 61500)), 'left', blue);
   }
 
-  // IV–X. ζ over the plane: its map and zeros, then the dial, the line ½, the edge, the sliver, the fence, and the argument.
   private drawPlane(): void {
     const time = this.time;
     const shown = span(time, 26500, 28500);
@@ -681,8 +652,6 @@ export class PrimeFilm {
     this.stroke(this.rect(placed), ink, 0.9, shown);
     this.clipTo(placed);
 
-    // The map, revealed upward. It lightens where its lines crowd together on a small plane,
-    // and fades while the view takes in hundreds of heights, where they would merge.
     const dense = 1 - Math.min(1, Math.max(0, (tall - 70) / 50));
     const crowd = Math.max(0.35, Math.min(1, placed.height / tall / 9));
     this.drawMap('zeta', placed, 0.62 * shown * dense * crowd, 3 + 61 * span(time, 27000, 30000));
@@ -691,7 +660,6 @@ export class PrimeFilm {
       this.line([[x(value), top], [x(value), bottom]], ink, 0.8, 0.55 * shown);
     }
 
-    // The line ½, the edge, the classical sliver, the claimed fence.
     const half = shown * span(time, 60500, 62500);
     this.line([[x(0.5), bottom], [x(0.5), bottom - placed.height * half]], blue, 1, 0.8 * half, [5, 4]);
     const edge = shown * span(time, 67500, 68500);
@@ -728,7 +696,6 @@ export class PrimeFilm {
     this.context.restore();
     this.markArgument(placed);
 
-    // The zeros: they appear, then each one fills in as its wave joins the count.
     const used = zerosUsed(time);
     const appear = shown * span(time, 33500, 35500);
 
@@ -740,7 +707,6 @@ export class PrimeFilm {
       this.dot(x(0.5), y(height), radius, blue, appear, filled === 0 && time < 47000);
     }
 
-    // Where the ink lines meet: the first zeros, ringed.
     const meet = shown * fade(time, 35500, 36300, 39500, 40500);
 
     for (const height of zeroHeights.slice(0, 3)) {
@@ -750,7 +716,6 @@ export class PrimeFilm {
       this.dot(x(0.5), y(height), 3.6, blue, meet);
     }
 
-    // IV. The dial: the first zero, and a supposed one sliding right from it.
     const dial = shown * fade(time, 47000, 48000, 60500, 61500);
 
     if (dial > 0) {
@@ -764,7 +729,6 @@ export class PrimeFilm {
       this.tag(`β = ${beta.toFixed(2)}`, x(beta), top - 16, dial, 'center', blue);
     }
 
-    // The foot: real parts, and later the fence.
     const foot = bottom + 14;
     const marks: [string, number, number][] = [
       ['0', 0, shown],
@@ -780,7 +744,6 @@ export class PrimeFilm {
 
     this.drawHeights(placed, shown);
 
-    // Words beside the pictures.
     const words = shown * fade(time, 68500, 69500, 75000, 76000);
     this.note('no zeros on\nthe edge (1896)', x(1) + 8, y(view.bottom + tall * 0.85), words);
     this.note('a sliver,\nthinner with\nheight', x(1) + 8, y(view.bottom + tall * 0.6), shown * fade(time, 70000, 71000, 75000, 76000));
@@ -789,7 +752,6 @@ export class PrimeFilm {
     this.label('zeta-sum', placed.left + placed.width / 2, top - 8, shown * fade(time, 32800, 33600, 40000, 41000));
     this.label('zeta-card', placed.left + placed.width / 2, top - 8, shown * fade(time, 84500, 85500, 98000, 99000) + shown * span(time, 113000, 114000));
 
-    // Where it stands.
     const review = span(time, 114500, 115500);
     this.tag('7/8 claim', placed.left + placed.width / 2, bottom + 44, review, 'center', blue);
     this.tag('under review', placed.left + placed.width / 2, bottom + 58, review, 'center', blue);
@@ -868,7 +830,6 @@ export class PrimeFilm {
     return placed.view.right - (placed.view.right - SUPPOSED.re) * span(time, 108000, 109300) - 0.12 * span(time, 109500, 110800);
   }
 
-  // Outside the clip: the words, the supposed zero and its strike.
   private markArgument(placed: Placed): void {
     const time = this.time;
     const { blue } = this.colors;

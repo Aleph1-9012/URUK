@@ -84,7 +84,6 @@
   }
 }
 
-/* A phone has no hover, so a press shows the same case. */
 @media (hover: none) {
   .case-link:active::before {
     transform: scaleX(1);

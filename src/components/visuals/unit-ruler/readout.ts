@@ -1,4 +1,4 @@
-import { patternNames, type Pattern } from './tiling';
+import { patternNames, type Pattern } from '../../../lib/engraving-patterns';
 
 // Plain paper has no pattern to fill with; every other pattern is defined once in the plate's SVG.
 export function swatchFill(pattern: Pattern): string {

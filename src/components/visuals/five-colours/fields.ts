@@ -1,4 +1,4 @@
-import { smooth } from './story';
+import { smooth } from '../../../lib/animation';
 
 type Box = { x: number; y: number; w: number; h: number };
 

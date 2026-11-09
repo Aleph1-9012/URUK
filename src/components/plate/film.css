@@ -1,0 +1,74 @@
+.film-host { display: block; }
+.result-opening:has(.film-host) { grid-template-columns: minmax(0, 920fr) minmax(0, 368fr); gap: 32px; }
+
+.film-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
+.plate .film-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
+.film-cue.is-active { visibility: visible; }
+.film-phrase { white-space: nowrap; }
+.film-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
+
+.film-controls { padding-top: 16px; }
+.film-host:not([data-ready]) .film-controls { display: none; }
+.film-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.plate .film-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
+.film-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../assets/plate/track.png') center / 100% 12px no-repeat; }
+.film-timeline::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 0; background: url('../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.film-timeline::-moz-range-thumb { width: 22px; height: 22px; border: 0; background: url('../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.film-timeline:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.film-steps { display: none; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; }
+.plate .film-steps p { margin: 0; color: var(--muted); font: italic .875rem/1.4 var(--font-alegreya); text-align: center; }
+.film-controls button:disabled { opacity: .45; cursor: default; }
+
+.film-transcript { margin-top: 18px; }
+.film-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
+.film-transcript ol { padding-left: 22px; margin-top: 20px; }
+.film-transcript li + li { margin-top: 20px; }
+.plate .film-transcript h3 { margin-bottom: 8px; font: italic 1.25rem/1.35 var(--font-alegreya); }
+.plate .film-transcript p { font: 1rem/1.55 var(--font-alegreya); }
+.plate .film-transcript p + p { margin-top: 8px; }
+
+.film-host--classic .film-controls { padding-block: 16px 4px; }
+.plate .film-host--classic .film-clock { font-size: .6875rem; }
+.film-host--classic .film-timeline { margin-top: 12px; }
+.film-host--classic .film-timeline:focus-visible { outline-offset: 4px; }
+.film-host--classic .film-steps { gap: 12px; padding-block: 10px 2px; }
+.film-host--classic .film-controls button:disabled { opacity: .5; }
+.film-host--classic .film-citations { font-size: .8125em; }
+.film-host--classic .film-subtitles { justify-items: normal; padding: 12px 28px 18px; }
+.film-host--classic .film-cue { width: auto; max-width: 46rem; margin-inline: auto; }
+.film-host--classic .film-transcript { text-align: left; }
+.film-host--classic .film-transcript ol { padding-left: 24px; margin-top: 22px; }
+.film-host--classic .film-transcript li + li { margin-top: 22px; }
+.plate .film-host--classic .film-transcript h3 { line-height: 1.4; margin-bottom: 6px; }
+.plate .film-host--classic .film-transcript p + p { margin-top: 6px; }
+.plate .film-method { margin-top: 20px; color: var(--muted); }
+.plate .film-host--classic .film-method { margin-top: 22px; }
+
+.film-host--grid .film-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px 16px; }
+.film-host--grid .film-subtitles { padding-inline: 24px; }
+.film-host--grid .film-buttons { display: contents; }
+.film-host--grid .film-clock { justify-self: center; }
+.film-host--grid .film-timeline { grid-column: 1 / -1; margin: 0; }
+.film-host--grid .film-steps { grid-column: 1 / -1; padding-top: 0; }
+
+@media (max-width: 74.999rem) {
+  .result-opening:has(.film-host) { grid-template-columns: minmax(0, 1fr); }
+  .result-opening:has(.film-host) .result-introduction { max-width: 800px; }
+}
+
+@container plate (max-width: 599px) {
+  .film-subtitles { padding: 12px 14px 16px; }
+  .plate .film-cue { font-size: 1.0625rem; }
+  .film-host--classic .film-subtitles { padding: 10px 16px 14px; }
+  .film-host--grid .film-subtitles { padding: 12px 14px 16px; }
+}
+
+@media (max-width: 47.999rem) {
+  .result-opening:has(.film-host) .result-introduction > .folio-top__copy { order: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-host [data-play] { display: none; }
+  .film-steps { display: flex; }
+  .film-host--grid .film-clock { grid-column: 1 / 3; }
+}

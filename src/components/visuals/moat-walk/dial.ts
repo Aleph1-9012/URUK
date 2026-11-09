@@ -1,5 +1,6 @@
+import { smooth } from '../../../lib/animation';
 import { stepVectors } from './math';
-import { layout, smooth, stepSquared } from './story';
+import { layout, stepSquared } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

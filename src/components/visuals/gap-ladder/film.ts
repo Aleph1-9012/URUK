@@ -1,5 +1,7 @@
+import { FilmLabels } from '../../plate/labels';
+import { smooth } from '../../../lib/animation';
 import { ringState, energyBeta, doublingStep } from './math';
-import { smooth } from './story';
+
 import { drawGapChart } from './chart';
 
 type Ink = 'ink' | 'blue' | 'muted' | 'paper';
@@ -15,14 +17,10 @@ export class GapLadderFilm {
   private tall = false;
   private time = 0;
   private colors: Record<Ink, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly sizes = new Map<string, Point>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (label.dataset.label) this.labels.set(label.dataset.label, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -36,31 +34,20 @@ export class GapLadderFilm {
 
     for (const key of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.sizes.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.sizes.set(id, { x: rect?.width ?? 0, y: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     this.time = time;
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
     this.ringAndSheet();
-    drawGapChart(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.label(id, x, y, alpha));
+    drawGapChart(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
   private line(points: readonly Point[], tone: Ink = 'ink', weight = 1, alpha = 1, progress = 1): void {
@@ -120,18 +107,6 @@ export class GapLadderFilm {
       this.pen.fillStyle = this.colors[tone];
       this.pen.fillText(line, px, py);
     }
-  }
-
-  private label(id: string, x: number, y: number, alpha = 1): void {
-    const label = this.labels.get(id);
-
-    if (!label || alpha < .005) return;
-
-    const size = this.sizes.get(id) ?? { x: 0, y: 0 };
-    label.style.transform = `translate(${Math.max(size.x / 2 + 7, Math.min(this.width - size.x / 2 - 7, x))}px,${Math.max(size.y / 2 + 6, Math.min(this.height - size.y / 2 - 6, y))}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(alpha);
-    this.visible.add(id);
   }
 
   private dial(point: Point, radius: number, states: number, angle: number, scale = 1): void {
@@ -329,16 +304,16 @@ export class GapLadderFilm {
       const x = box.x + cursor / 7 * box.w;
       this.line([{ x, y: box.y + 2 }, { x, y: box.y + box.h - 2 }], 'blue', 1.5);
       this.words('SPACE: 8 SITES · ENDS JOINED', box.x + box.w / 2, captionY, box.w + 20);
-      this.label('partition', this.tall ? w * .5 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 37);
-      this.label('transfer', x, box.y + 10);
+      this.labels.place('partition', this.tall ? w * .5 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 37);
+      this.labels.place('transfer', x, box.y + 10);
     } else if (t < 94000) {
       this.words(t < 92000 ? `INVERSE TEMPERATURE b = ${beta.toFixed(beta % 1 === 0 ? 0 : 1)}` : 'DOUBLE THE RING · n → 2n', box.x + box.w / 2, captionY, box.w + 20);
-      if (!this.tall || t < 89000 || t >= 92000) this.label(t < 92000 ? 'physical-purity' : 'spatial-purity', this.tall ? w * .50 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 48);
+      if (!this.tall || t < 89000 || t >= 92000) this.labels.place(t < 92000 ? 'physical-purity' : 'spatial-purity', this.tall ? w * .50 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 48);
     } else if (t < 101500) {
       const state = doublingStep(Math.min(3, completedJoint));
       this.words(`n = ${state.sites} · b = ${state.beta}`, box.x + box.w / 2, captionY, box.w + 20);
       this.words('PAPER’S START · DRAWN SMALLER', box.x + box.w / 2, captionY + (this.tall ? 16 : 20), box.w + 24, 'muted');
-      this.label('defect', this.tall ? w * .50 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 54);
+      this.labels.place('defect', this.tall ? w * .50 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 54);
     }
 
     if (this.tall && t < 94000) {

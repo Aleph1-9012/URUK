@@ -1,6 +1,7 @@
+import { smooth } from '../../../lib/animation';
 import { shotAt, type PhasePortrait } from './math';
 import type { CausticData, TableKind } from './data';
-import { layout, smooth } from './story';
+import { layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 
@@ -72,7 +73,6 @@ function portraitImage(portrait: PhasePortrait, width: number, height: number, d
     const x = Math.max(0, Math.min(pixelsWide - 1, Math.round(position * (pixelsWide - 1))));
     const y = Math.max(0, Math.min(pixelsHigh - 1, Math.round((1 - angle / Math.PI) * (pixelsHigh - 1))));
     cache.pen.fillRect(x, y, 1, 1);
-    // Reverse the same billiard impacts to show both directions of travel.
     cache.pen.fillRect(x, pixelsHigh - 1 - y, 1, 1);
   }
 

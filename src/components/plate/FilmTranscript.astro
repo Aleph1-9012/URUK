@@ -1,0 +1,28 @@
+---
+import { renderFilmText, type FilmCue, type FilmScene } from './text';
+
+interface Props {
+  cues: readonly FilmCue[];
+  scenes?: readonly FilmScene[];
+}
+
+const { cues, scenes = cues.map((cue, first) => ({ title: cue.title ?? '', first })) } = Astro.props;
+---
+
+<details class="film-transcript">
+  <summary class="text-link">Read the film as text</summary>
+  <ol>
+    {scenes.map((scene, index) => (
+      <li>
+        <h3>{scene.title}</h3>
+        {cues.slice(scene.first, scenes[index + 1]?.first ?? cues.length).map((cue) => (
+          <p>
+            <span set:html={renderFilmText(cue.text)} />
+            {cue.sources.map((source) => <> <a class="citation text-link" href={`#source-${source}`}>[{source}]</a></>)}
+          </p>
+        ))}
+      </li>
+    ))}
+  </ol>
+  <slot />
+</details>

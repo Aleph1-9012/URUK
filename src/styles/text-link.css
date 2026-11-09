@@ -34,7 +34,6 @@
   }
 }
 
-/* The same stroke, heavier and blue, shown at once. */
 .text-link:focus-visible,
 .folio-page a:not(.case-link):focus-visible {
   animation: none;
@@ -50,7 +49,6 @@
   text-decoration: none;
 }
 
-/* Ruled in from the left: the head is pressed, the line drawn out, then the tip lifts. */
 @keyframes stroke-rule {
   0% {
     background-size: 0 14px, 0 14px, 0 14px;

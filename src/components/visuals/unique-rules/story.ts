@@ -1,3 +1,5 @@
+import { createTimeline } from '../../plate/timeline';
+
 // Claude's approved 102 storyboard, 8 November 2026. Times are milliseconds.
 export const CUES = [
   { at: 0, title: 'One reply for each label', text: 'A Unique Game is played on a network. Every dot gets a label, and every line carries a rule: for each label at one end it allows exactly one at the other.', sources: [1] },
@@ -18,32 +20,4 @@ export const CUES = [
 
 export const FILM_DURATION = 120000;
 
-export function cueAt(time: number): number {
-  let index = 0;
-
-  for (const [position, cue] of CUES.entries()) {
-    if (time >= cue.at) index = position;
-  }
-
-  return index;
-}
-
-export function stillTime(index: number): number {
-  return index === CUES.length - 1 ? FILM_DURATION : (CUES[index + 1]?.at ?? FILM_DURATION) - 200;
-}
-
-export function formatTime(time: number): string {
-  const seconds = Math.floor(Math.max(0, Math.min(FILM_DURATION, time)) / 1000);
-
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
-}
-
-export function smooth(time: number, start: number, end: number): number {
-  const amount = Math.min(1, Math.max(0, (time - start) / (end - start)));
-
-  return amount * amount * (3 - 2 * amount);
-}
-
-export function fade(time: number, start: number, end: number, outStart = Infinity, outEnd = Infinity): number {
-  return smooth(time, start, end) * (outStart === Infinity ? 1 : 1 - smooth(time, outStart, outEnd));
-}
+export const TIMELINE = createTimeline(CUES, FILM_DURATION, 200);

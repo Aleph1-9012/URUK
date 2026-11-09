@@ -59,7 +59,6 @@ function paint(target: Painted, sample: Sample, color: string): void {
   context.fillStyle = color;
 
   if (sample.side === 201) {
-    // The pulled-back view uses log shading so faint distant tails stay visible.
     context.fillRect(0, 0, 1, 1);
     const ink = context.getImageData(0, 0, 1, 1).data;
     const image = context.createImageData(size, size);
@@ -224,7 +223,6 @@ export function drawWaveGrid(pen: CanvasRenderingContext2D, width: number, heigh
   if (!proof) {
     const cache = cacheFor(pen);
 
-    // Consecutive pairs share one snapshot. Keep its already-painted image.
     if (cache.first.key !== pair.first.key && cache.second.key === pair.first.key) {
       [cache.first, cache.second] = [cache.second, cache.first];
     }

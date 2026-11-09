@@ -1,5 +1,6 @@
+import { smooth, progress as span } from '../../../lib/animation';
 import { UNIT_JUMPS } from './math';
-import { layout, smooth, span } from './story';
+import { layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

@@ -1,5 +1,5 @@
+import { fade, smooth } from '../../../lib/animation';
 import { CURVES, CURVE_SEGMENTS, PINS, PLANE_BOUND, curveRun, evaluate, gradient, growthRuns, pinchBranches, type CurveRun, type Point } from './math';
-import { fade, smooth } from './story';
 
 export type PlaneColors = { ink: string; blue: string; muted: string; paper: string };
 
@@ -42,7 +42,6 @@ const GROWTH = {
   nodal: growthRuns(CURVE_SEGMENTS.nodal, PINS),
 };
 
-// Each time a curve comes on: [starts drawing, fully drawn, starts to fade, gone].
 const SHOWINGS = {
   conic: [[800, 3300, 4000, 4700], [7500, 9000, 10500, 11200]],
   cubic: [[4000, 5600, 7500, 8300], [10500, 12000, 14500, 15500], [36000, 37800, 43000, 44000], [74000, 75800, 78000, 79500], [97000, 98800, Infinity, Infinity]],
@@ -58,7 +57,6 @@ function showing(time: number, windows: ReadonlyArray<readonly [number, number, 
   return { grown: 0, opacity: 0 };
 }
 
-// Strokes a run from its start as far as the given length along it.
 function traceRun(pen: CanvasRenderingContext2D, run: CurveRun, length: number, place: (point: Point) => Point = (point) => point): void {
   const first = run.points[0];
 
@@ -86,7 +84,6 @@ function traceRun(pen: CanvasRenderingContext2D, run: CurveRun, length: number, 
   pen.stroke();
 }
 
-// Every piece of a curve finishes together; the runs of one piece grow at the same speed.
 function growPieces(pen: CanvasRenderingContext2D, pieces: ReadonlyArray<readonly CurveRun[]>, grown: number, place?: (point: Point) => Point): void {
   for (const runs of pieces) {
     let longest = 0;
@@ -165,7 +162,6 @@ export function drawCurvePlane(
   pen.stroke();
   pen.globalAlpha = 1;
 
-  // A curve comes on by being drawn: it starts at a point and the line runs along the curve until it is whole.
   const drawCurve = (name: keyof typeof CURVE_SEGMENTS): void => {
     const { grown, opacity } = showing(time, SHOWINGS[name]);
 

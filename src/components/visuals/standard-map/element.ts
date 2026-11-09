@@ -1,10 +1,10 @@
-import { createPlayer, swingAt, swingPeriod, swingTimeOf, type Player } from '../../plate/player';
+import { createPlayer, type Player } from '../../plate/player';
+import { swingAt, swingPeriod, swingTimeOf } from '../../plate/swing';
 import { bindTrack, wake, type Track } from '../../plate/track';
 import { describeK, formatK } from './labels';
 import { FILM, K_MAX, K_MIN, K_START } from './orbits';
 import type { OrbitJob, OrbitPicture } from './worker';
 
-// Once k has stopped moving for this long, the rough picture is redrawn in full.
 const SETTLE_AFTER = 250;
 
 class UrukStandardMap extends HTMLElement {
@@ -14,7 +14,6 @@ class UrukStandardMap extends HTMLElement {
   private observer: ResizeObserver | undefined;
   private canvas: HTMLCanvasElement | null = null;
   private k = K_START;
-  private lastId = 0;
   private busy = false;
   private waiting: OrbitJob | undefined;
   private settle: number | undefined;
@@ -23,7 +22,6 @@ class UrukStandardMap extends HTMLElement {
     const picture = event.data;
     this.busy = false;
 
-    // A picture for a canvas size that has since changed is dropped; the resize has asked for a new one.
     if (this.canvas && picture.width === this.canvas.width && picture.height === this.canvas.height) {
       this.canvas.getContext('2d')?.putImageData(new ImageData(picture.pixels, picture.width, picture.height), 0, 0);
       this.querySelector('[data-plate-loader]')?.remove();
@@ -54,9 +52,8 @@ class UrukStandardMap extends HTMLElement {
       max: K_MAX,
       step: 0.01,
       page: 0.1,
-      value: K_START,
+      value: this.k,
       describe: describeK,
-      // The reader has taken over: the film stops at the k they chose.
       onInput: (k, settled) => {
         this.player?.pause();
         this.player?.seek(swingTimeOf(FILM, k));
@@ -65,12 +62,11 @@ class UrukStandardMap extends HTMLElement {
     });
     this.player = createPlayer(this, {
       period: swingPeriod(FILM),
-      start: swingTimeOf(FILM, K_START),
+      start: swingTimeOf(FILM, this.k),
       onFrame: (time) => {
         const k = swingAt(FILM, time);
         this.track?.glide(k);
 
-        // While the film rests at either end, k is still, and the picture is left to sharpen.
         if (k !== this.k) {
           this.change(k, false);
         }
@@ -84,6 +80,9 @@ class UrukStandardMap extends HTMLElement {
 
   disconnectedCallback(): void {
     this.worker?.terminate();
+    this.worker = undefined;
+    this.busy = false;
+    this.waiting = undefined;
     this.track?.destroy();
     this.player?.destroy();
     this.observer?.disconnect();
@@ -126,15 +125,13 @@ class UrukStandardMap extends HTMLElement {
     this.draw(false);
   }
 
-  // One picture at a time; while one is being drawn only the newest request waits, so a fast film never queues up.
   private draw(draft: boolean): void {
     if (!this.canvas || this.canvas.width === 0) {
       return;
     }
 
-    this.lastId += 1;
     const dot = Math.max(1, Math.round(window.devicePixelRatio || 1));
-    this.waiting = { id: this.lastId, k: this.k, canvas: { width: this.canvas.width, height: this.canvas.height, dot }, draft };
+    this.waiting = { k: this.k, canvas: { width: this.canvas.width, height: this.canvas.height, dot }, draft };
     this.sendWaiting();
   }
 

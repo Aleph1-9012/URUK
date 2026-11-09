@@ -1,5 +1,3 @@
-// The mathematics of the 004 film: nets of fractions over two curves, the remainder argument, and a small example of an
-// elliptic curve whose fraction points fill two pieces and whose multiples grow in size. No DOM.
 
 export function gcd(first: number, second: number): number {
   let a = Math.abs(first);
@@ -17,7 +15,6 @@ export const NET_REACH = 2.6;
 
 export type Knot = { a: number; b: number; c: number };
 
-// The first net with a knot on a curve, given as an integer test of (a, b, c). Searches c = 1…top over the view.
 export function firstCatch(top: number, onCurve: (a: number, b: number, c: number) => boolean): Knot[] {
   for (let c = 1; c <= top; c += 1) {
     const reach = Math.floor(NET_REACH * c);
@@ -116,7 +113,6 @@ export function onExampleCurve({ x, y }: CurvePoint): boolean {
   return left.num === right.num && left.den === right.den;
 }
 
-// A fraction as the film types it: numerator and denominator in full, with a true minus sign.
 export function fractionText({ num, den }: Rational): string {
   const top = (num < 0n ? -num : num).toString();
   const sign = num < 0n ? '−' : '';
@@ -158,7 +154,6 @@ export function floatMultiples(count: number): { n: number; x: number; y: number
 
   for (let n = 1; n <= count; n += 1) {
     if (n > 1) {
-      // 2P comes from the tangent at P; every later step from the chord through P.
       const slope = n === 2 ? (3 * x * x - 25) / (2 * y) : (y - 6) / (x + 4);
       const nextX = slope * slope - x + 4;
       y = slope * (x - nextX) - y;

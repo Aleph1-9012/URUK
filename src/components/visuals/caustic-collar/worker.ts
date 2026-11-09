@@ -1,8 +1,6 @@
 import { BilliardTable, LAUNCH_DELTAS, computePeriodicFamily, computePortrait, traceOrbit, type PeriodicQ } from './math';
 import type { CausticWorkerMessage } from './data';
 
-export type { CausticWorkerMessage } from './data';
-
 function compute(): void {
   for (const kind of ['ellipse', 'wobble'] as const) {
     const table = new BilliardTable(kind === 'ellipse' ? 0 : .01);

@@ -1,4 +1,4 @@
-import { smooth } from './story';
+import { smooth } from '../../../lib/animation';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

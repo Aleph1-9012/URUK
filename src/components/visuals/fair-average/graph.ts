@@ -1,5 +1,5 @@
+import { fade, smooth } from '../../../lib/animation';
 import { CUTTINGS, DESCENDANTS, MAPS, PARENTS, TRANSPORT_SOURCES, mapSlopes, mapValue, type MapName, type Point } from './math';
-import { fade, smooth } from './story';
 
 export type GraphColors = { ink: string; blue: string; muted: string; paper: string };
 

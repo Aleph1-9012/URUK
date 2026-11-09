@@ -1,8 +1,6 @@
 import { WaveSimulation } from './simulation';
 import type { WaveWorkerMessage } from './data';
 
-export type { WaveWorkerMessage } from './data';
-
 async function readArray(url: URL, bytes: number): Promise<ArrayBuffer> {
   const response = await fetch(url);
 

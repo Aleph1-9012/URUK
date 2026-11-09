@@ -47,7 +47,6 @@ export function apply(map: ThompsonMap, t: number): number {
   throw new RangeError(`${map.name} is defined on [0, 1], not at ${t}.`);
 }
 
-// The marks on each line: line 0 is the evenly marked top, line n is where the first n maps have carried those marks.
 export function trackLines(): number[][] {
   const lines = [Array.from({ length: TICK_COUNT }, (_, index) => index / (TICK_COUNT - 1))];
 
@@ -69,7 +68,6 @@ function round(value: number): number {
 
 export type Band = {
   map: ThompsonMap;
-  // Every other piece is hatched, so a piece can be followed down through the bands.
   pieces: string[];
   strands: string[];
 };

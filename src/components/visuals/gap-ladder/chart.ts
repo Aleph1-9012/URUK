@@ -251,7 +251,6 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
     words('ODD OPEN CHAINS · FROM 1921', box.x + box.w * .72, box.y + box.h * .66, box.w * .55, 'blue', tall ? 9 : 11);
   }
 
-  // The walking ladder splits into the two bond ladders while the plot is carried to its corner.
   if (time >= 31000 && time < 49000) {
     const arriving = ease(time, 31000, 33000) * (1 - ease(time, 47000, 49000));
     const yTop = height * (tall ? .59 : .36);

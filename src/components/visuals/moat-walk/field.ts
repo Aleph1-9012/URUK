@@ -1,5 +1,6 @@
+import { smooth, progress as span } from '../../../lib/animation';
 import type { Flood, MoatData } from './data';
-import { layout, smooth, span, type Box } from './story';
+import { layout, type Box } from './story';
 
 export type FieldColors = { ink: string; blue: string; muted: string; paper: string };
 

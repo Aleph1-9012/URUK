@@ -1,9 +1,9 @@
+import { fade, smooth } from '../../../lib/animation';
 import {
   CENTRAL_PENTAGON, SIDE_LENGTH, TILING_EDGES, TREE,
   geodesic, horizontalTranslation, magnifiedHalfWidth, tilingMap, treePath,
   type DiskMap, type Point,
 } from './math';
-import { fade, smooth } from './story';
 
 export type DiskColors = { ink: string; blue: string; muted: string; paper: string };
 

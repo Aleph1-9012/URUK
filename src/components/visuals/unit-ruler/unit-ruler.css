@@ -37,7 +37,6 @@ uruk-unit-ruler[data-dragging] .unit-ruler__grip {
   cursor: grabbing;
 }
 
-/* The readout: the pattern under each end, joined by the same wedge line as the slider. */
 .ruler-readout {
   align-items: center;
   display: flex;

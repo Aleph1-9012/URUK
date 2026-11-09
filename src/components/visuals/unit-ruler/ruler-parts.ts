@@ -26,7 +26,6 @@ export function rulerParts(scale: number): RulerParts {
   const onScreen = UNIT * scale;
   const kind: LineKind = onScreen < 75 ? 'phone' : 'desktop';
   const cut = lineCuts[kind];
-  // Along the ruler the cut is stretched to exactly one unit; across it keeps its height on screen.
   const along = UNIT / cut.lineLength;
   const disc = (kind === 'phone' ? 12 : 16) / scale;
   const ring = disc / 2 + 6 / scale;
@@ -36,7 +35,6 @@ export function rulerParts(scale: number): RulerParts {
     line: { x: -cut.lineStart * along, y: -cut.height / scale / 2, width: cut.width * along, height: cut.height / scale },
     disc,
     halo: disc / 2 + 2 / scale,
-    // Grips stay at least 24 px across, but never so wide that the two ends leave no middle to drag by.
     endGrip: Math.max(12, Math.min(22, onScreen * 0.3)) / scale,
     lineGrip: 28 / scale,
     focus: { x: -ring, y: -ring, width: UNIT + 2 * ring, height: 2 * ring, stroke: 2 / scale },

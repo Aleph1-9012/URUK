@@ -1,8 +1,9 @@
+import { smooth } from '../../../lib/animation';
 import {
   E, U0, bandData, confocalPoint, ellipseParameter, matrixAt, numericalRangeBoundary,
   realEntries, sweepAt, sweepMark, type Point,
 } from './math';
-import { layout, smooth, type Box } from './story';
+import { layout, type Box } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

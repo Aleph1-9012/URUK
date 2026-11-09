@@ -1,6 +1,7 @@
+import { smooth, progress as span } from '../../../lib/animation';
 import { BilliardTable, causticParameter, periodicPath, shotAt, traceOrbit, type OrbitData, type PeriodicQ, type Point } from './math';
 import type { CausticData, TableKind } from './data';
-import { layout, smooth, span } from './story';
+import { layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 

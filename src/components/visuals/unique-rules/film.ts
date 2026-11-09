@@ -1,3 +1,4 @@
+import { FilmLabels } from '../../plate/labels';
 import { EDGES, BAD_EDGES, HIDDEN_LABELS, WALK_LABELS, WALK_EDGES, CUT_LABELS, agreement, AGREE_GAMMA } from './math';
 
 type Point = { x: number; y: number };
@@ -23,14 +24,10 @@ export class UniqueRulesFilm {
   private tall = false;
   private time = 0;
   private colors: Record<Tone, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
-  private readonly labels = new Map<string, HTMLElement>();
-  private readonly sizes = new Map<string, Point>();
-  private readonly visible = new Set<string>();
+  private readonly labels: FilmLabels;
 
   constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    for (const label of host.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (label.dataset.label) this.labels.set(label.dataset.label, label);
-    }
+    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 5 });
   }
 
   resize(width: number, height: number, density: number): void {
@@ -46,21 +43,12 @@ export class UniqueRulesFilm {
       this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
     }
 
-    this.measureLabels();
-  }
-
-  measureLabels(): void {
-    this.sizes.clear();
-
-    for (const [id, label] of this.labels) {
-      const rect = label.firstElementChild?.getBoundingClientRect();
-      this.sizes.set(id, { x: rect?.width ?? 0, y: rect?.height ?? 0 });
-    }
+    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     this.time = time;
-    this.visible.clear();
+    this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
@@ -70,9 +58,7 @@ export class UniqueRulesFilm {
     this.closeup();
     this.agreementPlot();
 
-    for (const [id, label] of this.labels) {
-      if (!this.visible.has(id)) label.style.visibility = 'hidden';
-    }
+    this.labels.endFrame();
   }
 
   private line(a: Point, b: Point, tone: Tone = 'ink', opacity = 1, weight = 1): void {
@@ -138,18 +124,6 @@ export class UniqueRulesFilm {
     }
 
     this.pen.globalAlpha = 1;
-  }
-
-  private label(id: string, x: number, y: number, opacity = 1): void {
-    const label = this.labels.get(id);
-
-    if (!label || opacity < .005) return;
-
-    const size = this.sizes.get(id) ?? { x: 0, y: 0 };
-    label.style.transform = `translate(${Math.max(size.x / 2 + 7, Math.min(this.width - size.x / 2 - 7, x))}px,${Math.max(size.y / 2 + 5, Math.min(this.height - size.y / 2 - 5, y))}px)`;
-    label.style.visibility = 'visible';
-    label.style.opacity = String(opacity);
-    this.visible.add(id);
   }
 
   private hatch(box: Box, opacity = .4): void {
@@ -295,8 +269,8 @@ export class UniqueRulesFilm {
       this.line({ x: box.x + yes * box.w, y: box.y }, { x: box.x + box.w, y: box.y }, 'blue', zones, 5);
       this.words('NO', box.x + .075 * box.w, box.y - 28, 40, zones * (1 - ease(t, 50000, 50500) + ease(t, 58500, 59000)), 'blue');
       this.words('YES', box.x + (yes + 1) / 2 * box.w, box.y - 28, 40, zones * (1 - ease(t, 50000, 50500) + ease(t, 58500, 59000)), 'blue');
-      this.label('no', box.x + .06 * box.w, box.y + 52, zones * lowerLabels);
-      this.label('yes', box.x + .92 * box.w, box.y + 52, zones * (1 - oldYes) * lowerLabels);
+      this.labels.place('no', box.x + .06 * box.w, box.y + 52, zones * lowerLabels);
+      this.labels.place('yes', box.x + .92 * box.w, box.y + 52, zones * (1 - oldYes) * lowerLabels);
       this.words('PROMISED NOT TO HAPPEN', box.x + .5 * box.w, box.y + 51, box.w * .55, zones * (1 - ease(t, 84500, 86000)) * lowerLabels);
       this.words('ε AND δ CHOSEN FIRST · SCHEMATIC', mid, box.y + 83, box.w + 25, fade(t, 33000, 35000, 41000, 42000), 'muted');
       this.words('WHICH ZONE? AS HARD AS 3SAT', mid, box.y + 83, box.w + 24, fade(t, 42000, 43500, 49000, 50000), 'blue');
@@ -340,7 +314,7 @@ export class UniqueRulesFilm {
     }
 
     const status = ease(t, 112000, 114000);
-    this.label('status', mid, box.y + 104, status);
+    this.labels.place('status', mid, box.y + 104, status);
   }
 
   private closeup(): void {
@@ -376,8 +350,8 @@ export class UniqueRulesFilm {
     }
 
     if (code > .01) {
-      this.label('stable', x - (this.tall ? 25 : 35), y + 65, code);
-      this.label('stability', x + (this.tall ? 90 : 110), y + 65, code);
+      this.labels.place('stable', x - (this.tall ? 25 : 35), y + 65, code);
+      this.labels.place('stability', x + (this.tall ? 90 : 110), y + 65, code);
       const checks = ease(t, 99000, 100400);
       this.words('BROAD CHECKS NOTICE: AT LEAST 1/8', x, y + (this.tall ? 85 : 92), this.width * (this.tall ? .9 : .45), checks * code, 'blue');
       this.line({ x: left, y: y - 10 }, { x: left + spacing * 4, y: y - 10 }, 'blue', checks * code);
@@ -407,8 +381,8 @@ export class UniqueRulesFilm {
       this.line(point(k, Math.min(maxY, agreement(k))), point(k + .5, Math.min(maxY, agreement(k + .5))), 'ink', opacity, 1.4);
     }
 
-    this.label('gamma', box.x - 14, point(0, AGREE_GAMMA).y, opacity);
-    this.label('agreement', box.x + box.w * .7, box.y + 5, opacity);
+    this.labels.place('gamma', box.x - 14, point(0, AGREE_GAMMA).y, opacity);
+    this.labels.place('agreement', box.x + box.w * .7, box.y + 5, opacity);
     this.words('REPETITIONS k', box.x + box.w / 2, box.y + box.h + 20, box.w, opacity, 'muted');
   }
 }

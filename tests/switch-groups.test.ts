@@ -1,7 +1,5 @@
 import { expect, test } from 'bun:test';
-import {
-  CUES, FILM_DURATION, WALKING, WALKS, arrivalOf, bendAt, cueAt, cueEnd, dialAt, pinPlace, stillTime, walkAt, walkedOn,
-} from '../src/components/visuals/switch-groups/timeline';
+import { CUES, FILM_DURATION, WALKING, WALKS, arrivalOf, bendAt, dialAt, pinPlace, walkAt, walkedOn, TIMELINE } from '../src/components/visuals/switch-groups/timeline';
 import {
   ALL_RULES, BENT_COEFFICIENTS, CROSSING_RULES, GROUP_COUNTS, GROUP_RULES, GROUP_SIZE, INSIDE_RULES, LEDGER, OPENING, OPENING_COUNT,
   STOP_DATA, SWITCHES, THRESHOLD_BITS, TRUE_COUNT, countSettings, decimalDigits, evaluate, hermite, nodeOf, occurrences, settingOf,
@@ -44,7 +42,6 @@ test('378 film: each walk sets the board\'s switches to its path, and the walks 
     }
   }
 
-  // Mid-walk, a switch shows the side of this walk's path or the last one's, never anything else.
   for (let time = WALKING.from; time < WALKING.to; time += 20) {
     const leaf = walkAt(time);
 
@@ -64,7 +61,6 @@ test('378 maths: each group counts 10 alone, and with only the inside rules the 
   expect(GROUP_COUNTS).toEqual([10, 10, 10]);
   expect(countSettings(INSIDE_RULES, SWITCHES)).toBe(1000);
 
-  // Every inside rule stays inside its own group of four switches.
   for (const [group, rules] of GROUP_RULES.entries()) {
     for (const literal of rules.flat()) {
       expect(Math.floor((Math.abs(literal) - 1) / GROUP_SIZE)).toBe(group);
@@ -106,16 +102,15 @@ test('378 film: subtitles stay ordered and leave time to read at seventeen chara
   for (const [index, cue] of CUES.entries()) {
     const letters = cue.text.replace(/\$[^$]*\$/g, 'xxxxx').length;
 
-    expect(cueEnd(index)).toBeGreaterThan(cue.at);
+    expect(TIMELINE.cueEnd(index)).toBeGreaterThan(cue.at);
 
-    // The last subtitle stays up after the film ends.
-    if (index < CUES.length - 1) expect(cueEnd(index) - cue.at).toBeGreaterThanOrEqual(letters * 1000 / 17 - 200);
+    if (index < CUES.length - 1) expect(TIMELINE.cueEnd(index) - cue.at).toBeGreaterThanOrEqual(letters * 1000 / 17 - 200);
 
-    expect(cueAt(cue.at)).toBe(index);
-    expect(cueAt(stillTime(index))).toBe(index);
+    expect(TIMELINE.cueAt(cue.at)).toBe(index);
+    expect(TIMELINE.cueAt(TIMELINE.stillTime(index))).toBe(index);
   }
 
-  expect(cueAt(FILM_DURATION + 1000)).toBe(CUES.length - 1);
+  expect(TIMELINE.cueAt(FILM_DURATION + 1000)).toBe(CUES.length - 1);
 });
 
 test('378 film: switches arrive and regroup without jumps, and the dial stops at 1, 2 and 3', () => {
@@ -125,7 +120,6 @@ test('378 film: switches arrive and regroup without jumps, and the dial stops at
     const current = Array.from({ length: 12 }, (_, index) => pinPlace(time, index));
 
     for (const [index, place] of current.entries()) {
-      // A switch not yet on the board may wait outside it.
       if (arrivalOf(time, index) > 0) {
         expect(place.u).toBeGreaterThanOrEqual(0);
         expect(place.u).toBeLessThanOrEqual(1);
@@ -140,7 +134,6 @@ test('378 film: switches arrive and regroup without jumps, and the dial stops at
     previous = current;
   }
 
-  // Once regrouped, the twelve switches stand in order, with wider gaps between groups.
   const settled = Array.from({ length: 12 }, (_, index) => pinPlace(80000, index).u);
 
   for (let index = 1; index < 12; index += 1) {
