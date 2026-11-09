@@ -1,0 +1,86 @@
+uruk-curve-budget { display: block; }
+
+.result-opening:has(uruk-curve-budget) {
+  grid-template-columns: minmax(0, 920fr) minmax(0, 368fr);
+  gap: 32px;
+}
+
+.nfilm { border: 1px solid var(--muted); background: var(--paper); }
+.nfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.nfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-curve-budget[data-ready] .nfilm-canvas { visibility: visible; }
+.nfilm-formulas { position: absolute; inset: 0; pointer-events: none; }
+.nfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
+.nfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.nfilm-label--blue { color: var(--blue); }
+.nfilm-label--small { font-size: .9375rem; }
+.nfilm-status > span { padding: 5px 8px; border: 1px solid var(--blue); color: var(--blue); font: .6875rem/1.4 var(--font-special-elite); }
+
+.nfilm-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
+.plate .nfilm-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
+.nfilm-cue.is-active { visibility: visible; }
+.nfilm-phrase { white-space: nowrap; }
+.nfilm-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
+
+.nfilm-controls { padding-top: 16px; }
+uruk-curve-budget:not([data-ready]) .nfilm-controls { display: none; }
+.nfilm-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.plate .nfilm-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
+.nfilm-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; }
+.nfilm-timeline::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.nfilm-timeline::-moz-range-thumb { width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.nfilm-timeline:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.nfilm-steps { display: none; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; }
+.plate .nfilm-steps p { margin: 0; color: var(--muted); font: italic .875rem/1.4 var(--font-alegreya); text-align: center; }
+.nfilm-controls button:disabled { opacity: .45; cursor: default; }
+
+.nfilm-transcript { margin-top: 18px; }
+.nfilm-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
+.nfilm-transcript ol { padding-left: 22px; margin-top: 20px; }
+.nfilm-transcript li + li { margin-top: 20px; }
+.plate .nfilm-transcript h3 { margin-bottom: 8px; font: italic 1.25rem/1.35 var(--font-alegreya); }
+.plate .nfilm-transcript p { font: 1rem/1.55 var(--font-alegreya); }
+.plate .nfilm-transcript p + p { margin-top: 8px; }
+.plate .nfilm-method { margin-top: 20px; color: var(--muted); }
+
+
+.nfilm-still { position: absolute; inset: 5% 5%; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 20px; }
+uruk-curve-budget[data-ready] .nfilm-still { display: none; }
+.nfilm-still-plane, .nfilm-still-plot { min-width: 0; }
+.nfilm-still svg { display: block; width: 100%; height: auto; }
+
+@media (max-width: 74.999rem) {
+  .result-opening:has(uruk-curve-budget) { grid-template-columns: minmax(0, 1fr); }
+  .result-opening:has(uruk-curve-budget) .result-introduction { max-width: 800px; }
+}
+
+@container plate (max-width: 599px) {
+  .nfilm-stage { aspect-ratio: 4 / 5; }
+  .nfilm-subtitles { padding: 12px 14px 16px; }
+  .plate .nfilm-cue { font-size: 1.0625rem; }
+  .nfilm-label { font-size: .9375rem; }
+  .nfilm-label--small { font-size: .8125rem; }
+  .nfilm-still { inset: 2% 5%; grid-template-columns: 1fr; grid-template-rows: 44% 56%; gap: 0; }
+  .nfilm-still-plane, .nfilm-still-plot { height: 100%; }
+  .nfilm-still svg { height: 100%; }
+}
+
+@media (max-width: 47.999rem) {
+  .result-opening:has(uruk-curve-budget) .result-introduction > .folio-top__copy { order: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  uruk-curve-budget [data-play] { display: none; }
+  .nfilm-steps { display: flex; }
+}
+
+/* The text-only fallback may grow instead of squeezing two diagrams into a film frame. */
+uruk-curve-budget:not([data-ready]) .nfilm-stage { aspect-ratio: auto; }
+uruk-curve-budget:not([data-ready]) .nfilm-still { position: relative; inset: auto; padding: 16px 14px; }
+
+@container plate (max-width: 599px) {
+  .nfilm-still { grid-template-rows: auto auto; gap: 14px; }
+  .nfilm-still-plane, .nfilm-still-plot { height: auto; }
+  .nfilm-still svg { height: auto; }
+  .nfilm-still svg text { font-size: 14px; }
+}

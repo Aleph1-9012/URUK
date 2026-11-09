@@ -6,6 +6,7 @@ import FractionRulers from './fraction-rulers/FractionRulers.astro';
 import FractionNets from './fraction-nets/FractionNets.astro';
 import PrimeWaves from './prime-waves/PrimeWaves.astro';
 import ThompsonBands from './thompson/ThompsonBands.astro';
+import CurveBudget from './curve-budget/CurveBudget.astro';
 import UnitRuler from './unit-ruler/UnitRuler.astro';
 
 interface Props {
@@ -19,6 +20,7 @@ const plates = {
   'unit-ruler': UnitRuler,
   'thompson-bands': ThompsonBands,
   'fraction-rulers': FractionRulers,
+  'curve-budget': CurveBudget,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];

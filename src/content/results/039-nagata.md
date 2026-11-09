@@ -13,6 +13,7 @@ papers:
   - preprints/Maximal-Multipoint-Seshadri-Constants-in-Higher-Dimensions-October-5-2026/main.pdf
   - preprints/Maximal-multipoint-Seshadri-constants-in-positive-characteristic-October-5-2026/seshadri-positive-characteristic.pdf
 draft: false
+visual: curve-budget
 ---
 
 Mark $r$ points in the plane and ask for an algebraic curve that passes through each of them $m$ times over, meaning the curve has a singular point of multiplicity $m$ there. A curve of degree $d$ has about $d^{2}/2$ free coefficients and each multiple point costs about $m^{2}/2$ of them, so counting suggests that curves exist once $d$ exceeds $m\sqrt r$ and not before. In 1959 Masayoshi Nagata, in the paper that settled Hilbert's fourteenth problem in the negative, conjectured that for ten or more points in general position the count is the truth: no curve does better than $d>m\sqrt r$. He proved it when $r$ is a perfect square at least 16. For every other $r$, ten included, it stayed open for sixty-seven years. On 23 September 2026 OpenAI posted a proof for every $r\ge10$, with unequal multiplicities allowed, and three companion papers extending the same principle to arbitrary surfaces and higher dimensions. [1][2][3]
