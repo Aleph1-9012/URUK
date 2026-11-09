@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/The-circulant-Hadamard-conjecture-September-23-2026/paper.pdf
 draft: false
+visual: barker-echoes
 ---
 
 Write down a row of plus and minus signs. Slide a copy of it along itself by one step, two steps, three, and at each shift count the agreements minus the disagreements. A sequence is as unlike its own shifts as a sign sequence can be if every one of those counts is $0$, $1$ or $-1$. Such sequences are called Barker sequences, after R. H. Barker's 1953 paper on synchronizing digital signals, and engineers have used them for seventy years: an eleven-term Barker sequence carries the slowest modes of the IEEE 802.11b Wi-Fi standard, and the thirteen-term one is a textbook radar pulse. The catch is that nobody has ever found one longer than thirteen. Turyn and Storer proved in 1961 that no odd length beyond thirteen works. The even case turned into a separate famous problem, the circulant Hadamard conjecture attributed to Ryser in 1963, which says that a square array of signs whose rows are all cyclic shifts of one another and all mutually perpendicular can only have size one or four. On 23 September 2026 OpenAI posted a fifteen-page paper claiming to prove it, and with it the complete list of Barker lengths. [1][3][4][10]

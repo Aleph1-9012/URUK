@@ -1,0 +1,132 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { BARKER13, KNOWN_ROWS, ROW4, aperiodic, circulant } from './math';
+import { CUES, TIMELINE } from './story';
+import './barker-echoes.css';
+
+const labels = [
+  { id: 'wrapping', tex: String.raw`P_a(t)=C_a(t)+C_a(n-t)` },
+  { id: 'order', tex: String.raw`n=4u^{2}` },
+  { id: 'fold', tex: String.raw`h=H_0+ZH_1+Z^2H_2+Z^3H_3` },
+];
+
+const matrix = circulant(ROW4);
+
+const echo = Array.from({ length: 25 }, (_, index) => ({
+  shift: index - 12,
+  value: aperiodic(BARKER13, index - 12),
+}));
+
+const lengths = Array.from({ length: 16 }, (_, index) => index + 1);
+
+const knownRows = new Map(Object.entries(KNOWN_ROWS).map(([length, row]) => [Number(length), row] as const));
+---
+
+<Plate
+  caption="A thirteen-sign Barker row slid past its copy, the wrap-around that turns even Barker rows into circulant Hadamard rows, the 4 × 4 example, sixty years of restrictions, the claim that no others exist, and the proof's last step on a 36-sign example and the order-four row."
+  leftOut="Step 1's projection at 2; the Character Comparison lemma and its induction; Kronecker's criterion and the odd-order argument; the local rings and the homomorphism of Lemma 4.1; Schmidt's field descent and the Leung–Schmidt restrictions; the difference-set form (4u², 2u² − u, u² − u); the five earlier claimed proofs by name; complex Barker and polyphase codes; the IEEE 802.11b use of the 11-term code. The R and W drawings are schematic."
+>
+  <uruk-barker-echoes class="film-host">
+    <div class="befilm">
+      <div class="befilm-stage" data-film-viewport>
+        <canvas class="befilm-canvas" data-film-canvas role="img" aria-label="A sign row slides against its copy to count agreements and disagreements. Its echo, wrap-around counts, four-by-four matrix and length ledgers lead into a claimed proof. The ratio drawings are schematic. The claim is unreviewed. A full text transcript follows."></canvas>
+        <div class="befilm-still" aria-hidden="true">
+          <div class="befilm-still-stage">
+            <svg viewBox="0 0 520 290" role="presentation">
+              <text x="260" y="22" text-anchor="middle" font-size="18">THIRTEEN SIGNS · BARKER 13</text>
+              {BARKER13.map((sign, index) => (
+                <g>
+                  <rect x={2 + index * 40} y="36" width="36" height="34" fill={sign === 1 ? 'var(--ink)' : 'var(--paper)'} stroke="var(--ink)" stroke-width="1.5" />
+                  <text class:list={{ 'befilm-tile-sign--filled': sign === 1 }} x={20 + index * 40} y="60" text-anchor="middle" font-size="25">{sign === 1 ? '+' : '−'}</text>
+                </g>
+              ))}
+              <text x="260" y="101" text-anchor="middle" font-size="17">FOUR WRAPPED COPIES</text>
+              {matrix.map((row, rowIndex) => row.map((sign, column) => (
+                <g>
+                  <rect x={198 + column * 32} y={114 + rowIndex * 32} width="27" height="27" fill={sign === 1 ? 'var(--ink)' : 'var(--paper)'} stroke="var(--ink)" stroke-width="1.2" />
+                  <text class:list={{ 'befilm-tile-sign--filled': sign === 1 }} x={211.5 + column * 32} y={134 + rowIndex * 32} text-anchor="middle" font-size="21">{sign === 1 ? '+' : '−'}</text>
+                </g>
+              )))}
+              <text x="260" y="262" text-anchor="middle" font-size="17">EACH PAIR: 2 AGREE, 2 DISAGREE</text>
+              <text x="260" y="285" text-anchor="middle" font-size="16">CIRCULANT HADAMARD · ORDER 4</text>
+            </svg>
+          </div>
+          <div class="befilm-still-chart befilm-still-chart--wide">
+            <svg viewBox="0 0 360 300" role="presentation">
+              <text x="180" y="24" text-anchor="middle" font-size="15">ECHO: PEAK 13</text>
+              <text x="180" y="44" text-anchor="middle" font-size="14">SIDELOBES ≤ 1</text>
+              <path d="M36 60V242H324M36 228H324M36 256H324" fill="none" stroke="var(--muted)" stroke-width=".8" />
+              {echo.map(({ shift, value }) => <line x1={180 + shift * 12} x2={180 + shift * 12} y1="242" y2={242 - value * 14} stroke="var(--ink)" stroke-width="4" />)}
+              {[-12, -6, 0, 6, 12].map((shift) => <text x={180 + shift * 12} y="275" text-anchor="middle" font-size="13">{shift}</text>)}
+              <text x="180" y="296" text-anchor="middle" font-size="13">SHIFT</text>
+              <text x="27" y="65" text-anchor="end" font-size="13">13</text>
+              <text x="27" y="232" text-anchor="end" font-size="13">1</text>
+            </svg>
+          </div>
+          <div class="befilm-still-chart befilm-still-chart--tall">
+            <svg viewBox="0 0 520 148" role="presentation">
+              <text x="260" y="15" text-anchor="middle" font-size="16">ECHO: PEAK 13, SIDELOBES ≤ 1</text>
+              <path d="M22 34V104H498M22 99H498M22 109H498" fill="none" stroke="var(--muted)" stroke-width=".8" />
+              {echo.map(({ shift, value }) => <line x1={260 + shift * 476 / 24} x2={260 + shift * 476 / 24} y1="104" y2={104 - value * 5} stroke="var(--ink)" stroke-width="5" />)}
+              {[-12, -6, 0, 6, 12].map((shift) => <text x={260 + shift * 476 / 24} y="129" text-anchor="middle" font-size="14">{shift}</text>)}
+              <text x="260" y="147" text-anchor="middle" font-size="14">SHIFT</text>
+              <text x="272" y="42" font-size="15">13</text>
+            </svg>
+          </div>
+          <div class="befilm-still-ledger">
+            <div class="befilm-still-ledger-line">
+              <p class="befilm-still-ledger-title">BARKER LENGTH n · ODD n &gt; 13: NONE, 1961</p>
+              <div class="befilm-still-cells">
+                {lengths.map((length) => (
+                  <div class="befilm-still-cell">
+                    <span>{length}</span>
+                    <span class="befilm-still-mark">
+                      {knownRows.has(length) ? <span class="befilm-still-strip">{knownRows.get(length)?.map((sign) => <i data-plus={sign === 1 || undefined} />)}</span> : length === 9 || length === 15 ? '×' : length % 2 === 0 ? '?' : ''}
+                    </span>
+                  </div>
+                ))}
+                <div class="befilm-still-cell"><span>…</span><span class="befilm-still-mark">?</span></div>
+              </div>
+            </div>
+            <div class="befilm-still-ledger-line">
+              <p class="befilm-still-ledger-title">CIRCULANT HADAMARD, ORDER n</p>
+              <div class="befilm-still-cells">
+                {lengths.map((length) => (
+                  <div class="befilm-still-cell">
+                    <span>{length}</span>
+                    <span class="befilm-still-mark">
+                      {length === 1 ? '▪' : length === 4 ? <span class="befilm-still-matrix">{matrix.flat().map((sign) => <i data-plus={sign === 1 || undefined} />)}</span> : length > 4 ? '?' : ''}
+                    </span>
+                  </div>
+                ))}
+                <div class="befilm-still-cell"><span>…</span><span class="befilm-still-mark">?</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="befilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => <span class="befilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="befilm-timeline" timeline={TIMELINE} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The fixed sign rows supply every tile, agreement tally and autocorrelation. A non-wrapped shift compares only the overlapping tiles. The echo is mirrored because the count at a negative shift equals that at the corresponding positive shift. The thirteen-sign row gives 13 at shift zero and alternating 0 and 1 at shifts 1 through 12. Filled tiles mean plus; open tiles mean minus. Ticks and crosses distinguish agreements and disagreements without colour.</p>
+      <p class="film-method">Wrapping carries the overhanging tiles to the empty front slots. The periodic count at shift t is the sum of the two non-wrapped counts at t and n − t. For an even Barker length greater than two, all nonzero periodic counts vanish. The four-by-four matrix is built by shifting the opening row (−1, 1, 1, 1) to the right. Each pair of its rows has two agreements and two disagreements. The row-sum square and the strip of odd u below 100 that are not prime powers are computed from the displayed values. The separate 2017 figure of 4,489 surviving orders below 4 · 10³⁰ is cited from the article; the twenty rings in the small strip do not represent those 4,489 orders.</p>
+      <p class="film-method">The 36-sign row uses the fixed seed-179 example from the direction's reference script. Tile j goes to array row j mod 4 and column j mod 9, so every column contains four signs. Halving the evaluations at Z = 1, −1 and i gives the displayed integer or Gaussian-integer coefficients c, d and g. This arbitrary row shows the mechanics only. It is not a Hadamard row, and its u = 3 is a prime power already excluded by Turyn's restriction.</p>
+      <p class="film-method">R and W on the unit circle are schematic: the proof defines them only under the assumption that the proposed matrix exists. Their drawn paths do not compute those ratios from the arbitrary 36-sign row. The nine-arrow walks are exact character sums on the cyclic group of order nine. The trivial character ends at 9; a character of order three closes after tracing a triangle three times. These small sums illustrate the last obstruction without verifying the paper's deductions.</p>
+      <p class="film-method">The order-four exception uses the matrix's fourth row (1, 1, 1, −1), which is a shift of the opening row. Its evaluations are c = 1, d = 1 and g = i, so W = i has even order four. These readouts do not belong to the opening row (−1, 1, 1, 1), whose values are c = 1, d = −1 and g = −1. Keeping the two rows separate is necessary for the comparison.</p>
+      <p class="film-method">The independent reference calculations are in 179-checks/barker.py. They check the sliding and wrapped counts, the circulant matrix, the fold and its coefficients, the restriction strip and the character sums. Finite searches in that script are checks of small examples, not evidence of nonexistence at every length. The film does not verify the claimed proof. Its review statements follow the article's dated evidence; Lean formalisation is not counted as independent mathematical approval.</p>
+    </FilmTranscript>
+  </uruk-barker-echoes>
+</Plate>
+
+<script>
+  import './element';
+</script>

@@ -20,6 +20,7 @@ export const visualCatalog = [
   { key: 'moat-walk', component: './moat-walk/MoatWalk.astro' },
   { key: 'fewest-crossings', component: './fewest-crossings/FewestCrossings.astro' },
   { key: 'caustic-collar', component: './caustic-collar/CausticCollar.astro' },
+  { key: 'barker-echoes', component: './barker-echoes/BarkerEchoes.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

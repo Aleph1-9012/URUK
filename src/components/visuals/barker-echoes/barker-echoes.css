@@ -1,0 +1,40 @@
+.befilm { border: 1px solid var(--muted); background: var(--paper); }
+.befilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.befilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-barker-echoes[data-ready] .befilm-canvas { visibility: visible; }
+.befilm-formulas { position: absolute; inset: 0; pointer-events: none; }
+.befilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: .9375rem; line-height: 1.25; white-space: nowrap; }
+.befilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.befilm-still { position: absolute; inset: 4%; display: grid; grid-template-columns: 59% 37%; grid-template-rows: 76% 20%; gap: 4%; }
+uruk-barker-echoes[data-ready] .befilm-still { display: none; }
+.befilm-still-stage, .befilm-still-chart { min-width: 0; min-height: 0; }
+.befilm-still svg { display: block; width: 100%; height: 100%; overflow: visible; color: var(--ink); }
+.befilm-still text { fill: var(--ink); font-family: var(--font-special-elite); }
+.befilm-still .befilm-tile-sign--filled { fill: var(--paper); }
+.befilm-still-chart--tall { display: none; }
+.befilm-still-ledger { grid-column: 1 / -1; display: grid; grid-template-rows: 1fr 1fr; gap: 9px; min-width: 0; font-family: var(--font-special-elite); }
+.befilm-still-ledger-line { min-width: 0; }
+.plate .befilm-still-ledger-title { margin: 0 0 4px; font: 10px/1.2 var(--font-special-elite); letter-spacing: .025em; }
+.befilm-still-cells { display: grid; grid-template-columns: repeat(17, minmax(0, 1fr)); border-top: 1px solid var(--muted); }
+.befilm-still-cell { display: grid; justify-items: center; align-content: start; min-width: 0; min-height: 27px; padding-top: 3px; border-right: 1px solid var(--muted); font-size: 11px; line-height: 1.15; }
+.befilm-still-cell:last-child { border-right: 0; }
+.befilm-still-mark { display: flex; justify-content: center; align-items: center; min-height: 14px; }
+.befilm-still-strip { display: flex; gap: 0; }
+.befilm-still-strip i { display: block; width: 1px; height: 3px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.befilm-still-strip i[data-plus] { background: var(--ink); }
+.befilm-still-matrix { display: grid; grid-template-columns: repeat(4, 2px); gap: 1px; }
+.befilm-still-matrix i { width: 2px; height: 2px; outline: .5px solid var(--ink); }
+.befilm-still-matrix i[data-plus] { background: var(--ink); }
+
+@container plate (max-width: 599px) {
+  .befilm-stage { aspect-ratio: 4 / 5; }
+  .befilm-label { font-size: .75rem; }
+  .befilm-label[data-label="fold"] { font-size: .65rem; }
+  .befilm-still { inset: 2% 4%; grid-template-columns: 1fr; grid-template-rows: 46% 25% 25%; gap: 2%; }
+  .befilm-still-chart--wide { display: none; }
+  .befilm-still-chart--tall { display: block; }
+  .befilm-still-ledger { grid-column: 1; gap: 3px; }
+  .plate .befilm-still-ledger-title { margin-bottom: 2px; font-size: 9px; letter-spacing: 0; }
+  .befilm-still-cell { min-height: 23px; padding-top: 2px; font-size: 9px; }
+  .befilm-still-mark { min-height: 11px; }
+}
