@@ -1,0 +1,30 @@
+.formula-inline math, uruk-formula math {
+  font-family: var(--font-garamond-math);
+  font-size: 1.07em;
+}
+
+.formula-inline math {
+  align-items: baseline;
+  display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+  overflow-x: auto;
+  vertical-align: baseline;
+}
+
+.formula-inline math > mrow { flex: none; padding-block: .15em; }
+
+.formula-inline[data-overflow]::after {
+  background: url('../assets/icons/roll-forward.svg') center / contain no-repeat;
+  content: "";
+  display: inline-block;
+  height: .7em;
+  margin-inline-start: .25em;
+  width: .7em;
+}
+
+uruk-formula { display: block; min-width: 0; margin-block: 24px; }
+.formula-viewport { overflow-x: auto; padding-block: 12px; }
+.formula-single, .formula-broken { width: max-content; min-width: 100%; }
+.formula-hint { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font: .6875rem/1.4 var(--font-special-elite); }
+.formula-hint span { width: 16px; height: 16px; flex: none; background: url('../assets/icons/roll-forward.svg') center / contain no-repeat; }

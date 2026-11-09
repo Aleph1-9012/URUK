@@ -4,6 +4,7 @@ export const result = z.strictObject({
   family: z.string().regex(/^\d{3}$/),
   topic: z.string().min(1),
   title: z.string().min(1),
+  paperTitle: z.string().min(1),
   claim: z.string().min(1),
   status: z.enum(['approved', 'disputed', 'under review', 'unreviewed']),
   checked: z.coerce.date().max(new Date()),

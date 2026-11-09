@@ -1,27 +1,51 @@
 ---
 import Icon from '../icon/Icon.astro';
 import NumberSign from '../number-signs/NumberSign.astro';
+import { decomposeNumberSigns } from '../number-signs/decompose';
 
-const sources = Array.from({ length: 19 }, (_, index) => index + 1);
+interface Props {
+  sources: { number: number; html: string }[];
+}
+
+const { sources } = Astro.props;
+const total = sources.length;
+const canCollapse = total > 6;
+const leftCount = Math.ceil((total + 1) / 2);
+const counts = decomposeNumberSigns(total);
+const units = [
+  { unit: '60', count: counts.sixties },
+  { unit: '10', count: counts.tens },
+  { unit: '1', count: counts.ones },
+] as const;
+const key = units.flatMap(({ unit, count }) => count > 0 ? [`${unit} × ${count}`] : []).join(' + ');
 ---
 
-<uruk-sources>
-  <div class="sources-preview" data-script-only>
-    {sources.slice(0, 6).map((number) => <p>{number}. Placeholder source {number}.</p>)}
-  </div>
+<uruk-sources data-total={total} data-open={!canCollapse}>
+  {canCollapse && <div class="sources-preview" data-script-only>
+    {sources.slice(0, 6).map(({ number, html }) => <div class="source-preview"><span>{number}.</span><div set:html={html} /></div>)}
+  </div>}
   <div class="sources-table" id="source-table">
     <ol class="sources-list">
-      {sources.map((number) => <li id={`source-${number}`}><span>{number}.</span> Placeholder source {number}.</li>)}
+      {sources.map(({ number, html }) => (
+        <li
+          id={`source-${number}`}
+          tabindex="-1"
+          class:list={{ 'source-left': number <= leftCount, 'source-left-last': number === leftCount }}
+          style={`grid-column:${number <= leftCount ? 1 : 2};grid-row:${number <= leftCount ? number : number - leftCount}`}
+        ><span>{number}.</span><div set:html={html} /></li>
+      ))}
     </ol>
-    <div class="sources-total">
+    <div class="sources-total" style={`grid-row:${total - leftCount + 1} / ${leftCount + 1}`}>
       <p class="sources-label">Total</p>
-      <div class="sources-numerals" aria-label="Nineteen in Uruk number signs"><NumberSign unit="10" mode="tally" /><div>{Array.from({ length: 9 }, () => <NumberSign unit="1" mode="tally" />)}</div></div>
-      <p class="sources-key">10 × 1 + 1 × 9 = 19 sources</p>
+      <div class="sources-numerals" role="img" aria-label={`${total} in Uruk number signs`}>
+        {units.map(({ unit, count }) => count > 0 && <div>{Array.from({ length: count }, () => <NumberSign unit={unit} mode="tally" />)}</div>)}
+      </div>
+      <p class="sources-key">{key} = {total} {total === 1 ? 'source' : 'sources'}</p>
     </div>
   </div>
-  <button type="button" class="sources-toggle case-link" aria-expanded="false" aria-controls="source-table" data-script-only>
-    <span data-sources-label>Show all 19 sources</span><span class="sources-icon" data-sources-open><Icon name="open" /></span><span class="sources-icon" data-sources-close><Icon name="close" /></span>
-  </button>
+  {canCollapse && <button type="button" class="sources-toggle case-link" aria-expanded="false" aria-controls="source-table" data-script-only>
+    <span data-sources-label>Show all {total} sources</span><span class="sources-icon" data-sources-open><Icon name="open" /></span><span class="sources-icon" data-sources-close><Icon name="close" /></span>
+  </button>}
 </uruk-sources>
 
 <script>
@@ -39,11 +63,27 @@ const sources = Array.from({ length: 19 }, (_, index) => index + 1);
       const update = (open: boolean) => {
         this.toggleAttribute('data-open', open);
         button.setAttribute('aria-expanded', String(open));
-        this.querySelector('[data-sources-label]')?.replaceChildren(open ? 'Show fewer' : 'Show all 19 sources');
+        this.querySelector('[data-sources-label]')?.replaceChildren(open ? 'Show fewer' : `Show all ${this.dataset.total} sources`);
       };
+      const followHash = () => {
+        if (/^#source-\d+$/.test(location.hash)) {
+          update(true);
+          requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView());
+        }
+      };
+      const { signal } = this.events;
 
       update(new URLSearchParams(location.search).get('sources') === 'open');
-      button.addEventListener('click', () => update(button.getAttribute('aria-expanded') !== 'true'), { signal: this.events.signal });
+      followHash();
+      button.addEventListener('click', () => update(button.getAttribute('aria-expanded') !== 'true'), { signal });
+      window.addEventListener('hashchange', followHash, { signal });
+      document.addEventListener('click', (event) => {
+        const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a.citation') : null;
+
+        if (link) {
+          update(true);
+        }
+      }, { signal });
     }
 
     disconnectedCallback(): void {
@@ -59,41 +99,35 @@ const sources = Array.from({ length: 19 }, (_, index) => index + 1);
 <style>
   uruk-sources { display: block; grid-column: 2 / -1; min-width: 0; }
   .sources-preview { display: grid; grid-auto-flow: column; grid-template-rows: repeat(3, auto); grid-template-columns: 640px minmax(0, 1fr); column-gap: 40px; row-gap: 16px; }
-  .sources-preview p, .sources-list li { font: var(--folio-source-font-size)/var(--folio-source-line-height) var(--font-alegreya); }
+  .source-preview, .sources-list li { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+  .source-preview > span, .sources-list li > span { flex: none; }
+  .source-preview > div, .sources-list li > div { min-width: 0; }
+  .sources-preview, .sources-list { overflow-wrap: anywhere; }
+  .sources-preview :global(p), .sources-list :global(p), .source-preview > span, .sources-list li > span { font: var(--folio-source-font-size)/var(--folio-source-line-height) var(--font-alegreya); }
+  .sources-preview :global(p + p), .sources-list :global(p + p) { margin-top: 8px; }
   .sources-table { border: 1px solid var(--muted); display: grid; grid-template-columns: 3fr 2fr; }
   .sources-list { display: contents; margin: 0; padding: 0; list-style: none; }
-  .sources-list li { padding: 12px 20px; border-bottom: 1px solid var(--muted); min-width: 0; }
-  .sources-list li:nth-child(-n+10) { grid-column: 1; border-right: 1px solid var(--muted); }
-  .sources-list li:nth-child(n+11) { grid-column: 2; }
-  .sources-list li:nth-child(11) { grid-row: 1; }
-  .sources-list li:nth-child(12) { grid-row: 2; }
-  .sources-list li:nth-child(13) { grid-row: 3; }
-  .sources-list li:nth-child(14) { grid-row: 4; }
-  .sources-list li:nth-child(15) { grid-row: 5; }
-  .sources-list li:nth-child(16) { grid-row: 6; }
-  .sources-list li:nth-child(17) { grid-row: 7; }
-  .sources-list li:nth-child(18) { grid-row: 8; }
-  .sources-list li:nth-child(19) { grid-row: 9; }
-  .sources-list li:nth-child(10) { grid-row: 10 / 12; border-bottom: 0; }
-  .sources-list li span { margin-right: 6px; }
-  .sources-total { grid-column: 2; grid-row: 10 / 12; padding: 18px 20px; border-top: 3px double var(--muted); }
+  .sources-list li { padding: 12px 20px; border-bottom: 1px solid var(--muted); scroll-margin-top: 24px; }
+  .sources-list li:target { background: rgb(33 38 42 / .06); }
+  .sources-list .source-left { border-right: 1px solid var(--muted); }
+  .sources-list .source-left-last { border-bottom: 0; }
+  .sources-total { grid-column: 2; padding: 18px 20px; border-top: 3px double var(--muted); min-width: 0; }
   .sources-total .sources-label, .sources-total .sources-key { font: .6875rem/1.6 var(--font-special-elite); margin-bottom: 12px; }
   .sources-label { text-transform: uppercase; }
-  .sources-numerals { display: flex; align-items: center; gap: 16px; margin-block: 10px 20px; }
-  .sources-numerals > div { display: grid; grid-template-columns: repeat(3, 24px); gap: 3px; }
+  .sources-numerals { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-block: 10px 20px; }
+  .sources-numerals > div { display: grid; grid-template-columns: repeat(3, auto); align-items: center; gap: 3px; }
   .sources-toggle { display: inline-flex; gap: 10px; align-items: center; border: 0; background: transparent; color: var(--ink); cursor: pointer; margin-top: 24px; padding: 0; font: .6875rem/1.4 var(--font-special-elite); text-transform: uppercase; }
   .sources-icon { display: inline-flex; width: 12px; height: 12px; }
   .sources-icon :global(svg) { max-width: 12px; max-height: 12px; }
   uruk-sources[data-open] [data-sources-open], uruk-sources:not([data-open]) [data-sources-close], uruk-sources[data-open] .sources-preview { display: none; }
-  /* Collapsed from the first paint when scripts run; without them the whole table shows. */
   @media (scripting: enabled) { uruk-sources:not([data-open]) .sources-table { display: none; } }
   @media (max-width: 74.999rem) { .sources-preview { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 47.999rem) {
     .sources-preview { display: flex; flex-direction: column; gap: 14px; }
     .sources-table { display: block; }
     .sources-list { display: block; }
-    .sources-list li:nth-child(-n+10) { border-right: 0; }
-    .sources-list li:nth-child(10) { border-bottom: 1px solid var(--muted); }
+    .sources-list .source-left { border-right: 0; }
+    .sources-list .source-left-last { border-bottom: 1px solid var(--muted); }
     .sources-total { padding: 20px 16px; }
   }
 </style>
