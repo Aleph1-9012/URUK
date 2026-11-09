@@ -9,6 +9,7 @@ checked: 2026-10-15
 papers:
   - preprints/Matrix-Multiplication-Nine-Fourths-October-2-2026/paper.pdf
 draft: false
+visual: grid-products
 ---
 
 Multiplying two matrices is the most common heavy computation in the world. Every neural network does it billions of times, and so does every weather model and every physics simulation. How many arithmetic operations it needs, as the matrices grow, is measured by a single number called $\omega$. Since 1969 the best known upper bound on $\omega$ has crept from $3$ down to $2.371177$, with most of the movement in the first twenty years and almost none in the last thirty-five. On 2 October 2026 OpenAI posted a thirteen-page proof that $\omega\le\tfrac94=2.25$. If it holds, it is the largest single improvement since 1981, and it comes by a route nobody had used. [1]
