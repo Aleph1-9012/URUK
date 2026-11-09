@@ -1,0 +1,163 @@
+---
+import Plate from '../../plate/Plate.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { BETTER_METHODS, CROSSING_RULES, GROUP_COUNTS, GROUP_RULES, TRUE_COUNT, type Rule } from './sat';
+import { CUES, FILM_DURATION, SCENES, formatTime } from './timeline';
+import './switch-film.css';
+
+const math = (tex: string) => renderFormula(tex, false);
+
+const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+// Text with $…$ formulas; a formula keeps the punctuation or word attached after it on its own line.
+const rich = (text: string) => text.split(/(\$[^$]+\$\S*)/).map((part) => {
+  const formula = /^\$([^$]+)\$(\S*)$/.exec(part);
+
+  if (!formula) return escape(part);
+
+  return `<span class="swf-nowrap">${math(formula[1] ?? '')}${escape(formula[2] ?? '')}</span>`;
+}).join('');
+
+const literal = (value: number) => `${value < 0 ? '\\neg ' : ''}x_{${Math.abs(value)}}`;
+
+const clause = (rule: Rule) => `(${rule.map(literal).join('\\vee ')})`;
+
+// Rules written out one formula each, so a long list can wrap between them.
+const listed = (rules: readonly Rule[]) => rules.map((rule) => `$${clause(rule)}$`).join(', ');
+
+type Label = { id: string; tex: string; tone?: 'blue'; size?: 'small' | 'large' };
+
+const labels: Label[] = [
+  { id: 'formula', tex: String.raw`(x_1\vee x_2\vee x_3)\wedge(\neg x_1\vee\neg x_2\vee\neg x_3)`, size: 'small' },
+  { id: 'power', tex: '2^n' },
+  { id: 'better', tex: String.raw`\approx1.33^n` },
+  { id: 'threshold', tex: String.raw`n=2^{10^{10}}`, size: 'small' },
+  { id: 'tries', tex: String.raw`3\times2^4=48\text{ tries, not }2^{12}=4096`, size: 'small' },
+  { id: 'dial', tex: 'T', tone: 'blue', size: 'large' },
+  { id: 'dial-zero', tex: String.raw`T=0\text{: the true count}`, size: 'small' },
+  { id: 'dial-stops', tex: String.raw`T=1,\ldots,Q`, size: 'small' },
+  { id: 'bent', tex: 'H(T)', tone: 'blue' },
+  { id: 'landing', tex: `H(0)=${TRUE_COUNT}`, tone: 'blue' },
+  { id: 'subexp', tex: '2^{o(n)}', tone: 'blue' },
+];
+
+// The still for readers without JavaScript: the twelve switches in their groups, and the cost chart.
+const pinX = (index: number) => 52 + (index + 1.2 * Math.floor(index / 4)) * 25.5;
+
+const knots = GROUP_RULES.flatMap((rules, group) => rules.map((rule, place) => ({
+  x: pinX(group * 4) + 38 + (place - 1) * 29,
+  pins: rule.map((value) => Math.abs(value) - 1),
+})));
+
+const chartY = (multiplier: number) => 400 - ((multiplier - 1) / 1.25) * 330;
+---
+
+<Plate
+  caption="Counting the settings that obey every rule, what each extra switch costs, and the claimed way to make that cost shrink."
+  leftOut="the construction of the summaries (Sections 2.7 and 4); the reduction from any clause width to three occurrences per switch (Sections 2.8 and 6); the sharper exponent of Appendix D; the Lean formalization of a weaker form, and Anthropic's independent claim, which the article describes. The proof drawings are schematic."
+>
+  <uruk-switch-film>
+    <div class="swf">
+      <div class="swf-screen" data-film-viewport>
+        <canvas
+          class="swf-canvas"
+          role="img"
+          aria-label="A film about the Exponential Time Hypothesis. Switches and rules are counted by trying every setting, and a chart shows what one more switch costs: twice as much by trying everything, about 1.33 times with cleverer methods, and a floor the hypothesis says no method gets under. A curve shows the claimed method, which only bends below that floor beyond 2 to the power 10 to the 10 switches. A schematic of the claimed proof follows: groups of switches, shared summaries, and a dial T. The film's explanation is in the transcript below."
+          data-film-canvas
+        ></canvas>
+
+        <div class="swf-still" aria-hidden="true">
+          <svg viewBox="0 0 800 500">
+            <defs>
+              <pattern id="swf-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                <path d="M0 0V6" stroke="currentColor" stroke-width=".8" />
+              </pattern>
+            </defs>
+            <text x="208" y="70" class="swf-still__tag" text-anchor="middle">THREE GROUPS OF FOUR</text>
+            {[0, 1, 2].map((group) => (
+              <path d={`M${pinX(group * 4) - 16} 210H${pinX(group * 4 + 3) + 16}V350H${pinX(group * 4) - 16}Z`} fill="none" stroke="var(--muted)" stroke-width="1" />
+            ))}
+            {knots.map((knot) => knot.pins.map((pin) => (
+              <path d={`M${knot.x} 318L${pinX(pin)} 258`} fill="none" stroke="currentColor" stroke-width=".8" opacity=".7" />
+            )))}
+            {knots.map((knot) => <rect x={knot.x - 3} y="315" width="6" height="6" fill="currentColor" />)}
+            {Array.from({ length: 12 }, (_, index) => (
+              <>
+                <circle cx={pinX(index)} cy="250" r="9" fill="var(--paper)" stroke="currentColor" stroke-width="1.5" />
+                <text x={pinX(index)} y="254" class="swf-still__pin" text-anchor="middle">{index + 1}</text>
+              </>
+            ))}
+            {GROUP_COUNTS.map((count, group) => <text x={pinX(group * 4) + 38} y="378" class="swf-still__tag" text-anchor="middle">{count} OF 16</text>)}
+
+            <text x="440" y="44" class="swf-still__tag">COST OF ONE MORE SWITCH</text>
+            <path d="M470 60V400H770" fill="none" stroke="var(--muted)" stroke-width="1" />
+            <rect x="470" y={chartY(1.12)} width="300" height={400 - chartY(1.12)} fill="url(#swf-hatch)" opacity=".75" />
+            <path d={`M470 ${chartY(1.12)}H770`} fill="none" stroke="currentColor" stroke-dasharray="5 4" />
+            <path d={`M470 ${chartY(2)}H770`} fill="none" stroke="currentColor" stroke-width="1.6" />
+            {BETTER_METHODS.map((method) => <path d={`M470 ${chartY(method.multiplier)}H770`} fill="none" stroke="currentColor" stroke-width="1" />)}
+            <text x="462" y={chartY(2) + 4} class="swf-still__number" text-anchor="end">×2</text>
+            <text x="462" y="404" class="swf-still__number" text-anchor="end">×1</text>
+            <text x="476" y={chartY(2) - 10} class="swf-still__tag">TRY EVERY SETTING</text>
+            <text x="476" y={chartY(4 / 3) - 12} class="swf-still__tag">BETTER METHODS: ×1.308 TO ×4/3</text>
+            <text x="620" y={chartY(1.06) + 4} class="swf-still__tag swf-still__tag--paper" text-anchor="middle">NO METHOD GETS IN HERE</text>
+            <text x="770" y="428" class="swf-still__tag" text-anchor="end">NUMBER OF SWITCHES n</text>
+          </svg>
+        </div>
+
+        <div class="swf-labels" aria-hidden="true">
+          {labels.map((label) => (
+            <span class:list={['swf-label', label.tone && `swf-label--${label.tone}`, label.size && `swf-label--${label.size}`]} data-label={label.id}>
+              <span set:html={math(label.tex)} />
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div class="swf-subtitles" aria-hidden="true">
+        {CUES.map((cue, index) => (
+          <p class:list={['swf-cue', { 'is-active': index === 0 }]} data-cue={index}>
+            <span set:html={rich(cue.text)} /><span class="swf-cue__sources"> {cue.sources.map((source) => `[${source}]`).join('')}</span>
+          </p>
+        ))}
+      </div>
+    </div>
+
+    <div class="swf-controls" data-script-only>
+      <div class="swf-control-row">
+        <button type="button" class="plate-button case-link case-link--tight" data-play><span data-play-label>Pause</span></button>
+        <p class="swf-clock"><span data-film-clock>0:00 / {formatTime(FILM_DURATION)}</span></p>
+        <button type="button" class="plate-button case-link case-link--tight" data-film-restart>Restart</button>
+      </div>
+      <label class="visually-hidden" for="swf-timeline">Film timeline. The arrow keys move one subtitle at a time.</label>
+      <input id="swf-timeline" class="swf-range" type="range" min="0" max={FILM_DURATION} step="100" value="0" data-film-range />
+      <div class="swf-steps">
+        <button type="button" class="plate-button case-link case-link--tight" data-film-previous>Previous</button>
+        <p>Step through without motion</p>
+        <button type="button" class="plate-button case-link case-link--tight" data-film-next>Next</button>
+      </div>
+    </div>
+    <p class="visually-hidden" aria-live="polite" aria-atomic="true" data-film-status></p>
+
+    <details class="swf-transcript">
+      <summary class="text-link">Read the film as text</summary>
+      <ol>
+        {SCENES.map((scene, index) => (
+          <li>
+            <h3>{scene.title}</h3>
+            {CUES.slice(scene.first, SCENES[index + 1]?.first ?? CUES.length).map((cue) => (
+              <p>
+                <span set:html={rich(cue.text)} />
+                {cue.sources.map((source) => <> <a class="citation text-link" href={`#source-${source}`}>[{source}]</a></>)}
+              </p>
+            ))}
+          </li>
+        ))}
+      </ol>
+      <p class="swf-transcript__note" set:html={rich(`How the film is made. Every count is computed by trying all settings: 6 of the opening's 8; for each group of four switches, 10 of 16 under its three rules (${listed(GROUP_RULES.flat())}); ${GROUP_COUNTS.join(' × ')} = 1,000 for those nine rules together; and ${TRUE_COUNT} of 4,096 once the crossing rules ${listed(CROSSING_RULES)} are added. Each switch occurs in exactly three rules, as in the paper's Section 2, where each occurs in at most three. The bars double exactly. The flat lines are the article's figures: $4/3$ for Schöning's method, about 1.328 for the best deterministic method before the paper, and about 1.308 for PPSZ. The hypothesis names no height for its floor, so the floor is drawn at an arbitrary one. The threshold is the article's own solution of the paper's parameter constraints, $\\lceil\\log_2n\\rceil\\approx1.09\\times10^{10}$, so $n$ is beyond $2^{10^{10}}$, a number with about 3.3 billion digits; the paper does not state it. The claimed curve's descent, the dial, the summaries and their routing, and the three costs are schematic. The bent count is a real polynomial of degree 5, made up for the drawing: its values and slopes at $T=1,2,3$ determine it exactly, and its value at $T=0$ is the count ${TRUE_COUNT}, as the paper's recovery requires of its real polynomial, whose degree is far higher. The status is the article's as of 1 November 2026.`)} />
+    </details>
+  </uruk-switch-film>
+</Plate>
+
+<script>
+  import './element';
+</script>
