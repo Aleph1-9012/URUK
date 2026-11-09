@@ -21,6 +21,7 @@ import UnitLinks from './unit-links/UnitLinks.astro';
 import FactorTwo from './factor-two/FactorTwo.astro';
 import MoatWalk from './moat-walk/MoatWalk.astro';
 import FewestCrossings from './fewest-crossings/FewestCrossings.astro';
+import CausticCollar from './caustic-collar/CausticCollar.astro';
 
 interface Props {
   visual: VisualKey;
@@ -47,6 +48,7 @@ const plates = {
   'factor-two': FactorTwo,
   'moat-walk': MoatWalk,
   'fewest-crossings': FewestCrossings,
+  'caustic-collar': CausticCollar,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];

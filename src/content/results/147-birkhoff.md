@@ -10,6 +10,7 @@ papers:
   - preprints/Rigidity-of-Smooth-Billiards-with-a-Continuous-Caustic-Collar-September-24-2026/paper.pdf
   - preprints/Continuous-Phase-Foliations-Create-Analytic-Caustic-Collars-September-24-2026/paper.pdf
 draft: false
+visual: caustic-collar
 ---
 
 Roll a ball inside an elliptical table and launch it at a shallow angle. It never crosses a certain smaller ellipse with the same two foci: every segment of its path is tangent to that inner curve, its caustic. Shallower launches give caustics closer to the rim, and the nested caustics fill a whole band inside the wall. This is what it means for the elliptical billiard to be integrable. George Birkhoff, who turned the convex billiard into a model dynamical system in 1927, is credited with asking the converse, first printed by Poritsky in 1950: is the ellipse the only table whose billiard is integrable? The conjecture has been attacked for decades with partial success: Lazutkin showed in 1973 that every smooth positively curved table has a Cantor set of caustics near the rim, which can leave gaps; Bialy proved in 1993 that a table whose entire phase space is foliated by invariant curves is a circle; and Avila, De Simoi and Kaloshin in 2016, then Kaloshin and Sorrentino in 2018, proved it for tables close to ellipses, in two Annals papers. The version in which integrability is assumed only near the boundary, with no closeness to an ellipse, is the near-boundary Birkhoff conjecture. On 24 September 2026 OpenAI posted two papers claiming it for smooth tables of positive curvature. [1][2][3][4]
