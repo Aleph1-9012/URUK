@@ -1,0 +1,127 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { DRAWN_MODES } from './data';
+import { computeContour, referenceFor, type Mode } from './math';
+import { CUES, TIMELINE } from './story';
+import './silent-lines.css';
+
+const labels = [
+  { id: 'local-equation', tex: String.raw`\Delta u+k^{2}p\,u=0` },
+  { id: 'wedge-lower', tex: String.raw`c\sqrt\lambda` },
+  { id: 'wedge-upper', tex: String.raw`C\sqrt\lambda` },
+  { id: 'growth-bound', tex: String.raw`Cs(1+E)` },
+  { id: 'neighbourhoods', tex: String.raw`\mathcal W_1\supset\mathcal W_2\supset\mathcal W_3` },
+  { id: 'neighbourhoods-compact', tex: String.raw`\mathcal W_k:\ \text{RATIO}>A_k\quad\mathcal W_1\supset\mathcal W_2\supset\mathcal W_3` },
+  { id: 'metric-limit', tex: String.raw`g_\infty` },
+];
+
+const mode = { m: 3, n: 5, sign: 1 } as const satisfies Mode;
+
+const contour = computeContour(mode);
+
+const reference = referenceFor(mode, contour);
+
+const references = DRAWN_MODES.map((drawnMode) => referenceFor(drawnMode));
+
+const isSelected = (drawnMode: Mode) => drawnMode.m === mode.m && drawnMode.n === mode.n && drawnMode.sign === mode.sign;
+
+const cells = Array.from(reference.growth, (E, index) => ({
+  x: Math.floor(index / reference.q),
+  y: index % reference.q,
+  high: E > reference.growthMean + 1,
+  opacity: [.03, .07, .12, .18, .26][Math.min(4, Math.floor((E - reference.growthMin) / (reference.growthMax - reference.growthMin) * 5))] ?? .03,
+}));
+
+const highSquares = cells.reduce((count, cell) => count + Number(cell.high), 0);
+
+const contourPaths: string[] = [];
+
+for (const path of contour.paths) {
+  const commands: string[] = [];
+
+  for (let index = 0; index < path.length; index += 2) {
+    const x = path[index];
+    const y = path[index + 1];
+
+    if (x === undefined || y === undefined) throw new Error('A contour path has paired coordinates.');
+
+    commands.push(`${index === 0 ? 'M' : 'L'}${(25 + x * 430).toFixed(3)} ${(58 + (1 - y) * 430).toFixed(3)}`);
+  }
+
+  contourPaths.push(commands.join(''));
+}
+
+const chartX = (k: number) => 52 + k / 32 * 435;
+
+const chartY = (E: number) => 208 - E / 4 * 130;
+
+const meanPath = references.map((row, index) => `${index === 0 ? 'M' : 'L'}${chartX(row.k)} ${chartY(row.growthMean)}`).join('');
+
+const maxPath = references.map((row, index) => `${index === 0 ? 'M' : 'L'}${chartX(row.k)} ${chartY(row.growthMax)}`).join('');
+---
+
+<Plate
+  caption="Sand on a square plate settles on the silent lines of six rising notes, and their lengths and those of 230 modes fill a wedge between two lines through the origin. The plate, cut into squares and shaded by growth, shows the bounded average at the heart of the surface proof. The counterexamples in dimensions three to five are sketched."
+  leftOut="the Carleman estimate under tilts; the affine correction, descent and excursions of Sections 2 to 5 beyond the target; Roy-Fortin's theorem with a potential of no fixed sign; the complex-phase quasimodes, sign functional and every exactification step; the 1978–2018 upper bounds outside surfaces, Hardt–Simon's exponential and Logunov's polynomial; the work of Enciso, Peralta-Salas and others on prescribed topology; quantum chaos and acoustics; real plates' fourth-order bending equation. The film draws Laplace modes. The β offset, counterexample drawings, nested neighbourhoods and ε₀ size are schematic."
+>
+  <uruk-silent-lines class="film-host">
+    <div class="slfilm">
+      <div class="slfilm-stage" data-film-viewport>
+        <canvas class="slfilm-canvas" data-film-canvas role="img" aria-label="The same grains move to the silent lines of six Laplace modes on one square plate. Computed line lengths form a wedge, and a growth grid compares bounded means with larger individual squares. Higher-dimensional counterexamples and a single limiting metric are schematic. The OpenAI claims are unreviewed. A full text transcript follows."></canvas>
+        <div class="slfilm-still" aria-hidden="true">
+          <div class="slfilm-still-plate">
+            <svg viewBox="0 0 480 520" role="presentation">
+              <text x="240" y="22" text-anchor="middle" font-size="22">GROWTH GRID · MODE (3, 5, +)</text>
+              <text x="240" y="45" text-anchor="middle" font-size="19">{highSquares} SQUARES ABOVE MEAN + 1</text>
+              {cells.map((cell) => <rect x={25 + cell.x * 430 / reference.q} y={58 + (reference.q - 1 - cell.y) * 430 / reference.q} width={430 / reference.q} height={430 / reference.q} fill="var(--ink)" fill-opacity={cell.opacity} />)}
+              {Array.from({ length: reference.q + 1 }, (_, index) => <path d={`M${25 + index * 430 / reference.q} 58V488M25 ${58 + index * 430 / reference.q}H455`} fill="none" stroke="var(--muted)" stroke-width=".45" stroke-opacity=".5" />)}
+              {contourPaths.map((path) => <path d={path} fill="none" stroke="var(--ink)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" />)}
+              {cells.map((cell) => cell.high && <rect x={25 + cell.x * 430 / reference.q} y={58 + (reference.q - 1 - cell.y) * 430 / reference.q} width={430 / reference.q} height={430 / reference.q} fill="none" stroke="var(--ink)" stroke-width="1.7" />)}
+              <rect x="25" y="58" width="430" height="430" fill="none" stroke="var(--ink)" stroke-width="1.3" />
+              <text x="240" y="515" text-anchor="middle" font-size="22">MEAN {reference.growthMean.toFixed(3)} · MAX {reference.growthMax.toFixed(3)}</text>
+            </svg>
+          </div>
+          <div class="slfilm-still-chart">
+            <svg viewBox="0 0 520 270" role="presentation">
+              <text x="260" y="24" text-anchor="middle" font-size="24">MEAN AND MAXIMUM GROWTH</text>
+              <circle cx="80" cy="49" r="5" fill="var(--ink)" /><text x="99" y="57" font-size="22">MEAN</text>
+              <path d="M275 43L281 49L275 55L269 49Z" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5" /><text x="294" y="57" font-size="22">MAXIMUM</text>
+              <path d="M52 78V208H487M52 143H487" fill="none" stroke="var(--muted)" stroke-width="1" />
+              <path d={meanPath} fill="none" stroke="var(--ink)" stroke-width="1.7" />
+              <path d={maxPath} fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="6 5" />
+              {references.map((row) => <g><circle cx={chartX(row.k)} cy={chartY(row.growthMean)} r={isSelected(row.mode) ? 6 : 4.3} fill="var(--ink)" /><path d={`M${chartX(row.k)} ${chartY(row.growthMax) - 5.5}l5.5 5.5l-5.5 5.5l-5.5-5.5Z`} fill="var(--paper)" stroke="var(--ink)" stroke-width={isSelected(row.mode) ? 2 : 1.5} /></g>)}
+              {[0, 2, 4].map((E) => <text x="38" y={chartY(E) + 7} text-anchor="end" font-size="22">{E}</text>)}
+              {[0, 10, 20, 30].map((k) => <text x={chartX(k)} y="235" text-anchor="middle" font-size="22">{k}</text>)}
+              <text x="269" y="267" text-anchor="middle" font-size="23">FREQUENCY k = √λ</text>
+            </svg>
+          </div>
+        </div>
+        <div class="slfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => <span class="slfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <FilmSubtitles cues={CUES} />
+      <p class="slfilm-fallback-note">The fixed plate and growth chart are shown. Read the transcript for the full film.</p>
+    </div>
+    <FilmControls id="slfilm-timeline" timeline={TIMELINE} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The drawing uses the specified Laplace modes on the unit square, with zero normal derivative at each edge. For a pair, u is cos(mπx)cos(nπy) plus or minus its transpose; its eigenvalue is π²(m² + n²). Product modes are also included in the scatter. The model identifies the silent lines of these Laplace functions. The mechanical bending equation of a real plate is left out, and the article's Chladni wording is preserved.</p>
+      <p class="film-method">Even reflection across the square's edges gives the same mode on the flat torus of side two. Its nodal length is four times the square's, so the folded plate illustrates a closed analytic surface. The fixed metric does not change when the note changes. This flat example belongs to the case known since 1988; its numerical plots do not verify the claimed theorem for every smooth surface.</p>
+      <p class="film-method">The numerical worker computes the connected contours and seven grain-transport passes. There are 2,400 persistent grain identities, with a fixed subset shown on phones. Seeded grains move down the squared mode's gradient and finish snapped onto the computed contour. At each note change the same identities move again. This transport is an explanatory animation rather than a simulation of sand mechanics. The contour computation and the fallback still are independent of the moving grain display.</p>
+      <p class="film-method">The six drawn contours use the reference's offset marching-square grid with 801 cells per side; the scatter pairs use 201. Product modes and simple diagonal modes have analytic contours. Other lengths are numerical approximations, not exact lengths: the reference's product validation has a worst error about 0.14 percent. Midpoint inclusion near the plate boundary gives small edge errors. The shipped scatter contains 230 full-precision rows. Its minimum length-to-frequency ratio is exactly 1/π on one-frequency product modes; the upper data slope, about 0.4856, comes from the (1, 3, −) pair and is not replaced by the product-mode value √2/π.</p>
+      <p class="film-method">The feature computes all six growth grids; only the scatter rows are shipped. Growth uses unnormalized L² norms on disks with radii s and 4s, with s = 1/ceil(k). Dividing each integral by its disk area would give a different quantity. The computation uses a 48-by-96 polar midpoint quadrature, and disks extending beyond the plate use its reflected mode. Grid indices start at the bottom left and are stored x-first. Thus (4, 9) is the fifth square across and tenth up. The selected high and low squares are fixed as directed because reflection symmetries can produce several numerically equal extrema.</p>
+      <p class="film-method">For mode (3, 5, +), the grid has 361 squares. Growth runs from about 0.735 to 3.263, with mean about 1.600, and nine squares exceed the mean by more than one. The observed local bound 0.47·s(1 + E) and its summed value about 23.2 belong to this one computed mode; 0.47 is not the theorem's universal constant. The actual total length is about 6.829. The six-mode mean/max chart illustrates bounded average growth while individual squares grow more. The proof's depth-independent mean bound is not established by this finite sample.</p>
+      <p class="film-method">The corrugated circle, folded nodal surfaces and metric neighbourhoods are schematic. The circle represents the three-sphere, not a computed two-dimensional counterexample. The nested witness neighbourhoods close on one perturbed metric inside the prescribed neighbourhood of round. They exclude the round reference dot, whose analytic nodal ratio is bounded. The same limiting metric retains all the large-ratio witnesses; the picture does not choose a new unrelated metric for every eigenvalue. The four-dimensional construction is separately on S² × T². The five-dimensional power example is on S⁴ × S¹, with a fixed positive ε₀. The sizes of β and ε₀ are schematic. The three- and four-dimensional claims assert an unbounded ratio, with no fixed power excess.</p>
+      <p class="film-method">The independent reference is 350-checks/nodal.py. The film omits the Carleman, descent, packing and exactification arguments and does not verify any claimed proof. Review statements follow the article's dated evidence. SmoothYau and YauCounterexample are catalogued comparator statements; NodalLength for the positive surface theorem is linked but not catalogued. Lean statements and kernel checks are not counted as independent human approval.</p>
+    </FilmTranscript>
+  </uruk-silent-lines>
+</Plate>
+
+<script>
+  import './element';
+</script>

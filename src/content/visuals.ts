@@ -24,6 +24,7 @@ export const visualCatalog = [
   { key: 'thorp-cube', component: './thorp-cube/ThorpCube.astro' },
   { key: 'glued-clusters', component: './glued-clusters/GluedClusters.astro' },
   { key: 'smallest-triangles', component: './smallest-triangles/SmallestTriangles.astro' },
+  { key: 'silent-lines', component: './silent-lines/SilentLines.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

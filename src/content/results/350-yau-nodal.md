@@ -10,6 +10,7 @@ papers:
   - preprints/Sharp-nodal-length-on-smooth-surfaces-September-23-2026/paper.pdf
   - preprints/Smooth-counterexamples-to-Yaus-nodal-upper-bound-in-dimensions-three-and-four-September-23-2026/paper.pdf
 draft: false
+visual: silent-lines
 ---
 
 Sprinkle sand on a metal plate and bow its edge: the sand collects along the lines where the plate does not move. Ernst Chladni showed these figures to Napoleon in 1809, and they are the nodal sets of the plate's vibration modes, the zero sets of eigenfunctions of the Laplacian. Higher notes give finer patterns. In 1982 Shing-Tung Yau conjectured the rule: on any closed surface, or any closed manifold of dimension $n$, the nodal set of the mode with eigenvalue $\lambda$ has $(n-1)$-dimensional size between $c\sqrt\lambda$ and $C\sqrt\lambda$, with constants depending only on the shape. Donnelly and Fefferman proved it in 1988 when the shape is real-analytic. For merely smooth shapes the lower bound was proved by Alexander Logunov in 2018, together with a polynomial upper bound, in work for which he and Eugenia Malinnikova received a Clay Research Award; on surfaces the two of them pushed the upper bound to $\lambda^{3/4-\beta}$, still short of $\sqrt\lambda$. On 23 September 2026 OpenAI posted three papers with a split verdict: the sharp upper bound holds on every smooth surface, and it is false in dimensions three, four and five. [1][2][3][4][5]
