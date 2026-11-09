@@ -22,6 +22,7 @@ export const visualCatalog = [
   { key: 'caustic-collar', component: './caustic-collar/CausticCollar.astro' },
   { key: 'barker-echoes', component: './barker-echoes/BarkerEchoes.astro' },
   { key: 'thorp-cube', component: './thorp-cube/ThorpCube.astro' },
+  { key: 'glued-clusters', component: './glued-clusters/GluedClusters.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

@@ -1,0 +1,131 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { SAMPLE_SIDE, SAMPLE_SPANNING } from './data';
+import { gridPoint, interiorFence, sampleAt, type Point } from './math';
+import { CUES, TIMELINE } from './story';
+import './glued-clusters.css';
+
+const labels = [
+  { id: 'pc', tex: String.raw`p_c=\tfrac12` },
+  { id: 'below-critical', tex: String.raw`q<p_c\quad\text{SCHEMATIC}` },
+  { id: 'gluing', tex: String.raw`\begin{aligned}&\mathbb P(o\leftrightarrow A,\ o\leftrightarrow T)\\&\ge\mathbb P(o\leftrightarrow A)\,\min_{a\in A}\mathbb P(a\leftrightarrow T)\end{aligned}` },
+];
+
+const sample = sampleAt(.5);
+
+const fence = interiorFence(.5);
+
+const fencedVertices = new Set(fence.members);
+
+function stillPoint(point: Point): Point {
+  return { x: 14 + point.x * 452 / 31, y: 54 + (31 - point.y) * 452 / 31 };
+}
+
+const openSegments: string[] = [];
+
+const fencedSegments: string[] = [];
+
+for (const [index, [a, b]] of sample.edges.entries()) {
+  if (!sample.open[index]) continue;
+
+  const from = stillPoint(gridPoint(a));
+  const to = stillPoint(gridPoint(b));
+  const segment = `M${from.x} ${from.y}L${to.x} ${to.y}`;
+  openSegments.push(segment);
+
+  if (fencedVertices.has(a) && fencedVertices.has(b)) fencedSegments.push(segment);
+}
+
+const points = Array.from({ length: SAMPLE_SIDE ** 2 }, (_, vertex) => stillPoint(gridPoint(vertex)));
+
+const loopPath = fence.orderedLoop.map((point, index) => {
+  const position = stillPoint(point);
+
+  return `${index === 0 ? 'M' : 'L'}${position.x} ${position.y}`;
+}).join('') + 'Z';
+
+const centre = stillPoint(gridPoint(fence.centre));
+---
+
+<Plate
+  caption="One random square grid swept through p, a planar loop of missing links around a cluster at the threshold, what was known by dimension and by graph, the claim of no infinite cluster at criticality, the finite inequality computed exactly on a small grid, and the continuity argument."
+  leftOut="site percolation's definition beyond the ledger tag; the Aizenman–Kesten–Newman uniqueness theorem; the lace expansion; Grimmett–Marstrand slabs and Duminil-Copin–Sidoravicius–Tassion; the conditional form of the inequality under revealed bits; the thirteen moves in detail; the intermediate-growth bisection, its C/√s bound and entropy; the Tessera–Tointon structure theorem; Blanc-Renaudie's notes; family 214. The three-dimensional bypass, contradiction threads and coarse-cube exploration are schematic."
+>
+  <uruk-glued-clusters class="film-host">
+    <div class="gcfilm">
+      <div class="gcfilm-stage" data-film-viewport>
+        <canvas class="gcfilm-canvas" data-film-canvas role="img" aria-label="One fixed random square-grid sample changes as p moves. A closed dual loop fences a finite cluster at one half. Exact finite-event curves explain a gluing inequality and continuity; schematic threads and cubes outline a claimed contradiction. Hatched ink marks the separate Anthropic lattice proof, while dashed blue marks the unreviewed OpenAI claims. A full text transcript follows."></canvas>
+        <div class="gcfilm-still" aria-hidden="true">
+          <div class="gcfilm-still-grid">
+            <svg viewBox="0 0 480 560" role="presentation">
+              <text x="240" y="20" text-anchor="middle" font-size="21">ONE FIXED SAMPLE · p = ½</text>
+              <text x="240" y="42" text-anchor="middle" font-size="18">32 × 32 POINTS · BOND PERCOLATION</text>
+              <path d={openSegments.join('')} fill="none" stroke="var(--ink)" stroke-width=".9" stroke-opacity=".38" />
+              {points.map((point) => <circle cx={point.x} cy={point.y} r=".7" fill="var(--ink)" />)}
+              <path d={fencedSegments.join('')} fill="none" stroke="var(--ink)" stroke-width="2.7" />
+              <path d={loopPath} fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linejoin="round" />
+              <circle cx={centre.x} cy={centre.y} r="4.8" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5" />
+              <text x="240" y="533" text-anchor="middle" font-size="19">37 POINTS · 34 MISSING LINKS IN THE LOOP</text>
+              <text x="240" y="557" text-anchor="middle" font-size="18">A FINITE BOX CANNOT SHOW INFINITY</text>
+            </svg>
+          </div>
+          <div class="gcfilm-still-notes">
+            <svg viewBox="0 0 360 360" role="presentation">
+              <text x="180" y="63" text-anchor="middle" font-size="19">THE LOOP IS A FENCE</text>
+              <text x="180" y="99" text-anchor="middle" font-size="17">Each segment crosses</text>
+              <text x="180" y="123" text-anchor="middle" font-size="17">a missing link.</text>
+              <text x="180" y="176" text-anchor="middle" font-size="17">Every route out of this</text>
+              <text x="180" y="200" text-anchor="middle" font-size="17">37-point cluster must</text>
+              <text x="180" y="224" text-anchor="middle" font-size="17">cross the closed loop.</text>
+              <text x="180" y="282" text-anchor="middle" font-size="17">This sample illustrates</text>
+              <text x="180" y="306" text-anchor="middle" font-size="17">the planar obstruction.</text>
+              <text x="180" y="330" text-anchor="middle" font-size="17">It does not prove the theorem.</text>
+            </svg>
+          </div>
+          <div class="gcfilm-still-ledger">
+            <svg viewBox="0 0 960 260" role="presentation">
+              <path d="M54 32H906M54 24V43M480 21V47M906 24V43" fill="none" stroke="var(--ink)" stroke-width="2" />
+              <circle cx="480" cy="32" r="7" fill="var(--paper)" stroke="var(--ink)" stroke-width="2" />
+              <text x="15" y="43" font-size="40">p</text>
+              <text x="54" y="86" text-anchor="middle" font-size="36">0</text>
+              <text x="480" y="86" text-anchor="middle" font-size="36">½</text>
+              <text x="906" y="86" text-anchor="middle" font-size="36">1</text>
+              <text x="480" y="133" text-anchor="middle" font-size="34">DIMENSIONS · CLASSICAL RESULTS</text>
+              <path d="M54 154H906M338 154V247M622 154V247" fill="none" stroke="var(--muted)" stroke-width="1.5" />
+              <text x="196" y="192" text-anchor="middle" font-size="38">2</text>
+              <text x="480" y="192" text-anchor="middle" font-size="38">3 TO 10</text>
+              <text x="764" y="192" text-anchor="middle" font-size="38">11+</text>
+              <text x="196" y="238" text-anchor="middle" font-size="34">1960, 1980</text>
+              <text x="480" y="238" text-anchor="middle" font-size="38">?</text>
+              <text x="764" y="238" text-anchor="middle" font-size="34">2017</text>
+            </svg>
+          </div>
+        </div>
+        <div class="gcfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => <span class="gcfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="gcfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The picture is a finite window of 32 by 32 points, with 1,984 possible links. It uses the actual NumPy default_rng(213) stream from the reference script, shipped as fixed numbers. Edges are ordered from the bottom row upwards, taking each point's right edge before its up edge. A link is kept exactly when its fixed number is strictly below p. Moving p reuses those same numbers rather than drawing another sample. Breadth-first search recomputes every connected component at the displayed p; heavy ink marks the selected cluster.</p>
+      <p class="film-method">The first top-to-bottom crossing appears immediately above its stored pivotal weight, {SAMPLE_SPANNING.vertical.toFixed(6)} when rounded, and the first side-to-side crossing above {SAMPLE_SPANNING.horizontal.toFixed(6)}. The first listed sample that spans is p = 0.55; it is not the exact onset. At p = 0.5 the largest cluster has 278 points. The fenced cluster is a different one: the largest component strictly inside the box, with 37 points. Its selected vertex is (21, 17). The outer boundary crosses 34 closed edges and forms one closed dual loop. A topological flood through the complement discards holes when finding that outer boundary.</p>
+      <p class="film-method">Neither a large cluster nor a crossing of this finite box demonstrates an infinite cluster. The exact threshold one half belongs to square-grid bond percolation. The cited interval 0.2485 to 0.2490 concerns the cubic bond threshold and is not calculated by the sample. The cubic site's critical parameter is different. The three-dimensional bypass drawing goes around an open sheet with an edge; it does not suggest that a closed enclosing surface can be bypassed simply because space is three-dimensional.</p>
+      <p class="film-method">The finite inequality uses a four-by-three grid with 17 links, the start o at (0, 1), relays A at (2, 0) and (2, 2), and target T at (3, 1). All 131,072 edge configurations are enumerated independently of the large sample. A connection to A means a connection to at least one relay. The left event asks that o reaches both A and T. It does not require the path to T to pass through a relay as a waypoint. The right curve multiplies the probability of reaching A by the smaller of the two separate relay-to-target probabilities. The curves and readouts are exact finite probabilities, rounded for display.</p>
+      <p class="film-method">For each finite event, the data counts configurations with k open edges. Its probability is the sum of Nₖ pᵏ(1 − p)^(17 − k). The multiplicities are already included in Nₖ, so no additional binomial coefficient is used. The left-to-right crossing probability of that small box equals one half at p = one half. Its values at 0.49 and 0.48 illustrate continuity of a finite event. That small example is not the proof's assumed high-probability large-box event.</p>
+      <p class="film-method">The contradiction threads, seed boxes, quarter-faces and coarse-cube exploration are schematic. Twenty-four is the cited number of quarter-faces, four on each cube face. The coarse cubes are indexed by a plane. Their successes are not depicted as independent Bernoulli trials: the proof controls conditional chances during an exploration. The square-grid, cubic-grid and three-regular-tree ball counts are exact. They illustrate three growth behaviours; the finite-radius curves do not prove the general growth classification or its gluing argument.</p>
+      <p class="film-method">Hatched ink marks Justin Leder's separate Anthropic formal proof for lattice bond percolation in dimensions at least two. Dashed blue marks the OpenAI claims: bond percolation on infinite, connected, locally finite, quasi-transitive graphs with critical probability below one, and the companion's cubic bond and site statements at their respective thresholds. The attribution and scope remain separate. The reported expert reaction did not report a check of either OpenAI paper.</p>
+      <p class="film-method">The independent reference is 213-checks/percolation.py. The film does not verify either claimed proof. Review statements follow the article's dated evidence. OpenAI's two comparator statements are each 63 lines; the cubic one is catalogued, while the general one is linked through the scope note. Lean statements and kernel checks are not counted as independent human approval.</p>
+    </FilmTranscript>
+  </uruk-glued-clusters>
+</Plate>
+
+<script>
+  import './element';
+</script>

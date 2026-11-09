@@ -10,6 +10,7 @@ papers:
   - preprints/No-percolation-at-criticality-on-quasi-transitive-graphs-September-24-2026/paper.pdf
   - preprints/Critical-bond-and-site-percolation-on-the-cubic-lattice-September-24-2026/paper.pdf
 draft: false
+visual: glued-clusters
 ---
 
 Build an endless grid of points. For each link between neighbouring points, toss a biased coin: keep the link with probability $p$, delete it otherwise. When $p$ is small, every connected piece of what survives is finite. When $p$ is large, one piece runs off to infinity. In between sits a sharp tipping point, the critical probability. The question this family answers is what happens exactly there. Does an infinite piece already exist at the threshold, or does it appear only once the threshold is passed? Benjamini, Lyons, Peres and Schramm called this "the main long-standing open question in percolation theory". It had been answered for flat grids in 1980 and for grids of eleven or more dimensions in 2017, and for nothing in between, including the three-dimensional grid that models real materials. [3]
