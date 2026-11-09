@@ -10,6 +10,7 @@ papers:
   - preprints/The-periodic-spin-one-Haldane-gap-September-24-2026/paper.pdf
   - preprints/A-boundary-field-gap-for-the-spin-one-Heisenberg-chain-September-24-2026/paper.pdf
 draft: false
+visual: gap-ladder
 ---
 
 Line up quantum spins in a ring and let each one prefer to point opposite to its neighbours. For spin one half, the lowest excitations cost almost nothing on a long chain; the system is gapless, as Lieb, Schultz and Mattis proved in 1961. In 1983 Duncan Haldane predicted, against the intuition of the time, that for spin one, and for every integer spin, the story is different: there is a gap, a minimum excitation energy that does not shrink however long the chain. The prediction was confirmed numerically to five digits, observed by neutron scattering in a nickel compound, and became one of the founding results of topological phases of matter, for which Haldane shared the 2016 Nobel Prize in Physics. Mathematically, Affleck, Kennedy, Lieb and Tasaki proved a gap in 1987, but for a modified chain with an extra biquadratic term; the pure Heisenberg chain, the one Haldane wrote about, resisted every attempt, and in 2025 Hal Tasaki wrote that a rigorous proof seemed far beyond reach. On 24 September 2026 OpenAI posted two papers claiming the gap for the pure spin-one chain, on even rings and on odd open chains with boundary fields, with explicit lower bounds. [1][2][3][4]
