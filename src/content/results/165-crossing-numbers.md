@@ -10,6 +10,7 @@ papers:
   - preprints/The-crossing-number-of-complete-graphs-September-23-2026/paper.pdf
   - preprints/The-crossing-number-of-complete-bipartite-graphs-September-23-2026/paper.pdf
 draft: false
+visual: fewest-crossings
 ---
 
 In 1944 Pál Turán was doing forced labour in a brick factory near Budapest. Bricks were moved on rail trucks from kilns to storage yards, every kiln was connected to every yard, and wherever two rails crossed the trucks jumped and bricks fell. He asked how the rails could be laid to minimize the crossings. That is the crossing number of the complete bipartite graph: $m$ kilns, $n$ yards, every kiln joined to every yard, drawn in the plane with as few crossings as possible. Zarankiewicz published a drawing and a formula in 1955 and claimed it was optimal, but his proof had a gap, and the formula became a conjecture. Harary and Hill asked the matching question for the complete graph, every dot joined to every other, in 1963, with a formula from Hill's drawings. Both formulas have been checked for small cases and believed for sixty years. On 23 September 2026 OpenAI posted two short papers, thirteen and sixteen pages, claiming to prove both. [1][2][4]

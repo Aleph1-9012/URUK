@@ -20,6 +20,7 @@ import UnitRuler from './unit-ruler/UnitRuler.astro';
 import UnitLinks from './unit-links/UnitLinks.astro';
 import FactorTwo from './factor-two/FactorTwo.astro';
 import MoatWalk from './moat-walk/MoatWalk.astro';
+import FewestCrossings from './fewest-crossings/FewestCrossings.astro';
 
 interface Props {
   visual: VisualKey;
@@ -45,6 +46,7 @@ const plates = {
   'unit-links': UnitLinks,
   'factor-two': FactorTwo,
   'moat-walk': MoatWalk,
+  'fewest-crossings': FewestCrossings,
 } satisfies Record<VisualKey, typeof PrimeWaves>;
 
 const Visual = plates[Astro.props.visual];

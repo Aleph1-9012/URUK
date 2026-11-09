@@ -1,4 +1,4 @@
 // Each key names one Plate I visual; a result's front matter picks one with `visual:`.
-export const visualKeys = ['zero-free-strip', 'fraction-nets', 'catalan-bounds', 'standard-map', 'unit-ruler', 'thompson-bands', 'switch-groups', 'fraction-rulers', 'unique-rules', 'grid-products', 'curve-budget', 'boundary-sphere', 'fair-average', 'five-colours', 'trapped-waves', 'gap-ladder', 'unit-links', 'factor-two', 'moat-walk'] as const;
+export const visualKeys = ['zero-free-strip', 'fraction-nets', 'catalan-bounds', 'standard-map', 'unit-ruler', 'thompson-bands', 'switch-groups', 'fraction-rulers', 'unique-rules', 'grid-products', 'curve-budget', 'boundary-sphere', 'fair-average', 'five-colours', 'trapped-waves', 'gap-ladder', 'unit-links', 'factor-two', 'moat-walk', 'fewest-crossings'] as const;
 
 export type VisualKey = (typeof visualKeys)[number];
