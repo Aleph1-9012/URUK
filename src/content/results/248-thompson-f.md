@@ -9,6 +9,7 @@ checked: 2026-10-18
 link: https://arxiv.org/abs/2610.18360
 papers:
   - preprints/Thompsons-group-F-is-nonamenable-September-23-2026/paper.pdf
+visual: fair-average
 draft: false
 ---
 

@@ -1,0 +1,132 @@
+---
+import Plate from '../../plate/Plate.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { MAPS, mapValue } from './math';
+import { CUES, FILM_DURATION, formatTime } from './story';
+import './fair-average.css';
+
+const formula = (tex: string) => renderFormula(tex, false);
+
+const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+function subtitle(text: string): string {
+  const pieces = text.split('$');
+
+  return pieces.map((piece, index) => {
+    if (index % 2 === 0) return escape(index > 0 ? piece.replace(/^\S+/, '') : piece);
+
+    const attached = /^\S+/.exec(pieces[index + 1] ?? '')?.[0] ?? '';
+
+    return `<span class="afilm-phrase">${formula(piece)}${escape(attached)}</span>`;
+  }).join('');
+}
+
+const floorFormula = String.raw`\frac{\delta^2/L^2-4/D}{4(1-1/D)}>0`;
+
+const labels = [
+  { id: 'x0', tex: 'x_0', blue: false },
+  { id: 'x1', tex: 'x_1', blue: false },
+  { id: 'inverse', tex: 'x_0^{-1}', blue: false },
+  { id: 'share', tex: String.raw`\frac{\lvert hA\,\triangle\,A\rvert}{\lvert A\rvert}`, blue: false },
+  { id: 'colors', tex: 'X_i=f(z_i)', blue: false },
+  { id: 'mean', tex: String.raw`m=\frac1D\sum_iX_i`, blue: true },
+  { id: 'floor', tex: floorFormula, blue: true },
+  { id: 'tower', tex: String.raw`2^{2^{2^{\cdot^{\cdot^{\cdot}}}}}`, blue: false },
+];
+
+const graphX = (x: number) => 35 + x * 230;
+
+const graphY = (y: number) => 260 - y * 230;
+
+const graphPath = MAPS.x0.map((point, index) => `${index === 0 ? 'M' : 'L'}${graphX(point.x)} ${graphY(point.y)}`).join('');
+
+const marks = Array.from({ length: 17 }, (_, index) => index / 16);
+
+const shareX = (share: number) => 35 + share / 1.2 * 230;
+---
+
+<Plate
+  caption="Thompson's maps as graphs, what a fair average would mean, why the question stayed open for fifty years, and how the approved proof shows that every finite set of F is moved by a definite share."
+  leftOut="the Banach–Tarski construction; the appendix's curve, tube and Lipschitz constants; admissible levels; the detailed correlation and variance calculations; Kim and Lodha's extensive amenability argument and Theorem 2.7; the groups T and V; the related work of Olshanskii–Sapir and Haagerup–Olesen; Moore's Ramsey reformulation; the Lean statement. The proof drawings are schematic."
+>
+  <uruk-fair-average>
+    <div class="afilm">
+      <div class="afilm-stage" data-film-viewport>
+        <canvas class="afilm-canvas" data-film-canvas role="img" aria-label="A film of Thompson's interval maps, the share of a finite set changed by a move, and the approved nonamenability proof using averages and fixed points. A complete text transcript follows."></canvas>
+        <div class="afilm-still" aria-hidden="true">
+          <div class="afilm-still-square">
+            <svg viewBox="0 0 300 330" role="presentation">
+              <text x="150" y="15" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="10">THOMPSON'S MAP x₀</text>
+              <rect x="35" y="30" width="230" height="230" fill="none" stroke="var(--muted)" stroke-width=".7" />
+              <line x1="35" y1="260" x2="265" y2="30" stroke="var(--muted)" stroke-opacity=".35" stroke-dasharray="3 3" />
+              <path d={graphPath} fill="none" stroke="var(--ink)" stroke-width="1.6" />
+              {MAPS.x0.map((point) => <circle cx={graphX(point.x)} cy={graphY(point.y)} r="3" fill="var(--paper)" stroke="var(--ink)" />)}
+              {[0, .5, 1].map((value) => <text x={graphX(value)} y="275" text-anchor="middle" fill="var(--muted)" font-family="var(--font-alegreya)" font-size="11">{value}</text>)}
+              <text x="82" y="212" text-anchor="middle" fill="var(--ink)" font-family="var(--font-alegreya)" font-size="15">slope 1/2</text>
+              <text x="197" y="183" text-anchor="middle" fill="var(--ink)" font-family="var(--font-alegreya)" font-size="15">1</text>
+              <text x="257" y="103" text-anchor="middle" fill="var(--ink)" font-family="var(--font-alegreya)" font-size="15">2</text>
+              <line x1="35" y1="292" x2="265" y2="292" stroke="var(--muted)" />
+              <line x1="35" y1="315" x2="265" y2="315" stroke="var(--muted)" />
+              {marks.map((value) => <line x1={graphX(value)} y1="292" x2={graphX(mapValue(MAPS.x0, value))} y2="315" stroke="var(--ink)" stroke-width=".6" />)}
+            </svg>
+          </div>
+          <div class="afilm-still-gauge">
+            <svg viewBox="0 0 300 245" role="presentation">
+              <text x="150" y="15" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="10">SHARE THAT CHANGES</text>
+              <text x="150" y="29" text-anchor="middle" fill="var(--ink)" font-family="var(--font-special-elite)" font-size="10">WHEN THE SET IS MOVED</text>
+              <text x="35" y="62" fill="var(--ink)" font-family="var(--font-alegreya)" font-size="13">Whole numbers: toward 0</text>
+              <line x1="35" y1="79" x2="265" y2="79" stroke="var(--muted)" />
+              <line x1={shareX(.4)} y1="79" x2={shareX(.05)} y2="79" stroke="var(--blue)" stroke-width="2" />
+              <circle cx={shareX(.05)} cy="79" r="3.5" fill="var(--blue)" />
+              <text x="35" y="116" fill="var(--ink)" font-family="var(--font-alegreya)" font-size="13">Free group: stays near 1</text>
+              <line x1="35" y1="133" x2="265" y2="133" stroke="var(--muted)" />
+              <circle cx={shareX(18 / 17)} cy="133" r="3.5" fill="var(--blue)" />
+              <text x="35" y="170" fill="var(--ink)" font-family="var(--font-alegreya)" font-size="13">F: a positive floor for some move</text>
+              <line x1="35" y1="187" x2="265" y2="187" stroke="var(--muted)" />
+              <line x1={shareX(.16)} y1="178" x2={shareX(.16)} y2="196" stroke="var(--blue)" stroke-width="2" />
+              <line x1={shareX(.16)} y1="187" x2="265" y2="187" stroke="var(--blue)" stroke-width="2" stroke-dasharray="3 3" />
+              {[0, 1, 1.2].map((value) => <text x={shareX(value)} y="213" text-anchor="middle" fill="var(--muted)" font-family="var(--font-alegreya)" font-size="11">{value}</text>)}
+              <text x="150" y="238" text-anchor="middle" fill="var(--blue)" font-family="var(--font-special-elite)" font-size="10">FLOOR HEIGHT IS SCHEMATIC</text>
+            </svg>
+            <div class="afilm-still-floor" set:html={formula(floorFormula)} />
+            <p class="afilm-still-note">δ = 1/2; choose D &gt; 16L². The film does not assign L.</p>
+          </div>
+        </div>
+        <div class="afilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map((label) => <span class:list={['afilm-label', 'afilm-label--small', { 'afilm-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}
+          <span class="afilm-label afilm-status" data-label="status"><span>APPROVED</span></span>
+        </div>
+      </div>
+      <div class="afilm-subtitles" aria-hidden="true">
+        {CUES.map((cue, index) => <p class:list={['afilm-cue', { 'is-active': index === 0 }]} data-cue={index}><span set:html={subtitle(cue.text)} /><span class="afilm-citations"> {cue.sources.map((source) => `[${source}]`).join('')}</span></p>)}
+      </div>
+    </div>
+    <div class="afilm-controls" data-script-only>
+      <div class="afilm-buttons">
+        <button class="plate-button case-link case-link--tight" type="button" data-play><span data-play-label>Pause</span></button>
+        <p class="afilm-clock"><span data-film-clock>0:00 / {formatTime(FILM_DURATION)}</span></p>
+        <button class="plate-button case-link case-link--tight" type="button" data-film-restart>Restart</button>
+      </div>
+      <label class="visually-hidden" for="afilm-timeline">Film timeline. Arrow keys move one subtitle at a time.</label>
+      <input id="afilm-timeline" class="afilm-timeline" data-film-range type="range" min="0" max={FILM_DURATION} step="100" value="0" />
+      <div class="afilm-steps">
+        <button class="plate-button case-link case-link--tight" type="button" data-film-previous>Previous</button>
+        <p>Step through without motion</p>
+        <button class="plate-button case-link case-link--tight" type="button" data-film-next>Next</button>
+      </div>
+    </div>
+    <p class="visually-hidden" data-film-status aria-live="polite" aria-atomic="true"></p>
+    <details class="afilm-transcript">
+      <summary class="text-link">Read the film as text</summary>
+      <ol>{CUES.map((cue) => <li><h3>{cue.title}</h3><p><span set:html={subtitle(cue.text)} /> {cue.sources.map((source) => <> <a class="citation text-link" href={`#source-${source}`}>[{source}]</a></>)}</p></li>)}</ol>
+      <p class="afilm-method">How the film is made. The interval maps are exact piecewise linear maps with dyadic bends and power-of-two slopes. The transport map carries the two marked intervals affinely to the reference pair. The animated transitions between graphs need not be elements of F, so slope labels appear only on the settled maps. The two interval rulers use the same map values as the graphs.</p>
+      <p class="afilm-method">Moving a run of <span set:html={formula('n')} /> whole numbers changes two elements. A radius-<span set:html={formula('k')} /> ball in the free group has <span set:html={formula(String.raw`2\cdot3^k-1`)} /> elements and changes by <span set:html={formula(String.raw`2\cdot3^k`)} /> under one generator. The plotted ratio can exceed one. These balls illustrate the obstruction; their failure alone is not a proof that every finite set fails Følner's criterion.</p>
+      <p class="afilm-method">The flat-disk example is the continuous map <span set:html={formula('f(z)=0.5iz+0.4')} />, with fixed point <span set:html={formula('0.32+0.16i')} />. It maps the unit disk into the disk of radius 0.9. Brouwer's statement requires continuity. The infinite-dimensional map in the proof is Lipschitz and moves every point by at least one half. The waves illustrate its supply of new directions; they do not construct that map.</p>
+      <p class="afilm-method">The three parent intervals are an exact illustrative layout. The proof uses a much larger <span set:html={formula('D')} />. With <span set:html={formula(String.raw`\delta=\frac12`)} />, its floor becomes positive only for <span set:html={formula('D>16L^2')} />, where <span set:html={formula('L')} /> is the map's Lipschitz constant. The article does not give a numerical value for L, so the floor's height is schematic. The colours, Moore's tower, the faint timeline ticks, and the Banach–Tarski icon are also schematic. Approval follows the article's account of Kim and Lodha's written proof; it does not imply that Moore has announced the consensus he awaits.</p>
+    </details>
+  </uruk-fair-average>
+</Plate>
+
+<script>
+  import './element';
+</script>
