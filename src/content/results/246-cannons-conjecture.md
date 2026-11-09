@@ -10,6 +10,7 @@ link: https://sites.google.com/g.ucla.edu/quasiworld/
 papers:
   - preprints/A-Modulus-Proof-of-Cannons-Conjecture-September-23-2026/paper.pdf
 draft: false
+visual: boundary-sphere
 ---
 
 An infinite finitely generated group can be drawn as an infinite network of moves. Its boundary records the different directions in which a shortest path can escape to infinity. Cannon's conjecture asks whether, for a hyperbolic group, a boundary shaped like a sphere forces the whole group to act as symmetries of hyperbolic three-dimensional space. OpenAI's paper dated 23 September 2026 claims a positive answer. Its argument turns the topology of that distant sphere into a quantitative bound on how paths cross increasingly fine coverings. [1]

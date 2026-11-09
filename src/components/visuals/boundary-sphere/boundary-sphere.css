@@ -1,0 +1,76 @@
+uruk-boundary-sphere { display: block; }
+
+.result-opening:has(uruk-boundary-sphere) {
+  grid-template-columns: minmax(0, 920fr) minmax(0, 368fr);
+  gap: 32px;
+}
+
+.bfilm { border: 1px solid var(--muted); background: var(--paper); }
+.bfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.bfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-boundary-sphere[data-ready] .bfilm-canvas { visibility: visible; }
+.bfilm-formulas { position: absolute; inset: 0; pointer-events: none; }
+.bfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
+.bfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.bfilm-label--blue { color: var(--blue); }
+.bfilm-label--small { font-size: .9375rem; }
+.bfilm-status > span { padding: 5px 8px; border: 1px solid var(--blue); color: var(--blue); font: .6875rem/1.4 var(--font-special-elite); }
+
+.bfilm-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
+.plate .bfilm-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
+.bfilm-cue.is-active { visibility: visible; }
+.bfilm-phrase { white-space: nowrap; }
+.bfilm-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
+
+.bfilm-controls { padding-top: 16px; }
+uruk-boundary-sphere:not([data-ready]) .bfilm-controls { display: none; }
+.bfilm-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.plate .bfilm-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
+.bfilm-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; }
+.bfilm-timeline::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.bfilm-timeline::-moz-range-thumb { width: 22px; height: 22px; border: 0; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; }
+.bfilm-timeline:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.bfilm-steps { display: none; align-items: center; justify-content: space-between; gap: 10px; padding-top: 8px; }
+.plate .bfilm-steps p { margin: 0; color: var(--muted); font: italic .875rem/1.4 var(--font-alegreya); text-align: center; }
+.bfilm-controls button:disabled { opacity: .45; cursor: default; }
+
+.bfilm-transcript { margin-top: 18px; }
+.bfilm-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
+.bfilm-transcript ol { padding-left: 22px; margin-top: 20px; }
+.bfilm-transcript li + li { margin-top: 20px; }
+.plate .bfilm-transcript h3 { margin-bottom: 8px; font: italic 1.25rem/1.35 var(--font-alegreya); }
+.plate .bfilm-transcript p { font: 1rem/1.55 var(--font-alegreya); }
+.plate .bfilm-transcript p + p { margin-top: 8px; }
+.plate .bfilm-method { margin-top: 20px; color: var(--muted); }
+
+
+.bfilm-still { position: absolute; inset: 4% 4%; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 18px; }
+uruk-boundary-sphere[data-ready] .bfilm-still { display: none; }
+.bfilm-still-disk, .bfilm-still-grid { min-width: 0; }
+.bfilm-still svg { display: block; width: 100%; height: auto; }
+.bfilm-energy > span { color: var(--blue); font: .75rem/1.4 var(--font-special-elite); }
+
+@media (max-width: 74.999rem) {
+  .result-opening:has(uruk-boundary-sphere) { grid-template-columns: minmax(0, 1fr); }
+  .result-opening:has(uruk-boundary-sphere) .result-introduction { max-width: 800px; }
+}
+
+@container plate (max-width: 599px) {
+  .bfilm-stage { aspect-ratio: 4 / 5; }
+  .bfilm-subtitles { padding: 12px 14px 16px; }
+  .plate .bfilm-cue { font-size: 1.0625rem; }
+  .bfilm-label { font-size: .9375rem; }
+  .bfilm-label--small { font-size: .8125rem; }
+  .bfilm-still { inset: 2% 5%; grid-template-columns: 1fr; grid-template-rows: 49% 51%; gap: 0; }
+  .bfilm-still-disk, .bfilm-still-grid { height: 100%; }
+  .bfilm-still svg { height: 100%; }
+}
+
+@media (max-width: 47.999rem) {
+  .result-opening:has(uruk-boundary-sphere) .result-introduction > .folio-top__copy { order: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  uruk-boundary-sphere [data-play] { display: none; }
+  .bfilm-steps { display: flex; }
+}
