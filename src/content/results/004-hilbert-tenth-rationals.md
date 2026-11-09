@@ -5,6 +5,7 @@ title: "Can a computer always tell whether an equation has a solution in fractio
 paperTitle: "Hilbert's tenth problem over the rational numbers"
 claim: "There is no algorithm which, given a polynomial with integer coefficients in any number of variables, decides whether it has a zero in the rational numbers."
 status: unreviewed
+visual: fraction-nets
 checked: 2026-10-17
 papers:
   - preprints/Hilberts-tenth-problem-over-the-rational-numbers-October-6-2026/main.pdf

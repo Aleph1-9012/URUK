@@ -1,0 +1,76 @@
+/* 004's Plate I film (v2), from nets of fractions to the claimed answer. The plate takes the wider column; below 75rem it takes the full width above the introduction. */
+uruk-fraction-nets { display: block; }
+.result-opening:has(uruk-fraction-nets) { grid-template-columns: minmax(0, 920fr) minmax(0, 368fr); gap: 32px; }
+
+/* The frame holds the picture and its subtitles, with no rule between them. */
+.fnets { border: 1px solid var(--muted); background: var(--paper); }
+.fnets-screen { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.fnets-canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+[data-ready] .fnets-canvas { opacity: 1; }
+
+.fnets-still { position: absolute; inset: 0; color: var(--ink); }
+.fnets-still svg { display: block; width: 100%; height: 100%; }
+.fnets-still__name { font: italic 24px var(--font-alegreya); fill: var(--ink); }
+.fnets-still__found { font: italic 22px var(--font-alegreya); fill: var(--blue); }
+[data-ready] .fnets-still { display: none; }
+
+/* Formulas pinned to the drawing; the script places each one every frame and keeps it inside the frame while its point is. */
+.fnets-labels { position: absolute; inset: 0; pointer-events: none; }
+.fnets-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1.125rem; line-height: 1.2; white-space: nowrap; }
+.fnets-label > span { display: block; width: max-content; }
+.fnets-label--above > span { transform: translate(-50%, -100%); }
+.fnets-label--right > span { transform: translate(0, -50%); }
+.fnets-label--blue { color: var(--blue); }
+.fnets-label--small { font-size: .9375rem; }
+.fnets-label--halo { text-shadow: 0 0 1px var(--paper), 0 0 2px var(--paper), 0 0 2px var(--paper), 0 0 3px var(--paper), 0 0 4px var(--paper), 0 0 6px var(--paper); }
+
+/* Subtitles, one at a time; every one is laid in the same cell so the frame never changes height. */
+.fnets-subtitles { display: grid; align-items: center; padding: 12px 28px 18px; }
+.fnets-cue { grid-area: 1 / 1; visibility: hidden; max-width: 46rem; margin-inline: auto; text-align: center; text-wrap: balance; }
+.plate .fnets-cue { font: 1.1875rem/1.5 var(--font-alegreya); }
+.fnets-cue.is-active { visibility: visible; }
+.fnets-nowrap { white-space: nowrap; }
+.fnets-cue__sources { color: var(--muted); font-size: .8125em; white-space: nowrap; }
+
+.fnets-controls { padding-block: 16px 4px; }
+uruk-fraction-nets:not([data-ready]) .fnets-controls { display: none; }
+.fnets-control-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.plate .fnets-clock { font: .6875rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
+.fnets-range { appearance: none; display: block; width: 100%; margin: 12px 0 0; height: 32px; background: url('../../../assets/plate/track.png') center / 100% 12px no-repeat; cursor: pointer; }
+.fnets-range::-webkit-slider-thumb { appearance: none; width: 22px; height: 22px; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; border: none; }
+.fnets-range::-moz-range-thumb { width: 22px; height: 22px; background: url('../../../assets/tablet/sign-10.png') center / contain no-repeat; border: none; }
+.fnets-range:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+.fnets-step-controls { display: none; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px 2px; }
+.plate .fnets-step-controls p { font: italic .875rem/1.4 var(--font-alegreya); color: var(--muted); text-align: center; }
+.fnets-controls button:disabled { opacity: .5; cursor: default; }
+
+.fnets-transcript { margin-top: 18px; text-align: left; }
+.fnets-transcript summary { width: fit-content; cursor: pointer; font: .9375rem/1.5 var(--font-alegreya); }
+.fnets-transcript ol { padding-left: 24px; margin-top: 22px; }
+.fnets-transcript li + li { margin-top: 22px; }
+.plate .fnets-transcript h3 { font: italic 1.25rem/1.4 var(--font-alegreya); margin-bottom: 6px; }
+.plate .fnets-transcript p { font: 1rem/1.55 var(--font-alegreya); }
+.plate .fnets-transcript p + p { margin-top: 6px; }
+.plate .fnets-transcript__note { margin-top: 22px; color: var(--muted); font-style: italic; }
+
+@media (max-width: 74.999rem) {
+  .result-opening:has(uruk-fraction-nets) { grid-template-columns: minmax(0, 1fr); }
+  .result-opening:has(uruk-fraction-nets) .result-introduction { max-width: 800px; }
+}
+
+@container plate (max-width: 599px) {
+  .fnets-screen { aspect-ratio: 4 / 5; }
+  .fnets-subtitles { padding: 10px 16px 14px; }
+  .plate .fnets-cue { font-size: 1.0625rem; }
+  .fnets-label { font-size: 1rem; }
+  .fnets-label--small { font-size: .8125rem; }
+}
+
+@media (max-width: 47.999rem) {
+  .result-opening:has(uruk-fraction-nets) .result-introduction > .folio-top__copy { order: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  uruk-fraction-nets [data-play] { display: none; }
+  .fnets-step-controls { display: flex; }
+}
