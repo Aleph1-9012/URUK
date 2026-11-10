@@ -1,0 +1,98 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createCornerModel } from './math';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createCornerModel();
+const dualLabel = renderFormula(String.raw`T:\ \text{one vertex per face}`, false);
+const graph = model.solids.truncated_octahedron;
+const minX = Math.min(...graph.positions.map(point => point.x));
+const maxX = Math.max(...graph.positions.map(point => point.x));
+const minY = Math.min(...graph.positions.map(point => point.y));
+const maxY = Math.max(...graph.positions.map(point => point.y));
+const spanX = maxX - minX;
+const spanY = maxY - minY;
+
+if (!(spanX > 0 && spanY > 0)) throw new Error('The computed Schlegel diagram occupies a plane region.');
+
+const scale = Math.min(410 / spanX, 410 / spanY);
+const left = (500 - spanX * scale) / 2;
+const top = 78 + (410 - spanY * scale) / 2;
+const vertices = graph.positions.map((point, index) => {
+  const color = graph.colors[index];
+
+  if (color !== 0 && color !== 1) throw new Error('Each computed corner has one of its two bipartite classes.');
+
+  return { x: left + (point.x - minX) * scale, y: top + (maxY - point.y) * scale, color };
+});
+const edges = graph.edges.map(([a, b]) => {
+  const first = vertices[a];
+  const second = vertices[b];
+
+  if (!first || !second) throw new Error('Every drawn edge has two computed corners.');
+
+  return { first, second };
+});
+const tourPoints = graph.firstTour.map(vertex => {
+  const point = vertices[vertex];
+
+  if (!point) throw new Error('Every step in the static tour visits a computed corner.');
+
+  return `${point.x},${point.y}`;
+});
+const firstPoint = tourPoints[0];
+const firstVertex = graph.firstTour[0];
+const walker = firstVertex === undefined ? undefined : vertices[firstVertex];
+
+if (!firstPoint || !walker) throw new Error('The static Hamiltonian tour has a starting corner.');
+
+const tourLine = [...tourPoints, firstPoint].join(' ');
+---
+
+<Plate
+  caption="A walker visits every corner of a cube, a hexagonal prism and a truncated octahedron exactly once and comes home. Each tour splits the faces into two trees. The paper claims every polyhedron with three edges at each corner and even faces has such a tour."
+  leftOut="the triangulation drawing itself, with the dual shown instead as face trees; the weighted sum and its states; Euler's count; induction on separating triangles; the Pfaffian strengthening; Feder–Subi and Kardoš. The drawings test the displayed finite graphs and do not verify the claimed general proof."
+>
+  <uruk-corner-tour class="film-host">
+    <div class="ctfilm">
+      <div class="ctfilm-stage" data-film-viewport>
+        <canvas class="ctfilm-canvas" data-film-canvas role="img" aria-label="A walker traces Hamiltonian tours on planar drawings of a cube, a hexagonal prism and a truncated octahedron. Filled and open corners alternate along every edge. Faces on each side of a tour form two dual trees, including the outer face, and further tours avoid selected edges. A blue ring identifies the unreviewed general claim. A full text transcript follows."></canvas>
+        <div class="ctfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 600" role="presentation">
+            <text x="250" y="31" text-anchor="middle" font-size="28">TRUNCATED OCTAHEDRON</text>
+            <text x="250" y="60" text-anchor="middle" font-size="24">PLANAR SCHLEGEL DIAGRAM</text>
+            {edges.map(edge => <line x1={edge.first.x} y1={edge.first.y} x2={edge.second.x} y2={edge.second.y} stroke="var(--ink)" stroke-width="2" opacity=".48" />)}
+            <polyline points={tourLine} fill="none" stroke="var(--ink)" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" />
+            {vertices.map(point => <circle cx={point.x} cy={point.y} r="4" fill={point.color === 0 ? 'var(--ink)' : 'var(--paper)'} stroke="var(--ink)" stroke-width="2" />)}
+            <circle cx={walker.x} cy={walker.y} r="12" fill="none" stroke="var(--ink)" stroke-width="2.4" />
+            <text x="250" y="529" text-anchor="middle" font-size="25">{graph.positions.length} CORNERS · {graph.edges.length} EDGES · {graph.tours.length} TOURS</text>
+            <text x="250" y="568" text-anchor="middle" font-size="25">ONE COMPUTED HAMILTONIAN TOUR</text>
+          </svg>
+        </div>
+        <div class="ctfilm-formulas" aria-hidden="true" data-bleed>
+          <span class="ctfilm-label" data-label="dual-t"><span set:html={dualLabel} /></span>
+        </div>
+      </div>
+      <p class="ctfilm-fallback-caption">A computed Hamiltonian tour visits all {graph.positions.length} corners of the truncated octahedron once and returns to its start. Its graph has {graph.edges.length} edges and {graph.tours.length} distinct undirected Hamiltonian tours. The picture shows one finite example before the general claim appears.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="ctfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The browser searches the three finite graphs exhaustively. Counting each undirected cycle once, there are {model.solids.cube.tours.length} Hamiltonian tours on the cube, {model.solids.hexagonal_prism.tours.length} on the hexagonal prism, and {graph.tours.length} on the truncated octahedron. Each drawn tour follows actual graph edges, visits every corner once, and closes. The moving ring is the walker. Filled and open corners are the two bipartite classes; every edge joins unlike kinds.</p>
+      <p class="film-method">The flat pictures are planar Schlegel diagrams of the solids. They preserve the graph's corners, edges and faces. The truncated octahedron has twenty-four permutation vertices and thirty-six edges, and its diagram is a projection through a hexagonal face. Its perspective and the carried vertex morphs explain how the examples relate; the morphing layouts are not additional polyhedra to which a theorem is being applied.</p>
+      <p class="film-method">For each displayed dual-tree example, the tour divides the bounded face centres into an inside and an outside. The unbounded outer face is also counted outside. Joining adjacent faces across edges that are not in the tour gives two induced trees in the dual graph. The browser recomputes the two face groups and their dual links. The outer face is part of the calculation even when its region extends beyond the picture.</p>
+      <p class="film-method">The avoided-edge examples search the actual enumerated tours for one omitting the struck edge. Every edge of each of the three finite graphs has such a tour. This finite check illustrates the stronger statement in the paper. It is not a construction or proof for every graph in the claimed class.</p>
+      <p class="film-method">The blue ring identifies the general claim for every cubic, bipartite, planar, three-vertex-connected graph. The paper's weighted-sum argument is an existence proof and does not assert a polynomial-time construction of the cycle. The review ledger follows the article's date, 20 October 2026. No mathematician had publicly reported reading or checking the proof. The finite examples and searches are not counted as proof verification.</p>
+    </FilmTranscript>
+  </uruk-corner-tour>
+</Plate>
+
+<script>
+  import './element';
+</script>

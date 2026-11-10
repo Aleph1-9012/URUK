@@ -31,6 +31,7 @@ export const visualCatalog = [
   { key: 'cheapest-floor', component: './cheapest-floor/CheapestFloor.astro' },
   { key: 'party-gap', component: './party-gap/PartyGap.astro' },
   { key: 'endless-bounce', component: './endless-bounce/EndlessBounce.astro' },
+  { key: 'corner-tour', component: './corner-tour/CornerTour.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

@@ -1,0 +1,19 @@
+.ctfilm { border: 1px solid var(--muted); background: var(--paper); }
+.ctfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.ctfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-corner-tour[data-ready] .ctfilm-canvas { visibility: visible; }
+.ctfilm-formulas { position: absolute; inset: 0; pointer-events: none; }
+.ctfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: .875rem; line-height: 1.25; white-space: nowrap; }
+.ctfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.ctfilm-still { position: absolute; inset: 3%; display: grid; place-items: center; }
+uruk-corner-tour[data-ready] .ctfilm-still { display: none; }
+.ctfilm-still svg { display: block; width: 100%; height: 100%; min-height: 0; overflow: visible; }
+.ctfilm-still text { fill: var(--ink); font-family: 'Alegreya', serif; }
+.plate .ctfilm-fallback-caption { margin: 0; padding: 12px 18px 18px; font: 1.0625rem/1.45 var(--font-alegreya); text-align: center; }
+uruk-corner-tour[data-ready] .ctfilm-fallback-caption { display: none; }
+uruk-corner-tour:not([data-ready]) .film-subtitles { display: none; }
+
+@container plate (max-width: 599px) {
+  .ctfilm-stage { aspect-ratio: 4 / 6; }
+  .ctfilm-label { font-size: .6875rem; }
+}

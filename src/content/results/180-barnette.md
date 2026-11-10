@@ -9,6 +9,7 @@ checked: 2026-10-20
 papers:
   - preprints/Paired-states-and-Hamiltonian-cycles-in-cubic-bipartite-planar-graphs-September-24-2026/paper.pdf
 draft: false
+visual: corner-tour
 ---
 
 Take a convex polyhedron in which exactly three edges meet at every corner and every face has an even number of sides, like a cube or a hexagonal prism. Can you always walk along its edges, visiting every corner exactly once, and return to where you started? In 1884 Tait conjectured that every polyhedron with three edges per corner has such a tour, which would have proved the four-colour theorem; Tutte found a counterexample in 1946. David Barnette asked in 1969 whether the tour exists once the faces are also required to have even length, which in graph terms means the graph is bipartite. Goodey proved it in 1975 when all faces are squares or hexagons, Feder and Subi relaxed one of three face classes in 2006, Kardoš settled the related Barnette-Goodey conjecture for faces of at most six sides in 2020, and Schnieders proved the case of faces with at most eight sides in 2025; computers had checked every graph up to a few dozen vertices. On 24 September 2026 OpenAI posted a nine-hundred-line paper claiming the conjecture in full. [1][2][3]
