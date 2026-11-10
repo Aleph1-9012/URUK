@@ -1,0 +1,106 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createHoldModel } from './math';
+import { graphLayout } from './drawing';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createHoldModel();
+const geometry = graphLayout({ x: 0, y: 66, w: 500, h: 490 }, false);
+const vertices = model.final.vertices.map(vertex => {
+  const position = model.positions[vertex.vertex];
+
+  if (!position) throw new Error('Each computed vertex has its carried circle position.');
+
+  const anchor: 'start' | 'middle' | 'end' = position.x > .25 ? 'start' : position.x < -.25 ? 'end' : 'middle';
+
+  return { ...vertex, anchor, point: { x: geometry.centre.x + position.x * geometry.radius, y: geometry.centre.y + position.y * geometry.radius }, count: { x: geometry.centre.x + position.x * (geometry.radius + geometry.countOffset), y: geometry.centre.y + position.y * (geometry.radius + geometry.countOffset) } };
+});
+const arrows = model.final.arcs.map(([from, to]) => {
+  const a = vertices[from];
+  const b = vertices[to];
+
+  if (!a || !b) throw new Error('Each final arrow joins its two existing vertices.');
+
+  const dx = b.point.x - a.point.x;
+  const dy = b.point.y - a.point.y;
+  const length = Math.hypot(dx, dy);
+
+  if (length <= 2 * geometry.nodeRadius) throw new Error('Distinct circle vertices leave room for their arrow.');
+
+  const ux = dx / length;
+  const uy = dy / length;
+  const fromGap = geometry.nodeRadius + (a.holds ? 6.5 : 2.5);
+  const toGap = geometry.nodeRadius + (b.holds ? 6.5 : 2.5);
+  const start = { x: a.point.x + ux * fromGap, y: a.point.y + uy * fromGap };
+  const tip = { x: b.point.x - ux * toGap, y: b.point.y - uy * toGap };
+  const base = { x: tip.x - ux * geometry.head, y: tip.y - uy * geometry.head };
+
+  return { line: `M${start.x},${start.y}L${tip.x},${tip.y}`, head: `M${tip.x},${tip.y}L${base.x - uy * geometry.head * .48},${base.y + ux * geometry.head * .48}L${base.x + uy * geometry.head * .48},${base.y - ux * geometry.head * .48}Z` };
+});
+const holders = model.final.holders.map(index => {
+  const vertex = model.final.vertices[index];
+
+  if (!vertex) throw new Error('Each final holder has its exact one-step and two-step sets.');
+
+  return vertex;
+});
+const labels = [
+  { id: 'first-set', tex: String.raw`N_1^+(v)` },
+  { id: 'second-set', tex: String.raw`N_2^+(v)` },
+  { id: 'holder-rule', tex: String.raw`|N_2^+(v)|\ge|N_1^+(v)|` },
+  { id: 'partial-ratio', tex: model.rule.fraction.toFixed(3) },
+  { id: 'partial-example', tex: `${model.rule.fraction.toFixed(3)}\\times${model.rule.firstCount}\\approx${model.rule.threshold.toFixed(2)}` },
+];
+---
+
+<Plate
+  caption="Nine dots, one arrow per pair. A dot holds when it reaches at least as many dots in exactly two steps as in one. An adversary flips arrows to remove the dots that hold and gets from six to two, but no single change removes the last ones. The paper claims that no arrangement of any size removes them all."
+  leftOut="the proof's pairs of vertices and families of pairs, which the visual note says the picture does not show; the tournament case, Fisher 1996, and the other partial results; the Lean files themselves."
+>
+  <uruk-dot-holds class="film-host">
+    <div class="dhfilm">
+      <div class="dhfilm-stage" data-film-viewport>
+        <canvas class="dhfilm-canvas" data-film-canvas role="img" aria-label="Nine numbered dots have one arrow per pair. A dot holds when its exact-distance-two set is at least as large as its one-step set. These sets are shown separately, with no repeated counting. Four carried arrow flips reduce six holders to two. A separate opposite-arrow inset shows why both directions cannot be allowed. A finite five-dot enumeration and an approximate 0.716 scale are distinct from the general claim, marked by blue rings. A full text transcript follows."></canvas>
+        {labels.map(label => <span class="dhfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        <div class="dhfilm-still" aria-hidden="true">
+          <svg viewBox="-20 0 540 700" role="presentation">
+            <text x="250" y="28" text-anchor="middle" font-size="28">AFTER THE FOUR ARROW FLIPS</text>
+            <text x="250" y="61" text-anchor="middle" font-size="22">COUNTS OUTSIDE: 1-STEP | 2-STEP</text>
+            <path d={arrows.map(arrow => arrow.line).join('')} fill="none" stroke="var(--ink)" stroke-width=".65" opacity=".6" vector-effect="non-scaling-stroke" />
+            <path d={arrows.map(arrow => arrow.head).join('')} fill="var(--ink)" opacity=".75" />
+            {vertices.map(vertex => <g>
+              {vertex.holds && <circle cx={vertex.point.x} cy={vertex.point.y} r={geometry.nodeRadius + 4} fill="none" stroke="var(--ink)" stroke-width="2" vector-effect="non-scaling-stroke" />}
+              <circle cx={vertex.point.x} cy={vertex.point.y} r={geometry.nodeRadius} fill="var(--paper)" stroke="var(--ink)" stroke-width=".8" vector-effect="non-scaling-stroke" />
+              <text class="dhfilm-still-math" x={vertex.point.x} y={vertex.point.y + 6} text-anchor="middle" font-size="20">{vertex.vertex + 1}</text>
+              <text class="dhfilm-still-math" x={vertex.count.x} y={vertex.count.y + 6} text-anchor={vertex.anchor} font-size="21">{vertex.firstCount} | {vertex.secondCount}</text>
+            </g>)}
+            <text x="250" y="568" text-anchor="middle" font-size="32">{holders.length} OF {model.n} DOTS HOLD</text>
+            {holders.map((vertex, index) => <text class="dhfilm-still-math" x="250" y={610 + index * 35} text-anchor="middle" font-size="27">DOT {vertex.vertex + 1}: {vertex.firstCount} IN ONE STEP · {vertex.secondCount} IN TWO</text>)}
+            <text x="250" y="688" text-anchor="middle" font-size="23">THE SEALS MARK THE TWO HOLDERS</text>
+          </svg>
+        </div>
+      </div>
+      <p class="dhfilm-fallback-caption">The final graph has {holders.length} holders after four flips. Counts beside each dot give its first and second neighbourhood sizes in that order. Exactly two steps excludes the starting dot and every one-step neighbour. Each reachable dot is counted once.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="dhfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The fixed Python-seeded history supplies five lists of arrows on nine labelled dots. The browser recomputes every one-step and two-step set, each holder and each sink from those arrows. Directed distance exactly two excludes the initial dot and its one-step neighbours, and a dot reached by several two-step paths is counted once. A sink holds with both counts zero.</p>
+      <p class="film-method">The initial graph has six holders. A local adversary tries every permitted change of one pair and first minimizes the number of holders, then the number of sinks. It flips four arrows and reaches two holders, numbered 3 and 9. The browser independently audits each best change and verifies the final local stopping condition. A moving arrow is a transition between counted graphs; settled counts describe the last completed move. This search on one graph is not a proof of the conjecture for arbitrary size.</p>
+      <p class="film-method">The final holders have one-step and two-step counts 1 and 2 for dot 3, and 2 and 4 for dot 9. The no-JavaScript still shows this computed 50-second state with its actual arrows and counts. The separate opposite-arrow example is a two-cycle, outside the oriented-graph hypothesis. Both of its vertices have one first neighbour and no second neighbour.</p>
+      <p class="film-method">The browser also enumerates all {model.exhaustive.total.toLocaleString('en-US')} oriented graphs on five labelled dots, choosing no arc or one of the two directions on each of ten pairs. It finds {model.exhaustive.withoutHolder} graphs without a holder. This is a finite computation and does not prove the claim for all nonempty finite oriented graphs. The measured computation is small enough to run synchronously, so no worker or precomputed count is used.</p>
+      <p class="film-method">The cited general result guarantees an approximate fraction {model.rule.fraction.toFixed(3)} for some vertex. The drawn ruler uses the actual final dot 9 only to illustrate that scale: its {model.rule.firstCount} one-step neighbours give a threshold of about {model.rule.threshold.toFixed(2)}. The general theorem does not specify this chosen dot, and the decimal coefficient is rounded.</p>
+      <p class="film-method">Blue rings identify the full claim for every nonempty finite oriented graph. The small graphs and local search do not check its proof. The release's catalogue lists the Lean formalization as complete, while a kernel check concerns the formal statement and is not a reading of the paper. The closing evidence preserves the article's date, 2 November 2026, and its unreviewed status.</p>
+    </FilmTranscript>
+  </uruk-dot-holds>
+</Plate>
+
+<script>
+  import './element';
+</script>

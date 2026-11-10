@@ -37,6 +37,7 @@ export const visualCatalog = [
   { key: 'pairs-rings', component: './pairs-rings/PairsRings.astro' },
   { key: 'selection-square', component: './selection-square/SelectionSquare.astro' },
   { key: 'digit-square', component: './digit-square/DigitSquare.astro' },
+  { key: 'dot-holds', component: './dot-holds/DotHolds.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

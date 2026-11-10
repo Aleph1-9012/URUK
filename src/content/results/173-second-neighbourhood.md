@@ -9,6 +9,7 @@ checked: 2026-11-02
 papers:
   - preprints/A-proof-of-Seymours-second-neighborhood-conjecture-September-23-2026/paper.pdf
 draft: false
+visual: dot-holds
 ---
 
 Draw any number of dots and join some pairs with arrows, never two arrows between the same pair and never an arrow from a dot to itself. From a dot you can reach some dots in one step along the arrows, and some further dots in exactly two steps. Around 1990 Paul Seymour conjectured that in every such picture there is a dot whose two-step set is at least as large as its one-step set. The statement takes a sentence; the proof resisted every attack for thirty-five years, with the best general result guaranteeing only about $0.716$ of the two-step dots the conjecture asks for. On 23 September 2026 OpenAI posted a fifteen-page proof of the full conjecture, together with a Lean formalization that the release's catalogue lists as complete. [1][2]
