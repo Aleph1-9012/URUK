@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/Integer-multiplication-below-n-log-n-September-23-2026/paper.pdf
 draft: false
+visual: digit-square
 ---
 
 The method taught in school multiplies two $n$-digit numbers in about $n^{2}$ steps: every digit of one number meets every digit of the other. In 1960 Kolmogorov conjectured that nothing fundamentally faster was possible, and within a week his student Karatsuba found a way to do it in about $n^{1.585}$ steps. A decade of improvements followed, and in 1971 Schönhage and Strassen reached $n\log n\log\log n$ using the fast Fourier transform, and proposed that $n\log n$ was the true answer. In 2019 Harvey and van der Hoeven finally achieved $n\log n$, and the field expected that to be the end: the Fourier transform does $n$ work on each of $\log n$ levels, and no one saw how to avoid any of it. On 23 September 2026 OpenAI posted a paper claiming an algorithm that runs in time $n(\log n)^{1-\kappa}$ with $\kappa=2^{-182}$. The saving is unimaginably small, and that is beside the point: if the paper is right, $n\log n$ is not a wall, and a conjecture that stood for fifty-five years is false. [1][3][4][5]

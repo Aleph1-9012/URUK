@@ -1,0 +1,113 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createDigitModel, scientificTex } from './math';
+import { historyChartBox, recordPoint, leafClusterPoint, leafClusterSize } from './drawing';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createDigitModel();
+const firstGap = model.gapReadings[0];
+const secondGap = model.gapReadings[1];
+
+if (!firstGap || !secondGap) throw new Error('The exact bound comparison includes its two displayed gap readings.');
+
+const labels = [
+  { id: 'school-bound', tex: 'n^{2}' },
+  { id: 'karatsuba-bound', tex: 'n^{1.585}' },
+  { id: 'ss-bound', tex: String.raw`n\log n\log\log n` },
+  { id: 'hv-bound', tex: String.raw`n\log n` },
+  { id: 'claim-bound', tex: String.raw`n(\log n)^{1-\kappa}` },
+  { id: 'kappa-bound', tex: `\\kappa=2^{-${model.halfSaving.power}}` },
+  { id: 'ratio-bound', tex: String.raw`T(n)/(n\log_2 n)` },
+  { id: 'ratio-axis', tex: String.raw`\log_2 n` },
+  { id: 'gap-first', tex: String.raw`n=2^{${firstGap.log2n}}:\;${scientificTex(firstGap.relativeGap)}` },
+  { id: 'gap-second', tex: String.raw`n=2^{${secondGap.log2n}}:\;${scientificTex(secondGap.relativeGap)}` },
+  { id: 'half-scale', tex: model.halfSaving.tex },
+  { id: 'fft-work', tex: `${model.fftSize}\\times${model.fftLevels.length}` },
+];
+const chartBox = { x: 35, y: 40, w: 430, h: 450 };
+const plot = historyChartBox(chartBox, false);
+const years = [1960, 1962, 1963, 1971];
+const records = years.map(year => ({ year, point: recordPoint(chartBox, year, false) }));
+const firstRecord = records[0];
+
+if (!firstRecord) throw new Error('The historical staircase begins with school multiplication.');
+
+let staircase = `M${firstRecord.point.x},${firstRecord.point.y}`;
+
+for (const record of records.slice(1)) staircase += `H${record.point.x}V${record.point.y}`;
+
+const leafSize = leafClusterSize(40000, false);
+const leaves = model.leaves.map((leaf, index) => ({ path: leaf.path, point: leafClusterPoint(index, chartBox, 40000, false) }));
+const xText = BigInt(model.x).toLocaleString('en-US');
+const yText = BigInt(model.y).toLocaleString('en-US');
+const productText = model.product.toLocaleString('en-US');
+---
+
+<Plate
+  caption="Two 8-digit numbers multiply in 64 digit products. Karatsuba's three-for-four split needs only 27, and later ideas reached n log n, which the Fourier transform's log n levels seemed to make a wall. The paper claims a bound just below it, by a factor that is never measurable, and if it is right a 55-year-old conjecture is false."
+  leftOut="the algorithm itself, which the visual note says cannot be shown; Toom–Cook's and Fürer's methods; the 2025 matrix-transposition reduction; storage-modification and random-access results beyond the machine-model tag."
+>
+  <uruk-digit-square class="film-host">
+    <div class="dsfilm">
+      <div class="dsfilm-stage" data-film-viewport>
+        <canvas class="dsfilm-canvas" data-film-canvas role="img" aria-label="Two eight-digit decimal integers form a square of 64 digit products. Their diagonal sums reconstruct the exact product. Karatsuba recursion replaces the square with 27 small products, including 13 carried operands, and these squares travel to the 1962 record. A historical chart and a sixteen-point butterfly explain the known bounds. The claimed tiny improvement is a dashed blue line visually coincident with n log n. A full text transcript follows."></canvas>
+        {labels.map(label => <span class="dsfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        <div class="dsfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 400" role="presentation">
+            <text x="250" y="30" text-anchor="middle" font-size="27">THE SAME EXACT DECIMAL PRODUCT</text>
+            <text class="dsfilm-still-math" x="250" y="105" text-anchor="middle" font-size="47">{xText}</text>
+            <text class="dsfilm-still-math" x="250" y="161" text-anchor="middle" font-size="47">× {yText}</text>
+            <line x1="35" y1="183" x2="465" y2="183" stroke="var(--ink)" stroke-width="1" vector-effect="non-scaling-stroke" />
+            <text class="dsfilm-still-math" x="250" y="229" text-anchor="middle" font-size="38">{productText}</text>
+            <text x="250" y="303" text-anchor="middle" font-size="35">{model.leaves.length} SMALL PRODUCTS</text>
+            <text x="250" y="345" text-anchor="middle" font-size="26">{model.carriedCount} WITH A CARRIED OPERAND</text>
+            <text x="250" y="384" text-anchor="middle" font-size="24">RECOMPUTED WITH EXACT INTEGERS</text>
+          </svg>
+          <svg viewBox="0 0 500 530" role="presentation">
+            <text x="250" y="28" text-anchor="middle" font-size="28">RECORDS IN THE BIT MODEL</text>
+            <text x="250" y="64" text-anchor="middle" font-size="23">STEP HEIGHTS SCHEMATIC</text>
+            <path d={`M${plot.x},${plot.y - 5}V365H${plot.x + plot.w}`} fill="none" stroke="var(--ink)" stroke-width=".8" vector-effect="non-scaling-stroke" />
+            <path d={staircase} fill="none" stroke="var(--ink)" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+            {records.map(record => <circle cx={record.point.x} cy={record.point.y} r="3" fill="var(--ink)" />)}
+            {leaves.map(leaf => <rect data-leaf={leaf.path} x={leaf.point.x - leafSize / 2} y={leaf.point.y - leafSize / 2} width={leafSize} height={leafSize} fill="var(--ink)" />)}
+            {records.map((record, index) => {
+              const labelY = 131 + index * 56;
+
+              return <line x1={record.point.x + 8} y1={record.point.y} x2="166" y2={labelY - 4} stroke="var(--ink)" stroke-width=".6" vector-effect="non-scaling-stroke" />;
+            })}
+            <text class="dsfilm-still-math" x="180" y="131" font-size="27">1960 · n<tspan baseline-shift="super" font-size="19">2</tspan></text>
+            <text class="dsfilm-still-math" x="180" y="187" font-size="27">1962 · n<tspan baseline-shift="super" font-size="19">1.585</tspan></text>
+            <text x="180" y="243" font-size="25">1963 · TOOM–COOK</text>
+            <text class="dsfilm-still-math" x="180" y="299" font-size="25">1971 · n log n log log n</text>
+            <text class="dsfilm-still-math" x={plot.x} y="395" text-anchor="middle" font-size="22">1960</text>
+            <text class="dsfilm-still-math" x={plot.x + plot.w} y="395" text-anchor="middle" font-size="22">2019</text>
+            <text x="250" y="448" text-anchor="middle" font-size="26">{leaves.length} SMALL SQUARES AT 1962</text>
+            <text x="250" y="485" text-anchor="middle" font-size="24">MULTITAPE TURING MACHINE</text>
+            <text x="250" y="520" text-anchor="middle" font-size="22">BEFORE THE CLAIMED BLUE LINE</text>
+          </svg>
+        </div>
+      </div>
+      <p class="dsfilm-fallback-caption">The exact product is {productText}. Karatsuba's recursion uses {model.leaves.length} small products, {model.carriedCount} with a carried operand. The same {model.leaves.length} squares sit at the 1962 mark of the historical chart. Its step heights are schematic; the years and cited bounds are the records.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="dsfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The browser starts with the two fixed decimal integers {xText} and {yText}. It computes all {model.school.length} digit products with exact integers and reconstructs their weighted diagonal sums and carries, giving {productText}. Decimal digits make this small example readable. The historical bounds concern the bit complexity of binary inputs on a fixed multitape Turing machine.</p>
+      <p class="film-method">Karatsuba recursion uses the actual high and low halves of each operand. Three products replace four at each split, through nominal lengths eight, four, two and one. The middle product uses the sums of the two halves and then subtracts the high and low products. The {model.leaves.length} leaves are small products; {model.carriedCount} have an operand of two decimal digits because sums carry. They are not claimed to be {model.leaves.length} single-digit operations. Exact recombination gives the same product.</p>
+      <p class="film-method">The historical staircase keeps chronological year positions, but its heights are schematic. The logarithmic-era bounds have no single constant exponent that would make a numerical exponent axis valid. The {model.leaves.length} computed leaf squares travel to the 1962 mark, then move to a retained inset as the chart changes to the normalized comparison. The no-JavaScript still is the computed 40-second state, before the butterfly and the claimed line.</p>
+      <p class="film-method">The {model.fftSize}-point butterfly has {model.fftLevels.length} levels, each with eight disjoint pairs touching all sixteen entries. Partners differ in the current index bit. It shows the transform's dependency pattern and work on every level, rather than performing a Fourier transform on these decimal operands or implementing the paper's algorithm.</p>
+      <p class="film-method">The bound comparison sets constants to one and normalizes by n log-base-two n. Its saving is computed with expm1 and a logarithm, avoiding subtraction of two floating-point numbers that round to one. At the displayed input sizes the dashed blue curve is visually coincident with the known bound; the separately computed gap readouts remain nonzero. Reaching one half requires the displayed double exponential in log-base-two n. The paper's unreported large constants prevent these curves from predicting practical running times.</p>
+      <p class="film-method">The tape is a schematic illustration of a fixed finite alphabet, fixed tapes and one-cell head moves. Random-access machines use a different cost model. Neither this tape, the arithmetic example nor the butterfly checks the new proof. The closing evidence preserves the article's date, 18 October 2026, when no mathematician had publicly reported reading or checking the proof and the release had no Lean formalization for this family.</p>
+    </FilmTranscript>
+  </uruk-digit-square>
+</Plate>
+
+<script>
+  import './element';
+</script>
