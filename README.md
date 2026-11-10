@@ -1,8 +1,53 @@
-# Uruk
+# URUK
 
-Uruk is an Astro site explaining mathematics papers and the evidence for their
-review status. It builds static pages from Markdown and adds browser interactions
-with custom elements. Bun runs the development commands and tests.
+Uruk is an open-source visual guide to selected papers from
+[OpenAI's mathematics release](https://github.com/openai/math/tree/4eaee87548250b2682affda7d05d947c05554bae).
+It gives readers a way into the problems without assuming a mathematics
+background, with exact statements and proof maps for those who want to go deeper.
+
+Each article explains the problem, its history, what the paper claims, how its
+claimed proof works, and where the result might be useful. Numbered sources link
+the explanation to the papers and supporting evidence. Dated review labels
+distinguish a paper's claims from what human mathematicians have checked.
+
+- Browse and search by paper title, topic or family number, and filter by review
+  status.
+- Watch interactive films on selected pages, with playback controls, a timeline,
+  cue stepping, a transcript and reduced-motion support.
+- Read the plain-language explanation alongside mathematical statements, proof
+  maps and cited limits on applications.
+- Follow links to the pinned source papers and the evidence behind each review
+  label.
+
+## Screenshots
+
+Captured from the site on 10 November 2026.
+
+### Home page
+
+![Uruk home page with engraved ornaments reflected in water and links to start reading](docs/screenshots/home.png)
+
+### Results browser
+
+![Results browser with paper titles, search and review-status filters](docs/screenshots/results.png)
+
+### Interactive film
+
+Paper 158's film, paused at the seven-colour tiling of the plane.
+
+![Seven-colour tiling in the film player beside the article introduction and dated review label](docs/screenshots/film.png)
+
+### Reading on a phone
+
+The start of paper 003's problem statement at a phone width.
+
+<img src="docs/screenshots/mobile-reading.png" width="390" alt="Paper 003's explanation laid out for a phone, with readable text and mathematical notation" />
+
+## Run locally
+
+Uruk uses Astro to build static pages from Markdown, TypeScript custom elements
+for browser interactions, Canvas and SVG for visuals, and Temml for mathematical
+notation. Bun runs the development commands and tests.
 
 ```sh
 bun install
