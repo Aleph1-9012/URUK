@@ -10,6 +10,7 @@ papers:
   - preprints/Primitive-roots-for-every-admissible-integer-base-October-4-2026/primitive-roots-all-integer-bases.pdf
   - preprints/Simultaneous-primitive-roots-a-conditional-lower-bound-for-prime-bases-October-4-2026/simultaneous-primitive-roots-conditional-lower-bound-prime-bases.pdf
 draft: false
+visual: remainder-clock
 ---
 
 Divide the powers of $2$ by $11$ and keep the remainders: $2,4,8,5,10,9,7,3,6,1$. Every nonzero remainder appears before the cycle repeats, and one says that $2$ is a primitive root modulo $11$. Modulo $7$ it is not: $2,4,1$, and the cycle closes early. On 27 September 1927 Emil Artin told Helmut Hasse, who wrote it in his diary, that every integer other than $-1$ and the perfect squares should be a primitive root for infinitely many primes, and he predicted the proportion: for $2$, about $37.4$ percent of all primes. A century later nobody had proved this for a single base. Hooley proved it in 1967 assuming the generalized Riemann hypothesis; Heath-Brown proved in 1986 that it fails for at most two prime bases, so at least one of $2$, $3$ and $5$ works, without being able to say which. On 4 October 2026, two days before its release, OpenAI posted a ninety-two-page paper claiming the infinitude statement for every admissible base, with a weaker count than Artin predicted. [1][3][4][5]
