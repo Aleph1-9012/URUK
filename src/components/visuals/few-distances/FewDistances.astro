@@ -1,0 +1,126 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createDistanceModel } from './math';
+import { comparisonBoxes, cubeLayout, projectPoint, tallyLayout, tallyPoint } from './drawing';
+import { CUES, TIMELINE, cameraAngle, randomProgress } from './story';
+import './style.css';
+
+const model = createDistanceModel();
+const formulas = [
+  ['grid-power', 'n^{2/3}'],
+  ['apst-power', 'n^{77/141}'],
+  ['sv-power', 'n^{0.5643}'],
+  ['subpoly-power', 'n^{2/3-o(1)}'],
+  ['claimed-bound', 'c_d\\,n^{2/d}'],
+  ['ratio-definition', '|\\Delta(P)|/n^{2/d}'],
+] as const;
+const stage = { x: 0, y: 0, w: 250, h: 360 };
+const boxes = comparisonBoxes(stage, randomProgress(30000));
+const extent = model.side - 1;
+const corners = Array.from({ length: 8 }, (_, index) => ({ x: (index & 1) * extent, y: ((index >> 1) & 1) * extent, z: ((index >> 2) & 1) * extent }));
+const edgeIndices: { a: number; b: number }[] = [];
+
+for (let a = 0; a < corners.length; a++) {
+  for (let axis = 0; axis < 3; axis++) {
+    const b = a ^ (1 << axis);
+
+    if (a < b) edgeIndices.push({ a, b });
+  }
+}
+
+const cubes = [
+  { name: 'GRID', box: boxes.grid, points: model.grid },
+  { name: 'RANDOM', box: boxes.random, points: model.random },
+].map(cube => {
+  const geometry = cubeLayout(cube.box, true);
+  const vertices = corners.map(point => projectPoint(point, geometry, cameraAngle(30000)));
+  const edges = edgeIndices.map(edge => {
+    const a = vertices[edge.a];
+    const b = vertices[edge.b];
+
+    if (!a || !b) throw new Error('Each cube edge connects two projected corners.');
+
+    return { a, b };
+  });
+
+  return { ...cube, geometry, edges, projected: cube.points.map(point => projectPoint(point, geometry, cameraAngle(30000))) };
+});
+const gridCube = cubes[0];
+const randomCube = cubes[1];
+
+if (!gridCube || !randomCube) throw new Error('The computed comparison has both projected point sets.');
+
+const tally = tallyLayout(stage, true);
+const slots = Array.from({ length: 48 }, (_, index) => {
+  const squared = index + 1;
+  const bucket = model.histogram.find(row => row.squared === squared);
+  const count = bucket?.count ?? 0;
+
+  return { squared, count, point: tallyPoint(squared, tally), width: Math.min(5, tally.pitch * .46), height: count ? tally.barHeight * Math.sqrt(count / model.common.count) : 0, labelled: [1, 5, 7, 15, 23, 24, 25, 31, 48].includes(squared) };
+});
+---
+
+<Plate
+  caption="A 5 × 5 × 5 grid of 125 points has only 31 different distances among its 7,750 pairs; 125 random points have 7,750. For thirty-five years lower bounds climbed toward the grid's exponent 2/3. The paper claims to reach it with a constant factor, in every dimension from three up."
+  leftOut="polynomial partitioning and the proof's machinery; the withdrawn earlier manuscript; dimensions above three beyond the claim's tag; the plane's sibling page, 167."
+>
+  <uruk-few-distances class="film-host">
+    <div class="fdfilm">
+      <div class="fdfilm-stage" data-film-viewport>
+        <canvas class="fdfilm-canvas" data-film-canvas role="img" aria-label="A rotating five by five by five integer grid has 125 points and 7,750 pairs but only 31 distinct positive distances. Its exact squared-distance tally has 17 gaps. The seeded random sample in the same cube has 7,750 distinct distances. A separate 25-site plane illustration leads into the cited exponent ladder and a blue claim rung. An exact finite grid-ratio chart preserves its small dips. A full transcript follows."></canvas>
+        {formulas.map(([id, tex]) => <span class="fdfilm-label" data-label={id}><span set:html={renderFormula(tex, false)} /></span>)}
+        <div class="fdfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 250 360" role="presentation">
+            <text x="125" y="15" text-anchor="middle" font-size="13">{model.grid.length} POINTS IN EACH · THE SAME CUBE</text>
+            {cubes.map(cube => <g>
+              <text x={cube.geometry.center.x} y="43" text-anchor="middle" font-size="12">{cube.name}</text>
+              {cube.edges.map(edge => <path d={`M${edge.a.x},${edge.a.y}L${edge.b.x},${edge.b.y}`} fill="none" stroke="var(--ink)" stroke-width=".45" opacity=".45" />)}
+              {cube.projected.map(point => <circle cx={point.x} cy={point.y} r={cube.geometry.pointRadius} fill="var(--ink)" />)}
+            </g>)}
+            <text x={gridCube.geometry.center.x} y="205" text-anchor="middle" font-size="10">GRID: {model.distinct} DISTINCT</text>
+            <text x={randomCube.geometry.center.x} y="205" text-anchor="middle" font-size="10">RANDOM: {model.randomDistinct.toLocaleString('en-US')}</text>
+            {Array.from({ length: 12 }, (_, index) => <line x1={boxes.random.x + (index + .5) * boxes.random.w / 12} y1="218" x2={boxes.random.x + (index + .5) * boxes.random.w / 12} y2="226" stroke="var(--ink)" stroke-width="1.5" />)}
+            <text x={boxes.random.x + boxes.random.w / 2} y="239" text-anchor="middle" font-size="7.5">FIRST 12 OF {model.randomDistinct.toLocaleString('en-US')} · ORDINAL</text>
+            <text x="125" y="258" text-anchor="middle" font-size="11">GRID TALLY · SQUARED LENGTHS 1–48</text>
+            {slots.map(slot => <g>
+              {slot.count > 0 && <rect x={slot.point.x - slot.width / 2} y={slot.point.y - slot.height} width={slot.width} height={slot.height} fill="var(--ink)" />}
+              {slot.labelled && <text class="fdfilm-still-math" x={slot.point.x} y={slot.point.y + 13} text-anchor="middle" font-size="7.5">{slot.squared}</text>}
+            </g>)}
+            <text x="125" y="350" text-anchor="middle" font-size="9">{model.distinct} MARKED · {model.missing.length} EMPTY</text>
+          </svg>
+          <svg viewBox="0 0 250 290" role="presentation">
+            <text x="125" y="23" text-anchor="middle" font-size="15">DISTINCT POSITIVE DISTANCES</text>
+            <text x="125" y="53" text-anchor="middle" font-size="13">GRID</text>
+            <text class="fdfilm-still-math" x="125" y="98" text-anchor="middle" font-size="42">{model.distinct}</text>
+            <text x="125" y="121" text-anchor="middle" font-size="12">OF {model.pairCount.toLocaleString('en-US')} PAIRS</text>
+            <line x1="30" y1="143" x2="220" y2="143" stroke="var(--ink)" stroke-width=".6" />
+            <text x="125" y="174" text-anchor="middle" font-size="13">SEEDED RANDOM SAMPLE</text>
+            <text class="fdfilm-still-math" x="125" y="218" text-anchor="middle" font-size="35">{model.randomDistinct.toLocaleString('en-US')}</text>
+            <text x="125" y="244" text-anchor="middle" font-size="12">OF {model.pairCount.toLocaleString('en-US')} PAIRS</text>
+            <text x="125" y="279" text-anchor="middle" font-size="9">SQUARED LENGTH {model.common.squared}: {model.common.count} PAIRS</text>
+          </svg>
+        </div>
+      </div>
+      <p class="fdfilm-fallback-caption">Both cubes contain {model.grid.length} distinct points. The integer grid determines {model.distinct} positive distances among {model.pairCount.toLocaleString('en-US')} pairs; the seeded random sample determines {model.randomDistinct.toLocaleString('en-US')}. Grid slots identify squared lengths, while the separate random strip previews only the first 12 distinct values in ordinal order. This is the computed 30-second comparison.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="fdfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. Only the canonical seed-166 random coordinates are supplied. The browser builds the integer grids, enumerates every unordered pair, computes squared lengths and histograms, and checks that all points are distinct. Squaring is one-to-one on positive lengths, so the number of positive distances equals the number of distinct squared lengths. All distances are measured in the model's three coordinates; the camera changes only their projection. No random generator is ported.</p>
+      <p class="film-method">The {model.grid.length}-point grid has {model.pairCount.toLocaleString('en-US')} pairs and {model.distinct} distinct distances. Its missing squared values are {model.missing.join(', ')}. Squared length {model.common.squared} occurs in {model.common.count} pairs. The histogram counts add to the pair count; mark heights use a square-root scale of pair multiplicity. All grid quantities are exact integers.</p>
+      <p class="film-method">The seeded random sample occupies the same fixed cube bounds. It has {model.randomDistinct.toLocaleString('en-US')} distinct squared lengths in floating-point computation, and a separate exact binary-rational certificate confirms the same count for the supplied coordinates. Its abbreviated strip is ordinal and is not a set of integer squared-distance bins. The no-JavaScript still reuses the 30-second projection and computed comparison.</p>
+      <p class="film-method">The brief plane scene refers to the genuine middle layer of {model.plane.points.length} distinct sites, with {model.plane.pairCount} pairs and {model.plane.distinct} distances. Counts are withheld while the picture flattens and returns; the intermediate artwork is not asserted to be a distinct-point configuration. It does not represent 125 distinct planar points.</p>
+      <p class="film-method">The exponent ladder is cited history. Its subpolynomial rung is shown with a schematic offset below two thirds; that offset is not a measured fixed exponent. Blue identifies the paper's claimed constant-factor bound for every fixed dimension at least three and every set of at least two distinct points. The unspecified positive constant depends on dimension. This would establish the grid's optimal order, not a sharp constant or a proof that the drawn 125-point grid minimizes the finite count.</p>
+      <p class="film-method">The ratio chart is computed for grids of side 2 through 12. It preserves the actual small decreases as well as increases. These eleven finite examples do not verify a bound for every point set or prove the paper's theorem. The closing ledger keeps the article's date, 20 October 2026, its unreviewed status and its lack of a Lean formalization.</p>
+    </FilmTranscript>
+  </uruk-few-distances>
+</Plate>
+
+<script>
+  import './element';
+</script>

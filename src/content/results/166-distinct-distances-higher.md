@@ -9,6 +9,7 @@ checked: 2026-10-20
 papers:
   - preprints/The-higher-dimensional-Erdos-distinct-distances-conjecture-September-23-2026/paper.pdf
 draft: false
+visual: few-distances
 ---
 
 Place $n$ points in space and measure every distance between two of them. How few different values can you get? Paul Erdős asked this in 1946 and observed that a cubic grid of side $t$, with $n=t^{3}$ points, has only about $t^{2}=n^{2/3}$ distinct distances, since every squared distance is an integer below $3t^{2}$; in dimension $d$ the grid gives $n^{2/d}$. He conjectured that nothing does better. In the plane the question became one of the most famous in discrete geometry, and Guth and Katz settled it up to a logarithm in 2015 with polynomial partitioning. In three and more dimensions the known lower bounds were far from the grid: Clarkson and others got close to $\sqrt n$ in 1990, Aronov, Pach, Sharir and Tardos reached $n^{77/141}$, Solymosi and Vu built recurrences giving $n^{0.5643}$, and in August 2026 Tidor, Yu and Zakharov reached $n^{2/3-o(1)}$ in three dimensions, the grid exponent up to a subpolynomial loss. An earlier manuscript claiming the full conjecture had been withdrawn by its author. On 23 September 2026 OpenAI posted a paper claiming the conjecture with a constant factor in every dimension $d\ge3$. [1][2][3]
