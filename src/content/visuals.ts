@@ -33,6 +33,7 @@ export const visualCatalog = [
   { key: 'endless-bounce', component: './endless-bounce/EndlessBounce.astro' },
   { key: 'corner-tour', component: './corner-tour/CornerTour.astro' },
   { key: 'warm-spot', component: './warm-spot/WarmSpot.astro' },
+  { key: 'fastest-routes', component: './fastest-routes/FastestRoutes.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

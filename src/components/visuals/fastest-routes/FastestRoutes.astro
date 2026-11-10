@@ -1,0 +1,94 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createRouteModel, gridPoint, type Point } from './math';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createRouteModel();
+const scale = 430 / model.N;
+const project = (point: Point): Point => ({ x: 250 + point.x * scale, y: 270 - point.y * scale });
+let ballPath = '';
+let reached = 0;
+
+for (const run of model.preview.ball40Runs) {
+  const [row, first, last] = run;
+
+  if (row === undefined || first === undefined || last === undefined || last < first) throw new Error('The static reachable set contains valid occupied row runs.');
+
+  const x = 250 + (first - model.R - .5) * scale;
+  const y = 270 - (row - model.R + .5) * scale;
+  const width = (last - first + 1) * scale;
+  ballPath += `M${x},${y}h${width}v${scale}h${-width}Z`;
+  reached += last - first + 1;
+}
+
+let treePath = '';
+
+for (const prefix of model.preview.treePaths40) {
+  if (!prefix.length) throw new Error('Every static route prefix includes its centre.');
+
+  for (const [index, vertex] of prefix.entries()) {
+    const point = project(gridPoint(vertex));
+    treePath += `${index === 0 ? 'M' : 'L'}${point.x.toFixed(3)},${point.y.toFixed(3)}`;
+  }
+}
+
+const timeSymbol = renderFormula('t', false);
+---
+
+<Plate
+  caption="Every edge of a grid gets a random travel time. The region reachable in time t grows into a rounded blob, and the fastest routes from its centre merge into a tree. The papers claim that no fastest route runs forever in both directions, and that the blob's limit is smooth and strictly convex for exponential times."
+  leftOut="Busemann functions; the moment condition's exact form; Licea–Newman and Damron–Hanson; the proof's machinery. The finite grid and the schematic claimed curve do not prove the infinite-lattice statements."
+>
+  <uruk-fastest-routes class="film-host">
+    <div class="frfilm">
+      <div class="frfilm-stage" data-film-viewport>
+        <canvas class="frfilm-canvas" data-film-canvas role="img" aria-label="An exact random grid's edge times define its fastest routes. The camera pulls back as a reachable region grows, with route prefixes merging towards the centre. Four finite opposite-endpoint routes are compared. Scaled finite outlines and a schematic blue claimed curve lead to a blue strike marking the claimed absence of doubly infinite geodesics. A full text transcript follows."></canvas>
+        <span class="frfilm-label" data-label="time-symbol"><span set:html={timeSymbol} /></span>
+        <div class="frfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 550" role="presentation">
+            <defs>
+              <clipPath id="frfilm-still-ball"><path d={ballPath} /></clipPath>
+              <pattern id="frfilm-still-stipple" width="4" height="4" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".65" fill="var(--ink)" /><circle cx="3" cy="2.8" r=".45" fill="var(--ink)" /></pattern>
+            </defs>
+            <text x="250" y="25" text-anchor="middle" font-size="25">REACHABLE IN TIME 40</text>
+            <rect x="35" y="55" width="430" height="430" fill="none" stroke="var(--ink)" stroke-width=".6" opacity=".35" />
+            <path d={ballPath} fill="var(--ink)" opacity=".06" />
+            <path d={ballPath} fill="url(#frfilm-still-stipple)" opacity=".4" />
+            <path d={treePath} clip-path="url(#frfilm-still-ball)" fill="none" stroke="var(--ink)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="250" cy="270" r="3.5" fill="var(--ink)" />
+            <text x="250" y="525" text-anchor="middle" font-size="22">ONE {model.N} × {model.N} GRID · SEED 212</text>
+          </svg>
+          <svg viewBox="0 0 500 300" role="presentation">
+            <text x="250" y="38" text-anchor="middle" font-size="28">COMPUTED STILL</text>
+            <text class="frfilm-still-math" x="250" y="90" text-anchor="middle" font-size="42">t = 40</text>
+            <text x="250" y="137" text-anchor="middle" font-size="31">{reached.toLocaleString('en-US')} REACHED SITES</text>
+            <text x="250" y="184" text-anchor="middle" font-size="25">{model.preview.treePaths40.length} ROUTE PREFIXES SHOWN</text>
+            <text x="250" y="220" text-anchor="middle" font-size="24">THE ROUTES CONTINUE</text>
+            <text x="250" y="253" text-anchor="middle" font-size="24">BEYOND THIS BALL</text>
+          </svg>
+        </div>
+      </div>
+      <p class="frfilm-fallback-caption">This computed still shows the {reached.toLocaleString('en-US')} sites reachable by time 40 on the shipped grid. Sixty exact fastest-route prefixes merge towards the centre and continue beyond the ball. It is a finite picture, before the film's general claims appear.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="frfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The 241 × 241 grid uses independent exponential edge times generated by NumPy's seed 212. Those exact horizontal and vertical weights are shipped in a binary asset. The browser does not substitute another random-number generator. A worker decodes the complete weights and runs Dijkstra's algorithm from the centre, and again for the four pairs of opposite endpoints. Edge times are positive. The drawn routes follow actual edges of this one finite grid.</p>
+      <p class="film-method">The close-up's edge weights and first fastest route are genuine canonical data. Edge thickness represents travel time, while a double ink track with a paper centre identifies the chosen route. In the full view, one pixel represents one grid site. The region includes sites whose computed passage time is at most the displayed t. Its ragged boundary comes from the same distances as the site-count readout. Positive array-row offsets are drawn upwards, so the hunt routes' shared middle-column row offset +3 appears above the centre.</p>
+      <p class="film-method">The route tree is computed for all 360 target sites near Euclidean radius 100. The branch-count readout refers to those full finite-grid routes. Sixty route prefixes are drawn, one out of every six. They are clipped at passage time 40, because the full routes continue beyond that ball. Reaching every target would require a time beyond the first arrival at this finite window's boundary. The film keeps the time-40 ball and does not imply that every target is inside it.</p>
+      <p class="film-method">While the worker is pending, or if it fails, the macro view identifies a genuine canonical time-40 still with sixty clipped route prefixes. Current cinematic ball counts, hunt routes and scaled-outline measurements are withheld until the live calculation is available. The close-up is also genuine precomputed data. A failed computation has an explicit failure message; no completed routes or numeric readouts are guessed.</p>
+      <p class="film-method">The two-sided hunt compares four finite fastest routes between points 40, 80, 160 and 240 grid steps apart. All four pass through middle-column row offset +3 in this sample. Holding at these four sizes does not establish a doubly infinite geodesic, and their absence is not staged by altering the sample. The normalized time-20, time-30 and time-40 outlines compare the computed exterior fronts, preserving their grid steps and omitting boundaries around unreached interior holes. Axis and diagonal reaches are measurements of the same grid, not a proof of the limiting geometry.</p>
+      <p class="film-method">The blue smooth convex curve is an analytic schematic guide fitted only to the finite time-40 axis and diagonal reach readings. It is not an estimate of the limiting curve. It marks the claim about exponential edge times. The blue strike marks the other paper's claim excluding bigeodesics in every direction on one event, under its stated moment condition. The finite sample and schematic drawings do not check those proofs. The closing review evidence preserves the article's date, 20 October 2026, when no mathematician had publicly reported reading or checking the papers.</p>
+    </FilmTranscript>
+  </uruk-fastest-routes>
+</Plate>
+
+<script>
+  import './element';
+</script>
