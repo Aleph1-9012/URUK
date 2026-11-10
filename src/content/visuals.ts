@@ -34,6 +34,7 @@ export const visualCatalog = [
   { key: 'corner-tour', component: './corner-tour/CornerTour.astro' },
   { key: 'warm-spot', component: './warm-spot/WarmSpot.astro' },
   { key: 'fastest-routes', component: './fastest-routes/FastestRoutes.astro' },
+  { key: 'pairs-rings', component: './pairs-rings/PairsRings.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

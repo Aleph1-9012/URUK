@@ -9,6 +9,7 @@ checked: 2026-11-03
 papers:
   - preprints/Almost-Linear-Time-Maximum-Cardinality-Matching-in-Sparse-General-Graphs-September-24-2026/main.pdf
 draft: false
+visual: pairs-rings
 ---
 
 Take a network of people and the pairs who are willing to work together, and pair up as many as possible, each person in at most one pair. This is maximum matching, one of the oldest problems in algorithms. Jack Edmonds solved it in polynomial time in 1965, with the paper that first proposed polynomial time as the meaning of "efficient"; Micali and Vazirani brought the time down to about $m\sqrt n$ for $m$ edges and $n$ people in 1980. For sparse networks, where $m$ is a few times $n$, that bound stood for forty-six years, while the easier case with two kinds of people, the bipartite case, fell to almost-linear time in 2022 through a revolution in network-flow algorithms. The obstacle in general networks is odd cycles. On 24 September 2026 OpenAI posted an 86-page paper claiming an algorithm that runs in time $(n+m)^{1+o(1)}$ on every graph: essentially the time it takes to read the input. [1][2]

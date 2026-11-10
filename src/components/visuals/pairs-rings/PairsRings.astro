@@ -1,0 +1,112 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createPairsModel, type Edge, type Point } from './math';
+import { runtimeChartPoint } from './drawing';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createPairsModel();
+const minX = Math.min(...model.positions.map(point => point.x));
+const maxX = Math.max(...model.positions.map(point => point.x));
+const minY = Math.min(...model.positions.map(point => point.y));
+const maxY = Math.max(...model.positions.map(point => point.y));
+
+if (!(maxX > minX && maxY > minY)) throw new Error('The computed network occupies a plane region.');
+
+const scale = Math.min(400 / (maxX - minX), 350 / (maxY - minY));
+const project = (point: Point): Point => ({ x: 250 + (point.x - (minX + maxX) / 2) * scale, y: 240 - (point.y - (minY + maxY) / 2) * scale });
+const people = model.positions.map(project);
+const segment = (edge: Edge) => {
+  const a = people[edge[0]];
+  const b = people[edge[1]];
+
+  if (!a || !b) throw new Error('Every willing or matched pair has its two people.');
+
+  return { a, b };
+};
+const links = model.edges.map(segment);
+const bonds = model.final.map(segment);
+const chartPlot = { x: 70, y: 90, w: 380, h: 318 };
+const chartPoint = (n: number, value: number): Point => runtimeChartPoint(n, value, chartPlot);
+const curve = model.chart.map(row => {
+  const point = chartPoint(row.n, row.classical);
+
+  return `${point.x},${point.y}`;
+}).join(' ');
+const labels = [
+  { id: 'mv-bound', tex: String.raw`m\sqrt n` },
+  { id: 'input-bound', tex: 'n+m' },
+  { id: 'claimed-bound', tex: '(n+m)^{1+o(1)}' },
+  { id: 'graph-variables', tex: 'm=3n' },
+];
+const yTicks = [{ power: 3, label: '10³' }, { power: 5, label: '10⁵' }, { power: 7, label: '10⁷' }, { power: 9, label: '10⁹' }, { power: 11, label: '10¹¹' }];
+const xTicks = [{ power: 3, label: '10³' }, { power: 4, label: '10⁴' }, { power: 5, label: '10⁵' }, { power: 6, label: '10⁶' }, { power: 7, label: '10⁷' }];
+---
+
+<Plate
+  caption="Twelve people pair up greedily into 5 pairs; one alternating path through the network lifts it to 6, the most possible. Odd rings are what make general networks hard. The paper claims a method that finds the most pairs in any network in about the time it takes to read it."
+  leftOut="fractional allocations; flows; the dynamic forest data structure; the degree-constrained version; the randomness and its 2/3 success. Edmonds's blossom operation is an illustration and is not the paper's algorithm."
+>
+  <uruk-pairs-rings class="film-host">
+    <div class="prfilm">
+      <div class="prfilm-stage" data-film-viewport>
+        <canvas class="prfilm-canvas" data-film-canvas role="img" aria-label="Twelve people choose disjoint heavy pair bonds on fifteen willing links. Greedy matching finds five pairs, then an alternating path flips to six. A five-person odd ring demonstrates Edmonds's blossom contraction, while a separate bipartite inset has two kinds of vertices. A runtime model compares the known m square-root-n bound with input reading and a schematic blue almost-linear claim. A full text transcript follows."></canvas>
+        {labels.map(label => <span class="prfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        <div class="prfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 530" role="presentation">
+            <text x="250" y="25" text-anchor="middle" font-size="26">THE SAME {model.n}-PERSON NETWORK</text>
+            {links.map(edge => <line x1={edge.a.x} y1={edge.a.y} x2={edge.b.x} y2={edge.b.y} stroke="var(--ink)" stroke-width="1" opacity=".5" vector-effect="non-scaling-stroke" />)}
+            {bonds.map(edge => <line x1={edge.a.x} y1={edge.a.y} x2={edge.b.x} y2={edge.b.y} stroke="var(--ink)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" />)}
+            {people.map((point, index) => <g><circle cx={point.x} cy={point.y} r="6" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.1" vector-effect="non-scaling-stroke" /><text x={point.x + 12} y={point.y + 4} font-size="20">{index + 1}</text></g>)}
+            <text x="250" y="482" text-anchor="middle" font-size="31">{model.final.length} PAIRS · THE MOST POSSIBLE</text>
+            <text x="250" y="515" text-anchor="middle" font-size="23">CHECKED OVER {model.checkedSubsets.toLocaleString('en-US')} LINK SETS</text>
+          </svg>
+          <svg viewBox="0 0 500 530" role="presentation">
+            <text x="250" y="25" text-anchor="middle" font-size="25">KNOWN RUNTIME MODEL</text>
+            <text class="prfilm-still-math" x="250" y="60" text-anchor="middle" font-size="28">m = 3n · CONSTANTS 1</text>
+            <path d="M70,90V408H450" fill="none" stroke="var(--ink)" stroke-width="1" vector-effect="non-scaling-stroke" />
+            {yTicks.map(tick => {
+              const point = chartPoint(1e3, 10 ** tick.power);
+
+              return <g><line x1="66" y1={point.y} x2="70" y2={point.y} stroke="var(--ink)" /><text class="prfilm-still-math" x="59" y={point.y + 5} text-anchor="end" font-size="20">{tick.label}</text></g>;
+            })}
+            {xTicks.map(tick => {
+              const point = chartPoint(10 ** tick.power, 1e3);
+
+              return <g><line x1={point.x} y1="408" x2={point.x} y2="413" stroke="var(--ink)" /><text class="prfilm-still-math" x={point.x} y="438" text-anchor="middle" font-size="20">{tick.label}</text></g>;
+            })}
+            <polyline points={curve} fill="none" stroke="var(--ink)" stroke-width="2" vector-effect="non-scaling-stroke" />
+            {model.chart.map(row => {
+              const point = chartPoint(row.n, row.classical);
+
+              return <circle cx={point.x} cy={point.y} r="3" fill="var(--ink)" />;
+            })}
+            <text class="prfilm-still-math" x="190" y="168" text-anchor="middle" font-size="35">m√n</text>
+            <text class="prfilm-still-math" x="470" y="438" font-size="25">n</text>
+            <text x="250" y="483" text-anchor="middle" font-size="24">MICALI–VAZIRANI 1980</text>
+            <text x="250" y="515" text-anchor="middle" font-size="22">MODEL COST · NOT A BENCHMARK</text>
+          </svg>
+        </div>
+      </div>
+      <p class="prfilm-fallback-caption">The computed matching has {model.final.length} pairs, covering all {model.n} people, and exhaustive search confirms that {model.maximum} is the maximum. The chart is the known m√n runtime model on a sparse family with m = 3n and constants set to one. This still precedes the paper's claimed line.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="prfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The twelve-person graph has fifteen willing links and a five-person odd ring. The browser recomputes greedy matching in the listed edge order, finds a shortest augmenting path and flips its alternating links. Each matching is checked for disjoint endpoints. Exhaustive search over all 32,768 link subsets independently confirms that the final six pairs are maximum. The rings are people, fine lines are willing links and heavy bonds are the selected pairs.</p>
+      <p class="film-method">The augmenting path visits people 12, 2, 1 and 5 in that order. Its old bond is removed while two new bonds appear, increasing the matching from five to six. During the drawn flip, the picture is labelled as a transition; the settled matchings are the mathematical states.</p>
+      <p class="film-method">The odd-ring scene illustrates Edmonds's blossom operation, not the new paper's algorithm. Contracting the five-person ring hides two internal matched pairs while retaining their contribution to the matching. They have not been removed mathematically. Expansion restores the same six-pair matching. The separate two-kind inset is a bipartite example; the main graph remains non-bipartite.</p>
+      <p class="film-method">The chart models sparse graph families with m = 3n, independently of this tiny fifteen-link example. Its axes are logarithmic and its displayed constants are one. The known Micali–Vazirani bound is m√n and reading the input is n + m. These are model costs rather than measured running times. The paper's claimed (n + m) raised to 1 + o(1) is drawn as a schematic blue line near input reading. The o(1) is not assigned a settable numerical value, and the line's height is not a quantitative prediction.</p>
+      <p class="film-method">Blue identifies the claim for every graph. The small matching example, the blossom illustration and the runtime chart do not check the paper's proof. The closing evidence preserves the article's date, 3 November 2026, when no computer scientist had publicly reported checking the proof and no Lean formalization was included in the release.</p>
+    </FilmTranscript>
+  </uruk-pairs-rings>
+</Plate>
+
+<script>
+  import './element';
+</script>
