@@ -1,0 +1,138 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createSchedulingModel } from './math';
+import { graphLayout, jobPoint, dependencyRoute, laneGrid, slotPoint } from './drawing';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createSchedulingModel();
+const geometry = graphLayout({ x: 0, y: 45, w: 250, h: 200 }, true);
+const jobs = model.positions.map((position, job) => {
+  const label = model.labels[job];
+
+  if (label === undefined) throw new Error('Each job has its computed Coffman–Graham priority.');
+
+  return { job, point: jobPoint(position, geometry), label };
+});
+const layerByJob = Array<number>(model.n).fill(-1);
+
+for (const [layer, members] of model.layers.entries()) {
+  for (const job of members) layerByJob[job] = layer;
+}
+
+let skipIndex = 0;
+const dependencies = model.arcs.map(([from, to]) => {
+  const a = jobs[from];
+  const b = jobs[to];
+  const fromLayer = layerByJob[from];
+  const toLayer = layerByJob[to];
+
+  if (!a || !b || fromLayer === undefined || toLayer === undefined || fromLayer < 0 || toLayer < 0) throw new Error('Each precedence arc joins two layered jobs.');
+
+  const skip = toLayer > fromLayer + 1;
+  const route = dependencyRoute(a.point, b.point, geometry, skip, skip ? skipIndex++ : 0);
+  const tip = route.at(-1);
+  const prior = route.at(-2);
+
+  if (!tip || !prior) throw new Error('Each dependency route has its final directed segment.');
+
+  const length = Math.hypot(tip.x - prior.x, tip.y - prior.y);
+
+  if (length <= 0) throw new Error('A dependency arrow has a nonzero final segment.');
+
+  const ux = (tip.x - prior.x) / length;
+  const uy = (tip.y - prior.y) / length;
+  const head = 3.5;
+  const base = { x: tip.x - ux * head, y: tip.y - uy * head };
+
+  return { path: route.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x},${point.y}`).join(''), head: `M${tip.x},${tip.y}L${base.x - uy * head * .48},${base.y + ux * head * .48}L${base.x + uy * head * .48},${base.y - ux * head * .48}Z` };
+});
+const panel = { x: 0, y: 0, w: 250, h: 420 };
+const plans = [
+  { name: 'THE RULE', schedule: model.cg3, grid: laneGrid(panel, true, 'rule', model.cg3.lanes) },
+  { name: 'THE BEST', schedule: model.opt3, grid: laneGrid(panel, true, 'best', model.opt3.lanes) },
+].map(plan => ({
+  ...plan,
+  tile: Math.min(28, plan.grid.cellW - 6, plan.grid.cellH - 6),
+  cells: Array.from({ length: plan.grid.hours * plan.grid.lanes }, (_, index) => {
+    const hour = Math.floor(index / plan.grid.lanes);
+    const lane = index % plan.grid.lanes;
+
+    return { hour, lane, point: slotPoint(plan.grid, hour, lane), active: hour < plan.schedule.makespan, job: plan.schedule.slots[hour]?.[lane] };
+  }),
+}));
+---
+
+<Plate
+  caption="Nine one-hour jobs, some waiting for others. The Coffman–Graham rule schedules them as fast as possible on two lanes, but takes 4 hours on three lanes where 3 will do. The paper claims an exact polynomial-time method for three lanes, open since 1979, with an exponent of 150,020 and no practical claim."
+  leftOut="the algorithm, which the visual note says cannot be shown; the approximation schemes and special cases; the multitape Turing-machine model; the Lean statement's encoding."
+>
+  <uruk-three-lanes class="film-host">
+    <div class="tlfilm">
+      <div class="tlfilm-stage" data-film-viewport>
+        <canvas class="tlfilm-canvas" data-film-canvas role="img" aria-label="Nine one-hour jobs have nine directed precedence constraints. Their Coffman–Graham priorities and exact schedules are computed from the graph. The rule is optimal at five hours on two machines, but takes four hours on three machines where an exact search finds three. The rule and optimum remain visible as separate plans for the same jobs. A blue bracket marks the paper's claimed polynomial-time algorithm for nonempty precedence DAGs of unit jobs on three identical machines. A full text transcript follows."></canvas>
+        <span class="tlfilm-label" data-label="runtime-exponent"><span set:html={renderFormula('150{,}020', false)} /></span>
+        <div class="tlfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 250 280" role="presentation">
+            <text x="125" y="17" text-anchor="middle" font-size="15">THE SAME {model.n} ONE-HOUR JOBS</text>
+            <text x="125" y="34" text-anchor="middle" font-size="9">ARROWS MEAN FINISH BEFORE START</text>
+            {dependencies.map(arc => <g>
+              <path d={arc.path} fill="none" stroke="var(--paper)" stroke-width="3.5" vector-effect="non-scaling-stroke" />
+              <path d={arc.path} fill="none" stroke="var(--ink)" stroke-width=".8" vector-effect="non-scaling-stroke" />
+              <path d={arc.head} fill="var(--ink)" />
+            </g>)}
+            {jobs.map(job => <g>
+              <rect x={job.point.x - geometry.tile / 2} y={job.point.y - geometry.tile / 2} width={geometry.tile} height={geometry.tile} fill="var(--paper)" stroke="var(--ink)" stroke-width=".8" vector-effect="non-scaling-stroke" />
+              <text class="tlfilm-still-math" x={job.point.x} y={job.point.y - 2} text-anchor="middle" font-size="12">{job.job + 1}</text>
+              <text class="tlfilm-still-math" x={job.point.x} y={job.point.y + 8} text-anchor="middle" font-size="8">L{job.label}</text>
+            </g>)}
+            <text x="125" y="263" text-anchor="middle" font-size="9">L = COFFMAN–GRAHAM PRIORITY</text>
+            <text x="125" y="278" text-anchor="middle" font-size="8">CROSSED LINES ARE UNJOINED</text>
+          </svg>
+          <svg viewBox="0 0 250 420" role="presentation">
+            <text x="125" y="18" text-anchor="middle" font-size="14">TWO PLANS · THE SAME NINE JOBS</text>
+            <text x="125" y="36" text-anchor="middle" font-size="9">THREE IDENTICAL MACHINES IN EACH PLAN</text>
+            {plans.map(plan => <g>
+              <text x="125" y={plan.grid.y - 31} text-anchor="middle" font-size="14">{plan.name}: {plan.schedule.makespan} HOURS</text>
+              <text x={plan.grid.x} y={plan.grid.y - 17} font-size="8">HOURS</text>
+              {Array.from({ length: plan.grid.hours }, (_, hour) => <text class="tlfilm-still-math" x={plan.grid.x + (hour + .5) * plan.grid.cellW} y={plan.grid.y - 5} text-anchor="middle" font-size="9">{hour + 1}</text>)}
+              {Array.from({ length: plan.grid.lanes }, (_, lane) => <text x={plan.grid.x - 7} y={plan.grid.y + (lane + .5) * plan.grid.cellH + 3} text-anchor="end" font-size="8">M{lane + 1}</text>)}
+              {plan.cells.map(cell => <g>
+                <rect x={plan.grid.x + cell.hour * plan.grid.cellW} y={plan.grid.y + cell.lane * plan.grid.cellH} width={plan.grid.cellW} height={plan.grid.cellH} fill="none" stroke="var(--ink)" stroke-width=".55" stroke-dasharray={cell.active ? undefined : '2 3'} opacity={cell.active ? .55 : .22} vector-effect="non-scaling-stroke" />
+                {cell.job !== undefined && <g>
+                  <rect x={cell.point.x - plan.tile / 2} y={cell.point.y - plan.tile / 2} width={plan.tile} height={plan.tile} fill="var(--paper)" stroke="var(--ink)" stroke-width="1" vector-effect="non-scaling-stroke" />
+                  <text class="tlfilm-still-math" x={cell.point.x} y={cell.point.y + 5} text-anchor="middle" font-size="14">{cell.job + 1}</text>
+                </g>}
+                {cell.active && cell.job === undefined && <line x1={cell.point.x - 3} y1={cell.point.y} x2={cell.point.x + 3} y2={cell.point.y} stroke="var(--ink)" stroke-width=".7" vector-effect="non-scaling-stroke" />}
+              </g>)}
+              <line x1={plan.grid.x + plan.schedule.makespan * plan.grid.cellW} y1={plan.grid.y - 2} x2={plan.grid.x + plan.schedule.makespan * plan.grid.cellW} y2={plan.grid.y + plan.grid.h + 5} stroke="var(--ink)" stroke-width="1.3" vector-effect="non-scaling-stroke" />
+              <text x={plan.grid.x + plan.schedule.makespan * plan.grid.cellW} y={plan.grid.y + plan.grid.h + 18} text-anchor="middle" font-size="9">FINISH: {plan.schedule.makespan}</text>
+            </g>)}
+            <text x="125" y="394" text-anchor="middle" font-size="10">THE RULE NEEDS ONE EXTRA HOUR</text>
+            <text x="125" y="412" text-anchor="middle" font-size="8">DASH = IDLE · FAINT CELLS ARE AFTER FINISH</text>
+          </svg>
+        </div>
+      </div>
+      <p class="tlfilm-fallback-caption">These are two alternative schedules for the same {model.n} jobs and three identical machines. Coffman–Graham takes {model.cg3.makespan} hours; exact search finds and certifies {model.opt3.makespan}. Each numbered job appears once in each plan, and every precedence constraint is respected.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="tlfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. Only the nine jobs and their nine precedence arcs are supplied as instance data. The browser checks acyclicity, computes the Coffman–Graham labels and both list schedules, and searches over finished-job sets for exact two-machine and three-machine optima. Every schedule is checked to place each job once, obey all dependencies and respect its machine capacity.</p>
+      <p class="film-method">The graph is laid out by longest-path layers. Routed arrows retain the same endpoints, and line crossings are unjoined; only numbered cards are jobs. The supplied arc set has no redundant transitive constraints. Labels are computed from decreasing successor-label lists, choosing the lexicographically smallest eligible list. Each hour then takes the highest-labelled jobs whose predecessors finished in earlier hours.</p>
+      <p class="film-method">On this instance the two-machine rule uses {model.cg2.makespan} hours, which exact search certifies as optimal. On three machines it uses {model.cg3.makespan}, while the optimum is {model.opt3.makespan}. The upper and lower grids are alternative plans for the same jobs, not six machines running together. All five hour columns stay in view for continuity; the finish line gives the actual makespan, idle slots before it are marked, and later cells are faint. The no-JavaScript still is the computed 47-second comparison.</p>
+      <p class="film-method">The three-hour optimum here is recovered by exact search over finished sets. It is not produced by the paper's proposed polynomial-time algorithm. The comparison shows where the classical two-machine rule fails when a third machine is added, while the cited 2025 subexponential method is mentioned without being implemented.</p>
+      <p class="film-method">Blue appears only on the bracket identifying the paper's claim for nonempty precedence DAGs of unit-length, nonpreemptive jobs on exactly three identical machines. The exponent 150,020 refers to binary input length in the paper's machine model. No runtime curve or practical speed estimate is invented. The tiny example does not check that proof.</p>
+      <p class="film-method">The closing evidence preserves the article's date, 18 October 2026. No mathematician had publicly reported reading or checking the proof, and the release links a Lean statement that is not in its catalogue of complete formalizations. The status remains unreviewed.</p>
+    </FilmTranscript>
+  </uruk-three-lanes>
+</Plate>
+
+<script>
+  import './element';
+</script>

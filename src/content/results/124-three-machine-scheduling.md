@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/A-polynomial-time-algorithm-for-three-machine-unit-job-scheduling-September-24-2026/paper.pdf
 draft: false
+visual: three-lanes
 ---
 
 You have a list of tasks that each take one hour, some of which cannot start until others finish, and a few identical workers. How quickly can everything be done? With two workers this is easy, by an algorithm of Coffman and Graham from 1972. With the number of workers as part of the input it is NP-complete, Ullman showed in 1975, which is the standard way of saying no efficient algorithm is expected. In between sits the case of exactly three workers, which Garey and Johnson listed in 1979 among the open problems in their book on NP-completeness, and which stayed there for forty-seven years: the last problem from their list whose status had not moved. Special cases were solved, approximation schemes were found, and in 2025 Nederlof, Swennenhuis and Węgrzycki gave the first exact algorithm faster than trying everything, in subexponential time. On 24 September 2026 OpenAI posted a paper claiming a polynomial-time algorithm for three machines, with a running-time exponent of $150{,}020$. [1][3][4][5]
