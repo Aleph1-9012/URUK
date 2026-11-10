@@ -28,6 +28,7 @@ export const visualCatalog = [
   { key: 'remainder-clock', component: './remainder-clock/RemainderClock.astro' },
   { key: 'polymer-walk', component: './polymer-walk/PolymerWalk.astro' },
   { key: 'needle-room', component: './needle-room/NeedleRoom.astro' },
+  { key: 'cheapest-floor', component: './cheapest-floor/CheapestFloor.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

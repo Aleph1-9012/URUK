@@ -1,0 +1,86 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createFloorModel } from './math';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createFloorModel();
+const labels = [
+  { id: 'gaussian', tex: String.raw`e^{-\pi r^2}` },
+  { id: 'inverse', tex: String.raw`1/t` },
+  { id: 'alpha', tex: String.raw`\alpha` },
+  { id: 'e8', tex: String.raw`E_8` },
+  { id: 'bound', tex: String.raw`\begin{gathered}\widehat f(0)-f(0)=\sum_{a\ne0}G(a)\\=${model.floor.toFixed(4)}\end{gathered}` },
+] as const;
+const final = model.frames.at(-1);
+
+if (!final) throw new Error('The static relaxation includes the final stored configuration.');
+
+const patchScale = Math.min(426 / model.torus.w, 326 / model.torus.h);
+const patch = { x: (500 - model.torus.w * patchScale) / 2, y: 44, w: model.torus.w * patchScale, h: model.torus.h * patchScale };
+const plot = { x: 58, y: 51, w: 400, h: 223 };
+const maximum = Math.max(...model.energies.map(row => row.energy)) * 1.08;
+const plotX = (step: number) => plot.x + step / model.steps * plot.w;
+const plotY = (energy: number) => plot.y + plot.h * (1 - energy / maximum);
+const energyPath = model.energies.map((row, index) => `${index === 0 ? 'M' : 'L'}${plotX(row.step).toFixed(3)},${plotY(row.energy).toFixed(3)}`).join(' ');
+const excess = 100 * (model.finalEnergy / model.floor - 1);
+---
+
+<Plate
+  caption="120 points that push each other apart slide from a random scatter, energy 0.99 per point, towards the triangular lattice's 0.160, below the square's 0.180 and the honeycomb's 0.272. A function under the push that touches it at the lattice distances is the certificate behind the claim: nothing beats the triangular lattice, for every completely monotone push."
+  leftOut="the definition of complete monotonicity beyond decreasing, convex and so on; the lower limit and centered-disk averaging; sine-product cardinal functions, spectral measures and Gaussian damping; tail-operator inversion; Bernstein-basis sign proofs and interval arithmetic; the Fourier-complement step for widths below one; the Coulomb paper's Voronoi sectors; Smale's seventh problem; the Abrikosov lattice. The irregular competitors, auxiliary function and Fourier-transform curves, and interpolation blocks are schematic."
+>
+  <uruk-cheapest-floor class="film-host">
+    <div class="cffilm">
+      <div class="cffilm-stage" data-film-viewport>
+        <canvas class="cffilm-canvas" data-film-canvas role="img" aria-label="One hundred twenty repelling points move on a wrapped patch from a random scatter into a slightly strained triangular pattern. Their recorded energy approaches the triangular lattice value. Three regular patterns, a family of Gaussian potentials and exact contact distances explain the claimed Fourier-certificate strategy. The auxiliary function and its transform are schematic. A full text transcript follows."></canvas>
+        <div class="cffilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 420" role="presentation">
+            <text x="250" y="23" text-anchor="middle" font-size="21">120 POINTS · THE PATCH WRAPS ROUND</text>
+            <rect x={patch.x} y={patch.y} width={patch.w} height={patch.h} fill="none" stroke="var(--muted)" stroke-width="1.2" />
+            {final.map(point => <circle cx={patch.x + point.x * patchScale} cy={patch.y + point.y * patchScale} r="3.4" fill="var(--ink)" />)}
+            <text x="250" y="401" text-anchor="middle" font-size="21">SETTLED RUN · ENERGY {model.finalEnergy.toFixed(4)}</text>
+          </svg>
+          <svg viewBox="0 0 500 420" role="presentation">
+            <text x="250" y="23" text-anchor="middle" font-size="21">ENERGY PER POINT · STEPS</text>
+            <path d={`M${plot.x} ${plot.y}V${plot.y + plot.h}H${plot.x + plot.w}`} fill="none" stroke="var(--muted)" stroke-width="1.1" />
+            {[0, .5, 1].map(value => <g><path d={`M${plot.x - 4} ${plotY(value)}H${plot.x}`} stroke="var(--muted)" /><text x={plot.x - 10} y={plotY(value) + 5} text-anchor="end" font-size="20">{value}</text></g>)}
+            {[0, 500, 1000, 1500, 2100].map(step => <g><path d={`M${plotX(step)} ${plot.y + plot.h}v5`} stroke="var(--muted)" /><text x={plotX(step)} y={plot.y + plot.h + 24} text-anchor="middle" font-size="19">{step}</text></g>)}
+            <path d={`M${plot.x} ${plotY(model.floor)}H${plot.x + plot.w}`} fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray="5 4" />
+            <path d={energyPath} fill="none" stroke="var(--ink)" stroke-width="1.7" />
+            <circle cx={plotX(model.steps)} cy={plotY(model.finalEnergy)} r="3.8" fill="var(--ink)" />
+            <text x="250" y="322" text-anchor="middle" font-size="20">STEP {model.steps}: {model.finalEnergy.toFixed(4)} · {excess.toFixed(1)} % ABOVE</text>
+            <text x="250" y="354" text-anchor="middle" font-size="21">TRIANGULAR LATTICE FLOOR: {model.floor.toFixed(4)}</text>
+            <text x="250" y="389" text-anchor="middle" font-size="17">THE FINAL GAP IS UNDER ONE PIXEL AT THIS SCALE</text>
+          </svg>
+        </div>
+        <div class="cffilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map(label => <span class="cffilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <p class="cffilm-fallback-caption">A finite run on a wrapped patch settles into a triangular pattern turned about thirty degrees and slightly squeezed to fit. Its energy remains about {excess.toFixed(1)} percent above the triangular lattice's value. The minimum among all configurations is the paper's claim.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="cffilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. All 120 points keep their identities on a rectangular torus, with one point per unit of area. A point leaving one side re-enters on the other. The run begins from seed 91. It uses fifteen hundred noisy gradient steps with decreasing temperature, followed by six hundred ordinary descent steps. This is one finite numerical example, not a proof that every starting scatter reaches the minimum.</p>
+      <p class="film-method">The stored run has sixty-five frames and an explicit step for each. In addition to the original every-thirty-fifth-step frames, it includes the actual states at steps 50, 500, 1,000 and 1,500. Their energy readings are about 0.26347, 0.22207, 0.18292 and 0.16452. The final energy is about 0.16086, against the triangular lattice's 0.15960. Between stored states, each point travels by the shortest torus displacement. Such in-between motion is interpolation, not an extra optimizer step. The chart follows the recorded energy curve at its actual steps.</p>
+      <p class="film-method">The final pattern is turned about thirty degrees from the lattice that this torus fits exactly. Its six-neighbour distances range from about 1.053 to 1.120, so it is slightly squeezed and remains about 0.8 percent above the floor. The perfect aligned lattice is a different configuration. The browser recomputes the final run's energy, the perfect lattice's energy, lattice sums at Gaussian width one, shell distances and the twelve-bell mixture. Only the recorded trajectory, wider Gaussian table and quadrature terms are supplied as data.</p>
+      <p class="film-method">For the contact scene, the carried settled points move onto an exact aligned triangular reference, then return to the stored run. These reference moves are not extra descent steps, and the recorded energy chart continues to describe the original run.</p>
+      <p class="film-method">At density one, the triangular lattice spacing is about 1.07457. Summing the Gaussian interaction gives about 0.15960 per point for the triangular lattice, 0.18034 for the square and 0.27162 for honeycomb corners. A honeycomb pattern here means its corner points, not the triangular arrangement of the cell centres. The chart's floor is ink as a comparison with the lattice value. Only the blue mark identifies the claimed lower bound for every configuration. The irregular competitor patches are schematic and have no computed energy readings.</p>
+      <p class="film-method">The first three nonzero triangular shells have six points each, at radii about 1.0746, 1.8612 and 2.1491. Their Gaussian values are about 0.02658, 1.88 times ten to the minus fifth and 4.99 times ten to the minus seventh. These contact points are exact lattice calculations to the displayed precision. The curve under the Gaussian and its nonnegative Fourier-transform picture are schematic. They are not the paper's computed certificate, and the drawings do not establish that such a certificate exists.</p>
+      <p class="film-method">The inverse power one over t is illustrated by a twelve-term Gaussian quadrature. Its widths are exp(u)/π and its weights exp(u), for integer u from minus six through five. The sum approximates one over t within 0.4 percent on t between 0.3 and 3. The finite interpolation blocks and summable tail are schematic. The papers' certificate files and checkers are mentioned, but Uruk has not run them.</p>
+      <p class="film-method">The universal statement concerns lower energy limits for all configurations with centered-disk density one and all nonnegative completely monotone potentials, including infinite energies. The finite torus run illustrates the question and does not supply that theorem. The stated scope identifies the minimum value, not every minimizer, and does not claim one sharp auxiliary certificate for each mixed potential. The companion tags describe separate packing, Coulomb and spherical claims.</p>
+      <p class="film-method">Review statements follow the article's dated evidence. No named mathematician had publicly reported reading or checking the proofs by 20 October 2026. Lean has four comparator statements and none is catalogued. A formal statement or kernel check is not counted as independent human approval.</p>
+    </FilmTranscript>
+  </uruk-cheapest-floor>
+</Plate>
+
+<script>
+  import './element';
+</script>
