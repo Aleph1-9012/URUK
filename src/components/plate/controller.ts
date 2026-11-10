@@ -70,7 +70,7 @@ export function defineFilm(name: string, timeline: FilmTimeline, setup: (film: F
         drawing.draw(motion.matches ? timeline.stillTime(index) : time);
         const tick = Math.round(time / 100);
 
-        if (range && tick !== rangeTick) {
+        if (range && (tick !== rangeTick || time === timeline.duration || time === 0)) {
           range.value = String(time);
           rangeTick = tick;
         }

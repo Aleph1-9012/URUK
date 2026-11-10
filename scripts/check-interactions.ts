@@ -48,14 +48,21 @@ async function checkFilm(page: Page): Promise<void> {
   await range.press('PageDown');
   assert.equal((await filmState(page)).cue, 0);
 
-  await range.evaluate((element) => {
+  const targetTime = await range.evaluate((element) => {
     if (!(element instanceof HTMLInputElement)) throw new Error('Film range must be an input.');
 
-    element.value = String(Number(element.max) / 2);
+    const step = Number(element.step);
+
+    if (!(step > 0)) throw new Error('Film controls declare a positive numeric scrub step.');
+
+    const target = Math.round(Number(element.max) / 2 / step) * step;
+    element.value = String(target);
     element.dispatchEvent(new Event('input', { bubbles: true }));
+
+    return target;
   });
   const scrubbed = await filmState(page);
-  assert.equal(scrubbed.time, scrubbed.duration / 2);
+  assert.equal(scrubbed.time, targetTime);
 
   await range.evaluate((element) => {
     const film = element.closest('[data-ready]');
