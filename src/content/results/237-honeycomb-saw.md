@@ -10,6 +10,7 @@ papers:
   - preprints/Mass-and-covering-exponents-for-fixed-length-honeycomb-walks-September-26-2026/main.pdf
   - preprints/Cylinder-loop-weights-and-planar-nesting-September-26-2026/main.pdf
 draft: false
+visual: polymer-walk
 ---
 
 A self-avoiding walk is a path on a grid that never visits the same point twice. It is the simplest model of a polymer chain, a molecule that cannot pass through itself, and it is notoriously hard: nobody knows a formula for the number of such paths of length $n$, let alone their shape. An ordinary random walk of $n$ steps wanders a distance of about $\sqrt n$; a straight line goes $n$. In 1949 the chemist Paul Flory guessed, and in 1982 the physicist Bernard Nienhuis derived from the Coulomb-gas picture of statistical physics, that a planar self-avoiding walk wanders about $n^{3/4}$, and computer enumerations agree to many digits. Rigorously, almost nothing was known. On the honeycomb lattice, where Nienhuis also predicted the growth rate of the number of walks, Duminil-Copin and Smirnov proved that prediction in 2012, $\sqrt{2+\sqrt2}$ per step, in the paper that made the honeycomb the one lattice where exact tools exist; but the best bound on the spread of a typical walk, by Krachun and Panagiotis in 2023, was still only "less than $n$ by a logarithm". On 26 September 2026 OpenAI posted thirteen papers, about 1,067 pages, whose headline claims the exponent $3/4$ for the diameter of the typical honeycomb walk at every large length. [1][2][3][4]

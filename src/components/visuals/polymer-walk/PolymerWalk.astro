@@ -1,0 +1,130 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createPolymerModel, type Point } from './math';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'rod', tex: String.raw`n` },
+  { id: 'ordinary', tex: String.raw`\sqrt n` },
+  { id: 'saw', tex: String.raw`n^{3/4}` },
+  { id: 'diameter-claim', tex: String.raw`n^{3/4-\delta}\le D\le n^{3/4+\delta}` },
+  { id: 'ball', tex: String.raw`s^{4/3}` },
+  { id: 'ball-claim', tex: String.raw`\min(n,s^{4/3})\ n^{\pm\delta}` },
+  { id: 'mu', tex: String.raw`\sqrt{2+\sqrt2}=1.8478` },
+  { id: 'rho', tex: String.raw`\rho^{\ell}` },
+  { id: 'bridge', tex: String.raw`N^{-1/4}` },
+  { id: 'subwalk', tex: String.raw`(1+\operatorname{diam}\sigma)^{4/3}` },
+  { id: 'critical', tex: String.raw`c_n\rho^n` },
+  { id: 'division', tex: String.raw`\frac{\text{exceptional mass}}{c_n\rho^n}` },
+] as const;
+
+const model = createPolymerModel();
+
+function fitPath(points: readonly Point[], x: number, y: number, width: number, height: number) {
+  const xs = points.map(point => point.x);
+  const ys = points.map(point => point.y);
+  const lowX = Math.min(...xs);
+  const highX = Math.max(...xs);
+  const lowY = Math.min(...ys);
+  const highY = Math.max(...ys);
+  const scale = Math.min(width / (highX - lowX), height / (highY - lowY));
+  const left = x + (width - (highX - lowX) * scale) / 2;
+  const top = y + (height - (highY - lowY) * scale) / 2;
+  const projected = points.map(point => ({ x: left + (point.x - lowX) * scale, y: top + (highY - point.y) * scale }));
+  const origin = projected[0];
+
+  if (!origin) throw new Error('A static walk contains its starting point.');
+
+  return { path: projected.map((point, index) => `${index === 0 ? 'M' : 'L'}${point.x.toFixed(3)},${point.y.toFixed(3)}`).join(' '), origin };
+}
+
+const walk = fitPath(model.walk, 28, 42, 444, 212);
+const ordinary = fitPath(model.ordinaryWalk, 32, 293, 436, 62);
+const chart = { x: 65, y: 45, w: 390, h: 286 };
+const chartX = (length: number) => chart.x + Math.log2(length / 32) / 5 * chart.w;
+const chartY = (span: number) => chart.y + chart.h * (1 - Math.log(span / 4) / Math.log(1200 / 4));
+const first = model.chart[0];
+const last = model.chart[model.chart.length - 1];
+
+if (!first || !last) throw new Error('The static diameter chart has measured lengths.');
+
+const series = [
+  { name: 'ROD · SLOPE 1', key: 'rod', power: 1, anchor: first.rod },
+  { name: 'PREDICTED SLOPE ¾', key: 'saw', power: .75, anchor: first.saw },
+  { name: 'ORDINARY · SLOPE ½', key: 'ordinary', power: .5, anchor: first.ordinary },
+] as const;
+---
+
+<Plate
+  caption="A walk on the honeycomb that never revisits a point. Sampled walks of 32 to 1,024 steps spread like the three-quarter power of their length, between an ordinary random walk's square-root spread and a straight line's length. A ball on the walk holds about the four-thirds power of its radius in points. The claimed proof passes from weighted bridges to a bound on every subwalk."
+  leftOut="the parafermionic observable and its turning weight; the nesting, polygon, cylinder and chord companions; sewing and multiplicity control; ordered probes and shared irreducible pieces; fast bridges; the appendix's renewal proof; SLE 8/3; every constant. The height of the 2023 bound, the crossing-mass curve and the division from critical weight to fixed length are schematic."
+>
+  <uruk-polymer-walk class="film-host">
+    <div class="pwfilm">
+      <div class="pwfilm-stage" data-film-viewport>
+        <canvas class="pwfilm-canvas" data-film-canvas role="img" aria-label="One sampled walk grows on a honeycomb without revisiting a vertex. Diameter, ball counts and subwalk measurements accompany its growth. Ink guides compare a rod, an ordinary walk and the three-quarter prediction. Dashed blue bands identify unreviewed claims. A full text transcript follows."></canvas>
+        <div class="pwfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 420" role="presentation">
+            <text x="250" y="20" text-anchor="middle" font-size="20">PIVOT-SAMPLED · 1,024 STEPS</text>
+            <path d={walk.path} fill="none" stroke="var(--ink)" stroke-width="1.05" stroke-linejoin="round" />
+            <circle cx={walk.origin.x} cy={walk.origin.y} r="4.5" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.3" />
+            <text x={walk.origin.x + 9} y={walk.origin.y + 3} font-size="20">o</text>
+            <text x="250" y="280" text-anchor="middle" font-size="18">ORDINARY WALK · SEPARATE SCALE</text>
+            <path d={ordinary.path} fill="none" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round" />
+            <circle cx={ordinary.origin.x} cy={ordinary.origin.y} r="3.5" fill="var(--paper)" stroke="var(--ink)" />
+            <path d="M28 382H488M478 375L488 382L478 389" fill="none" stroke="var(--ink)" stroke-width="1.5" />
+            <text x="250" y="412" text-anchor="middle" font-size="18">ROD EXITS THIS FRAME · DIAMETER 887</text>
+          </svg>
+          <svg viewBox="0 0 500 420" role="presentation">
+            <text x="250" y="20" text-anchor="middle" font-size="20">DIAMETER AGAINST LENGTH</text>
+            <path d={`M${chart.x} ${chart.y}V${chart.y + chart.h}H${chart.x + chart.w}`} fill="none" stroke="var(--ink)" stroke-width="1.2" />
+            {[10, 100, 1000].map(span => <g><path d={`M${chart.x - 5} ${chartY(span)}H${chart.x}`} stroke="var(--ink)" /><text x={chart.x - 10} y={chartY(span) + 5} text-anchor="end" font-size="19">{span}</text></g>)}
+            {model.chart.map(row => <g><path d={`M${chartX(row.length)} ${chart.y + chart.h}v5`} stroke="var(--ink)" /><text x={chartX(row.length)} y={chart.y + chart.h + 24} text-anchor="middle" font-size="18">{row.length}</text></g>)}
+            {series.map(row => (
+              <g>
+                <path d={`M${chartX(first.length)} ${chartY(row.anchor)}L${chartX(last.length)} ${chartY(row.anchor * (last.length / first.length) ** row.power)}`} fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-dasharray={row.key === 'saw' ? '5 4' : undefined} />
+                {model.chart.map(point => <circle cx={chartX(point.length)} cy={chartY(point[row.key])} r="3.3" fill="var(--ink)" />)}
+              </g>
+            ))}
+            {series.map(row => (
+              <g>
+                <rect x={chart.x + chart.w - 240} y={chartY(row.anchor * (last.length / first.length) ** row.power) - 32} width="244" height="25" fill="var(--paper)" />
+                <text class="pwfilm-still-math" x={chart.x + chart.w} y={chartY(row.anchor * (last.length / first.length) ** row.power) - 13} text-anchor="end" font-size="19">{row.name}</text>
+              </g>
+            ))}
+            <text x="475" y="365" text-anchor="end" font-size="21">n</text>
+            <text x="250" y="389" text-anchor="middle" font-size="18">PIVOT-SAMPLED · 200 WALKS PER LENGTH</text>
+            <text x="250" y="413" text-anchor="middle" font-size="18">FLORY 1949 · NIENHUIS 1982 · PREDICTED</text>
+          </svg>
+        </div>
+        <div class="pwfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map(label => <span class="pwfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <p class="pwfilm-fallback-caption">A sampled self-avoiding walk, an ordinary walk shown at a separate scale, and a rod that leaves the frame. Finite diameter measurements sit beside the predicted three-quarter slope. These samples illustrate the laws; they do not prove them.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="pwfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. A honeycomb vertex has three neighbours at distance one. The browser searches all paths that never revisit a vertex and counts them through twelve steps immediately. A worker extends the same exact search through eighteen steps. While that calculation is pending, only the completed count through twelve is displayed. The first three counts are 3, 6 and 12; the eighteenth is 199,350. The counts, their ratios and the critical-weight bars are computed from that search.</p>
+      <p class="film-method">The two long self-avoiding walks come from 237-checks/saw.py, with seed 237. The pivot Markov chain targets the uniform law on walks of one length. Its finite burn-in and sampled output illustrate that law and are not a proof of convergence. The reference uses 200 sampled walks per length, with the first third of its 3,000 to 12,000 pivot attempts treated as burn-in. The stored coordinates are recovered as exact honeycomb vertices before unit steps, contacts, ball counts and crossings are calculated.</p>
+      <p class="film-method">The first twelve steps belong to the same 1,024-step walk that grows later. At its seventh step, an unused neighbour is already on the earlier path and is skipped. The rod and the ordinary random walk are separate comparisons. The rod has diameter about 887 at 1,024 steps and leaves the frame at the self-avoiding walk's scale. A separately scaled comparison is labelled on screen. The ordinary walk may revisit vertices.</p>
+      <p class="film-method">Chart dots are measured mean diameters, not the diameter of the single carried walk. The pivot-sampled means are 15.14, 24.81, 39.74, 71.26, 120.50 and 200.63 for lengths 32 through 1,024; their fitted slope is 0.752. The ordinary-walk means come from 120 samples per length and have fitted slope 0.521. The reference measures diameter by taking widths in ninety directions, an approximation within 0.0153 percent of the true diameter. The three-quarter and square-root guides remain predictions and comparisons in ink.</p>
+      <p class="film-method">A live readout counts vertices inside the displayed ball on the one carried walk. The ball-chart dots are a different measurement: averages over twenty sampled 1,024-step walks and one hundred centres each. Their fitted slope at radii two through sixteen is about 1.28. It is shown beside the four-thirds guide, not identified with it. The claimed theorem allows the stated power slack.</p>
+      <p class="film-method">The critical activity is the reciprocal of the honeycomb growth constant, about 0.541196. Each highlighted piece of length ℓ has weight ρ raised to ℓ. The crossing picture is calculated from the carried sample: it enters a band at its lower edge, leaves at the upper edge twenty units higher, and touches neither edge in between. The crossing-mass law is imported from the companion papers and its inset curve is schematic.</p>
+      <p class="film-method">The subwalk scatter has four hundred pieces of this one walk. Each stored pair carries the corresponding start index, so the highlighted piece and its plotted diameter agree. The ratios of length to one plus diameter raised to the four-thirds power range from about 0.50 to 1.51 in this sample. The label “THIS WALK” limits that finite observation. The critical-weight bars are exact finite counts; dividing the exceptional mass is a schematic illustration of the paper's passage to one length.</p>
+      <p class="film-method">The close-ends sample has endpoints three units apart and diameter about 133.29. Both endpoints are ringed, because a lower bound on diameter does not force them apart. The final image returns to the first sample. The height of the 2023 bound, the crossing-mass curve, the displayed power slack and the exceptional-mass division are schematic. None of these drawings verifies the claimed proof.</p>
+      <p class="film-method">Review statements follow the article's dated evidence. OSVerify reported one major issue with a proposed repair in the nesting dependency's Lemma 3.9. Lean covers supporting statements rather than the headline shape theorem. A formal statement or kernel check is not counted as independent human approval.</p>
+    </FilmTranscript>
+  </uruk-polymer-walk>
+</Plate>
+
+<script>
+  import './element';
+</script>

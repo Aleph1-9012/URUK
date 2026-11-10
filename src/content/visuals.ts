@@ -26,6 +26,7 @@ export const visualCatalog = [
   { key: 'smallest-triangles', component: './smallest-triangles/SmallestTriangles.astro' },
   { key: 'silent-lines', component: './silent-lines/SilentLines.astro' },
   { key: 'remainder-clock', component: './remainder-clock/RemainderClock.astro' },
+  { key: 'polymer-walk', component: './polymer-walk/PolymerWalk.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);
