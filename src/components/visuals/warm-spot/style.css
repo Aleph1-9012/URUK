@@ -1,0 +1,20 @@
+.wsfilm { border: 1px solid var(--muted); background: var(--paper); }
+.wsfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.wsfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-warm-spot[data-ready] .wsfilm-canvas { visibility: visible; }
+.wsfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
+.wsfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.wsfilm-still { position: absolute; inset: 3%; display: grid; place-items: center; }
+uruk-warm-spot[data-ready] .wsfilm-still { display: none; }
+.wsfilm-still svg { display: block; width: 100%; height: 100%; min-height: 0; overflow: visible; }
+.wsfilm-still text { fill: var(--ink); font-family: 'Alegreya', serif; }
+.wsfilm-still .wsfilm-still-math { font-family: 'Garamond Math', serif; }
+.plate .wsfilm-fallback-caption { margin: 0; padding: 12px 18px 18px; font: 1.0625rem/1.45 var(--font-alegreya); text-align: center; }
+uruk-warm-spot[data-ready] .wsfilm-fallback-caption { display: none; }
+uruk-warm-spot:not([data-ready]) .film-subtitles { display: none; }
+
+@container plate (max-width: 599px) {
+  .wsfilm-stage { aspect-ratio: 4 / 6; }
+  .wsfilm-label { font-size: .75rem; }
+  .wsfilm-still { inset: 2%; }
+}

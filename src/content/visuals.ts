@@ -32,6 +32,7 @@ export const visualCatalog = [
   { key: 'party-gap', component: './party-gap/PartyGap.astro' },
   { key: 'endless-bounce', component: './endless-bounce/EndlessBounce.astro' },
   { key: 'corner-tour', component: './corner-tour/CornerTour.astro' },
+  { key: 'warm-spot', component: './warm-spot/WarmSpot.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

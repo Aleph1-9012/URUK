@@ -9,6 +9,7 @@ checked: 2026-10-17
 papers:
   - preprints/Strict-hot-spots-and-absence-of-interior-critical-points-on-smooth-simply-connected-planar-domains-September-24-2026/main.pdf
 draft: false
+visual: warm-spot
 ---
 
 Heat a flat metal plate unevenly, wrap its edge in perfect insulation, and wait. The temperature evens out, but not all at once. One region stays warmest the longest and another stays coldest, and as time passes the pattern of warm and cold settles into a fixed shape that simply fades. In 1974 Jeffrey Rauch asked whether the hottest and coldest points of that final shape always sit on the edge of the plate. For plates with holes the answer is no, which Burdzy and Werner showed in 1999. For plates without holes, the case Burdzy singled out as a conjecture in 2005, the answer was unknown. On 24 September 2026 OpenAI posted a paper claiming that for every such plate with a smooth edge the answer is yes, in the strongest form: the final shape has no flat point anywhere inside, not even a saddle. [1][3][5][7]
