@@ -35,6 +35,7 @@ export const visualCatalog = [
   { key: 'warm-spot', component: './warm-spot/WarmSpot.astro' },
   { key: 'fastest-routes', component: './fastest-routes/FastestRoutes.astro' },
   { key: 'pairs-rings', component: './pairs-rings/PairsRings.astro' },
+  { key: 'selection-square', component: './selection-square/SelectionSquare.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

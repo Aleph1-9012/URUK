@@ -1,0 +1,92 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createSelectionModel } from './math';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createSelectionModel();
+const cellSize = 8;
+const square = { x: 14, y: 78, side: model.size * cellSize };
+const maximumSum = model.numbers.reduce((sum, value) => sum + value, 0);
+const tones = Array.from({ length: 32 }, (_, index) => ({ opacity: .06 + .24 * index / 31, path: '' }));
+
+for (const cell of model.cells) {
+  const tone = tones[Math.floor(31 * cell.sum / maximumSum)];
+
+  if (!tone) throw new Error('Each computed sum has its finite ink-density band.');
+
+  tone.path += `M${square.x + cell.sortedCol * cellSize},${square.y + cell.sortedRow * cellSize}h${cellSize}v${cellSize}h-${cellSize}Z`;
+}
+
+const grid = Array.from({ length: model.size + 1 }, (_, index) => {
+  const offset = index * cellSize;
+
+  return `M${square.x + offset},${square.y}v${square.side}M${square.x},${square.y + offset}h${square.side}`;
+}).join('');
+const staircase = model.walk.map((step, index) => `${index === 0 ? 'M' : 'L'}${square.x + (step.col + .5) * cellSize},${square.y + (step.row + .5) * cellSize}`).join('');
+const hitX = square.x + model.hit.sortedCol * cellSize;
+const hitY = square.y + model.hit.sortedRow * cellSize;
+const hitRow = model.rows[model.hit.rowMask];
+const hitCol = model.cols[model.hit.colMask];
+
+if (!hitRow || !hitCol) throw new Error('The target cell has its two computed half-selections.');
+
+const rowSum = hitRow.sum;
+const colSum = hitCol.sum;
+const labels = [
+  { id: 'all-bound', tex: '2^n' },
+  { id: 'meet-bound', tex: '2^{n/2}' },
+  { id: 'claim-bound', tex: '2^{0.49n}' },
+  { id: 'human-bound', tex: '2^{0.499999n}' },
+];
+---
+
+<Plate
+  caption="All 4,096 selections of twelve numbers fill a square. Sorting its two sides lets a staircase find the one that hits the target in 82 cells, the 1974 meet-in-the-middle idea. A prime remainder adds false positives that must be listed and removed. The paper claims to beat that idea's exponent 1/2 on every input, though only by a factor that is 2 at n = 100."
+  leftOut="the isolation lemma; the Fourier checksum and its filtering tables; the representation dichotomy; the low-space companion paper; pseudopolynomial algorithms; the word-RAM model and the bit-length condition."
+>
+  <uruk-selection-square class="film-host">
+    <div class="sqfilm">
+      <div class="sqfilm-stage" data-film-viewport>
+        <canvas class="sqfilm-canvas" data-film-canvas role="img" aria-label="Twelve integers form a 64 by 64 square of all 4,096 selections. Sorting the two half-sum lists carries each cell into a new position. A staircase reaches the unique target in 82 cells. A prime modulus produces 39 aliases, and a logarithmic chart compares exact exponent curves, including the paper's dashed blue 0.49n claim. A full text transcript follows."></canvas>
+        {labels.map(label => <span class="sqfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        <div class="sqfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 540 740" role="presentation">
+            <text x="270" y="25" text-anchor="middle" font-size="25">THE SORTED SQUARE OF SELECTIONS</text>
+            <text x="270" y="57" text-anchor="middle" font-size="24">{model.size} ROW SUMS × {model.size} COLUMN SUMS</text>
+            {tones.map(tone => <path d={tone.path} fill="var(--ink)" opacity={tone.opacity} />)}
+            <path d={grid} fill="none" stroke="var(--ink)" stroke-width=".3" opacity=".3" />
+            <rect x={square.x} y={square.y} width={square.side} height={square.side} fill="none" stroke="var(--ink)" stroke-width="1" vector-effect="non-scaling-stroke" />
+            <path d={staircase} fill="none" stroke="var(--paper)" stroke-width="4" vector-effect="non-scaling-stroke" />
+            <path d={staircase} fill="none" stroke="var(--ink)" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linejoin="round" />
+            <circle cx={square.x + cellSize / 2} cy={square.y + cellSize / 2} r="5" fill="var(--paper)" stroke="var(--ink)" stroke-width="1" vector-effect="non-scaling-stroke" />
+            <rect x={hitX} y={hitY} width={cellSize} height={cellSize} fill="var(--ink)" />
+            <circle cx={hitX + cellSize / 2} cy={hitY + cellSize / 2} r="10" fill="none" stroke="var(--ink)" stroke-width="1.5" vector-effect="non-scaling-stroke" />
+            <text x="270" y="628" text-anchor="middle" font-size="30">{model.walk.length} CELLS VISITED OF {model.cells.length.toLocaleString('en-US')}</text>
+            <text class="sqfilm-still-math" x="270" y="669" text-anchor="middle" font-size="31">{rowSum.toLocaleString('en-US')} + {colSum.toLocaleString('en-US')} = {model.target.toLocaleString('en-US')}</text>
+            <text x="270" y="708" text-anchor="middle" font-size="25">ONE SELECTION HITS THE TARGET</text>
+          </svg>
+        </div>
+      </div>
+      <p class="sqfilm-fallback-caption">The sorted {model.size} by {model.size} square contains every selection of the {model.n} numbers. Its staircase visits {model.walk.length} cells and stops at the unique target, {model.target.toLocaleString('en-US')}. Each step moves down when the sum is too small and right when it is too large.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="sqfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The twelve fixed positive integers, target {model.target.toLocaleString('en-US')} and prime {model.prime} are the only instance data supplied. The browser computes all {model.cells.length.toLocaleString('en-US')} subset sums, finds the unique solution and builds both lists of {model.size} half-selection sums. The solution uses numbers 2, 4, 6, 8, 9 and 10, counting from one.</p>
+      <p class="film-method">Rows represent selections from the first six numbers, and columns represent selections from the last six. Their cells keep their identity while rows sort ascending and columns sort descending. The search starts in the upper-left cell, moves down when the sum is below the target and right when it is above. It visits {model.walk.length} cells before reaching sorted row {model.hit.sortedRow}, column {model.hit.sortedCol}, with positions counted from zero. The no-JavaScript still shows this computed 40-second state.</p>
+      <p class="film-method">Exactly {model.sameRemainder.length} cells have the target's remainder modulo {model.prime}. Of these, {model.aliases.length} have the wrong integer sum and are aliases. The film counts and subtracts those aliases exactly on this small instance. The paper estimates its modular count by sampling and enumerates false positives; the film does not implement the paper's checksum or algorithm.</p>
+      <p class="film-method">The chart plots log-base-two model steps with constants set to one. Its exponents are n, n/2, 0.49n and 0.499999n. The camera zooms to n between 150 and 200 and log-base-two steps between 70 and 100. Li and Ye's 0.499999n line remains visually coincident with n/2 at this scale. The exact gain from exponent 0.49n is a factor of two at n = 100 and four at n = 200; the unreported constants prevent these lines from predicting practical runtimes.</p>
+      <p class="film-method">Blue identifies OpenAI's claimed exponent for arbitrary inputs. The algorithm is randomized and claimed correct with probability at least two thirds. The small exact instance, staircase and aliases do not check that proof. The closing evidence preserves the article's date, 3 November 2026, when no computer scientist had publicly reported checking the proof and the release contained no Lean formalization for this family.</p>
+    </FilmTranscript>
+  </uruk-selection-square>
+</Plate>
+
+<script>
+  import './element';
+</script>

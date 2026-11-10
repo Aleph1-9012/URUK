@@ -1,0 +1,21 @@
+.sqfilm { border: 1px solid var(--muted); background: var(--paper); }
+.sqfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.sqfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-selection-square[data-ready] .sqfilm-canvas { visibility: visible; }
+.sqfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
+.sqfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.sqfilm-still { position: absolute; inset: 3% 12%; display: grid; place-items: center; }
+uruk-selection-square[data-ready] .sqfilm-still { display: none; }
+.sqfilm-still svg { display: block; width: 100%; height: 100%; min-height: 0; overflow: visible; }
+.sqfilm-still text { fill: var(--ink); font-family: 'Alegreya', serif; }
+.sqfilm-still .sqfilm-still-math { font-family: 'Garamond Math', serif; }
+.plate .sqfilm-fallback-caption { margin: 0; padding: 12px 18px 18px; font: 1.0625rem/1.45 var(--font-alegreya); text-align: center; }
+uruk-selection-square[data-ready] .sqfilm-fallback-caption { display: none; }
+uruk-selection-square:not([data-ready]) .film-subtitles { display: none; }
+
+@container plate (max-width: 599px) {
+  .sqfilm-stage { aspect-ratio: 4 / 11; }
+  uruk-selection-square:not([data-ready]) .sqfilm-stage { aspect-ratio: 4 / 6; }
+  .sqfilm-label { font-size: .75rem; }
+  .sqfilm-still { inset: 2% 3%; }
+}

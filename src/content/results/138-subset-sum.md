@@ -10,6 +10,7 @@ papers:
   - preprints/Subset-Sum-in-Time-2-power-0-49n-October-4-2026/subset-sum.pdf
   - preprints/A-Low-Space-Algorithm-for-Worst-Case-Subset-Sum-September-26-2026/paper.pdf
 draft: false
+visual: selection-square
 ---
 
 Here are $n$ whole numbers and a target. Is there a selection of them that adds up to the target exactly? This is Subset Sum, one of the first problems proved NP-complete, in Karp's 1972 list under the name Knapsack. Trying every selection takes $2^{n}$ steps. In 1974 Horowitz and Sahni cut that to about $2^{n/2}$: split the numbers in half, list the sums of each half, and look for two that add to the target. For fifty-two years nobody improved the exponent $1/2$ for arbitrary inputs, and that number became the reference point of exact algorithms and a baseline in cryptography. On 4 October 2026 OpenAI posted a paper claiming $O(2^{0.49n})$. Three days later Baitian Li and Lixi Ye posted an independent human paper reaching $O(2^{0.499999n})$ by a different method. [1][3][4]
