@@ -9,6 +9,7 @@ checked: 2026-10-17
 papers:
   - preprints/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026/paper.pdf
 draft: false
+visual: thick-enough
 ---
 
 An arithmetic progression is a run of numbers with a constant gap, such as $5,8,11,14$. Paul Erdős asked whether every set of positive integers that is "not too thin" must contain such runs of every length, and he made "not too thin" precise in a way that covers the prime numbers: the reciprocals of the set's members should add up to infinity. He offered \$5000 for an answer. The three-term case was proved in 2020. The primes themselves, which Erdős saw as the motivating example, were handled by Green and Tao in 2004 by a different route. On 23 September 2026 OpenAI posted a 198-page paper claiming the full answer, yes, as a corollary of a much stronger statement about how large a set can be while avoiding a progression. [1][2][3]

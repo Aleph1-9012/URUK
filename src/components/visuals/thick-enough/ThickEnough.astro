@@ -1,0 +1,108 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createReciprocalModel } from './math';
+import { lineLayout, cellPoint, completionBox } from './drawing';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createReciprocalModel();
+const nine = model.r3.find(result => result.n === 9);
+
+if (!nine || model.r14.size !== model.set14.length || model.nineSetCheck.withoutProgression !== 0) throw new Error('The computed overview requires its exact extremal certificates.');
+
+const formulas = [
+  ['r3-nine', `r_3(9)=${nine.size}`],
+  ['r3-fourteen', `r_3(14)=${model.r14.size}`],
+  ['dyadic-block', 'I_m=[2^m,2^{m+1})'],
+  ['block-bound', '\\#(A\\cap I_m)\\le r_k(2^m),\\quad 1/a\\le2^{-m}'],
+  ['claimed-bound', 'r_k(N)\\le C_kN\\,\\cdot'],
+  ['claimed-decay', '\\exp[-c_k(\\log N)^{\\varepsilon_k}]'],
+] as const;
+const stage = { x: 0, y: 0, w: 250, h: 440 };
+const geometry = lineLayout(stage, true, 14);
+const cases = completionBox(stage, true);
+const cells = Array.from({ length: 14 }, (_, index) => ({ value: index + 1, point: cellPoint(index + 1, geometry), selected: model.set14.includes(index + 1) }));
+const first = cells[0];
+const last = cells.at(-1);
+
+if (!first || !last) throw new Error('The computed fourteen-cell line has both endpoints.');
+
+const additions = model.completions.map((completion, index) => {
+  const y = cases.y + (index + .5) * cases.h / model.completions.length;
+  const points = completion.progression.map(value => ({ value, x: cellPoint(value, geometry).x, y }));
+  const [a, b, c] = completion.progression;
+  const gap = b - a;
+
+  if (c - b !== gap) throw new Error('Each separate addition case completes an evenly spaced triple.');
+
+  const arcs = [
+    { x1: cellPoint(a, geometry).x, x2: cellPoint(b, geometry).x },
+    { x1: cellPoint(b, geometry).x, x2: cellPoint(c, geometry).x },
+  ].map(arc => ({ path: `M${arc.x1},${y - 4}Q${(arc.x1 + arc.x2) / 2},${y - 20},${arc.x2},${y - 4}`, x: (arc.x1 + arc.x2) / 2 }));
+
+  return { added: completion.added, y, points, gap, arcs };
+});
+---
+
+<Plate
+  caption="The primes are thick enough that their reciprocals add up to infinity; the powers of two are thin and avoid nontrivial progressions of length at least three. Splitting the numbers into doubling blocks turns Erdős's question into how fast progression-free sets must shrink. The paper claims they shrink fast enough for every length."
+  leftOut="the proof's machinery; Green–Tao and the 2020 three-term proof, which the subtitles do not name; the every-power-of-log consequence; the Lean proof's weaker bound beyond the ledger."
+>
+  <uruk-thick-enough class="film-host">
+    <div class="tefilm">
+      <div class="tefilm-stage" data-film-viewport>
+        <canvas class="tefilm-canvas" data-film-canvas role="img" aria-label="A carried number line shows equal-gap progressions, primes and powers of two. Live finite reciprocal sums compare these sets. Exact search finds an eight-element progression-free subset of one through fourteen, and all six missing numbers complete progressions in separate trials. Doubling blocks give exact small three-term density bounds, followed by a schematic blue envelope for the paper's claim. A full transcript follows."></canvas>
+        {formulas.map(([id, tex]) => <span class="tefilm-label" data-label={id}><span set:html={renderFormula(tex, false)} /></span>)}
+        <div class="tefilm-still" aria-hidden="true">
+          <svg viewBox="0 0 250 170" role="presentation">
+            <text x="125" y="18" text-anchor="middle" font-size="16">A LARGEST SET IN 1–14</text>
+            <text class="tefilm-still-math" x="125" y="43" text-anchor="middle" font-size="19">r₃(14) = {model.r14.size}</text>
+            <line x1={first.point.x} y1={geometry.y} x2={last.point.x} y2={geometry.y} stroke="var(--ink)" stroke-width=".5" />
+            {cells.map(cell => <g>
+              <circle cx={cell.point.x} cy={cell.point.y} r={cell.selected ? 3.5 : 2.3} fill={cell.selected ? 'var(--ink)' : 'var(--paper)'} stroke="var(--ink)" stroke-width=".7" />
+              <text class="tefilm-still-math" x={cell.point.x} y={cell.point.y + 15} text-anchor="middle" font-size="8.5">{cell.value}</text>
+            </g>)}
+            <text x="125" y="151" text-anchor="middle" font-size="10">THE EIGHT SOLID POINTS HAVE NO TRIPLE</text>
+          </svg>
+          <svg viewBox="0 170 250 330" role="presentation">
+            <text x="125" y="177" text-anchor="middle" font-size="11">SIX SEPARATE ADDITION CASES</text>
+            {additions.map(addition => <g>
+              {addition.arcs.map(arc => <g>
+                <path d={arc.path} fill="none" stroke="var(--ink)" stroke-width=".65" />
+                <text class="tefilm-still-math" x={arc.x} y={addition.y - 17} text-anchor="middle" font-size="7">+{addition.gap}</text>
+              </g>)}
+              {addition.points.map(point => <g>
+                <circle cx={point.x} cy={point.y} r="3" fill={point.value === addition.added ? 'var(--paper)' : 'var(--ink)'} stroke="var(--ink)" stroke-width={point.value === addition.added ? 1.2 : .6} />
+                <text class="tefilm-still-math" x={point.x} y={point.y + 14} text-anchor="middle" font-size="8.5">{point.value}</text>
+              </g>)}
+              <text x="245" y={addition.y + 3} text-anchor="end" font-size="8">ADD {addition.added}</text>
+            </g>)}
+            <text x="125" y="449" text-anchor="middle" font-size="10">THIS EIGHT-SET IS MAXIMAL</text>
+            <text x="125" y="471" text-anchor="middle" font-size="10">ALL {model.nineSetCheck.count.toLocaleString('en-US')} NINE-SETS CHECKED</text>
+            <text x="125" y="491" text-anchor="middle" font-size="9">EVERY ONE HAS A TRIPLE: THE MAXIMUM IS {model.r14.size}</text>
+          </svg>
+        </div>
+      </div>
+      <p class="tefilm-fallback-caption">The {model.set14.length} solid points form a progression-free subset of 1 through 14. Each row below tries one missing number separately, with the new number hollow, and shows its completed progression. These six cases prove the drawn set is maximal. The separate check of all {model.nineSetCheck.count.toLocaleString('en-US')} nine-element subsets certifies that {model.r14.size} is the maximum. This is a computed overview of the 50-second scene.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="tefilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The only instance input is the article's eight-element subset of 1 through 14. The browser computes a prime sieve and reciprocal prefixes through one million, the first twenty powers of two, exact small progression-free maxima, every completion of the displayed set, and all {model.nineSetCheck.count.toLocaleString('en-US')} nine-element subsets of 1 through 14. The synchronous calculation needs no worker.</p>
+      <p class="film-method">The gauges report finite sums. The prime sum through one million is {model.gauges.primeSum.toFixed(6)}, the harmonic sum is {model.gauges.harmonicSum.toFixed(6)}, and the twenty-term powers-of-two sum is {model.gauges.powerSum.toFixed(6)}. Their finite readouts do not prove an infinite limit. Euler's divergence result is cited. The powers-of-two comparison shows an unequal outer sum and doubled middle term. The infinite obstruction is parity: after dividing by the smallest power, the outer sum is odd and twice the middle power is even. The progression claim concerns nontrivial lengths of at least three.</p>
+      <p class="film-method">The six missing-number trials are separate additions to the same eight-set. They give {model.completions.map(row => `${row.added}: ${row.progression.join(', ')}`).join('; ')}. They prove this set is maximal under adding one number. The independent exhaustive check that every nine-element subset contains a triple, together with the eight-set witness, proves the maximum is {model.r14.size}. The no-JavaScript still presents these separate certificates as an overview.</p>
+      <p class="film-method">In the displayed block bound, A is a k-term-progression-free set, and a is one of its members in the block I_m. The four exact bars are three-term bounds at dyadic widths 2, 4, 8 and 16. They are upper bounds for possible block contributions, not simultaneous densities of one constructed set. Including the possible contribution of number 1 gives {model.partialBound.toFixed(2)} so far. This is a partial upper bound, not the sum of an infinite series. Vanishing density alone does not establish summability; the dyadic upper bounds must form a convergent series.</p>
+      <p class="film-method">The blue envelope is schematic and marks the paper's claimed decay for every fixed progression length k of at least three. Its constants and curve height are not measured or fitted from the four small bars. The film omits the proof construction and does not verify the claim.</p>
+      <p class="film-method">The closing ledger keeps the article's 17 October 2026 evidence date and its unreviewed status. The Lean development proves the corollary using a weaker bound; that evidence is kept distinct from a public reading of the paper's proof.</p>
+    </FilmTranscript>
+  </uruk-thick-enough>
+</Plate>
+
+<script>
+  import './element';
+</script>
