@@ -1,0 +1,113 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createColourModel } from './math';
+import { graphLayout, vertexPoint, glyphRadius, glyphPath, glyphStyle, hatchPath } from './drawing';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const formulas = [
+  ['growth-bound', 'n^{0.195}'],
+  ['fixed-c', 'c\\ge3'],
+  ['n-first', '10^{3}'],
+  ['n-middle', '10^{6}'],
+  ['n-last', '10^{9}'],
+  ['independence-ratio', '\\alpha(G)/n'],
+  ['fraction-range', '0<\\delta<1/3'],
+] as const;
+const model = createColourModel();
+const geometry = graphLayout({ x: 0, y: 0, w: 250, h: 400 }, true);
+const radius = glyphRadius(9);
+const vertices = model.positions.map((position, vertex) => {
+  const color = model.planted[vertex];
+
+  if (color === undefined) throw new Error('Each canonical vertex has its planted glyph.');
+
+  const point = vertexPoint(position, geometry);
+  const distance = Math.hypot(point.x - geometry.center.x, point.y - geometry.center.y);
+
+  if (distance <= 0) throw new Error('Each numbered vertex has its noncentral circular position.');
+
+  const label = { x: point.x + (point.x - geometry.center.x) * geometry.idOffset / distance, y: point.y + (point.y - geometry.center.y) * geometry.idOffset / distance };
+
+  return { vertex, color, point, label, outline: glyphPath(color, radius), style: glyphStyle(color) };
+});
+const edges = model.edges.map(([a, b]) => {
+  const first = vertices[a];
+  const second = vertices[b];
+
+  if (!first || !second) throw new Error('Every graph edge joins two canonical vertices.');
+
+  return { first: first.point, second: second.point };
+});
+const palette = Array.from({ length: model.plantedCount }, (_, kind) => ({ kind, x: 125 + (kind - (model.plantedCount - 1) / 2) * 40, outline: glyphPath(kind, radius), style: glyphStyle(kind) }));
+---
+
+<Plate
+  caption="An 18-dot graph is promised to need only three colours, but first-fit colouring in a bad order uses six. Fei, Minzer and Wang prove that no efficient method can guarantee any fixed number of colours as graphs grow. OpenAI's paper claims more: that even a fixed fraction of mutually unjoined dots cannot be found efficiently, though a third of them always exist."
+  leftOut="the proof's construction, including formulas, phase spaces and chains of questions; 4-to-1 games and the reductions; the history of hardness results beyond the tag."
+>
+  <uruk-promised-three class="film-host">
+    <div class="ptfilm">
+      <div class="ptfilm-stage" data-film-viewport>
+        <canvas class="ptfilm-canvas" data-film-canvas role="img" aria-label="One graph has 18 vertices and 57 edges. First-fit uses six ink glyphs in the supplied order, although the graph has a proper three-glyph colouring. A largest independent set has six vertices. A growth chart distinguishes the cited human hardness proof from the paper's claim, marked by a blue fraction rule. Eighteen isolated vertices illustrate the independence-ratio distinction. A full text transcript follows."></canvas>
+        {formulas.map(([id, tex]) => <span class="ptfilm-label" data-label={id}><span set:html={renderFormula(tex, false)} /></span>)}
+        <div class="ptfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 250 400" role="presentation">
+            <defs>
+              <clipPath id="ptfilm-still-hatch"><path d={glyphPath(2, radius)} /></clipPath>
+            </defs>
+            <text x="125" y="18" text-anchor="middle" font-size="15">THE HIDDEN THREE-COLOURING</text>
+            {edges.map(edge => <path d={`M${edge.first.x},${edge.first.y}L${edge.second.x},${edge.second.y}`} fill="none" stroke="var(--ink)" stroke-width=".4" opacity=".55" />)}
+            {vertices.map(vertex => <g>
+              <g transform={`translate(${vertex.point.x},${vertex.point.y})`}>
+                <circle r={radius + 1} fill="var(--paper)" />
+                <path d={vertex.outline} fill={vertex.style.filled ? 'var(--ink)' : 'var(--paper)'} stroke="var(--ink)" stroke-width={vertex.style.strokeWidth} stroke-linejoin="round" />
+                {vertex.color === 2 && <path d={hatchPath(radius)} fill="none" stroke="var(--ink)" stroke-width=".85" stroke-linecap="round" clip-path="url(#ptfilm-still-hatch)" />}
+              </g>
+              <text class="ptfilm-still-math" x={vertex.label.x} y={vertex.label.y + 3} text-anchor="middle" font-size="8.5">{vertex.vertex + 1}</text>
+            </g>)}
+            <text x="125" y={geometry.paletteY - 20} text-anchor="middle" font-size="10">THREE INK MARKS NOW SHOWN</text>
+            {palette.map(mark => <g transform={`translate(${mark.x},${geometry.paletteY})`}>
+              <circle r={radius + 1} fill="var(--paper)" />
+              <path d={mark.outline} fill={mark.style.filled ? 'var(--ink)' : 'var(--paper)'} stroke="var(--ink)" stroke-width={mark.style.strokeWidth} stroke-linejoin="round" />
+              {mark.kind === 2 && <path d={hatchPath(radius)} fill="none" stroke="var(--ink)" stroke-width=".85" stroke-linecap="round" clip-path="url(#ptfilm-still-hatch)" />}
+              <text class="ptfilm-still-math" y="20" text-anchor="middle" font-size="9">{mark.kind + 1}</text>
+            </g>)}
+            <text x="125" y="312" text-anchor="middle" font-size="10">NEIGHBOURS HAVE DIFFERENT MARKS</text>
+            <text x="125" y="337" text-anchor="middle" font-size="10">{model.n} VERTICES · {model.edges.length} EDGES</text>
+          </svg>
+          <svg viewBox="0 0 250 300" role="presentation">
+            <text x="125" y="28" text-anchor="middle" font-size="15">SHOWN NOW</text>
+            <text class="ptfilm-still-math" x="125" y="72" text-anchor="middle" font-size="42">{model.plantedCount}</text>
+            <text x="125" y="99" text-anchor="middle" font-size="13">THE HIDDEN COLOURING</text>
+            <line x1="30" y1="133" x2="220" y2="133" stroke="var(--ink)" stroke-width=".6" />
+            <text x="125" y="166" text-anchor="middle" font-size="15">EARLIER FIRST-FIT</text>
+            <text class="ptfilm-still-math" x="125" y="211" text-anchor="middle" font-size="42">{model.firstFit.colorCount}</text>
+            <text x="125" y="241" text-anchor="middle" font-size="13">THIS ORDER USES SIX MARKS</text>
+            <text x="125" y="278" text-anchor="middle" font-size="10">BOTH COLOURINGS ARE PROPER</text>
+          </svg>
+        </div>
+      </div>
+      <p class="ptfilm-fallback-caption">The graph is shown in its hidden {model.plantedCount}-colouring. First-fit used {model.firstFit.colorCount} colours in the supplied order. Each ink mark stands for a colour, and no edge joins two vertices with the same mark. This is the computed 26-second still.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="ptfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. Only the graph, its planted colour assignments and the sampled first-fit order are supplied. The browser computes first-fit's choices from already coloured neighbours, checks both proper colourings, and searches for a largest independent set. All counts come from this graph. The six glyphs share their geometry between the canvas and the computed SVG still. The reveal changes marks in place; intermediate marks are labelled in transit and are not asserted to be a proper colouring.</p>
+      <p class="film-method">First-fit uses {model.firstFit.colorCount} colours in this order, which the canonical script found as the worst of 500 sampled orders. Other orders can use fewer. The planted colouring uses {model.plantedCount} classes. The lifted class is vertices 13 through 18, with no internal edge, and its size {model.alpha} is the exact maximum. The small graph is directly solvable and does not demonstrate an asymptotic hardness proof.</p>
+      <p class="film-method">The chart computes the illustrative power n to 0.195 with multiplicative constant one. It is not a measured runtime curve or an implementation of the cited algorithm. The human Fei–Minzer–Wang hardness result stays in ink. Its band describes fixed numbers of colours as graph size grows, not a claim that this finite example needs more than three.</p>
+      <p class="film-method">Adding {model.withIsolates.isolateCount} isolated vertices preserves the exact chromatic number three and gives a largest independent set of {model.withIsolates.alpha} among {model.withIsolates.n} vertices. The original graph contains a triangle, certifying that two colours do not suffice. The added vertices show why needing many colours need not force a small independence ratio.</p>
+      <p class="film-method">Blue marks only the paper's claimed hardness for every fixed fraction delta strictly between zero and one third. An independent set containing at least a third always exists in a three-colourable graph. The claim concerns finding a guaranteed fixed fraction efficiently as inputs grow, not the difficulty of solving the drawn 18-vertex graph.</p>
+      <p class="film-method">The closing evidence keeps the article's date, 3 November 2026. No mathematician had publicly said they checked OpenAI's proof. The release's Lean formalization is in its catalogue, while a kernel check is not a public reading of the paper. The status remains unreviewed.</p>
+    </FilmTranscript>
+  </uruk-promised-three>
+</Plate>
+
+<script>
+  import './element';
+</script>

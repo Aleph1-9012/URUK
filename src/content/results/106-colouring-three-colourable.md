@@ -9,6 +9,7 @@ checked: 2026-11-03
 papers:
   - preprints/Hardness-of-finding-large-independent-sets-in-three-colorable-graphs-September-24-2026/Hardness-of-finding-large-independent-sets-in-three-colorable-graphs-September-24-2026.pdf
 draft: false
+visual: promised-three
 ---
 
 A proper colouring of a graph gives neighbouring vertices different colours. Deciding whether three colours suffice is a classic hard problem. The question here is stranger: suppose you are promised that three colours suffice, and asked only to find some colouring with a hundred colours, or a million. It sounds like it should be easy, and nobody knows how to do it. The best algorithms use a number of colours that grows with the graph, about $n^{0.195}$ for $n$ vertices, and the best hardness results proved for decades that four colours, then five, are out of reach. On 14 September 2026 Fei, Minzer and Wang posted a human proof of a conjecture about 4-to-1 games that, through two earlier reductions, closes the question: for every fixed $c$, colouring a three-colourable graph with $c$ colours is NP-hard. Ten days later OpenAI posted a paper proving something stronger by a different route: it is NP-hard even to find an independent set, a set of mutually non-adjacent vertices, containing any fixed positive fraction of the vertices, although a three-colourable graph always has one containing a third of them. [1][2][3]
