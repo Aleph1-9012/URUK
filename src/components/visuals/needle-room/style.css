@@ -1,0 +1,23 @@
+.nrfilm { border: 1px solid var(--muted); background: var(--paper); }
+.nrfilm-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.nrfilm-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; visibility: hidden; }
+uruk-needle-room[data-ready] .nrfilm-canvas { visibility: visible; }
+.nrfilm-formulas { position: absolute; inset: 0; pointer-events: none; }
+.nrfilm-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: .875rem; line-height: 1.25; white-space: nowrap; }
+.nrfilm-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+.nrfilm-label[data-label='floor'], .nrfilm-label[data-label='maximal'] { color: var(--blue); }
+.nrfilm-still { position: absolute; inset: 3%; display: grid; grid-template-columns: 49% 48%; gap: 3%; }
+uruk-needle-room[data-ready] .nrfilm-still { display: none; }
+.nrfilm-still svg { display: block; width: 100%; height: 100%; min-height: 0; overflow: visible; }
+.nrfilm-still text { fill: var(--ink); font-family: 'Alegreya', serif; }
+.nrfilm-still .nrfilm-still-math { font-family: 'Garamond Math', serif; }
+.plate .nrfilm-fallback-caption { margin: 0; padding: 12px 18px 18px; font: 1.0625rem/1.45 var(--font-alegreya); text-align: center; }
+uruk-needle-room[data-ready] .nrfilm-fallback-caption { display: none; }
+uruk-needle-room:not([data-ready]) .film-subtitles { display: none; }
+
+@container plate (max-width: 599px) {
+  .nrfilm-stage { aspect-ratio: 4 / 6; }
+  .nrfilm-label { font-size: .75rem; }
+  .nrfilm-label[data-label='maximal'] { font-size: .625rem; }
+  .nrfilm-still { inset: 3% 4%; grid-template-columns: 1fr; grid-template-rows: 48% 49%; }
+}

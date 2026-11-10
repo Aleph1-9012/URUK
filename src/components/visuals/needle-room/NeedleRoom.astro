@@ -1,0 +1,109 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { renderFormula } from '../../../lib/formulas/render';
+import { createKakeyaModel, rotateTriangles, type Point } from './math';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'r2', tex: String.raw`\mathbb R^2` },
+  { id: 'r3', tex: String.raw`\mathbb R^3` },
+  { id: 'r4', tex: String.raw`\mathbb R^4` },
+  { id: 'lambda', tex: String.raw`\lambda` },
+  { id: 'line-lambda3', tex: String.raw`\lambda^3` },
+  { id: 'line-lambdaK', tex: String.raw`\lambda^K` },
+  { id: 'floor', tex: String.raw`\delta^{\varepsilon}\lambda^3` },
+  { id: 'maximal', tex: String.raw`\begin{gathered}\lVert K_\delta f\rVert_{L^3(S^2)}\\\le C_\varepsilon\delta^{-\varepsilon}\lVert f\rVert_{L^3(\mathbb R^3)}\end{gathered}` },
+  { id: 'hinge', tex: String.raw`F(s)=\beta(s-\tau)_+` },
+  { id: 'moving-point', tex: String.raw`(t,\,y_0+tV,\,w_0+tW)` },
+  { id: 'ell', tex: String.raw`\ell` },
+] as const;
+
+const model = createKakeyaModel();
+const copies = [0, Math.PI / 3, Math.PI * 2 / 3].flatMap(angle => rotateTriangles(model.slivers, angle, model.centre));
+let lowX = Infinity;
+let highX = -Infinity;
+let lowY = Infinity;
+let highY = -Infinity;
+
+for (const triangle of copies) {
+  for (const point of triangle) {
+    lowX = Math.min(lowX, point.x);
+    highX = Math.max(highX, point.x);
+    lowY = Math.min(lowY, point.y);
+    highY = Math.max(highY, point.y);
+  }
+}
+
+const scale = Math.min(444 / (highX - lowX), 310 / (highY - lowY));
+const left = 28 + (444 - (highX - lowX) * scale) / 2;
+const top = 48 + (310 - (highY - lowY) * scale) / 2;
+
+function project(point: Point): Point {
+  return { x: left + (point.x - lowX) * scale, y: top + (highY - point.y) * scale };
+}
+
+const unionPath = copies.map(triangle => triangle.map((point, index) => {
+  const position = project(point);
+
+  return `${index === 0 ? 'M' : 'L'}${position.x.toFixed(3)},${position.y.toFixed(3)}`;
+}).join(' ') + 'Z').join(' ');
+const finalShare = model.stageShares.at(-1);
+
+if (finalShare === undefined) throw new Error('The finite sprouting construction has its final area share.');
+---
+
+<Plate
+  caption="A needle turns round in a triangle of height 1. Cut into 256 slivers and slid together, one sixty-degree fan uses 22 percent of the triangle's area; three turned copies keep every direction. Counting squares still finds a two-dimensional shape. In space, tubes through one point shaded in their middle fraction fill about that fraction cubed of their total: the floor the three-dimensional paper claims. The four-dimensional paper claims full dimension four."
+  leftOut="Davies's continuous turning in small area; the infimum over covers and the limit as their size tends to zero; the ball multiplier, restriction and Bochner–Riesz; the hairbrush, planebrush and stickiness; four-dimensional maximal bounds and sticky-set results; multilinear Kakeya, Furstenberg and pinning estimates, and mutual information; the horizon, comparison principle and details of the three narrowness regimes; Nikodym and curved Kakeya; family 079; every constant. The general-power line, claimed floor's height, hinge parameters, moving-point chart and narrowness ruler are schematic."
+>
+  <uruk-needle-room class="film-host">
+    <div class="nrfilm">
+      <div class="nrfilm-stage" data-film-viewport>
+        <canvas class="nrfilm-canvas" data-film-canvas role="img" aria-label="A unit needle turns in a triangle whose slivers slide into a smaller branched region. Grids count the region's squares. The plane tilts into a flat ink drawing of tubes through one point, and their shaded middles shrink. A dimension ladder and volume-share chart separate known results from unreviewed claims. A full text transcript follows."></canvas>
+        <div class="nrfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 420" role="presentation">
+            <text x="250" y="22" text-anchor="middle" font-size="22">256 SLIVERS · THREE TURNED COPIES</text>
+            <path d={unionPath} fill="var(--ink)" fill-rule="nonzero" />
+            <text x="250" y="393" text-anchor="middle" font-size="24">EVERY DIRECTION · AREA {model.threeArea.toFixed(3)}</text>
+          </svg>
+          <svg viewBox="0 0 500 420" role="presentation">
+            <text x="250" y="31" text-anchor="middle" font-size="25">UNIT SEGMENTS IN EVERY DIRECTION</text>
+            <text x="250" y="84" text-anchor="middle" font-size="22">ONE FAN: SIXTY DEGREES</text>
+            <text x="250" y="121" text-anchor="middle" font-size="26">{(100 * finalShare).toFixed(1)} % OF THE TRIANGLE'S AREA</text>
+            <path d="M120 153H380" stroke="var(--muted)" stroke-width="1" />
+            <text x="250" y="190" text-anchor="middle" font-size="22">TURNED BY 0°, 60° AND 120°</text>
+            <text x="250" y="232" text-anchor="middle" font-size="25">THREE COPIES: AREA {model.threeArea.toFixed(3)}</text>
+            <text x="250" y="274" text-anchor="middle" font-size="22">ORIGINAL TRIANGLE: {model.triangleArea.toFixed(3)}</text>
+            <text x="250" y="336" text-anchor="middle" font-size="21">A FINITE STAGE OF THE CONSTRUCTION</text>
+            <text x="250" y="376" text-anchor="middle" font-size="21">MORE SLIVERS CAN USE LESS AREA</text>
+          </svg>
+        </div>
+        <div class="nrfilm-formulas" aria-hidden="true" data-bleed>
+          {labels.map(label => <span class="nrfilm-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+        </div>
+      </div>
+      <p class="nrfilm-fallback-caption">One sixty-degree fan is cut into 256 slivers and slid sideways. Three copies, turned by sixty degrees, contain a unit segment in every direction and have combined area about 0.353, against the original triangle's 0.577. This is a finite positive-area stage of the construction.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="nrfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The needle has length one. Its first room is a disc of area π/4, about 0.7854; the equilateral triangle has height one, side 2/√3 and area 1/√3, about 0.5774. The needle follows three sixty-degree pivots and three short slides, including the final slide along the baseline. Its endpoints keep their physical identities, stay in the triangle and finish exchanged. The direction's independent script samples fifteen hundred positions with forty-one points along the needle to check length and containment.</p>
+      <p class="film-method">The triangle fans from its upper corner into 256 slivers. The sprouting construction slides whole slivers sideways in eight stages with α = 0.84. Their widths, heights and directions are preserved. Browser calculations produce the shifts. The numerical area evaluation unions horizontal intervals and integrates midpoint slices; the reference doubles twelve thousand slices to twenty-four thousand to check agreement. The final fan uses about 22.3 percent of the original triangle's area. It contains the unit directions in a sixty-degree range. Three copies rotated by zero, sixty and one hundred twenty degrees cover every direction, with union area about 0.3532. These are finite positive-area illustrations, rather than a drawn zero-area set.</p>
+      <p class="film-method">The square grid is fixed at the triangle's original left corner. A cell counts if it meets the drawn region. Columns to the left of the origin remain negative columns and are not wrapped into the right side. The browser counts the first two grid sizes directly. The four needle counts are 8, 16, 32 and 64; the slid shape uses 36, 120, 410 and 1,488. At side one sixty-fourth, this is about sixty percent of the whole triangle's 2,465 cells, despite its twenty-two-percent area. These box counts illustrate dimension; they omit the infimum over covers and the limiting definition of Hausdorff dimension.</p>
+      <p class="film-method">The tube picture is a fixed oblique line drawing, without rendered shading. The radius is δ = 1/32. A Fibonacci net provides 2,442 directions, identified with their opposites, whose closest pair is about 1.006 δ apart. Sixty members of that computed net are drawn. Each tube has length one and passes through the same point; shortening each shaded middle to fraction λ gives a bush contained in a ball of radius √((λ/2)² + δ²). The net's covering bound gives an inner ball of radius λ/2. The space filled is therefore shown as a range between the two ball volumes, not an exact union volume.</p>
+      <p class="film-method">All tubes together have volume about 7.492 when their individual volumes are added. At λ equal to one, one half and one quarter, the shaded volumes add to 7.492, 3.746 and 1.873. Their union-volume ranges are approximately 0.524–0.527, 0.0655–0.0670 and 0.00818–0.00896. Dividing by the full tubes' added volume gives the plotted shares. Tubes kept apart instead fill exactly the fraction λ. These examples explain the linear and cubic powers and do not prove a bound for every possible configuration.</p>
+      <p class="film-method">The dimension ladder's settled facts and cited bounds follow the article. The plane target is two, Davies's 1971 result. Three dimensions show Wolff's five-halves bound and Wang and Zahl's 2025 set theorem. In four dimensions the later cited ticks are 3 + 1/40 and 3.059. The blue ring at four and the dashed blue cubic floor are the release's claims. The claimed maximal-function formula is shown with its δ-dependent loss; the drawn floor's height does not assert its unknown constant.</p>
+      <p class="film-method">The folding bush, stacked plates and hinge function are schematic descriptions of the three-dimensional proof map. The later four-dimensional chart uses a moving-point view of a line: t is time, y has two coordinates and w has one. The displayed curves, quadratic-test band and narrowness ruler illustrate the argument rather than calculating its chart invariants. The hinge parameters, line of general power and three narrowness regimes are labelled schematic. No drawing checks either proof.</p>
+      <p class="film-method">Review statements follow the article's dated evidence. Its four-dimensional paper received two minor OSVerify findings and no major finding, while no named mathematician had publicly reported reading or checking either paper by the article's date. The uncatalogued fixed-scale Lean file covers neither headline claim. A formal statement or kernel check is not counted as independent human approval.</p>
+    </FilmTranscript>
+  </uruk-needle-room>
+</Plate>
+
+<script>
+  import './element';
+</script>

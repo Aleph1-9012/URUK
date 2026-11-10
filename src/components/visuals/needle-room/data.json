@@ -1,0 +1,141 @@
+{
+  "stageShares": [
+    1.0,
+    0.7187,
+    0.5361,
+    0.4181,
+    0.3412,
+    0.2905,
+    0.2571,
+    0.2357,
+    0.2226
+  ],
+  "threeTrees": {
+    "union_area": 0.3532,
+    "one_tree_area": 0.1285,
+    "centre": [
+      0.143111,
+      0.333333
+    ]
+  },
+  "largeSquares": [
+    {
+      "delta": 0.03125,
+      "needle": 32,
+      "tree": 410,
+      "triangle": 641
+    },
+    {
+      "delta": 0.015625,
+      "needle": 64,
+      "tree": 1488,
+      "triangle": 2465
+    }
+  ],
+  "best": [
+    {
+      "k": 2,
+      "slivers": 4,
+      "alpha": 0.7000000000000002,
+      "share": 0.5002
+    },
+    {
+      "k": 4,
+      "slivers": 16,
+      "alpha": 0.7800000000000002,
+      "share": 0.3457
+    },
+    {
+      "k": 6,
+      "slivers": 64,
+      "alpha": 0.8200000000000003,
+      "share": 0.2692
+    },
+    {
+      "k": 8,
+      "slivers": 256,
+      "alpha": 0.8400000000000003,
+      "share": 0.2226
+    },
+    {
+      "k": 10,
+      "slivers": 1024,
+      "alpha": 0.8600000000000003,
+      "share": 0.1908
+    }
+  ],
+  "bush": {
+    "delta": 0.03125,
+    "directions": 2442,
+    "closest_pair_over_delta": 1.0064,
+    "covering_radius_over_delta": 1.2897,
+    "total_volume": 7.492,
+    "rows": [
+      {
+        "lambda": 1,
+        "union_low": 0.5236,
+        "union_high": 0.52667,
+        "shaded_total": 7.492,
+        "share_low": 0.069888,
+        "share_high": 0.070298
+      },
+      {
+        "lambda": 0.5,
+        "union_low": 0.06545,
+        "union_high": 0.06699,
+        "shaded_total": 3.746,
+        "share_low": 0.008736,
+        "share_high": 0.008942
+      },
+      {
+        "lambda": 0.25,
+        "union_low": 0.00818,
+        "union_high": 0.00896,
+        "shaded_total": 1.873,
+        "share_low": 0.001092,
+        "share_high": 0.001196
+      }
+    ]
+  },
+  "ladder": {
+    "R2": [
+      {
+        "value": 2,
+        "who": "Davies",
+        "year": 1971
+      }
+    ],
+    "R3": [
+      {
+        "value": 2.5,
+        "who": "Wolff",
+        "year": 1995
+      },
+      {
+        "value": 3,
+        "who": "Wang and Zahl",
+        "year": 2025
+      }
+    ],
+    "R4": [
+      {
+        "value": 3,
+        "who": "Wolff",
+        "year": 1995
+      },
+      {
+        "value": 3.025,
+        "who": "Guth and Zahl (with Zahl, Katz and Rogers)"
+      },
+      {
+        "value": 3.059,
+        "who": "Katz and Zahl"
+      },
+      {
+        "value": 4,
+        "who": "OpenAI",
+        "claimed": true
+      }
+    ]
+  }
+}

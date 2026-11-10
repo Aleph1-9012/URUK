@@ -10,6 +10,7 @@ papers:
   - preprints/The-Kakeya-maximal-conjecture-in-three-dimensions-September-23-2026/paper.pdf
   - preprints/Every-four-dimensional-Kakeya-set-has-full-Hausdorff-dimension-September-24-2026/paper.pdf
 draft: false
+visual: needle-room
 ---
 
 In 1917 Sōichi Kakeya asked how small a region of the plane can be if a needle of length one is to be turned around inside it to point in every direction. Besicovitch answered in 1928: as small as you like. A set that contains a unit segment in every direction, now called a Kakeya set, can have area zero. But area is a crude measure. The Kakeya conjecture says that such a set, in $n$-dimensional space, must still have full dimension $n$ in the finer sense of Hausdorff, and a stronger maximal version says the same thing quantitatively, about averages over thin tubes. Davies proved the plane in 1971. Three dimensions took until February 2025, when Hong Wang and Joshua Zahl proved the set conjecture, work for which Wang received a Fields Medal in the summer of 2026. On 23 and 24 September 2026 OpenAI posted two papers claiming the next two steps: the maximal conjecture in three dimensions, which Wang and Zahl's theorem does not give, and the set conjecture in four dimensions, where the best known lower bound on the dimension had been $3.059$. [1][2][3][4][6]
