@@ -10,6 +10,7 @@ papers:
   - preprints/The-Sharp-Logarithmic-Exponent-of-r-5-t-September-24-2026/paper.pdf
   - preprints/Sharp-Logarithmic-Exponents-for-Fixed-Off-Diagonal-Ramsey-Numbers-September-24-2026/paper.pdf
 draft: false
+visual: party-gap
 ---
 
 Among any six people, three are mutual acquaintances or three are mutual strangers; five people are not enough. That is the Ramsey number $r(3,3)=6$, the first case of a theorem Frank Ramsey proved in 1930 on the way to a problem in logic. The general number $r(s,t)$ is the smallest party size that forces $s$ mutual acquaintances or $t$ mutual strangers, and almost nothing exact is known: $r(5,5)$ lies somewhere between $43$ and $46$. Mathematicians therefore ask how $r(s,t)$ grows when $s$ is fixed and $t$ gets large. Erdős and Szekeres showed in 1935 that it grows no faster than $t^{s-1}$; in 1980 Ajtai, Komlós and Szemerédi shaved off a power of $\log t$, giving $t^{s-1}/(\log t)^{s-2}$. Whether that is the truth took decades to settle case by case: Kim proved it for $s=3$ in 1995, Mattheus and Verstraete found the power of $t$ for $s=4$ in 2023, and in May 2026 Bradač found the power of $t$ for every $s$, leaving a gap only in the power of the logarithm. On 24 September 2026 OpenAI posted two papers claiming to close that gap for every $s\ge5$. [1][2][3][4][5][6]

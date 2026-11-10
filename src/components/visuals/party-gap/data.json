@@ -1,0 +1,154 @@
+{
+  "hunt": [
+    true,
+    false,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false,
+    true,
+    true,
+    false,
+    true,
+    true,
+    false,
+    true
+  ],
+  "huntSeed": 171,
+  "flags": [
+    [
+      10,
+      7
+    ],
+    [
+      10,
+      0
+    ],
+    [
+      8,
+      3
+    ],
+    [
+      12,
+      5
+    ],
+    [
+      3,
+      12
+    ],
+    [
+      11,
+      2
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      12,
+      7
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      9,
+      10
+    ],
+    [
+      12,
+      7
+    ],
+    [
+      7,
+      12
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      0,
+      10
+    ],
+    [
+      0,
+      7
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      8,
+      8
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      8,
+      10
+    ]
+  ],
+  "streamsChecked": 3000,
+  "ladder": {
+    "3": {
+      "upper": 1,
+      "lower": [
+        {
+          "exp": 1,
+          "who": "Kim",
+          "year": 1995,
+          "power_of_t": 2
+        }
+      ]
+    },
+    "4": {
+      "upper": 2,
+      "lower": [
+        {
+          "power_of_t": 2.5,
+          "exp": 2.5,
+          "who": "Spencer"
+        },
+        {
+          "power_of_t": 3,
+          "exp": 4,
+          "who": "Mattheus and Verstraete",
+          "year": 2023
+        }
+      ]
+    },
+    "5": {
+      "upper": 3,
+      "lower": [
+        {
+          "power_of_t": 3,
+          "exp": 3,
+          "who": "Spencer"
+        },
+        {
+          "power_of_t": 4,
+          "exp": 6,
+          "who": "Bradac",
+          "year": 2026
+        },
+        {
+          "power_of_t": 4,
+          "exp": "3+eps",
+          "who": "OpenAI",
+          "claimed": true
+        }
+      ]
+    }
+  }
+}
