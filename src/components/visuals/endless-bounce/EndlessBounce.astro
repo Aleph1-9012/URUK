@@ -1,0 +1,127 @@
+---
+import Plate from '../../plate/Plate.astro';
+import FilmControls from '../../plate/FilmControls.astro';
+import FilmSubtitles from '../../plate/FilmSubtitles.astro';
+import FilmTranscript from '../../plate/FilmTranscript.astro';
+import '../../plate/film.css';
+import { createBounceModel, directionStats, timeShareLeft, type Point } from './math';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const model = createBounceModel();
+const table = model.cases.irrational;
+const run = table.run;
+
+if (run.kind !== 'complete') throw new Error('The static irrational-table prefix must complete its computed run.');
+
+const headings = directionStats(run.directions);
+const timeShare = timeShareLeft(run);
+const maximumX = Math.max(...table.triangle.map(point => point.x));
+const maximumY = Math.max(...table.triangle.map(point => point.y));
+const scale = Math.min(370 / maximumX, 245 / maximumY);
+const left = (500 - maximumX * scale) / 2;
+const project = (point: Point) => ({ x: left + point.x * scale, y: 294 - point.y * scale });
+const boundary = table.triangle.map(point => {
+  const at = project(point);
+
+  return `${at.x},${at.y}`;
+}).join(' ');
+const bands = Array.from({ length: 10 }, (_, band) => {
+  let path = '';
+  const first = band * 40;
+
+  for (let index = first; index <= Math.min(first + 40, run.points.length - 1); index++) {
+    const point = run.points[index];
+
+    if (!point) throw new Error('Every trail band uses computed collision points.');
+
+    const at = project(point);
+    path += `${index === first ? 'M' : 'L'}${at.x.toFixed(3)},${at.y.toFixed(3)} `;
+  }
+
+  return { path, opacity: .05 + band * .065 };
+});
+const last = run.points.at(-1);
+
+if (!last) throw new Error('The static path includes its final point.');
+
+const ball = project(last);
+const dividerBottom = project({ x: model.divider, y: 0 });
+const dividerTop = project({ x: model.divider, y: maximumY });
+const circle = { x: 250, y: 188, radius: 117 };
+const atAngle = (radius: number, angle: number) => ({ x: circle.x + radius * Math.cos(angle), y: circle.y - radius * Math.sin(angle) });
+const maximumCount = Math.max(...headings.bins);
+
+if (maximumCount <= 0) throw new Error('The computed prefix contributes headings to its circle.');
+
+const sectors = headings.bins.map((count, index) => {
+  const start = index * 2 * Math.PI / headings.bins.length;
+  const end = (index + 1) * 2 * Math.PI / headings.bins.length;
+  const innerStart = atAngle(96, start);
+  const outerStart = atAngle(circle.radius, start);
+  const innerEnd = atAngle(96, end);
+  const outerEnd = atAngle(circle.radius, end);
+
+  return { path: `M${innerStart.x},${innerStart.y}L${outerStart.x},${outerStart.y}A117,117 0 0 0 ${outerEnd.x},${outerEnd.y}L${innerEnd.x},${innerEnd.y}A96,96 0 0 1 ${innerStart.x},${innerStart.y}Z`, opacity: count === 0 ? 0 : .08 + .35 * count / maximumCount, innerStart, outerStart };
+});
+const rays = run.directions.map(angle => ({ from: atAngle(78, angle), to: atAngle(114, angle) }));
+---
+
+<Plate
+  caption="A ball bounces forever in a triangle. In the equilateral and right isosceles tables it only ever heads 6 or 8 ways. In this irrational table its headings spread around the circle. The papers claim ergodicity and weak mixing in every irrational triangle."
+  leftOut="Forni–Moll's framework; Fourier modes; smoothing away from the cones; the localized energy estimate; the weak-mixing eigenvalue argument; translation surfaces. The flat double's gluing layout is schematic. A finite numerical trajectory does not establish ergodicity or weak mixing."
+>
+  <uruk-endless-bounce class="film-host">
+    <div class="ebfilm">
+      <div class="ebfilm-stage" data-film-viewport>
+        <canvas class="ebfilm-canvas" data-film-canvas role="img" aria-label="A ball and its trail move inside changing triangular tables. A direction circle records six or eight headings for rational tables and headings across all twenty-four sectors for the illustrated irrational table. A gauge compares time spent left of a line with the area there. Two copies open into a schematic flat double, and blue marks identify the unreviewed claims. A full text transcript follows."></canvas>
+        <div class="ebfilm-still" aria-hidden="true">
+          <svg viewBox="0 0 500 420" role="presentation">
+            <defs><clipPath id="ebfilm-still-table"><polygon points={boundary} /></clipPath></defs>
+            <text x="250" y="24" text-anchor="middle" font-size="26">IRRATIONAL TRIANGLE · ONE BALL</text>
+            <g clip-path="url(#ebfilm-still-table)">
+              {bands.map(band => <path d={band.path} fill="none" stroke="var(--ink)" stroke-width="1.1" opacity={band.opacity} />)}
+              <line x1={dividerBottom.x} y1={dividerBottom.y} x2={dividerTop.x} y2={dividerTop.y} stroke="var(--ink)" stroke-width="1.4" stroke-dasharray="6 5" />
+            </g>
+            <polygon points={boundary} fill="none" stroke="var(--ink)" stroke-width="2" />
+            <circle cx={ball.x} cy={ball.y} r="5" fill="var(--ink)" />
+            <text x="250" y="322" text-anchor="middle" font-size="25">LEFT OF x = {model.divider}</text>
+            <text x="65" y="343" font-size="23">TIME {timeShare.toFixed(3)}</text>
+            <rect x="65" y="351" width="370" height="9" fill="var(--ink)" opacity=".12" />
+            <rect x="65" y="351" width={370 * timeShare} height="9" fill="var(--ink)" />
+            <text x="65" y="381" font-size="23">AREA {table.areaShare.toFixed(3)}</text>
+            <rect x="65" y="389" width="370" height="9" fill="var(--ink)" opacity=".12" />
+            <rect x="65" y="389" width={370 * table.areaShare} height="9" fill="var(--ink)" />
+          </svg>
+          <svg viewBox="0 0 500 420" role="presentation">
+            <text x="250" y="24" text-anchor="middle" font-size="26">DIRECTIONS · COMPUTED PREFIX</text>
+            {sectors.map(sector => <g><path d={sector.path} fill="var(--ink)" opacity={sector.opacity} /><line x1={sector.innerStart.x} y1={sector.innerStart.y} x2={sector.outerStart.x} y2={sector.outerStart.y} stroke="var(--ink)" stroke-width=".8" /></g>)}
+            {rays.map(ray => <line x1={ray.from.x} y1={ray.from.y} x2={ray.to.x} y2={ray.to.y} stroke="var(--ink)" stroke-width=".8" opacity=".3" />)}
+            <circle cx={circle.x} cy={circle.y} r={circle.radius} fill="none" stroke="var(--ink)" stroke-width="1.4" />
+            <text class="ebfilm-still-math" x="385" y="195" font-size="29">0</text>
+            <text class="ebfilm-still-math" x="250" y="58" text-anchor="middle" font-size="29">π/2</text>
+            <text class="ebfilm-still-math" x="103" y="195" font-size="29">π</text>
+            <text class="ebfilm-still-math" x="250" y="338" text-anchor="middle" font-size="29">3π/2</text>
+            <text x="250" y="373" text-anchor="middle" font-size="25">{headings.distinct} HEADINGS · {24 - headings.empty}/24 SECTORS</text>
+            <text x="250" y="408" text-anchor="middle" font-size="24">{run.directions.length} BOUNCES · COMPUTED PREFIX</text>
+          </svg>
+        </div>
+      </div>
+      <p class="ebfilm-fallback-caption">The computed four-hundred-bounce prefix in this irrational triangle has {headings.distinct} observed headings and reaches all twenty-four direction sectors. Its time share left of the line is {timeShare.toFixed(3)}, against area share {table.areaShare.toFixed(3)}. This finite picture does not prove that every irrational triangle is ergodic or weakly mixing.</p>
+      <FilmSubtitles cues={CUES} />
+    </div>
+    <FilmControls id="ebfilm-timeline" timeline={TIMELINE} step={50} />
+    <FilmTranscript cues={CUES}>
+      <p class="film-method">How the film is made. The fixed-table runs use the same starting point, 0.31 across and 0.12 up, and the same heading, 0.37 radians. The irrational triangle has angles 1 and 1.2 radians, with the third completing the angle sum. The browser computes specular reflections and the first four hundred bounces. A worker computes one hundred thousand bounces in each of the three fixed tables. While it is pending, the picture uses only the genuine four-hundred-bounce prefix and labels the longer calculation as pending. It does not substitute the reference's completed readouts. A failed computation leaves an explicit failure message and the actual prefix.</p>
+      <p class="film-method">The worker returns the complete trajectory, event times, heading samples and measured shares. Drawing motion follows distance along the computed path, so a longer free flight takes proportionally longer at unit speed. Each table keeps its own sample clock, and returning to a table resumes its paused sample. The trail is grouped by age into fading ink bands. During a table change, barycentric motion carries the ball and trail towards the next table's paused state, or its starting point on first activation. The readout says TRANSITION. This is a drawing transition; no moving-wall physics is asserted. The completed readouts describe the full one-hundred-thousand-bounce experiment, separately from its slower playback.</p>
+      <p class="film-method">The direction circle has twenty-four equal sectors and records observed headings. Distinct headings are counted after rounding to one millionth of a degree, matching the reference script. The chosen equilateral and right isosceles runs have six and eight headings. The irrational run has 6,901 over one hundred thousand bounces, reaching every sector. A finite set of observed directions or occupied sectors does not establish density in the full circle.</p>
+      <p class="film-method">The share gauge measures time to the left of x = 0.4. At unit speed, time is path length, so the calculation clips each travelled segment at the line and weights its contribution by its length. It is not a fraction of collision counts. The area share is computed by clipping the triangle itself. All reported decimal values describe the stated finite run, and agreement for one orbit does not prove ergodicity.</p>
+      <p class="film-method">The flat double's arrangement on the page is schematic. It represents oppositely oriented copies glued along corresponding sides, with a straight continuation across each seam. The cone angles are twice the triangle's angles, approximately 114.6, 137.5 and 107.9 degrees. The drawing does not supply the papers' analysis near those cone points.</p>
+      <p class="film-method">Blue identifies the claims of ergodicity and weak mixing for every irrational triangle. Strong mixing and polygons with more than three sides are not claimed. The closing review evidence follows the article's date, 20 October 2026. No mathematician had publicly reported reading or checking the proofs. This numerical illustration is not counted as proof verification.</p>
+    </FilmTranscript>
+  </uruk-endless-bounce>
+</Plate>
+
+<script>
+  import './element';
+</script>

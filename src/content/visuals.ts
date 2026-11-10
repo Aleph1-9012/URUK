@@ -30,6 +30,7 @@ export const visualCatalog = [
   { key: 'needle-room', component: './needle-room/NeedleRoom.astro' },
   { key: 'cheapest-floor', component: './cheapest-floor/CheapestFloor.astro' },
   { key: 'party-gap', component: './party-gap/PartyGap.astro' },
+  { key: 'endless-bounce', component: './endless-bounce/EndlessBounce.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

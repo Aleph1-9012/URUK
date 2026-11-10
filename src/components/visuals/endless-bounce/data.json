@@ -1,0 +1,97 @@
+{
+  "equilateral": {
+    "vertices": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.5,
+        0.866025
+      ]
+    ],
+    "angles_deg": [
+      60.0,
+      60.0,
+      60.0
+    ],
+    "directions": 6,
+    "direction_bins_empty": 18,
+    "time_share_left": {
+      "100": 0.3177,
+      "1000": 0.318,
+      "10000": 0.3199,
+      "100000": 0.32
+    },
+    "area_share_left": 0.32
+  },
+  "right_isosceles": {
+    "vertices": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0
+      ]
+    ],
+    "angles_deg": [
+      90.0,
+      45.0,
+      45.0
+    ],
+    "directions": 8,
+    "direction_bins_empty": 16,
+    "time_share_left": {
+      "100": 0.6331,
+      "1000": 0.6389,
+      "10000": 0.6399,
+      "100000": 0.64
+    },
+    "area_share_left": 0.64
+  },
+  "irrational": {
+    "vertices": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0
+      ],
+      [
+        0.622863,
+        0.970052
+      ]
+    ],
+    "angles_deg": [
+      57.2958,
+      68.7549,
+      53.9493
+    ],
+    "directions": 6901,
+    "direction_bins_empty": 0,
+    "time_share_left": {
+      "100": 0.2414,
+      "1000": 0.2441,
+      "10000": 0.2574,
+      "100000": 0.2553
+    },
+    "area_share_left": 0.2569
+  },
+  "flat_double_cone_angles_deg": [
+    114.59,
+    137.51,
+    107.9
+  ]
+}
