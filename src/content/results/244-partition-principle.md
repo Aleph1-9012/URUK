@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/The-Partition-Principle-does-not-imply-Choice-September-24-2026/partition-principle-without-choice.pdf
 draft: false
+visual: choice-pieces
 ---
 
 Cut a set into pieces. The Axiom of Choice lets you pick one point from every piece at once, however many pieces there are. A weaker-sounding statement, the Partition Principle, says only that there are never more pieces than points: some one-to-one map sends each piece to a point, though the point need not lie in its own piece. Beppo Levi stated the principle in 1902; Bertrand Russell claimed without proof that it implies Choice; and whether it does has been open ever since, in what Asaf Karagila, the problem's leading specialist, has called the oldest open problem in set theory. Three preprints in 2025 and 2026 claimed a model in which the principle holds and Choice fails, and all three were withdrawn. On 24 September 2026 OpenAI posted a forty-four-page paper claiming such a model. [1][3][4]

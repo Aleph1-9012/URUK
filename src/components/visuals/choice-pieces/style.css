@@ -1,0 +1,13 @@
+uruk-choice-pieces .film-frame { container: ppfilm / inline-size; }
+uruk-choice-pieces .film-label { font-size: .875rem; }
+uruk-choice-pieces [data-label="con-zf"],
+uruk-choice-pieces [data-label="con-extension"] { color: var(--blue); }
+
+@container ppfilm (600px <= width < 760px) {
+  uruk-choice-pieces .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container ppfilm (width < 600px) {
+  uruk-choice-pieces .film-stage { aspect-ratio: 4 / 9; }
+  uruk-choice-pieces .film-label { font-size: .75rem; }
+}
