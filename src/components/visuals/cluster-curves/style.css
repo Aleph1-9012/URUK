@@ -1,0 +1,11 @@
+uruk-cluster-curves .film-frame { container: fkfilm / inline-size; }
+uruk-cluster-curves .film-label { font-size: .875rem; }
+
+@container fkfilm (600px <= width < 760px) {
+  uruk-cluster-curves .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container fkfilm (width < 600px) {
+  uruk-cluster-curves .film-stage { aspect-ratio: 4 / 9; }
+  uruk-cluster-curves .film-label { font-size: .75rem; }
+}

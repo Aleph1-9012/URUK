@@ -1,0 +1,45 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'cluster-weight', tex: String.raw`q^{k(A)}` },
+  { id: 'edge-probability', tex: String.raw`p_q=\frac{\sqrt q}{1+\sqrt q}` },
+  { id: 'sle-family', tex: String.raw`\mathrm{SLE}_{\kappa}` },
+  { id: 'kappa-formula', tex: String.raw`\kappa(q)=\frac{4\pi}{\arccos(-\sqrt q/2)}` },
+  { id: 'kappa-one', tex: String.raw`\kappa(1)=6` },
+  { id: 'kappa-two', tex: String.raw`\kappa(2)=\frac{16}{3}` },
+  { id: 'kappa-three', tex: String.raw`\kappa(3)=\frac{24}{5}` },
+  { id: 'kappa-four', tex: String.raw`\kappa(4)=4` },
+  { id: 'q0-limit', tex: String.raw`\kappa(q)\longrightarrow8\quad(q\downarrow0)` },
+  { id: 'sle-scope', tex: String.raw`\mathrm{SLE}_{\kappa(q)}:\quad0<q\le4` },
+  { id: 'cle-scope', tex: String.raw`\mathrm{CLE}_{\kappa(q)}:\quad1\le q\le4` },
+  { id: 'triangular-sle', tex: String.raw`\mathrm{SLE}_{6}` },
+  { id: 'ising-sle', tex: String.raw`\mathrm{SLE}_{16/3}` },
+] as const;
+---
+
+<Film
+  tag="uruk-cluster-curves"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="Three fixed random-cluster configurations on free-boundary twenty-four-by-twenty-four square grids have cluster weights one, two and three. Open edges and sites assemble, then the boundaries of thickened clusters trace closed ink loops, with the longest loop drawn heavier. These are finite ribbon representatives, not a Dobrushin interface or a simulation of a continuum curve. The grids shrink into thumbnails that travel to their calculated positions on the decreasing parameter curve kappa of q. Separate ink marks identify the known triangular-site percolation and FK-Ising results. The square-lattice gap remains explicit. A blue stroke and rings on the q axis identify the papers' claims rather than any validation of these samples. The closing ledger retains the article's unreviewed status and evidence date."
+  caption="Three finite random-cluster samples and their cluster boundaries travel onto the parameter curve for their predicted scaling limits. Separate ink marks identify known human results; blue marks identify OpenAI's claims. The samples do not test convergence."
+  leftOut="The proof map, Dobrushin boundary conditions, a simulated SLE or CLE, conformal maps between domains, Cardy's formula as a plotted function, natural parametrisation and the disordered or massive FK-Ising companions."
+>
+  <p class="film-method">How the film is made. The three fixed edge lists come from the direction's Swendsen-Wang computation with seed 223, with one hundred and twenty sweeps on a free-boundary <span set:html={renderFormula(String.raw`24\times24`, false)} /> square grid at each of <span set:html={renderFormula(String.raw`q=1,2,3`, false)} />. The edge-opening probability used within that sampler is <span set:html={renderFormula(String.raw`p_q=\sqrt q/(1+\sqrt q)`, false)} />. The pictures are independent samples, not a coupling across cluster weights. The browser does not run a fresh random sampler. It rebuilds the clusters, traces their boundaries and evaluates the parameter formula from the retained edges.</p>
+  <p class="film-method">Each grid has five hundred and seventy-six sites and one thousand, one hundred and four possible edges. At cluster weights one, two and three, the retained samples have respectively five hundred and forty-five, five hundred and thirty-seven, and four hundred and ninety-seven open edges, with eighty-three, ninety-five and one hundred and thirty-three clusters. Every site remains in its own sample as that picture contracts into a thumbnail. The assembly at the start is a drawing transition, not a sequence of equilibrium samples.</p>
+  <p class="film-method">The drawn loops are boundaries of thickened sites and open edges. Their corners are offset by one fifth of a lattice spacing so that touching medial strands have separate, noncrossing ribbon representatives. A corner-state traversal counts each unoriented loop once. The resulting loop counts are one hundred and thirty-five, one hundred and fifty-one and one hundred and eighty-seven; the longest traversals have eight hundred and ninety-two, three hundred and thirty-six and two hundred and twenty-eight steps. For each sample, the loop count also equals the number of clusters plus the cycle rank of its open-edge graph. The enlarged detail uses an actual portion of the first sample's longest loop. This finite picture does not demonstrate fractal scaling or conformal invariance.</p>
+  <p class="film-method">The parameter curve is the exact formula <span set:html={renderFormula(String.raw`\kappa(q)=4\pi/\arccos(-\sqrt q/2)`, false)} />, not a fit to the samples. It places the three thumbnails at <span set:html={renderFormula(String.raw`6,\ 16/3,\ 24/5`, false)} />. Its value approaches eight as positive <span set:html={renderFormula(String.raw`q`, false)} /> approaches zero, and its included endpoint at four has <span set:html={renderFormula(String.raw`\kappa=4`, false)} />. Zero is a limiting endpoint, not one of the claimed model parameters. Nothing is claimed here for cluster weights greater than four.</p>
+  <p class="film-method">The known percolation result marked at <span set:html={renderFormula(String.raw`q=1`, false)} /> is for site percolation on the triangular lattice. It does not validate the square-lattice bond sample shown in this film. The other known point is FK-Ising, whose interface parameter is <span set:html={renderFormula(String.raw`16/3`, false)} />. Smirnov's 2010 observable and the 2014 FK-Ising interface-convergence result are distinct steps, as the article explains. The quoted subtitle retains the article's wording. Neither known point is presented as a human check of the papers in this release.</p>
+  <p class="film-method">The claimed interface range shown in blue is <span set:html={renderFormula(String.raw`0<q\le4`, false)} />. For <span set:html={renderFormula(String.raw`0<q<1`, false)} />, the companion's domain assumption is a smooth Jordan domain. The primary and endpoint claims for <span set:html={renderFormula(String.raw`1\le q\le4`, false)} /> allow bounded Jordan domains under their stated boundary approximation. The separate loop-ensemble claim shown here is for <span set:html={renderFormula(String.raw`1\le q\le4`, false)} />, including the endpoint companion. A free-boundary finite sample is not the papers' wired-to-free Dobrushin interface, and none of the drawn loops is an SLE or CLE simulation. Blue rings mark parameter values on the horizontal axis; they do not certify the thumbnails.</p>
+  <p class="film-method">The closing ledger preserves the article's evidence date, 20 October 2026, and its unreviewed status. No mathematician had publicly reported reading or checking these proofs, and this film performs no machine proof check. With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the nine cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

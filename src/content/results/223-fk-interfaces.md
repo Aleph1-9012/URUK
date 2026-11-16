@@ -5,6 +5,7 @@ title: "Do the boundaries of random clusters on a grid become the same curves at
 paperTitle: "Square-lattice FK interfaces and nested loops for 1 ≤ q < 4"
 claim: "For every fixed cluster weight 1 ≤ q ≤ 4, the Dobrushin interface of the critical square-lattice random-cluster model converges to chordal SLE_κ with κ = 4π/arccos(−√q/2), in every bounded Jordan domain under uniform marked boundary approximation, and the complete nested collection of loops converges to whole-plane CLE_κ retaining multiplicities and traversals; at q = 1 this gives Cardy's formula for square-lattice bond percolation with free boundary edges. Companions treat 0 < q < 1, the natural parametrization, weakly disordered FK-Ising and massive FK-Ising interfaces."
 status: unreviewed
+visual: cluster-curves
 checked: 2026-10-20
 papers:
   - preprints/Square-lattice-FK-interfaces-and-nested-loops-for-1-leq-q-lt-4-September-23-2026/paper.pdf

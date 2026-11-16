@@ -55,6 +55,7 @@ export const visualCatalog = [
   { key: 'circle-shapes', component: './circle-shapes/CircleShapes.astro' },
   { key: 'ring-rules', component: './ring-rules/RingRules.astro' },
   { key: 'arrow-grid', component: './arrow-grid/ArrowGrid.astro' },
+  { key: 'cluster-curves', component: './cluster-curves/ClusterCurves.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);
