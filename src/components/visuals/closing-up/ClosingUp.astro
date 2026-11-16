@@ -1,0 +1,36 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'sphere-dimensions', tex: String.raw`S^n,\quad n\ge2` },
+  { id: 'new-dimensions', tex: String.raw`n\ge3` },
+  { id: 'classical-dimension', tex: String.raw`n=2` },
+  { id: 'infinity', tex: String.raw`\infty` },
+] as const;
+---
+
+<Film
+  tag="uruk-closing-up"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="Six great circles close on one round sphere. The same surface deforms into a schematic triaxial ellipsoid, whose three principal geodesics are traced from live numerical integrations. A generic path is shown only over a finite sampled length, with an initial exclusion interval before its closest return is measured. That trace retracts while the principal ellipse remains. One lap, two laps, another starting point and reversed travel use the same geometric image, distinguished by moving beads and lap labels. The surface relaxes back to round, carrying the principal curves into great circles. An ink halo and blue infinity sign identify the paper's higher-dimensional infinitude claim while the two-dimensional toy remains explicitly classical. The closing ledger preserves the dated unreviewed status and the pinned release's formal scope."
+  caption="A two-dimensional ellipsoid illustrates closed geodesics, prime traversal and geometric image. Its finite generic trace supplies a sampled return distance, not a proof of nonclosure. The two-sphere's infinitude is classical input. The paper claims that every smooth metric on every standard sphere of dimension at least two has infinitely many prime closed geodesics with pairwise distinct images, with new work in dimensions at least three and no genericity assumption. The claim extends to closed manifolds with a finite smooth cover diffeomorphic to such a sphere and to every closed three-manifold, orientable or not."
+  leftOut="The free loop space, Morse theory and string-topology proof; the objections to earlier proof claims; a drawing of higher-dimensional spheres; quantitative counts by length; the proof of the three-manifold corollary; a formal proof replay."
+>
+  <p class="film-method">How the film is made. The surface is a round two-sphere and a triaxial ellipsoid with semi-axes one, zero point eight and zero point six. The browser integrates geodesics on the ellipsoid at unit speed and numerically checks the surface constraint, speed, and position and direction returns of the three principal ellipses. Their planes are the three coordinate planes. The six round examples are great circles. These finite examples illustrate the definitions in a dimension where infinitude is already classical; they do not test the new higher-dimensional theorem.</p>
+  <p class="film-method">The deformation and relaxation are display morphs. Intermediate carried curves are graphic correspondences between the two surfaces, not claimed geodesics of each intermediate metric. The settled endpoint curves come from the corresponding round formulas or ellipsoid integrations. The surface and retained curves move continuously, and the extra three round circles retract rather than disappear by a fade.</p>
+  <p class="film-method">The generic geodesic is sampled for a path length equal to five times the longest principal ellipse's perimeter. Its closest position return is measured only after excluding an initial length equal to zero point three times that perimeter, so that the starting point is not compared with itself. The on-screen minimum is the result for this sample, integration resolution and finite horizon. It is not a lower bound for all future times, does not test the direction return, and proves neither nonclosure of the path nor finiteness or infinitude of closed geodesics.</p>
+  <p class="film-method">The principal ellipse remains during the rewind and the definitions. A once-around traversal is prime; a twice-around traversal repeats that same shorter closed geodesic and is not prime. Both laps use the same geometric line. Moving beads and lap labels show the extra traversal without drawing an offset loop that would suggest a new image. Changing the starting point, reversing direction or repeating the traversal leaves the image unchanged. A prime geodesic need not be a simple curve, although this particular principal ellipse is simple.</p>
+  <p class="film-method">The two-sphere result, associated with Franks, Bangert and Hingston around 1992, stays in ink and is input to the paper rather than new work. Blue is reserved for the infinity sign and tags identifying the new claim in dimensions <span set:html={renderFormula(String.raw`n\ge3`, false)} />. The halo is ink. The full sphere statement concerns every smooth Riemannian metric on <span set:html={renderFormula(String.raw`S^n`, false)} /> for <span set:html={renderFormula(String.raw`n\ge2`, false)} />, with infinitely many prime closed geodesics having pairwise distinct images. No genericity or nondegeneracy assumption is added.</p>
+  <p class="film-method">The stated extensions concern every closed manifold with a finite smooth cover diffeomorphic to <span set:html={renderFormula(String.raw`S^n`, false)} />, and every closed three-manifold with any smooth Riemannian metric, whether orientable or not. They do not settle the infinitude problem for arbitrary closed manifolds in dimension four and above, and they give no numerical bound on how many geodesics have length below a chosen cutoff. The visible two-dimensional surface cannot represent a higher-dimensional sphere.</p>
+  <p class="film-method">The ledger preserves the article's unreviewed status and evidence date, 18 October 2026. Family 345 has no Lean scope note or comparator statement in the pinned release. The browser's curve integrations are finite numerical checks, not machine verification of the theorem, and the film performs no proof replay. With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the eleven exact canonical cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

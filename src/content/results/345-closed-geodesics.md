@@ -6,6 +6,7 @@ paperTitle: "Infinitely many closed geodesic images on every Riemannian sphere"
 claim: "Every smooth Riemannian metric on the sphere S^n, n ≥ 2, has infinitely many prime closed geodesics with pairwise distinct images. The same holds on every closed manifold finitely covered by a sphere and on every closed three-manifold."
 status: unreviewed
 checked: 2026-10-18
+visual: closing-up
 papers:
   - preprints/Infinitely-many-closed-geodesic-images-on-every-Riemannian-sphere-September-24-2026/paper.pdf
 draft: false

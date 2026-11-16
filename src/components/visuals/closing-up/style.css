@@ -1,0 +1,13 @@
+uruk-closing-up .film-frame { container: cgfilm / inline-size; }
+uruk-closing-up .film-label { font-size: .875rem; }
+uruk-closing-up [data-label="new-dimensions"],
+uruk-closing-up [data-label="infinity"] { color: var(--blue); }
+
+@container cgfilm (600px <= width < 760px) {
+  uruk-closing-up .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container cgfilm (width < 600px) {
+  uruk-closing-up .film-stage { aspect-ratio: 4 / 9; }
+  uruk-closing-up .film-label { font-size: .75rem; }
+}

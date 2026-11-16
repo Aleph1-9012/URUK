@@ -65,6 +65,7 @@ export const visualCatalog = [
   { key: 'three-of-seven', component: './three-of-seven/ThreeOfSeven.astro' },
   { key: 'ball-tube-slab', component: './ball-tube-slab/BallTubeSlab.astro' },
   { key: 'last-slopes', component: './last-slopes/LastSlopes.astro' },
+  { key: 'closing-up', component: './closing-up/ClosingUp.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);
