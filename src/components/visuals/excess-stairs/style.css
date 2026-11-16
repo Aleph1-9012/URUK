@@ -1,0 +1,11 @@
+uruk-excess-stairs .film-frame { container: iofilm / inline-size; }
+uruk-excess-stairs .film-label { font-size: .875rem; }
+
+@container iofilm (600px <= width < 760px) {
+  uruk-excess-stairs .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container iofilm (width < 600px) {
+  uruk-excess-stairs .film-stage { aspect-ratio: 4 / 9; }
+  uruk-excess-stairs .film-label { font-size: .75rem; }
+}

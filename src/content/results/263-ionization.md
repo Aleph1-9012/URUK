@@ -6,6 +6,7 @@ paperTitle: "Uniform excess charge for Coulomb molecules and the outer radius of
 claim: "In the full nonrelativistic Schrödinger model with two electron spin states, a system of M fixed nuclei of charges at least one and total charge Z strictly binds at most Z + CM electrons, for a universal constant C. Neutral atoms have first ionization energies and outer half-electron radii bounded above and below by universal positive constants. Companion papers give Thomas-Fermi asymptotics for the energy to remove m electrons and for outer-electron radii."
 status: unreviewed
 checked: 2026-10-20
+visual: excess-stairs
 papers:
   - preprints/Uniform-excess-charge-for-Coulomb-molecules-and-the-outer-radius-of-neutral-atoms-September-24-2026/paper.pdf
   - preprints/Generalized-ionization-energies-for-full-Coulomb-atoms-September-24-2026/paper.pdf
