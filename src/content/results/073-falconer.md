@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/The-Falconer-distance-conjecture-in-all-dimensions-September-23-2026/paper.pdf
 draft: false
+visual: dust-reach
 ---
 
 Take a set of points in the plane and write down every distance between two of them. A solid patch produces every distance up to its width. A finite set of $n$ points produces at most $\binom n2$ distances; Erdős asked how few, and Guth and Katz answered in 2010. In between are fractal sets: dust clouds with a dimension between $0$ and $2$. In 1985 Kenneth Falconer asked how large the dimension of a compact set must be to force its distance set to have positive length, proved that dimension above $3/2$ suffices in the plane and above $(d+1)/2$ in $\mathbb R^{d}$, and showed with lattice examples that $d/2$ is the best one could hope for. The conjecture that $d/2$ suffices became one of the central problems of harmonic analysis, attacked with Fourier restriction, decoupling and, most recently, the projection theory of fractal sets; forty years of work brought the planar threshold down to $5/4$ and the three-dimensional one to about $12/7$. On 23 September 2026 OpenAI posted a sixty-four-page paper claiming the conjecture in every dimension. [1][3][4][5]

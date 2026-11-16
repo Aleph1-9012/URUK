@@ -1,0 +1,39 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'pair-count', tex: String.raw`\binom n2` },
+  { id: 'half-dimension', tex: String.raw`d/2` },
+  { id: 'hausdorff', tex: String.raw`\dim_H E` },
+  { id: 'positive-length', tex: String.raw`\mathcal L^1(\Delta(E))>0` },
+  { id: 'sq-distance', tex: String.raw`r^2` },
+  { id: 'distance', tex: String.raw`r` },
+  { id: 'dimension', tex: String.raw`s` },
+  { id: 'r-end', tex: String.raw`\sqrt2` },
+] as const;
+---
+
+<Film
+  tag="uruk-dust-reach"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="Points in a square carry their pair distances to a bar. Computed finite Cantor samples, a solid square and a lattice comparison distinguish sampled bin coverage from actual length. Bars are carried schematically during transitions; coverage readouts appear for settled samples. A ladder shows historical planar thresholds. A blue bracket marks the claimed Falconer theorem, followed by its dated unreviewed evidence. A full text transcript follows."
+  caption="Points in the plane and their distances: finite Cantor samples, a solid patch and one scale of a lattice example. Hit bins at one resolution do not measure the length of a distance set. The blue bracket marks the claim for compact sets above dimension d/2. Finite pictures, not the proof."
+  leftOut="the proof; Fourier analysis; higher dimensions beyond the theorem's label; three-dimensional thresholds; the pinned distance problem; the endpoint d/2; the Shmerkin–Wang equality case."
+>
+  <p class="film-method">How the film is made. The opening list has twelve points and sixty-six unordered pairs. Each pair supplies its Euclidean distance. The bar places those values at their numerical positions. A finite list of distances has length zero, even when its ticks hit almost every bin of a chosen width. Bin coverage is a finite-resolution readout, not Lebesgue measure or evidence for the conjecture.</p>
+  <p class="film-method">The solid square is a separate continuum example, with side 0.30 and diagonal <span set:html={renderFormula(String.raw`0.30\sqrt2`, false)} />. Its distance set is the interval from zero to that diagonal length. A dense sampled grid checks bin coverage for finitely many points; that sampled check does not establish the interval statement. The continuum patch and its sampled check are identified separately in the drawing.</p>
+  <p class="film-method">Each dust comes from the product of two Cantor constructions with a fixed contraction ratio. Its stated dimension belongs to the infinite product set. Parent points grow into the children of the higher-stage sample; every sample point used for a coverage readout is drawn once that sample settles. The displayed finite point sets themselves have Hausdorff dimension zero. The chosen dusts share one bin width, so their finite-resolution readouts can be compared. Their coverage does not locate a dimension threshold, establish positive length or prove the claim for a dust. During point morphs, the bars are carried schematically between computed endpoints. Coverage readouts wait for settlement.</p>
+  <p class="film-method">The lattice uses 961 points in a square. Its squared distances lie at integer multiples of the squared grid spacing. The comparison uses the same number of random points and the same bins. This is one finite scale of the lattice example. The compact endpoint construction in the article requires thickening and iteration across scales, which the film leaves out. A finite lattice or random set has a finite distance set of length zero.</p>
+  <p class="film-method">The ladder gives historical planar thresholds and keeps the strict target separate from the known results. The claimed theorem concerns every compact subset of Euclidean space in each integer dimension at least two whose Hausdorff dimension is strictly greater than half the ambient dimension. Its conclusion is positive length of the distance set, rather than a statement that the distance set contains an interval. Blue marks that claim. No proof, Fourier estimate or higher-dimensional construction is shown.</p>
+  <p class="film-method">The closing ledger follows the article's evidence dated 18 October 2026. No mathematician had publicly reported reading or checking the proof. The planar Lean statement is catalogued; the linked all-dimensions statement is not. A kernel check concerns the formal statement and is not counted as a reading or approval of the paper. Without JavaScript the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

@@ -1,0 +1,11 @@
+uruk-dust-reach .film-frame { container: fafilm / inline-size; }
+uruk-dust-reach .film-label { font-size: .875rem; }
+
+@container fafilm (600px <= width < 760px) {
+  uruk-dust-reach .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container fafilm (width < 600px) {
+  uruk-dust-reach .film-stage { aspect-ratio: 4 / 7; }
+  uruk-dust-reach .film-label { font-size: .75rem; }
+}
