@@ -1,0 +1,11 @@
+uruk-cheapest-edges .film-frame { container: msfilm / inline-size; }
+uruk-cheapest-edges .film-label { font-size: .875rem; }
+
+@container msfilm (600px <= width < 760px) {
+  uruk-cheapest-edges .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container msfilm (width < 600px) {
+  uruk-cheapest-edges .film-stage { aspect-ratio: 4 / 9; }
+  uruk-cheapest-edges .film-label { font-size: .75rem; }
+}

@@ -68,6 +68,7 @@ export const visualCatalog = [
   { key: 'closing-up', component: './closing-up/ClosingUp.astro' },
   { key: 'doubling-clock', component: './doubling-clock/DoublingClock.astro' },
   { key: 'tape-shears', component: './tape-shears/TapeShears.astro' },
+  { key: 'cheapest-edges', component: './cheapest-edges/CheapestEdges.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

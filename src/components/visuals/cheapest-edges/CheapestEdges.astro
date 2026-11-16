@@ -1,0 +1,40 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'energy-terms', tex: String.raw`\begin{gathered}E=\text{roughness}+\text{edge cost}\\+\text{distance}\end{gathered}` },
+  { id: 'claim-domain', tex: String.raw`\Omega\subset\mathbb R^2\quad\text{bounded, Lipschitz}` },
+  { id: 'claim-data', tex: String.raw`g\in L^\infty(\Omega)` },
+  { id: 'claim-arcs', tex: String.raw`C^{1,\alpha}\text{ arcs},\quad\alpha>0` },
+  { id: 'interior-set', tex: String.raw`U\Subset\Omega` },
+  { id: 'tip-gradient', tex: String.raw`|\nabla u|=\frac1{2\sqrt r}` },
+  { id: 'tip-field', tex: String.raw`u=\sqrt r\sin(\theta/2)` },
+  { id: 'weak-integrability', tex: String.raw`\begin{gathered}\nabla u\in L^{4,\infty}_{\mathrm{loc}}\\\nabla u\in L^p_{\mathrm{loc}},\quad p<4\end{gathered}` },
+] as const;
+---
+
+<Film
+  tag="uruk-cheapest-edges"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="One fixed schematic image carries an ink edge set with an arc, a free crack tip and a triple junction. A four-hundred-cell one-dimensional finite-difference toy compares smoothing and edge costs. A separate shortest-network calculation gives three 120-degree angles. A schematic blow-up shows a supposed isolated bounded arc beside a half-line, with connected complement; it is not a computed limit. Blue marks identify the paper's claimed interior classification and the exclusion of that hypothetical component. A crack-tip model illustrates the local weak-L4 exponent. The closing frame preserves the dated unreviewed status and the absence of a linked formal statement."
+  caption="The image and its edges are schematic. The browser computes a finite one-dimensional energy toy, a shortest connecting network and integrals for an analytic crack-tip model. None is a computed planar Mumford-Shah minimizer. The paper claims an interior classification for reduced absolute minimizers in bounded Lipschitz planar domains with bounded image data. Its edge types are a regular arc, a free end and a 120-degree triple junction. The statement includes local finiteness of the global components meeting an interior set, with no boundary or higher-dimensional conclusion."
+  leftOut="The planar minimizing pair; electrostatic comparison and Lemma 5.4; Deangelis's separate argument; boundary behavior, higher dimensions and higher regularity; a new specialist review or formal proof replay."
+>
+  <p class="film-method">How the film is made. The fixed patch image and its edge set <span set:html={renderFormula('K', false)} /> are schematic. The camera carries the same arc, free tip and triple junction through the scenes. They are not obtained by minimizing the planar image energy. Their blue marks identify the manuscript's claim, rather than a numerical verification.</p>
+  <p class="film-method">The one-dimensional toy uses 400 cells on the unit interval, with image value zero on the left half and four on the right. For each chosen edge location, a tridiagonal finite-difference solve minimizes the discrete roughness and image-distance terms, with natural end conditions. Each edge point costs one. The displayed energies and sampled best location are computed live. They approximate a one-dimensional analogue and are not exact values for the planar problem.</p>
+  <p class="film-method">The junction toy joins the three terminals <span set:html={renderFormula(String.raw`(0,0),(1,0),(0.35,0.8)`, false)} />. A live Weiszfeld iteration minimizes their sum of distances to one junction. Its three angles approach 120 degrees, and its length is compared with the best path along two sides of the terminal triangle. This checks only a length term. It does not establish a Mumford-Shah minimizing pair.</p>
+  <p class="film-method">The blow-up picture shows only a hypothetical local window: an isolated bounded arc beside part of an unbounded edge through the origin. The rest of the global set is unspecified; it may have further bounded components outside every fixed compact set. Connectedness of the full complement is an assumed hypothesis, not a conclusion from the visible window. A complete set consisting only of one bounded arc and one half-line is already covered by an imported classification. No closed loop, rescaling sequence or global generalized minimizer is computed here. The blue strike illustrates the paper's claimed exclusion of an isolated compact obstruction.</p>
+  <p class="film-method">The theorem concerns reduced absolute minimizers in a bounded Lipschitz domain <span set:html={renderFormula(String.raw`\Omega\subset\mathbb R^2`, false)} /> with <span set:html={renderFormula(String.raw`g\in L^\infty(\Omega)`, false)} />. Each point of <span set:html={renderFormula('K', false)} /> has one of three local models formed by <span set:html={renderFormula(String.raw`C^{1,\alpha}`, false)} /> arcs for some positive <span set:html={renderFormula(String.raw`\alpha`, false)} />. Only finitely many global connected components of <span set:html={renderFormula('K', false)} /> meet each open set compactly contained in <span set:html={renderFormula(String.raw`\Omega`, false)} />. The count is not a count of components after cutting <span set:html={renderFormula('K', false)} /> at the smaller set's boundary.</p>
+  <p class="film-method">The tip field is the illustrative amplitude-one formula <span set:html={renderFormula(String.raw`u=\sqrt r\sin(\theta/2)`, false)} />. Its gradient has magnitude <span set:html={renderFormula(String.raw`1/(2\sqrt r)`, false)} />, and its annular power integrals are evaluated from their analytic radial formula. The amplitude is chosen for this display and is not the normalization of a global minimizing crack tip. The third-power integral converges while the fourth-power integral grows logarithmically. The claimed local weak-<span set:html={renderFormula('L^4', false)} /> estimate does not imply a strong-<span set:html={renderFormula('L^4', false)} /> estimate at a crack tip.</p>
+  <p class="film-method">The ledger preserves the article's evidence date, 20 October 2026, and its unreviewed status. The pinned release supplies no Lean scope note or comparator statement for this family. Its separate source inventory does contain Mumford–Shah analysis modules. These were inventoried without fetching or replaying their proof bodies; no absence of Lean code is inferred. This film performs no proof replay or new search for specialist acceptance. With JavaScript disabled, the article and exact transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the nine cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
