@@ -47,6 +47,7 @@ export const visualCatalog = [
   { key: 'propeller-cuts', component: './propeller-cuts/PropellerCuts.astro' },
   { key: 'maze-walk', component: './maze-walk/MazeWalk.astro' },
   { key: 'fewer-butterflies', component: './fewer-butterflies/FewerButterflies.astro' },
+  { key: 'overlap-fill', component: './overlap-fill/OverlapFill.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);
