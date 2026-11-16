@@ -59,6 +59,7 @@ export const visualCatalog = [
   { key: 'random-mosaic', component: './random-mosaic/RandomMosaic.astro' },
   { key: 'coin-matrix', component: './coin-matrix/CoinMatrix.astro' },
   { key: 'choice-pieces', component: './choice-pieces/ChoicePieces.astro' },
+  { key: 'carry-tree', component: './carry-tree/CarryTree.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

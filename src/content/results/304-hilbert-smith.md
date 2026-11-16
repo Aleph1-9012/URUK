@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/The-Hilbert-Smith-conjecture-in-every-finite-dimension-September-23-2026/paper.pdf
 draft: false
+visual: carry-tree
 ---
 
 The symmetries of a circle form a circle; the rotations of a sphere form a three-dimensional group; these are Lie groups, smooth objects on which one can do calculus. In 1900 Hilbert asked, as the fifth of his twenty-three problems, whether the smoothness is automatic: if a group of transformations is merely continuous, must it be a Lie group? For groups that are themselves manifolds the answer is yes, proved by Gleason, Montgomery and Zippin in 1952. The sharper form, named for Hilbert and for Paul Smith, asks about any locally compact group that acts faithfully on a connected manifold, and the structure theory reduces it to a single strange case: can the $p$-adic integers, a compact group that looks like a Cantor set, act faithfully by homeomorphisms on a manifold? For dimensions one and two the answer was classical; John Pardon proved it for three-manifolds in 2013; for smooth, Lipschitz or quasiconformal actions it was known in all dimensions. The general topological case in dimension four and up stayed open. On 23 September 2026 OpenAI posted a paper claiming it in every dimension. [1][3][4]

@@ -1,0 +1,38 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'p-two', tex: String.raw`p=2` },
+  { id: 'adic-integers', tex: String.raw`\mathbb Z_2` },
+  { id: 'quotient-eight', tex: String.raw`\mathbb Z_2\longrightarrow\mathbb Z/8\mathbb Z` },
+  { id: 'rotation-rule', tex: String.raw`\rho(a)=R_{(a\bmod8)/8}` },
+  { id: 'kernel', tex: String.raw`\ker\rho=8\mathbb Z_2` },
+  { id: 'claim-parameters', tex: String.raw`\text{every prime }p,\quad n\ge1` },
+] as const;
+---
+
+<Film
+  tag="uruk-carry-tree"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A marked circle turns while a sphere illustrates its separate three-parameter rotation group. A rough path is explicitly labelled schematic. A residue-coset tree of the 2-adic integers grows beside the same circle, branching by the least significant digits first. Adding one ripples through four visible levels. The final low-digit wrap continues into a higher digit. The tree then carries its mod-eight quotient into the eight rotations of the circle, and its zero coset is outlined as the kernel. A dimension ruler records the classical one- and two-dimensional cases, Pardon's three-dimensional result and the known regular actions in ink. A blue bracket and kernel glyphs identify the paper's claim for the remaining topological cases. The same circle, tree, classical kernel and ruler remain with the dated unreviewed ledger."
+  caption="The 2-adic tree acts on the circle through one classical mod-eight rotation action. Its nonzero kernel stays in ink. Blue marks state the paper's claim: for every prime p and every positive integer n, every jointly continuous action of the p-adic integers on a connected Hausdorff second-countable topological n-manifold without boundary has nonzero kernel and factors through a finite quotient. The quotient level may depend on the action."
+  leftOut="The sheaves, Witt groups and fixed signature lattice; Newman's theorem and the local reduction; the claimed proof's equal-parts contradiction; Pardon's dynamical corollary; a construction of a rough group action or a proof check."
+>
+  <p class="film-method">How the film is made. The opening circle shows rotations only. The full symmetry group of a circle also includes reflections. The sphere is a two-dimensional space, while its rotation group has three parameters. Its three-axis icon refers to that group, not the dimension of the sphere. The later rough path illustrates the words "merely continuous" schematically. It is not a constructed nonsmooth action or an example of a group that fails to be a Lie group.</p>
+  <p class="film-method">The browser constructs the residue tree live. At level <span set:html={renderFormula(String.raw`k`, false)} />, its <span set:html={renderFormula(String.raw`2^k`, false)} /> nodes represent the cosets of <span set:html={renderFormula(String.raw`2^k\mathbb Z_2`, false)} />. Edges represent inclusion of those cosets. The branching reads binary digits from least significant to most significant, so the two children of residue <span set:html={renderFormula(String.raw`r\pmod{2^k}`, false)} /> are <span set:html={renderFormula(String.raw`r`, false)} /> and <span set:html={renderFormula(String.raw`r+2^k`, false)} /> modulo <span set:html={renderFormula(String.raw`2^{k+1}`, false)} />. The planar spacing is schematic; it is not a Euclidean distance between 2-adic numbers.</p>
+  <p class="film-method">Adding one is computed digit by digit. The carry from fifteen reaches beyond the four visible digits: the integer becomes sixteen, whose displayed residue is zero modulo sixteen. Higher digits continue. Every finite quotient has a periodic adding-one permutation, but adding one on the 2-adic integers has infinite order. The animation's finite wrap is not a period of the infinite group. Phone layouts use three tree levels except during the four-level carry; the fourth-level discs then merge into their third-level parent cosets.</p>
+  <p class="film-method">The single circle action is <span set:html={renderFormula(String.raw`\rho(a)=R_{(a\bmod8)/8}`, false)} />, where <span set:html={renderFormula(String.raw`R_t`, false)} /> rotates by <span set:html={renderFormula(String.raw`t`, false)} /> full turns. It factors through <span set:html={renderFormula(String.raw`\mathbb Z/8\mathbb Z`, false)} /> and has kernel <span set:html={renderFormula(String.raw`8\mathbb Z_2`, false)} />. At the four-digit level, both zero and eight lie in the outlined kernel coset. They act as the identity rotation. This is one classical action on a circle, not an assertion that every finite group action is a rotation. Its quotient level is three; the paper's general claim allows the level to depend on the action. Motion between the eight exact rotations is presentation animation. It does not describe a continuous path of inputs in the totally disconnected 2-adic group.</p>
+  <p class="film-method">The dimension ruler separates known results from the new claim. Dimensions one and two are classical, and Pardon's three-manifold result is from 2013. Smooth, Lipschitz and quasiconformal actions were already covered in all dimensions. Those cells and the regularity band stay in ink. Blue marks only the newly claimed topological cases in dimension four and above and their claim tag. The complete hypotheses remain in the figure caption. The theorem requires jointly continuous actions on connected Hausdorff second-countable topological manifolds of positive finite dimension without boundary. It covers every prime, not only the toy's prime two.</p>
+  <p class="film-method">The statement allows noncompact, nonorientable and nontriangulable manifolds, arbitrary stabilizers and fixed points. It assumes no dimension bound on the orbit space. A manifold with boundary is outside the stated scope. The circle toy does not establish these general conclusions or demonstrate the paper's proof mechanism.</p>
+  <p class="film-method">The ledger preserves the article's unreviewed status and evidence date, 18 October 2026. The dated search found no public statement by a mathematician that they had read or checked this proof. Family 304 has no Lean scope note or comparator statement in the pinned release. The film performs no machine proof check. With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the eleven exact canonical cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

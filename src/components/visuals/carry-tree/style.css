@@ -1,0 +1,12 @@
+uruk-carry-tree .film-frame { container: hmfilm / inline-size; }
+uruk-carry-tree .film-label { font-size: .875rem; }
+uruk-carry-tree [data-label="claim-parameters"] { color: var(--blue); }
+
+@container hmfilm (600px <= width < 760px) {
+  uruk-carry-tree .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container hmfilm (width < 600px) {
+  uruk-carry-tree .film-stage { aspect-ratio: 4 / 9; }
+  uruk-carry-tree .film-label { font-size: .75rem; }
+}
