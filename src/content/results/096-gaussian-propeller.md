@@ -81,7 +81,7 @@ Kernel clustering is a standard machine-learning task, grouping data by a positi
 
 ## Has anyone checked it?
 
-We found no named mathematician who says they are reading or checking this paper, and no public comment from Naor, Heilman, Khot or Jagannath, whose work it builds on. VibeMathed records no check by an independent mathematician. [4]
+We found no named mathematician who says they are reading or checking this paper. On 23 October 2026 Steven Heilman, whose work it builds on, posted a preprint that says it simplifies and improves OpenAI's proof. It shows that equality holds only for three 120-degree sectors in the plane, up to symmetries and changes on sets of measure zero, and proves the three-dimensional case without the computer search used before. For the step from four cells to any number it follows OpenAI's argument, and it says GPT 6 was used to prepare it. It also says that before OpenAI's release he had a different, longer proof of the theorem. It does not say it checked OpenAI's paper. We found no public comment from Naor, Khot or Jagannath. VibeMathed records no check by an independent mathematician. [4][7]
 
 **Machine checking.** The release's Lean scope note links one statement, `GaussianPropeller.lean`, the sharp bound $9/(8\pi)$ for every dimension and every number of labelled cells with attainment for $d\ge2$, $k\ge3$; it is in the catalogue `formalization.yaml`. The kernel-clustering consequence is outside it. A kernel check is evidence about the formal statement, not a reading of the paper; Uruk does not count it as approval. [5]
 
@@ -95,3 +95,4 @@ The pinned commit is the repository as it stood on 29 October 2026. On 7 October
 4. VibeMathed, "Gaussian propeller conjecture", read 20 October 2026. https://vibemathed.com/problem/gaussian-propeller-conjecture
 5. OpenAI, Lean scope note for family 096 and `lean/formalization.yaml` at the pinned commit. https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/docs/096.md and https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/lean/formalization.yaml
 6. OpenAI, `history.md` in openai/math, entries for 7, 26 and 29 October 2026. https://github.com/openai/math/blob/4eaee87548250b2682affda7d05d947c05554bae/history.md
+7. Steven Heilman, "On the Propeller Conjecture", arXiv:2610.32158v1, 23 October 2026, read 14 November 2026. The simplified proof, the equality case, the three-dimensional case without computer assistance, the earlier proof and the statement on AI use. https://arxiv.org/abs/2610.32158v1
