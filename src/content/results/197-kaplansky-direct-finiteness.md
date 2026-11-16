@@ -12,6 +12,7 @@ papers:
   - preprints/A-Counterexample-to-Kaplanskys-Direct-Finiteness-Conjecture-in-Odd-Characteristic-September-26-2026/paper.pdf
   - preprints/A-Counterexample-to-the-Group-Ring-Determinant-Conjecture-September-23-2026/paper.pdf
 draft: false
+visual: ring-rules
 ---
 
 In ordinary arithmetic, and for square matrices, a left inverse is a right inverse: if $ab=1$ then $ba=1$. Irving Kaplansky asked in the 1950s whether the same holds in every group algebra, the ring of finite formal sums of group elements with coefficients in a field; he proved it over the complex numbers, and the question for fields of positive characteristic became one of three famous "Kaplansky conjectures" about group rings. Walter Gottschalk asked a cousin of it in 1973 about cellular automata, rules like Conway's Game of Life played on the cells of a group: if such a rule never sends two different configurations to the same one, must every configuration be reachable? Both questions were known to have the answer yes for every sofic group, a vast class containing every group anyone could write down, and for twenty-five years the obstacle was that nobody knew a group outside it. In the summer of 2026 an OpenAI model produced the first nonsofic group, with heavy use of recent work of Gábor Kun and Andreas Thom; on 23 September and 4 October OpenAI posted papers claiming that over such groups both conjectures fail, the second even for a torsion-free group, and that a third conjecture about determinants falls with them. [1][2][4][6]

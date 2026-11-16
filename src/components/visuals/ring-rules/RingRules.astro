@@ -1,0 +1,47 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'matrix-field', tex: String.raw`A,B\in M_4(\mathbb F_2)` },
+  { id: 'matrix-ab', tex: String.raw`AB=I_4` },
+  { id: 'matrix-ba', tex: String.raw`BA=I_4` },
+  { id: 'ring-rule', tex: String.raw`a=1+x+x^2` },
+  { id: 'ring-inverse', tex: String.raw`b=1+x^2+x^3` },
+  { id: 'finite-algebra', tex: String.raw`\mathbb F_2[C_4],\quad x^4=1` },
+  { id: 'claim-field', tex: String.raw`K\text{ finite},\quad\operatorname{char}K=2` },
+  { id: 'claim-products', tex: String.raw`ab=1,\qquad ba\ne1` },
+  { id: 'claim-map', tex: String.raw`\tau:K^G\longrightarrow K^G` },
+  { id: 'torsion-field', tex: String.raw`a,b,c\in\mathbb F_2[G]` },
+  { id: 'torsion-hypothesis', tex: String.raw`ab=1,\quad ac=0,\quad c\ne0` },
+  { id: 'proof-assumption', tex: String.raw`\text{Assume }ba=1` },
+  { id: 'proof-first', tex: String.raw`c=(ba)c` },
+  { id: 'proof-second', tex: String.raw`=b(ac)=0` },
+  { id: 'proof-nonzero', tex: String.raw`c\ne0` },
+] as const;
+---
+
+<Film
+  tag="uruk-ring-rules"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A finite four-by-four matrix over the two-element field and its inverse multiply to the identity in both orders. Its first row becomes a three-cell rule on finite cyclic rings. All sixteen configurations of four cells have distinct images, while eight configurations of three cells have two images with four preimages each. Every binary rule on rings of one to eight cells is checked. A twenty-one-cell cyclic group matches addition in one finite integer window. These finite, commutative toys retire beside a hatched blank for the unknown group. Blue marks identify the papers' unreviewed counterexample claims. A separate symbolic contradiction explains the torsion-free paper's auxiliary element, followed by the dated review and formal-statement ledger."
+  caption="On a finite ring of cells over the two-element field, a linear rule is injective exactly when it is onto. The papers claim a group algebra where ab equals one but ba does not, and a cellular automaton that is injective without being onto. The group and its elements are not computed or drawn."
+  leftOut="The nonsofic group, its Cayley graph, the construction and its terminating recipe, an explicit one-sided inverse in that group, the determinant construction, odd characteristic, the embedding step, and a proof of any paper's claim. The finite cyclic examples cannot provide the claimed counterexample."
+>
+  <p class="film-method">How the film is made. The browser computes with the two-element field <span set:html={renderFormula(String.raw`\mathbb F_2`, false)} />, where addition is modulo two. The opening matrices are finite square matrices over this field, not arbitrary coefficient rings. The three-cell stencil is <span set:html={renderFormula(String.raw`1+x+x^2`, false)} /> in the group algebra of a finite cyclic group. These finite cyclic algebras are commutative. Their matrix and configuration calculations illustrate the finite case and cannot exhibit a one-sided inverse without a two-sided inverse.</p>
+  <p class="film-method">On four cells, cyclic convolution gives the inverse <span set:html={renderFormula(String.raw`1+x^2+x^3`, false)} /> and both products are the identity. The live map sends all sixteen binary configurations to sixteen distinct images. On three cells the same stencil has rank one, so the eight configurations have only two images, each with four preimages. Merging and unreachable configurations occur together. The browser also enumerates every rule on one through eight cyclic cells and checks that invertibility, injectivity and surjectivity agree. The tally is a computation about these finite algebras only.</p>
+  <p class="film-method">The twenty-one-cell cyclic group is compared with the integer window from minus ten to ten. All 121 sums whose two inputs lie from minus five to five stay inside that window and agree with cyclic addition after decoding. This is a small exact illustration of matching a finite piece. It is not a construction of the paper's nonsofic group, an approximation of that group or a computation establishing the general sofic results.</p>
+  <p class="film-method">The finite configuration toy uses row vectors <span set:html={renderFormula(String.raw`v\mapsto vC(a)`, false)} />. Operator composition then reverses the order of matrix multiplication, which is harmless for these commutative cyclic examples. Section 7 of the characteristic-two paper instead uses <span set:html={renderFormula(String.raw`(T_cx)(g)=\sum_uc_ux(gu)`, false)} />, with <span set:html={renderFormula(String.raw`T_c\circ T_d=T_{cd}`, false)} />. Its claimed map is <span set:html={renderFormula(String.raw`\tau=T_b`, false)} />, with left inverse <span set:html={renderFormula(String.raw`T_a`, false)} /> because <span set:html={renderFormula(String.raw`ab=1`, false)} />. If that map were onto, its left inverse would also be a right inverse, contradicting the claimed <span set:html={renderFormula(String.raw`ba\ne1`, false)} />. The screen names the map generically rather than identifying it with the finite stencil.</p>
+  <p class="film-method">The finite illustration contracts into labelled toy rings before the unknown group-algebra claim formulas appear and stays explicitly labelled as a toy. The hatched blank represents only what is not drawn. The 23 September characteristic-two claim uses some finite field <span set:html={renderFormula(String.raw`K`, false)} /> of characteristic two, which need not be the two-element field. Its group contains odd torsion. The 4 October claim is separate: its group is torsion-free and its coefficients are in <span set:html={renderFormula(String.raw`\mathbb F_2`, false)} />. Neither group's elements or multiplication are generated by this film.</p>
+  <p class="film-method">In the symbolic torsion-free argument, <span set:html={renderFormula(String.raw`a,b,c`, false)} /> name only the unknown group-algebra elements in the paper. They are not the earlier four-cell rule and inverse or a kernel witness from the three-cell example. Given <span set:html={renderFormula(String.raw`ab=1`, false)} />, <span set:html={renderFormula(String.raw`ac=0`, false)} /> and <span set:html={renderFormula(String.raw`c\ne0`, false)} />, assuming <span set:html={renderFormula(String.raw`ba=1`, false)} /> would imply <span set:html={renderFormula(String.raw`c=(ba)c=b(ac)=0`, false)} />, a contradiction. This verifies the conditional algebraic deduction, not the existence of those elements.</p>
+  <p class="film-method">The ledger preserves the article's evidence date, 3 November 2026, and its unreviewed status. Three of the four papers have catalogue entries, but the torsion-free paper is not catalogued. The linked Lean statements do not include the nonsoficity conclusion. No outside replay was found in the article's evidence, and this film performs no Lean or kernel replay. Named expert engagement with the earlier nonsofic construction does not establish a reading of these four algebra papers. Machine evidence is not human approval. Without JavaScript, the article and transcript remain available with no fallback illustration; reduced motion uses a completed example for each cue.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
