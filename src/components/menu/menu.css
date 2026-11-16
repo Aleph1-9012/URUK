@@ -41,6 +41,7 @@ uruk-menu { display: block; }
 mark { background: transparent; color: var(--blue); text-decoration: underline; text-underline-offset: 4px; }
 
 @media (max-width: 47.999rem) {
+  .menu-search input { font-size: 1rem; }
   .menu-page { min-height: calc(100svh - 114px); padding-block: 12px 0; }
   .menu-filters { margin-left: 0; padding-top: 0; }
   .menu-index { display: none; }

@@ -18,7 +18,8 @@ const currentIndex = results.findIndex(({ data }) => data.family === current);
 const images = `--seal: url('${seal.src}'); --roller-desktop: url('${desktopRoller.src}'); --roller-phone: url('${phoneRoller.src}')`;
 ---
 
-<uruk-roll data-current={current} class:list={{ 'roll-neighbors': current !== undefined }} style={images} data-seal={seal.src}>
+<uruk-roll data-current={current} data-arrival={current ? undefined : 'pending'} class:list={{ 'roll-neighbors': current !== undefined }} style={images} data-seal={seal.src}>
+  {!current && <span class="roll-viewport-height" aria-hidden="true"></span>}
   <div class="roll-stage">
     <div class="roll-sheet">
       <div class="roll-roller roll-roller--start" aria-hidden="true"><span><canvas></canvas></span></div>

@@ -28,6 +28,10 @@ class UrukRoll extends HTMLElement {
   private drawnOffset: number | undefined;
   private turnFrame: number | undefined;
   private unwritten: string | undefined;
+  private arrivalFrame: number | undefined;
+  private fontsReady = false;
+  private resultsReady = false;
+  private phoneArrivalStarted = false;
 
   get cards(): HTMLAnchorElement[] {
     return Array.from(this.querySelectorAll<HTMLAnchorElement>('.roll-card'));
@@ -54,11 +58,25 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
+    if (this.hasAttribute('data-arrival') && !this.phone && !this.phoneArrivalStarted) {
+      this.dataset.arrival = 'desktop';
+    }
+
     this.loadSeal(signal);
     this.observer = new ResizeObserver(() => this.measure());
     this.observer.observe(this);
-    window.addEventListener('resize', () => this.measure(), { signal });
+    window.addEventListener('resize', () => {
+      this.measure();
+      this.prepareArrival();
+    }, { signal });
     viewport.addEventListener('scroll', () => this.followScroll(), { signal });
+    viewport.addEventListener('focusin', () => this.finishArrival(), { signal });
+    viewport.addEventListener('wheel', () => this.finishArrival(), { passive: true, signal });
+    viewport.addEventListener('keydown', () => this.finishArrival(), { signal });
+    this.addEventListener('animationend', (event) => {
+      if (event.animationName === 'roll-unroll-down') this.finishArrival();
+    }, { signal });
+    matchMedia(REDUCED_MOTION).addEventListener('change', () => this.finishArrival(), { signal });
 
     for (const button of this.querySelectorAll<HTMLButtonElement>('[data-direction]')) {
       button.addEventListener('click', () => {
@@ -71,6 +89,8 @@ class UrukRoll extends HTMLElement {
     }
 
     viewport.addEventListener('pointerdown', (event) => {
+      this.finishArrival();
+
       if (event.pointerType !== 'mouse' || event.button !== 0 || this.phone) {
         return;
       }
@@ -114,13 +134,25 @@ class UrukRoll extends HTMLElement {
         this.dragged = false;
       }
     }, { signal, capture: true });
-    void document.fonts.ready.then(() => this.measure());
+    void document.fonts.ready.then(() => {
+      if (signal.aborted) return;
+
+      this.fontsReady = true;
+      this.measure();
+      this.prepareArrival();
+    });
     this.measure();
   }
 
   disconnectedCallback(): void {
     this.events?.abort();
     this.observer?.disconnect();
+    if (this.dataset.arrival === 'opening') this.finishArrival();
+
+    if (this.arrivalFrame !== undefined) {
+      cancelAnimationFrame(this.arrivalFrame);
+      this.arrivalFrame = undefined;
+    }
 
     if (this.turnFrame !== undefined) {
       cancelAnimationFrame(this.turnFrame);
@@ -135,10 +167,13 @@ class UrukRoll extends HTMLElement {
   }
 
   scrollToStart(): void {
+    if (this.resultsReady) this.finishArrival();
     this.viewport?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }
 
   filterResults(families: ReadonlySet<string>, filter: ResultFilter): void {
+    if (this.resultsReady) this.finishArrival();
+
     for (const card of this.cards) {
       card.hidden = !families.has(card.dataset.family ?? '');
     }
@@ -166,10 +201,73 @@ class UrukRoll extends HTMLElement {
     this.querySelector('[data-roll-heading]')?.replaceChildren(filter.description);
     this.scrollToStart();
     this.measure();
+    this.resultsReady = true;
+    this.prepareArrival();
   }
 
   private behavior(): ScrollBehavior {
     return matchMedia(REDUCED_MOTION).matches ? 'instant' : 'smooth';
+  }
+
+  private finishArrival(): void {
+    if (this.dataset.arrival === 'pending' || this.dataset.arrival === 'opening') {
+      this.phoneArrivalStarted = true;
+      this.dataset.arrival = 'open';
+
+      if (this.arrivalFrame !== undefined) {
+        cancelAnimationFrame(this.arrivalFrame);
+        this.arrivalFrame = undefined;
+      }
+
+      this.scheduleTurn();
+    }
+  }
+
+  private prepareArrival(): void {
+    const signal = this.events?.signal;
+
+    if (!signal || signal.aborted || !this.hasAttribute('data-arrival')) return;
+
+    if (!this.phone) {
+      if (this.dataset.arrival === 'opening') this.finishArrival();
+      if (!this.phoneArrivalStarted) this.dataset.arrival = 'desktop';
+
+      return;
+    }
+
+    if (this.phoneArrivalStarted) return;
+
+    this.dataset.arrival = 'pending';
+
+    if (matchMedia(REDUCED_MOTION).matches) {
+      this.finishArrival();
+
+      return;
+    }
+
+    if (!this.fontsReady || !this.resultsReady || this.arrivalFrame !== undefined) return;
+
+    this.arrivalFrame = requestAnimationFrame(() => {
+      this.arrivalFrame = undefined;
+      if (signal.aborted || this.phoneArrivalStarted) return;
+
+      if (!this.phone) {
+        this.prepareArrival();
+
+        return;
+      }
+
+      this.measure();
+      this.phoneArrivalStarted = true;
+      this.dataset.arrival = 'opening';
+      this.scheduleTurn();
+    });
+  }
+
+  private unopenedAmount(paper: HTMLElement): number {
+    const { m41, m42 } = new DOMMatrixReadOnly(getComputedStyle(paper).transform);
+
+    return this.phone ? -m42 / paper.offsetHeight : -m41 / paper.offsetWidth;
   }
 
   private loadSeal(signal: AbortSignal): void {
@@ -202,8 +300,7 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
-    const { m41, m42 } = new DOMMatrixReadOnly(getComputedStyle(paper).transform);
-    const unopened = this.phone ? -m42 / paper.offsetHeight : -m41 / paper.offsetWidth;
+    const unopened = this.unopenedAmount(paper);
     const offset = this.sealOffset + unopened * this.sealTile * OPENING_TURNS;
     const moved = this.drawnOffset === undefined ? 0 : offset - this.drawnOffset;
     this.drawnOffset = offset;
@@ -279,15 +376,16 @@ class UrukRoll extends HTMLElement {
     const sheet = this.querySelector<HTMLElement>('.roll-sheet')?.getBoundingClientRect();
     const paper = this.querySelector<HTMLElement>('.roll-paper')?.getBoundingClientRect();
     const frame = viewport.getBoundingClientRect();
+    const viewportHeight = this.querySelector<HTMLElement>('.roll-viewport-height')?.getBoundingClientRect().height;
 
-    if (!sheet || !paper) {
+    if (!sheet || !paper || !viewportHeight) {
       return;
     }
 
     // Measured against the paper, because the paper is still sliding out while the page opens.
     const below = paper.bottom - frame.bottom;
     const start = sheet.top + frame.top - paper.top + window.scrollY;
-    const available = window.innerHeight - start - below - footnote - (closed ? CLOSING_ROLLER : 0);
+    const available = viewportHeight - start - below - footnote - (closed ? CLOSING_ROLLER : 0);
     const { rows, rowHeight } = sheetRows(available, first.getBoundingClientRect().height, items.length, !closed);
 
     viewport.style.setProperty('--row-height', `${rowHeight}px`);

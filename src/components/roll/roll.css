@@ -6,6 +6,9 @@ uruk-roll, .menu-page, .result-on-roll {
 
 uruk-roll { display: flex; flex-direction: column; min-width: 0; }
 
+/* Read the stable viewport height without depending on mobile toolbar or keyboard resizing. */
+.roll-viewport-height { height: 100svh; pointer-events: none; position: fixed; visibility: hidden; width: 0; }
+
 .roll-stage { padding: 8px 0 0 calc(var(--roll-inset) + 60px); }
 .roll-sheet { isolation: isolate; position: relative; }
 uruk-roll[data-closed] .roll-sheet { width: calc(var(--roll-lead) + var(--count) * var(--card-width) + 40px); }
@@ -23,6 +26,10 @@ uruk-roll[data-closed] .roll-roller--end { display: block; }
 @keyframes roll-open-down {
   from { clip-path: inset(100% -2px -2px -2px); transform: translateY(-100%); }
   to { clip-path: inset(0 -2px -2px -2px); transform: translateY(0); }
+}
+@keyframes roll-unroll-down {
+  from { clip-path: inset(100% -2px -2px -2px); transform: translateY(-100%); }
+  to { clip-path: inset(0% -2px -2px -2px); transform: translateY(0); }
 }
 @keyframes roll-edge { from, to { opacity: 1; } }
 .roll-paper::after { border-right: 1.5px solid var(--ink); content: ""; inset: 0 0 0 auto; opacity: 0; pointer-events: none; position: absolute; }
@@ -44,6 +51,7 @@ uruk-roll[data-closed] .roll-frame { margin-right: 40px; }
 
 /* Room for a hovered card's case to cross past its corners, which the scroller would otherwise clip. Only while it shows, so a neighbouring card never shows a strip at rest. */
 @media (min-width: 48rem) {
+  uruk-roll[data-arrival="open"] .roll-paper { animation: none; }
   .roll-window:has(.roll-card:is(:hover, :focus-visible)) { margin: -4px; padding: 4px; scroll-padding-inline: 4px; }
 }
 
@@ -96,6 +104,7 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 }
 
 @media (max-width: 47.999rem) {
+  uruk-roll[data-arrival] .roll-paper { animation: none; }
   uruk-roll:not(.roll-neighbors) .roll-controls { margin-top: 0; order: -1; padding-inline: 20px; }
   uruk-roll:not(.roll-neighbors) .roll-wind { display: none; }
   .roll-neighbors .roll-controls { margin-top: 20px; padding-inline: 24px; }
@@ -143,4 +152,14 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
   .roll-neighbors .roll-card__title { margin-bottom: 16px; }
   .roll-neighbors .roll-card:not([data-neighbor]) { display: none; }
   .roll-neighbors .roll-window { height: auto; }
+}
+
+@media (max-width: 47.999rem) and (scripting: enabled) {
+  /* Reserve one row until measurement; the pending paper remains rolled up. */
+  uruk-roll[data-arrival] .roll-window { height: var(--window-height, 228px); }
+}
+
+@media (max-width: 47.999rem) and (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  uruk-roll[data-arrival="pending"] .roll-paper { clip-path: inset(100% -2px -2px -2px); transform: translateY(-100%); }
+  uruk-roll[data-arrival="opening"] .roll-paper { animation: roll-unroll-down 1.2s cubic-bezier(.3, 0, .2, 1) both; }
 }
