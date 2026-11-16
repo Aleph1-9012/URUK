@@ -1,0 +1,48 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'unknown-two', tex: String.raw`\binom{x_1}{x_2}` },
+  { id: 'kernel-two', tex: String.raw`\binom{1}{-1}` },
+  { id: 'equation-one', tex: String.raw`x_1+x_2=y_1` },
+  { id: 'equation-two', tex: String.raw`x_1-x_2=y_2` },
+  { id: 'determinant-two', tex: String.raw`\det A_2=-2` },
+  { id: 'lower-bound', tex: String.raw`\mathbb P(\det A_n=0)\ge2^{-n}` },
+  { id: 'row-product', tex: String.raw`2^{-(n-2)}\cdot\frac14=2^{-n}` },
+  { id: 'six-bound', tex: String.raw`2^{-6}=\frac1{64}` },
+  { id: 'fair-probability', tex: String.raw`\mathbb P(\det A_n=0)=` },
+  { id: 'fair-rate', tex: String.raw`\left(\frac12+o(1)\right)^n=2^{-n+o(n)}` },
+  { id: 'bias-p', tex: String.raw`p=\frac34` },
+  { id: 'pair-agreement', tex: String.raw`Q=p^2+(1-p)^2` },
+  { id: 'bias-example', tex: String.raw`Q=\left(\frac34\right)^2+\left(\frac14\right)^2=\frac58` },
+  { id: 'biased-probability', tex: String.raw`\lim_{n\to\infty}\mathbb P(\det A_n^{(p)}=0)^{1/n}` },
+  { id: 'biased-rate', tex: String.raw`=p^2+(1-p)^2` },
+  { id: 'fixed-p', tex: String.raw`p\in(0,1),\quad p\ne\frac12` },
+] as const;
+---
+
+<Film
+  tag="uruk-coin-matrix"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A selected six-by-six symmetric sign matrix fills its twenty-one independent positions on and above the diagonal. Fifteen mirrored copies reuse those signs below it. The same grid contracts to its two-by-two corner, whose last sign temporarily changes to produce equal rows and a nonzero kernel vector. Changing that sign back restores the invertible corner. The grid regrows for the equal-row lower bound, with its second row and matching second column changed together in a symmetric what-if. After both are restored, all six coordinates of a kernel vector give six zero row products despite the absence of equal or opposite row pairs. Separate exact small-size counts retire before blue formulas state the papers' asymptotic exponential-rate claims. A fixed three-quarter coin illustrates the biased agreement rate five eighths without treating it as a failure percentage. The closing ledger preserves the dated review and Lean-catalogue limits."
+  caption="One symmetric sign matrix carries examples of dependence, an elementary equal-row bound and exact small-size counts. Blue formulas state the papers' claimed exponential rates. The finite examples and counts do not verify those asymptotic claims."
+  leftOut="The lattice, finite-group and path proof arguments; the history of nonsingularity bounds; eigenvalues near zero or least singular values; a finite-size reliability guarantee; a classification of typical singular matrices."
+>
+  <p class="film-method">How the film is made. The six-by-six sign matrix and its kernel vector are retained from the direction's exact finite search. The example was selected to be singular, to have no equal or opposite row pair and to have a kernel vector using every coordinate. It is one possible sign configuration, not a fresh random draw while the film plays. The fair ensemble chooses twenty-one signs independently on and above the diagonal; the fifteen reflected entries repeat earlier choices. Diagonal entries are random signs too, not fixed zeros. A solid square denotes plus one, and a hollow hatched square denotes minus one.</p>
+  <p class="film-method">The top-left corner originally has determinant minus two. Its bottom-right sign temporarily changes from minus one to plus one, producing two equal rows. The vector <span set:html={renderFormula(String.raw`(1,-1)^{\mathsf T}`, false)} /> then has two zero row products. Restoring that sign gives row products zero and two, and an invertible corner. These are exact finite calculations; the temporary corner is labelled separately from the restored six-by-six matrix.</p>
+  <p class="film-method">The equal-row picture changes the second row and its matching second column together, including their shared corner, so the what-if remains symmetric. The probability calculation concerns the fair random ensemble rather than the chosen picture. Outside the shared two-by-two corner, four independent pairs must agree when <span set:html={renderFormula(String.raw`n=6`, false)} />. The three independently chosen corner signs must all agree, with probability one quarter. Thus the event has probability <span set:html={renderFormula(String.raw`2^{-(n-2)}/4=2^{-n}`, false)} />, or one sixty-fourth at size six, and it forces singularity. Both the row and column return to their original signs before the example's full kernel is used.</p>
+  <p class="film-method">The original six-by-six matrix has rank five and kernel vector <span set:html={renderFormula(String.raw`(1,1,-1,-1,-1,1)^{\mathsf T}`, false)} />. Each of its six displayed row products is zero. The retained counts enumerate every symmetric sign matrix at sizes one through six. They distinguish all singular matrices from those with no equal or opposite row pair. At sizes five and six the latter counts are respectively one thousand, nine hundred and twenty of fifteen thousand, eight hundred and seventy-two singular matrices, and one hundred and eighty-four thousand, three hundred and twenty of nine hundred and seven thousand and eight singular matrices. These counts are finite mathematical facts. Their strip leaves before the claimed asymptotic formula appears.</p>
+  <p class="film-method">The fair blue formula <span set:html={renderFormula(String.raw`2^{-n+o(n)}`, false)} /> specifies an exponential rate as size tends to infinity. It does not specify the factor multiplying <span set:html={renderFormula(String.raw`2^{-n}`, false)} />. Subexponential factors may still grow with size. The finite counts are not plotted as an approach to this limit, and the film does not infer that almost every singular matrix has two equal or opposite rows.</p>
+  <p class="film-method">For the biased claim, <span set:html={renderFormula(String.raw`p\in(0,1)`, false)} /> is fixed and differs from one half. Every independently chosen sign, including the diagonal, is plus one with probability <span set:html={renderFormula(String.raw`p`, false)} />. The agreement probability of two independent such signs is <span set:html={renderFormula(String.raw`Q=p^2+(1-p)^2`, false)} />. The example <span set:html={renderFormula(String.raw`p=3/4`, false)} /> gives <span set:html={renderFormula(String.raw`Q=5/8`, false)} />. This illustrates the claimed exponential rate, not the probability that the displayed matrix or an arbitrary finite-size matrix fails. Error terms and size thresholds may depend on the fixed bias; no uniform assertion for a changing <span set:html={renderFormula(String.raw`p=p(n)`, false)} /> is made. The biased companion uses results from the fair paper and is not an independent confirmation of it.</p>
+  <p class="film-method">The closing ledger preserves the article's unreviewed status and evidence date, 7 November 2026. Neither paper has a formalization listed in the pinned release's Lean catalogue. The film performs no release-proof replay. Finite matrix arithmetic and enumeration checks do not verify the papers' probability estimates. With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the twelve cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

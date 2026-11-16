@@ -1,0 +1,16 @@
+uruk-coin-matrix .film-frame { container: smfilm / inline-size; }
+uruk-coin-matrix .film-label { font-size: .875rem; }
+uruk-coin-matrix [data-label="fair-probability"],
+uruk-coin-matrix [data-label="fair-rate"],
+uruk-coin-matrix [data-label="biased-probability"],
+uruk-coin-matrix [data-label="biased-rate"],
+uruk-coin-matrix [data-label="fixed-p"] { color: var(--blue); }
+
+@container smfilm (600px <= width < 760px) {
+  uruk-coin-matrix .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container smfilm (width < 600px) {
+  uruk-coin-matrix .film-stage { aspect-ratio: 4 / 9; }
+  uruk-coin-matrix .film-label { font-size: .75rem; }
+}

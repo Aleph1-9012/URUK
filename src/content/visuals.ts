@@ -57,6 +57,7 @@ export const visualCatalog = [
   { key: 'arrow-grid', component: './arrow-grid/ArrowGrid.astro' },
   { key: 'cluster-curves', component: './cluster-curves/ClusterCurves.astro' },
   { key: 'random-mosaic', component: './random-mosaic/RandomMosaic.astro' },
+  { key: 'coin-matrix', component: './coin-matrix/CoinMatrix.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

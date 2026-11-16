@@ -5,6 +5,7 @@ title: "How often is a symmetric matrix of coin flips singular?"
 paperTitle: "The sharp exponential rate of singularity for symmetric Bernoulli matrices"
 claim: "For a real symmetric matrix with independent fair signs on and above the diagonal, the probability of singularity is (1/2 + o(1))^n. A companion claims exponential rate p^2 + (1-p)^2 for each fixed non-half bias p."
 status: unreviewed
+visual: coin-matrix
 checked: 2026-11-07
 papers:
   - preprints/The-sharp-exponential-rate-of-singularity-for-symmetric-Bernoulli-matrices-October-3-2026/symmetric-bernoulli-singularity.pdf
