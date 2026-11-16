@@ -9,6 +9,7 @@ checked: 2026-10-20
 papers:
   - preprints/Almost-everywhere-Fourier-convergence-in-L-log-L-September-23-2026/paper.pdf
 draft: false
+visual: rough-sums
 ---
 
 Every periodic function can be written as a sum of sines and cosines, Fourier claimed in 1807, and the question of when that sum really adds back up to the function occupied analysis for a century and a half. In 1923 Kolmogorov, aged nineteen, built an integrable function whose Fourier series diverges at almost every point. In 1966 Lennart Carleson proved that for square-integrable functions the series converges almost everywhere, settling a conjecture of Lusin from 1915 in one of the hardest proofs of the century; Hunt extended it to every $L^{p}$ with $p>1$. Between $L^{1}$, where convergence fails, and $L^{p}$, where it holds, lies a scale of function classes measured by logarithms, and the natural conjecture was that $L\log L$, the functions with $\int|f|\log|f|<\infty$, is where convergence still holds. Sjölin proved it with an extra $\log\log$, Antonov in 1996 with an extra $\log\log\log$, and Arias de Reyna, Lie, Di Plinio and Fragkos pushed closer; the endpoint itself resisted. On 23 September 2026 OpenAI posted a paper claiming it. [1][2][3]

@@ -1,0 +1,51 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'l-one', tex: String.raw`L^1` },
+  { id: 'l-two', tex: String.raw`L^2` },
+  { id: 'l-p', tex: String.raw`L^p` },
+  { id: 'l-log-l', tex: String.raw`L\log L` },
+  { id: 'antonov', tex: String.raw`L\log L\log\log\log L` },
+  { id: 'sjolin', tex: String.raw`L\log L\log\log L` },
+  { id: 'series', tex: String.raw`S_N f` },
+  { id: 'function', tex: String.raw`f` },
+  { id: 'integral', tex: String.raw`I_T(h)=\int |h|\log(2+|h|)\,d\mu` },
+  { id: 'cut-domain', tex: String.raw`0\le t=\ln(\pi/|x|)\le T` },
+  { id: 'model-f', tex: String.raw`f(x)=1/(|x|L^3)` },
+  { id: 'model-log', tex: String.raw`L=1+\ln(\pi/|x|)` },
+  { id: 'cutoff-0', tex: String.raw`T=10^2` },
+  { id: 'cutoff-1', tex: String.raw`T=10^4` },
+  { id: 'cutoff-2', tex: String.raw`T=10^6` },
+  { id: 'cutoff-3', tex: String.raw`T=10^8` },
+  { id: 'strict-p', tex: String.raw`p>1` },
+  { id: 'comparison', tex: String.raw`g(x)=1/(|x|L^2)` },
+  { id: 'claim-sums', tex: String.raw`S_N f\to f\quad\text{a.e.}` },
+] as const;
+---
+
+<Film
+  tag="uruk-rough-sums"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="Computed cosine partial sums bend toward one even function with a spike at zero. A ladder orders function classes by inclusion, with schematic spacing. Integral readouts compare this example with a different spike outside L log L; neither is Kolmogorov's undrawn function. A blue bracket marks the claimed almost-everywhere convergence along the full sequence. A dated review ledger and full transcript follow."
+  caption="One function with a logarithmic spike is rebuilt from computed cosine sums. A schematic ladder separates Kolmogorov's undrawn divergence example, the known convergence classes and the claimed L log L theorem. Finite sums illustrate one function, not the proof."
+  leftOut="the proof; time-frequency tiles and trees; the entropy argument; the maximal operator; the paper's two figures; Kolmogorov's function. The outside-L log L comparison concerns an integral, not an assertion that its Fourier series diverges."
+>
+  <p class="film-method">How the film is made. The illustrated even function is <span set:html={renderFormula(String.raw`f(x)=1/(|x|L^3)`, false)} />, with <span set:html={renderFormula(String.raw`L=1+\ln(\pi/|x|)`, false)} />, for nonzero x on the circle from minus pi to pi. It grows without bound near zero. Its value at that one point does not affect its integrals or Fourier coefficients. An arrow identifies the clipped spike rather than drawing an artificial finite peak.</p>
+  <p class="film-method">A worker computes the Fourier coefficients and integral comparisons from the function, without shipping a coefficient table. The drawing evaluates partial sums from those coefficients. Because the function is even, the symmetric partial sums are sums of cosines. The film shows finitely many of them through N = 200. Re-bending between consecutive displayed curves carries the drawing; it does not assert a noninteger Fourier cutoff or prove convergence. A finite number of sampled values cannot establish an almost-everywhere theorem.</p>
+  <p class="film-method">The example belongs to L log L and also to older convergence classes on the ladder. It illustrates how sums can approach one rough function, not a case that requires the new claimed theorem. Slow approximation near the spike is different from divergence. No curve of Kolmogorov's function is drawn.</p>
+  <p class="film-method">The integral comparison uses the same logarithm with power two in the denominator instead of power three. That comparison function g is integrable but outside L log L. Its increasing truncated integral illustrates the class distinction. It is not Kolmogorov's function, and the film makes no assertion that its Fourier series diverges. The logarithmic variable is <span set:html={renderFormula(String.raw`t=\ln(\pi/|x|)`, false)} />. Each finite readout <span set:html={renderFormula(String.raw`I_T(h)`, false)} /> integrates <span set:html={renderFormula(String.raw`|h|\log(2+|h|)`, false)} /> only over points where <span set:html={renderFormula(String.raw`0\le t\le T`, false)} />, using the circle's normalized measure <span set:html={renderFormula(String.raw`d\mu=dx/(2\pi)`, false)} />. The two rows apply this same functional to f and g. All displayed values are finite-cutoff computations, rather than the value of g's divergent full integral.</p>
+  <p class="film-method">The ladder follows inclusion of classes, with the larger classes toward <span set:html={renderFormula(String.raw`L^1`, false)} /> and the stronger integrability assumptions toward <span set:html={renderFormula(String.raw`L^p`, false)} />. Its rung spacing is schematic. It measures neither elapsed years nor a numerical gap between classes. The labels abbreviate the logarithmic growth conditions in the article. Known results and the blue claimed rung remain distinct.</p>
+  <p class="film-method">The claimed conclusion is convergence almost everywhere for every complex-valued function in L log L on the one-dimensional circle, along the full sequence of ordinary symmetric partial sums N = 0, 1, 2 and so on. The exceptional null set can depend on the function. The claim is sufficient integrability, not a statement that L log L is the exact threshold between convergence and divergence. No proof or higher-dimensional analogue is shown.</p>
+  <p class="film-method">The closing evidence follows the article's date, 20 October 2026. No mathematician had publicly reported reading or checking the proof. The Lean statement FourierLLogL.lean is in the pinned catalogue. A kernel check is evidence about the formal statement and is not counted as a reading or approval of the written paper. Without JavaScript, the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
