@@ -1,0 +1,42 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'interaction', tex: String.raw`b\cos(\theta_x-\theta_y)` },
+  { id: 'correlation-pure', tex: String.raw`r^{-1/4}` },
+  { id: 'correlation-corrected', tex: String.raw`r^{-1/4}(\log r)^{1/8}` },
+  { id: 'local-slope', tex: String.raw`-\frac14+\frac{1}{8\log r}` },
+  { id: 'limit-slope', tex: String.raw`-\frac14` },
+  { id: 'length-law', tex: String.raw`\log\xi=\frac{1}{\sqrt{1-b}}` },
+  { id: 'length-units', tex: String.raw`A=1,\quad b_c=1` },
+  { id: 'length-general', tex: String.raw`\log\xi\sim\frac{A}{\sqrt{b_c-b}}` },
+  { id: 'critical-claim', tex: String.raw`C_{b_c}(r)\sim B\,r^{-1/4}(\log r)^{1/8}` },
+] as const;
+---
+
+<Film
+  tag="uruk-arrow-grid"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="One periodic twenty-by-twenty grid contains four hundred arrows. The same arrows turn between three fixed sampled configurations at chosen inverse temperatures. Vortex and antivortex rings mark the winding of neighbouring arrows in each settled sample. The finite pictures do not establish a phase transition or vortex unbinding. The grid then shrinks to an inset while its bottom row becomes a logarithmic distance axis. A pure one-quarter power law and a formula with a logarithmic correction are drawn at their distinct actual values with amplitude one, followed by a separate schematic correlation-length curve. The plotted curves are formulas, not correlations measured from the grid. Dashed ink identifies predictions, blue marks identify OpenAI's unreviewed claims, and the closing ledger preserves the dated absence of human and machine checks."
+  caption="A periodic grid of four hundred arrows at three toy inverse temperatures, with vortices counted in the fixed samples. Formula plots illustrate the predicted critical correlation and correlation length. Blue marks identify what the papers claim to prove. The finite pictures and plots do not check those claims."
+  leftOut="The proof map, the dual height picture, the stiffness constant, the critical spin field, centre magnetization and discrete Gaussian results; a computed critical temperature or amplitude; any measured correlation function, thermodynamic-limit computation or numerical demonstration of vortex unbinding."
+>
+  <p class="film-method">How the film is made. Three fixed sampled angle fields are retained from the direction's seeded Metropolis computation on a periodic <span set:html={renderFormula(String.raw`20\times20`, false)} /> grid. There are four hundred distinct sites. The browser draws these fields and recomputes the winding charges and displayed formula values. It does not run a new Monte Carlo simulation while the film plays. The picture begins with the sample at <span set:html={renderFormula(String.raw`b=0.9`, false)} />, turns toward the sample at <span set:html={renderFormula(String.raw`b=1.5`, false)} />, and later passes through <span set:html={renderFormula(String.raw`b=0.9`, false)} /> to <span set:html={renderFormula(String.raw`b=0.5`, false)} />. These are chosen toy inverse temperatures, not computed values of the critical point.</p>
+  <p class="film-method">Each arrow turns along the shorter angular route between its old and new directions. These turns provide visual continuity between fixed configurations. They are not physical-time dynamics, a Monte Carlo trajectory or samples at intervening inverse temperatures. Vortex counts belong to the settled fields rather than the turning frames. Filled and hollow rings distinguish opposite winding charges without introducing another pigment.</p>
+  <p class="film-method">A plaquette's charge is the sum of the four oriented angle changes, each wrapped into a principal angular interval, divided by <span set:html={renderFormula(String.raw`2\pi`, false)} />. The retained samples have charges zero or plus or minus one, and zero total signed charge. The periodic calculation includes the plaquettes that cross the displayed boundaries, so it uses four hundred plaquettes as well as four hundred sites. The final counts are zero, twenty-two and eighty-four at <span set:html={renderFormula(String.raw`b=1.5,\ 0.9,\ 0.5`, false)} />, respectively. These counts do not prove a phase transition, identify the critical point or demonstrate that vortex pairs bind or unbind. The nearest-opposite-vortex distance in these samples did not distinguish the pictures.</p>
+  <p class="film-method">The Mermin-Wagner result and the low-temperature phase theorem are cited results, not conclusions drawn from the finite samples. A finite periodic grid can have a visibly smooth field and nonzero average arrow direction; this does not establish magnetic order in the infinite-volume model. The thread between distant arrows and the early straight memory segment are schematic. No correlation function is estimated from the sampled fields.</p>
+  <p class="film-method">The correlation plot draws the two leading formulas <span set:html={renderFormula(String.raw`r^{-1/4}`, false)} /> and <span set:html={renderFormula(String.raw`r^{-1/4}(\log r)^{1/8}`, false)} /> for distances from ten to one hundred million, with natural logarithms and amplitude set to one. The corrected formula has local logarithmic slope <span set:html={renderFormula(String.raw`-\frac14+\frac{1}{8\log r}`, false)} />. Both curves retain their actual formula values. At distance ten they start at different heights; they are not rescaled to a common starting point. The curves illustrate the predicted asymptotic forms, not exact measured correlations or exponents recovered from the grid.</p>
+  <p class="film-method">The separate length plot draws <span set:html={renderFormula(String.raw`\log\xi=1/\sqrt{b_c-b}`, false)} /> in illustrative units <span set:html={renderFormula(String.raw`A=1,\ b_c=1`, false)} />. Its vertical values are the logarithm of the correlation length, not the length itself. The critical marker at one is schematic and is separate from the grid's three chosen inverse temperatures. Neither the actual critical value nor either positive amplitude is computed. The paper's precise claim is <span set:html={renderFormula(String.raw`\sqrt{b_c-b}\,\log\xi\longrightarrow A>0`, false)} /> as <span set:html={renderFormula(String.raw`b\uparrow b_c`, false)} /> from the disordered side. The displayed unit curve illustrates this leading asymptotic behavior.</p>
+  <p class="film-method">The blue marks identify claims for the ordinary nearest-neighbour cosine model on the infinite square lattice. The paper takes the thermodynamic limit through free boxes before the large-distance limit. This film's small periodic grid is an illustration with different boundary conditions and cannot establish either limit. Fröhlich and Spencer's known low-temperature result remains separate from the exact critical predictions and the papers' claimed proofs.</p>
+  <p class="film-method">The closing ledger preserves the article's evidence date, 20 October 2026, and its unreviewed status. No mathematician had publicly reported reading or checking the proofs, and this family has no Lean scope note or comparator statement in the pinned release. This film performs no machine proof check. Without JavaScript, the article and transcript remain available with no fallback illustration. Reduced motion selects one completed supporting frame for each of the ten cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

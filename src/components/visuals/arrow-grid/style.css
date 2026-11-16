@@ -1,0 +1,11 @@
+uruk-arrow-grid .film-frame { container: xyfilm / inline-size; }
+uruk-arrow-grid .film-label { font-size: .875rem; }
+
+@container xyfilm (600px <= width < 760px) {
+  uruk-arrow-grid .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container xyfilm (width < 600px) {
+  uruk-arrow-grid .film-stage { aspect-ratio: 4 / 9; }
+  uruk-arrow-grid .film-label { font-size: .75rem; }
+}
