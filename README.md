@@ -64,8 +64,9 @@ latest production build on the same port. Stop one before starting the other.
 | Write or revise a result | `src/content/results/NNN-topic.md` | `src/content/schema.ts`, `sections.ts`, `render.ts` |
 | Change review labels or filter keys | `src/content/review-status.ts` | `components/status-sign`, `components/menu` |
 | Add or select a visual | `src/content/visuals.ts` | `components/visuals/<feature>/`, result front matter |
-| Change a film's explanation or choreography | Its `story.ts` or `timeline.ts` | Its `film.ts`, drawing modules, math, and CSS |
-| Change all narrated films' controls | `src/components/plate/` | `controller.ts`, `timeline.ts`, shared film components and styles |
+| Change a film's explanation or choreography | Its `story.ts` | Its `film.ts`, drawing modules, math, and `style.css` |
+| Change every film's markup, controls or stage styles | `src/components/plate/Film.astro` | `controller.ts`, `timeline.ts`, `film.css` |
+| Change how films run their workers | `src/components/plate/numerics.ts` | Each film's `element.ts` and `worker.ts` |
 | Change search and filtering | `src/components/menu/` | `pages/results/index.astro`, roll's public API |
 | Change the results roll | `src/components/roll/` | `Roll.astro`, `element.ts`, `model.ts`, local CSS |
 | Change the home-page explanation | `src/components/dig/content.ts` | `Dig.astro`, `element.ts` |
@@ -93,23 +94,58 @@ use the `uruk-paper-content` skill when available.
 
 ## Work on a visual
 
-Each visual's directory owns its Astro entry point, mathematics, drawing,
-storyboard, styles, worker, and data when needed. A new visual needs one entry in
-`src/content/visuals.ts`, then a result selects its key with `visual:`. The renderer
-checks every registered component path during the build.
+A visual lives in `src/components/visuals/<key>/`. Its folder name, its catalog
+key in `src/content/visuals.ts` and its element `uruk-<key>` are the same word.
+A result selects it with `visual: <key>`. The renderer checks every registered
+component path during the build.
 
-Narrated films register through `defineFilm` in `components/plate/controller.ts`.
-The feature's `element.ts` creates its drawing and connects any worker. Use the
-provided abort signal to release worker resources. `createTimeline` supplies cue
-lookup, settled frames, and clock formatting. Keep cue text and its settling
-offset with the storyboard. Shared animation calculations live in
-`src/lib/animation.ts`. `components/plate/labels.ts` owns measurement, placement,
-and visibility for the films that use centered DOM labels.
+A narrated film's folder holds:
 
-The standard map, draggable unit ruler, and Thompson bands use the lower-level
-player and track directly because their controls differ from narrated films.
-Prime-wave number-theory code lives under `prime-waves/zeta/`. Engraving-pattern
-vocabulary shared by two visuals lives in `src/lib/engraving-patterns.ts`.
+| File | Holds |
+| --- | --- |
+| `<Name>.astro` | The film's formulas, caption, canvas description and method notes, passed to `plate/Film.astro` |
+| `element.ts` | Registration with `defineFilm`, and the worker if there is one |
+| `story.ts` | Cues, `TIMELINE`, and the film's timing |
+| `film.ts` | The drawing: `resize(frame)` and `draw(time)` |
+| `math.ts`, panels, data | The mathematics and the drawing's parts |
+| `style.css` | Only what differs from the shared stage: label sizes and tones, the phone aspect ratio |
+| `<key>.test.ts` | Tests of the film's mathematics, beside the code they test |
+
+`plate/Film.astro` owns the markup every film shares: the plate, the stage and
+canvas, the formula labels, subtitles, controls and transcript. `plate/film.css`
+styles them. A film adds markup only through the `labels` and `notice` slots.
+
+The controller measures the canvas, sizes its backing store and reads the
+page's colour tokens. It hands the film a frame (`plate/frame.ts`): width,
+height, density and tones. A film never calls `getComputedStyle` or sets
+`canvas.width`. `PHONE_STAGE_WIDTH` names the width below which films use
+their phone layout.
+
+`plate/canvas/` holds drawing helpers whose bodies were identical across films:
+wrapped text, fitted captions and a partial line. Add to it only code that
+several films share word for word. A film's layout, choreography and drawing
+style stay in the film.
+
+A film with a worker starts it through `runNumerics` in `plate/numerics.ts`.
+The helper sets `data-numerics-pending` while calculating, then
+`data-numerics-ready` or `data-numerics-error` on the element,
+handles a worker that cannot start, finish or transfer its data, and stops the
+worker when the film disconnects.
+
+`createTimeline` supplies cue lookup, settled frames and clock formatting. Keep
+a film's timing in `story.ts` as named functions, as `pairs-rings` does; older
+films still carry time literals in their drawing code. Shared animation
+calculations live in `src/lib/animation.ts`. `plate/labels.ts` measures, places
+and shows the centred DOM labels.
+
+Film viewports retain their layout while loading and become visible only after
+the controller draws the opening frame. Do not add static fallback illustrations
+before playback. With JavaScript disabled, the article and film transcript remain
+available; reduced motion uses the film's settled cue frames.
+
+The standard map is the one interactive plate. It uses the lower-level player
+and track directly because its controls differ from narrated films.
+Prime-wave number-theory code lives under `prime-waves/zeta/`.
 
 ## Check a change
 
@@ -119,6 +155,7 @@ bun run verify
 
 This runs Astro and TypeScript checks, validates every result, runs the tests,
 and builds production pages. There is currently no configured lint command.
+A film's tests sit in its folder; `tests/` holds the tests that cross features.
 
 For browser changes, build first, then run the interaction checks:
 
@@ -134,7 +171,9 @@ to the top of the phone roll. They use
 Chromium at `/usr/bin/chromium` and a preview server on port 4322.
 
 For layout changes, the existing screen checker builds with drafts enabled and
-checks eleven viewport configurations. Pass routes to narrow the run:
+checks eleven viewport configurations. Both browser check commands use temporary
+previews on port 4322, so run them one at a time. The development server can stay
+on 4321. Pass routes to narrow the screen check:
 
 ```sh
 bun run check:screens / /results/ /results/003/
@@ -143,7 +182,37 @@ bun run check:screens / /results/ /results/003/
 Omit routes to check every built page and the search/source variants. Screenshots
 go under `/tmp/uruk-work/screens/`; the command prints the exact directory.
 
+While building a film, capture stills at chosen times and widths, and report its
+subtitles against the article:
+
+```sh
+URUK_DRAFTS=1 bun run build
+bun run film:frames /results/166/ 0,30000,61500 1440,390,320
+bun run check:subtitles 166
+```
+
+`film:frames` waits for a film's worker before the first still and saves under
+`/tmp/uruk-work/frames/` unless a folder is given. `check:subtitles` lists the
+subtitles that are not sentences of the article or are too long for their time.
+Films built before 12 November 2026 predate both rules, so it is a report and
+not part of `verify`.
+
 Keep generated `dist/`, `.astro/`, and `node_modules/` out of source edits.
 Keep regression tests focused on visible behavior, mathematical invariants, or
 boundary contracts. Preserve the provenance of artwork, data, and mathematical
 claims.
+
+The core fonts in `src/assets/fonts/` retain the original outlines, spacing and
+font metrics from `public/fonts/`. `styles/fonts.css` embeds the text fonts in a
+shared, cached stylesheet so they arrive before text paints. Result pages also
+link `styles/math-fonts.css` for the common mathematical glyphs. Keep these
+stylesheets linked from `Base.astro`; importing them as ordinary CSS would
+inline the font data in every production page. The original fonts supply less
+common characters. Their license notices remain in `public/fonts/`.
+
+To regenerate these assets after changing the originals, run
+`python3 scripts/subset-fonts.py`. This optional asset command requires the
+HarfBuzz subset library and WOFF2 command-line tools, not needed for ordinary
+Bun builds. The generator records its Unicode ranges and preserves the default
+HarfBuzz layout and hinting closure. The checked-in subsets were generated with
+HarfBuzz 14.6.0.

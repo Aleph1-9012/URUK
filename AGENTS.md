@@ -6,8 +6,9 @@ entry point and follow its imports; avoid reading every film for a local change.
 - Apply the `anti-slop` skill for JavaScript and TypeScript work. The user's skill
   is at `/home/silverhand9012/.codex/skills/anti-slop/SKILL.md`. There is no
   configured repository lint command; do not claim one passed.
-- Keep a visual's math, storyboard, rendering, worker, and styles in its feature
-  directory. Shared film controls and browser lifecycle belong in
+- Keep a visual's math, storyboard, rendering, worker, styles, and tests in its
+  feature directory. Films share their markup through `plate/Film.astro`, their
+  canvas frame through `plate/frame.ts`, and workers through `plate/numerics.ts`. Shared film controls and browser lifecycle belong in
   `src/components/plate/`. Stable calculations belong below browser code.
 - Register visuals only in `src/content/visuals.ts`. Review labels and public
   filter keys belong only in `src/content/review-status.ts`.
@@ -23,5 +24,5 @@ entry point and follow its imports; avoid reading every film for a local change.
   source-text snapshots, module mocks, or assertions about constant arithmetic.
 - Do not edit generated `dist/`, `.astro/`, or dependency files to fix source.
 
-The refactor's decisions, justified special cases, and verification record are
+The refactors' decisions, justified special cases, and verification records are
 in `docs/untangle-decisions.md`.

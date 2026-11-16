@@ -229,3 +229,146 @@ mathematics. Change time and LLM token savings have not been benchmarked.
 The [audit report](../../uruk-untangle-audit/report.md) retains the complete
 measurements, scan limitations, and reproduction commands. Its raw evidence is
 outside the checkout; this log and the contributor guides remain in the repository.
+
+# Second refactor, 14 November 2026
+
+Status: completed on 14 November 2026. The first refactor covered
+18 films. By this one the site had 50, built one at a time from scratch, and
+each new film had copied the same markup, stage styles, canvas sizing, colour
+reading, text helpers and worker handling. An audit with 22 ast-grep rules and
+a duplicate-function scan produced a plan; this section records what was done.
+
+Baseline: the uncommitted working tree of 14 November, kept as a source
+snapshot and a drafts build in `../uruk-untangle-audit/round2/`. Before any
+edit the frame comparison was run on the baseline against itself and reported
+zero differences in 2,600 states.
+
+## One name per film
+
+- Folder, catalog key and element now match: `prime-waves` (was key
+  `zero-free-strip`, element `uruk-prime-film`), `uruk-catalan-bounds`,
+  `uruk-switch-groups`. Result 003 selects `visual: prime-waves`.
+- Every film's stylesheet is `style.css` and its storyboard is `story.ts`.
+- The film constructor's first argument is `root` in every film.
+
+## Films share one shell
+
+- Fifty templates repeated the plate, stage, canvas, label layer, subtitles,
+  controls and transcript in 30 slightly different skeletons.
+- Fifty stylesheets repeated the same seven stage rules.
+
+Decision: `plate/Film.astro` owns the markup and `plate/film.css` the stage
+rules. A film's template passes its formulas, texts and method notes; its
+stylesheet keeps only label sizes, tones and the phone aspect ratio, scoped by
+its element name. Nine films' identical review stamp became
+`.film-label--stamp`.
+
+Two visible-in-principle changes were accepted, both invisible in the frame
+comparison apart from the first:
+
+- Ten films placed labels directly in the stage. They now sit in the shared
+  label layer, which ignores the pointer as it already did in the other 40
+  films. Formula text in those ten films can no longer be selected by mouse.
+- Four early films hid the canvas with `opacity` until ready; all films now use
+  `visibility`. The stage was already transparent until ready.
+
+## The controller measures; films draw
+
+- Fifty `resize` methods sized the canvas backing store and read the four
+  colour tokens, in 14 variants, each with fallback hex values. The fallback
+  ink differed from the token.
+
+Decision: the controller calls `readFrame`, sizes the canvas and passes a
+`FilmFrame` (width, height, density, tones) to `resize`. Films no longer touch
+`getComputedStyle` or `canvas.width` except for their own off-screen caches
+and the seven pigments of `five-colours`. `PAGE_TONES` holds the token values
+until the first resize. `PHONE_STAGE_WIDTH` names the 600-pixel threshold.
+
+Kept as they are, with reasons:
+
+- Films keep their own `width`, `height`, `density` and colour fields. Moving
+  them behind a shared object would rewrite thousands of drawing lines for no
+  change in where edits land.
+- The two-line frame reset (`setTransform`, `clearRect`) stays in each film.
+  Its variants differ in caps, joins and dash, and a shared `begin()` would
+  need threading through every constructor.
+- Each film constructs its own `FilmLabels`, because the margins differ.
+
+## A small drawing kit
+
+Only word-for-word copies moved to `plate/canvas/`: the wrapped-text module
+(six films), the partial `line` (17 films) and the fitted caption writer
+(12 films, each passing its own font rule). Left in place: `hatch` (two
+behaviours), `polar-product`'s wrapped text (its line spacing multiplies in a
+different order), the font-stack strings (199 literals in three spellings) and
+17 local easing helpers. Share one of these only when a film is next edited
+and the comparison stays at zero.
+
+## One worker lifecycle
+
+Twelve films start their worker through `runNumerics`. It owns the two
+`data-numerics-*` attributes, construction failure, `error` and `messageerror`,
+and termination. Success paths are unchanged. Failure paths are now the same
+everywhere: the film records the reason, the error attribute is set, the worker
+stops and the film redraws. The standard map keeps its own lifecycle because
+it survives reconnects with reader state.
+
+## Removed
+
+`unit-ruler/` and `thompson/` (no result selected them), `StepControl.astro`,
+the stylesheet rules only they used, `lib/engraving-patterns.ts` (its list
+moved into `five-colours`) and their seven tests. They remain in Git history.
+
+## Tests beside films, scripts for builders
+
+- Fifty-two film test files and their fixtures moved into the film folders.
+  `tests/` keeps the seven cross-feature files.
+- `scripts/site-browser.ts` starts the preview and browser for both checks.
+- `bun run film:frames` captures stills; `bun run check:subtitles` reports
+  subtitles against the article. Twenty-six of 50 films meet both subtitle
+  rules; the others predate them. Re-cueing is content work.
+
+## Verification
+
+- `bun run verify`: zero diagnostics, 201 tests (208 less the seven removed
+  with the plates), 73 documents, 78 pages.
+- Frame comparison of all 50 films at widths 390 and 1440, 26 times each:
+  canvas pixels, label placement, subtitle and transcript text, and computed
+  layout of the plate, stage, controls, transcript and every label. Zero
+  differences after each step, apart from the accepted pointer change. Widths
+  700 and 1024 were also compared after the shell step.
+- `check:interactions`: 50 films in 100 sessions, plus the standard map,
+  search, filters and back-to-top. `check:screens`: 99 viewports on nine
+  representative routes, zero failures.
+- No lint command is configured; the anti-slop guidance was applied by hand.
+
+| Pattern (ast-grep 0.51.1, same rules both sides) | Before | After |
+| --- | ---: | ---: |
+| Canvas backing store sized in a film | 52 | 2 |
+| Colour token read in a film | 61 | 2 |
+| Fallback colour literal | 209 | 9 |
+| `width < 600` literal | 98 | 1 |
+| `data-numerics-*` string | 67 | 7 |
+| Swallowed worker-construction error | 4 | 1 |
+| Film size fields | 44 | 44 |
+| Frame reset | 51 | 51 |
+| Font literal | 217 | 199 |
+| Local easing helper | 17 | 17 |
+
+Identical top-level functions across films fell from 24 groups (933 redundant
+lines) to 16 groups (155 lines). Source under `src`, `scripts` and `tests`
+fell from 82,999 to 80,187 lines.
+
+A new film now needs its own drawing, story, mathematics and a short template
+and stylesheet. A change to every film's markup, stage, canvas sizing or
+worker handling lands in one file under `components/plate/`.
+
+## Left open
+
+- Timing: about 5,300 time literals sit in drawing code outside the
+  storyboards. Move a film's timing into its `story.ts` when that film is
+  re-cued, under the frame comparison.
+- The remaining items under "A small drawing kit".
+- Comment and test review of the films added since 9 November was not done.
+- The workspace folder `Uruk-assets` has its own housekeeping list; the plan
+  and its evidence are kept in `../uruk-untangle-audit/round2/`.
