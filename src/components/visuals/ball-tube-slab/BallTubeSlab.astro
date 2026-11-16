@@ -1,0 +1,44 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'volume-axis', tex: String.raw`V` },
+  { id: 'area-axis', tex: String.raw`P` },
+  { id: 'ball-area', tex: String.raw`(36\pi)^{1/3}v^{2/3}` },
+  { id: 'tube-area', tex: String.raw`2\sqrt{\pi v}` },
+  { id: 'slab-area', tex: String.raw`2` },
+  { id: 'first-tie', tex: String.raw`\frac{4\pi}{81}` },
+  { id: 'second-tie', tex: String.raw`\frac1\pi` },
+  { id: 'ball-radius', tex: String.raw`r=\frac13` },
+  { id: 'tube-radius', tex: String.raw`r=\frac29` },
+  { id: 'common-area', tex: String.raw`P=\frac{4\pi}{9}` },
+  { id: 'complement', tex: String.raw`v=\min(V,1-V)` },
+] as const;
+---
+
+<Film
+  tag="uruk-ball-tube-slab"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A schematic section through a ball grows, gains a unit periodic cell and crosses its joined edges. The same section changes into a wrapped tube's end-on disc and a slab's strip. Three ink boundary-area curves draw, and a moving dot follows their candidate lower envelope. Only the two adjacent-candidate transition ties turn blue for the paper's full classification claim. At the first transition, the original section frame compacts and a second equal-scale unit frame grows beside it. They show alternative ball and tube sections with radii one third and two ninths, rather than two disjoint regions occupying one cell. The graph and two blue tie marks remain with a ledger distinguishing unreviewed human evidence from a historical report of formal acceptance."
+  caption="Thick ink is the lowest boundary area among these three candidates, not a proof that no other finite-perimeter region does better. The blue ties identify the paper's claimed full profile and classification in the unit cubic flat three-torus: balls, coordinate wrapped tubes, coordinate slabs and their complements, up to isometry and changes on null sets. Only adjacent candidate types tie on this lower envelope. The drawings are schematic sections, not three-dimensional volume pictures; the two later frames show alternatives at the same scale."
+  leftOut="The reflection and slicing arguments; the nesting estimate and interval bounds; any additional competitor or proof animation; arbitrary rectangular boxes, other lattices or higher dimensions; stationary-surface classification; a new formal proof replay."
+>
+  <p class="film-method">How the film is made. The browser computes the three standard candidate boundary areas from their elementary formulas: <span set:html={renderFormula(String.raw`(36\pi)^{1/3}v^{2/3}`, false)} /> for a ball, <span set:html={renderFormula(String.raw`2\sqrt{\pi v}`, false)} /> for a unit-length wrapped tube and <span set:html={renderFormula(String.raw`2`, false)} /> for a slab, with <span set:html={renderFormula(String.raw`v=\min(V,1-V)`, false)} />. The thick curve is their lower envelope only. The browser does not search among all regions or establish the global isoperimetric profile.</p>
+  <p class="film-method">The two blue points are the adjacent candidate transitions on that envelope, at <span set:html={renderFormula(String.raw`4\pi/81`, false)} /> and <span set:html={renderFormula(String.raw`1/\pi`, false)} />. The ball and slab curves also intersect above the candidate lower envelope. That separate intersection is not a minimizing transition and is not marked blue. Computing the candidate intersections does not prove that the blue points are ties among all globally minimizing regions; that is part of the paper's claim.</p>
+  <p class="film-method">A section has area, not three-dimensional volume. The ball's central disc depicts a region whose volume is <span set:html={renderFormula(String.raw`4\pi r^3/3`, false)} />. The end-on tube section has area <span set:html={renderFormula(String.raw`\pi r^2`, false)} />, which happens to equal the tube's volume because its wrapped length is one. Its boundary area is <span set:html={renderFormula(String.raw`2\pi r`, false)} /> with no end caps. The slab has two flat boundary surfaces, each of area one. Opposite cell faces are joined, and crossing a drawn cell face adds no boundary area.</p>
+  <p class="film-method">At the first transition, the ball radius is <span set:html={renderFormula(String.raw`1/3`, false)} /> and the tube radius is <span set:html={renderFormula(String.raw`2/9`, false)} />. Both three-dimensional regions have volume <span set:html={renderFormula(String.raw`4\pi/81`, false)} /> and boundary area <span set:html={renderFormula(String.raw`4\pi/9`, false)} />. The two section discs have different areas. They are alternatives in two separate equal-scale unit cells, not disjoint parts of one region. Separate frames avoid presenting their union as a new competitor with twice the volume. The original frame compacts continuously before the second frame grows beside it.</p>
+  <p class="film-method">The full claim ranges over all finite-perimeter competitors in the unit cubic flat three-torus. It classifies global minimizers up to ambient isometry and changes on sets of volume zero, including complements above half volume. The tube is around a shortest coordinate closed geodesic and the slab is a coordinate slab. The claim does not extend to arbitrary boxes, other lattices, higher dimensions or every stationary surface. The film draws no fourth competitor or mechanism purporting to prove the exclusion.</p>
+  <p class="film-method">The ledger preserves the article's unreviewed human-review label and its search date, 7 November 2026. The pinned release links <code>CubicTorus.lean</code>, a statement of the full finite-perimeter profile and classification including both transition ties, but does not catalogue it. Carlos Toledo's historical ledger reports acceptance by Lean and nanoda on 10 October 2026 at commit <code>fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb</code>. The current paper and statement are inspected at the approved pin <code>4eaee87548250b2682affda7d05d947c05554bae</code>; the historical target and mapping match byte for byte. This film has not rerun that proof, and the reported kernel acceptance is not our check or a specialist assessment of the manuscript and its correspondence to the statement.</p>
+  <p class="film-method">During the candidate scan, the cursor pauses at each computed transition while the schematic section changes type. Those intermediate drawings are display morphs, not physical evolutions or constant-volume competitors. Exact radius and area readouts refer to the settled candidate geometries. The first-transition comparison shows separate equal-scale unit sections of alternative regions.</p>
+  <p class="film-method">With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the nine exact canonical cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

@@ -6,6 +6,7 @@ paperTitle: "The Isoperimetric Conjecture for the Cubic Flat Three-Torus"
 claim: "In the unit cubic flat three-torus, the least perimeter at volume V is min{(36π)^(1/3)v^(2/3), 2√(πv), 2}, where v = min(V, 1-V). Every minimizer is a ball, a circular tube around a shortest closed geodesic, a coordinate slab, or a complement, with exactly the adjacent types tied at 4π/81 and 1/π."
 status: unreviewed
 checked: 2026-11-07
+visual: ball-tube-slab
 papers:
   - preprints/The-Isoperimetric-Conjecture-for-the-Cubic-Flat-Three-Torus-September-24-2026/article.pdf
 draft: false
