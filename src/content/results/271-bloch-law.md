@@ -6,6 +6,7 @@ paperTitle: "Bloch's Law for Finite-Range Heisenberg Ferromagnets in Three Dimen
 claim: "The three-dimensional quantum Heisenberg ferromagnet is magnetized at low temperature in every dimension from three up and for every spin, and in three dimensions its spontaneous magnetization falls below saturation by exactly the amount Bloch predicted in 1930, zeta(3/2)/(8 pi^{3/2} sqrt(det D)) times T^{3/2}, with the next correction and the uniform direction of the magnetization in a finite box also determined."
 status: unreviewed
 checked: 2026-11-03
+visual: tilted-waves
 papers:
   - preprints/Blochs-Law-for-Finite-Range-Heisenberg-Ferromagnets-in-Three-Dimensions-October-5-2026/bloch-law-heisenberg.pdf
   - preprints/Spontaneous-magnetization-in-the-quantum-Heisenberg-ferromagnet-September-24-2026/paper.pdf

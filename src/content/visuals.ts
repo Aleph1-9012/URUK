@@ -61,6 +61,7 @@ export const visualCatalog = [
   { key: 'choice-pieces', component: './choice-pieces/ChoicePieces.astro' },
   { key: 'carry-tree', component: './carry-tree/CarryTree.astro' },
   { key: 'excess-stairs', component: './excess-stairs/ExcessStairs.astro' },
+  { key: 'tilted-waves', component: './tilted-waves/TiltedWaves.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);
