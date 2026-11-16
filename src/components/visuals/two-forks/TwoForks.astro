@@ -1,0 +1,44 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'target-name', tex: String.raw`S` },
+  { id: 'required-name', tex: String.raw`A` },
+  { id: 'envelope-name', tex: String.raw`T` },
+  { id: 'pivot-name', tex: String.raw`p` },
+  { id: 'base-claim', tex: String.raw`(S\setminus\{s\},S,1)` },
+  { id: 'envelope-rule', tex: String.raw`T=\{p\}\cup\bigcup_iT_i` },
+  { id: 'height-rule', tex: String.raw`h=1+\max_i h_i` },
+  { id: 'child-avoids', tex: String.raw`b\notin T_i` },
+  { id: 'board-size', tex: String.raw`17\times17` },
+  { id: 'paper-height', tex: String.raw`\le21\text{ Maker moves}` },
+  { id: 'paper-claims', tex: String.raw`6+722=728` },
+  { id: 'paper-pivot', tex: String.raw`p_{727}=(8,8)` },
+  { id: 'paper-required', tex: String.raw`A_{727}=\varnothing` },
+] as const;
+---
+
+<Film
+  tag="uruk-two-forks"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="One square lattice carries several explicitly reset examples of the Maker-Breaker game. Maker uses filled cells and Breaker uses rings. Empty target outlines show Snaky's eight rotations and reflections without claiming ownership. A separate alternating-play example keeps every claimed cell permanently marked. Conditional positions then show a five-cell base, a fork made from two placed Snakies, and a height-three combination. Those toys start with required cells already owned by Maker and are not strategies from an empty board. Height is an upper bound; the displayed height-three toy can win early. The toy shrinks into an inset beside schematic paper counts. Blue marks the claimed 21-move bound, 728 conditions, a 17-by-17 frame and the first pivot. A blank placeholder labels the paper's undrawn 251-cell envelope. The certificate, its actual cards and its actual envelope geometry are not reconstructed. A dated evidence ledger and full transcript follow."
+  caption="Two placed Snakies make a fork from a position where Maker already owns the required cells. The toys illustrate the combination rule and its height bound. The paper claims a certificate of 728 conditional claims that wins from the empty board within 21 Maker moves; that certificate is not drawn or checked here."
+  leftOut="a playable game; the paper's certificate and placement codes; the actual 251-cell envelope and the six TikZ figures; the 25- and 35-move constructions; the earlier handicap and higher-dimensional results. The scripted toys do not build a strategy from the empty board."
+>
+  <p class="film-method">How the film is made. Snaky has cells <span set:html={renderFormula(String.raw`(0,0),(1,0),(2,0),(3,0),(3,1),(4,1)`, false)} />. The browser computes its eight distinct rotations and reflections. The orientation gallery draws empty target outlines, not Maker-owned cells. A ring can occupy an unowned target cell and spoil that placement. A complete Maker-owned Snaky already wins, so no later Breaker claim is played into it. Reset labels separate the demonstrations; they do not release cells during a single play. The alternating-play example keeps each claim permanently.</p>
+  <p class="film-method">A valid claim <span set:html={renderFormula(String.raw`(A,T,h)`, false)} /> is conditional. Maker is to move, already owns every cell of A, and Breaker owns no cell of T. Extra Maker cells and Breaker cells outside T are allowed. The claim says Maker has already won or can win within h further actual fresh Maker claims. The base requires five owned cells of one unblocked placement and has height one. The fork uses two placed Snakies, a required set of five cells, an eight-cell envelope and pivot (0,0). After claiming the pivot, two finishing cells remain; a Breaker reply cannot block both.</p>
+  <p class="film-method">The browser recomputes the combination rule <span set:html={renderFormula(String.raw`T=\{p\}\cup\bigcup_iT_i`, false)} />, <span set:html={renderFormula(String.raw`A=(\bigcup_iA_i\cup\bigcap_iT_i)\setminus\{p\}`, false)} /> and <span set:html={renderFormula(String.raw`h=1+\max_i h_i`, false)} /> from the toy children. The second height-two copy in the height-three toy is rotated by 180 degrees and translated by (5,1). That toy has five required cells and a ten-cell envelope. Its constructed height is three, an upper bound rather than an exact move count. Correct replay checks for an already completed Snaky and counts only fresh Maker claims; this toy completes within two actual claims. The film never invents an additional claim to make the replay use its whole height.</p>
+  <p class="film-method">The local checks verify the toy claims and replay legal responses in a finite window. The combination rule separately covers every distant reply because a Breaker cell outside T lies outside every child envelope. If a pivot is already Maker's, the article's policy uses a fresh replacement move and counts it. An already owned base cell is not counted as a new claim. These conditional toys retain a nonempty required set and do not approach the paper's empty-board certificate.</p>
+  <p class="film-method">The counts 728 claims, six bases, 722 numbered lines, height 21, the 17-by-17 board, the 251-cell envelope and pivot (8,8) are cited from the article. Numbered lines may contain inline combinations, so 722 is not a count of every use of the rule. The actual cards, their references and the actual 251-cell footprint are not supplied by the article and are not reconstructed here. The blank placeholder is a label for an undrawn object, not its boundary. The last paper card is stated to have an empty required set, unlike the toys. The blue marks identify these paper claims. No numerical toy replay establishes the claimed 21-move strategy.</p>
+  <p class="film-method">The checker described in the paper verifies finite certificate data as uses of a hand-proved rule. It does not play the game or search for a strategy. The paper's certificate checker is not run here. The closing human-review evidence follows 20 October 2026, when no mathematician had publicly reported reading or checking the proof. The release links three comparator statements: the 21-move legal strategy, four conditional templates and a separate 35-move certificate reconstruction. Their files contain placeholders, and they are not listed in the pinned formalization catalogue. The release also contains 354 separate Snaky Lean modules. That is an inventory count; their bodies were not fetched or replayed. This scope does not assert that related formal code is absent. No local proof replay is performed. A kernel or certificate check is evidence about the formal statement and is not counted as a reading or approval of the written paper. With JavaScript disabled the article and transcript remain available. Reduced motion uses one completed drawing per cue.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

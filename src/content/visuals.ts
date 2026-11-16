@@ -71,6 +71,7 @@ export const visualCatalog = [
   { key: 'cheapest-edges', component: './cheapest-edges/CheapestEdges.astro' },
   { key: 'flat-walls', component: './flat-walls/FlatWalls.astro' },
   { key: 'random-floor', component: './random-floor/RandomFloor.astro' },
+  { key: 'two-forks', component: './two-forks/TwoForks.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

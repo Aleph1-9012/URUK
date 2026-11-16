@@ -8,6 +8,7 @@ status: unreviewed
 checked: 2026-10-20
 papers:
   - preprints/Snaky-in-21-Maker-moves-September-25-2026/article.pdf
+visual: two-forks
 draft: false
 ---
 
