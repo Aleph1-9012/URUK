@@ -1,0 +1,28 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+---
+
+<Film
+  tag="uruk-maze-walk"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  description="An eight-room maze carries a walker with a three-bit location pointer. Uniform neighbour choices unroll into a layered graph, whose rows show computed probabilities. A blocked passage prevents reaching the exit. The same graph folds into schematic bars for known memory bounds. A blue bracket marks the claimed general class equality. A dated review ledger distinguishes the Lean statement from a reading of the proof."
+  caption="A walker with one pointer in an 8-room maze: the walk unrolls into a layered graph with an exact reaching probability. The known memory bounds leave a gap between log³ᐟ² n and log n, which the paper claims to close."
+  leftOut="the proof, including its correction hierarchy, estimators and catalytic bits; the effective compiler; Theorem 1.2 and its quantitative acceptance-probability approximation; the time bounds."
+>
+    <p class="film-method">How the film is made. The maze is an eight-room toy with nine undirected passages, start room 0 and absorbing exit 7. The location pointer needs three bits. Eight locations are not the full configuration space of a general computer: the tape strip and the maze are a schematic illustration of a small stored pointer.</p>
+    <p class="film-method">At each step the walker chooses uniformly among the current room's neighbours. A room with three passages needs a uniform three-way choice, which can be implemented with fair coin flips and rejection. The coin glyph represents fresh randomness, not one fair flip choosing among three passages. A sample walk is distinct from the exact distribution of all walks.</p>
+    <p class="film-method">The layered graph has one column per step, with eight vertices per column. Its probability rows are computed live. Probability arriving at exit 7 stays there, so that vertex's probability is the chance of having reached the exit by that step. Removing passage 6–7 and recomputing from the start makes that chance zero at every step. The displayed computation stores the entire row of eight probabilities. It illustrates the quantity to be computed and is not a logarithmic-space algorithm for the general problem.</p>
+    <p class="film-method">The memory bars use <span set:html={renderFormula(String.raw`n=2^{10}`, false)} /> and base-two logarithms. They show the expressions <span set:html={renderFormula(String.raw`\log^2n=100`, false)} />, <span set:html={renderFormula(String.raw`\log^{3/2}n\approx31.6`, false)} /> and <span set:html={renderFormula(String.raw`\log n=10`, false)} /> with constants ignored. These are schematic values of asymptotic bounds, not measured memory budgets for this toy. The selected historical bounds omit later refinements described in the article. Reingold's maze-only result is separate from the general derandomization question.</p>
+    <p class="film-method">Blue marks the paper's claim <span set:html={renderFormula(String.raw`\mathsf L=\mathsf{RL}=\mathsf{BPL}`, false)} />. The general randomized machines have logarithmic work space and polynomial worst-case running time. The film does not illustrate the paper's method, its stronger quantitative approximation theorem or its compiler.</p>
+    <p class="film-method">The closing evidence follows the article's date, 20 October 2026. No computer scientist had publicly reported reading or checking the proof. The pinned catalogue contains a Lean statement of the class equality, not the quantitative approximation or compiler. That statement defines its own machine model, which needs comparison with the paper's model. No outside replay was found. A kernel check is evidence about a formal statement and is not counted as approval. Without JavaScript, the article and this transcript remain available.</p>
+  <p class="film-method">The rejection routine can take arbitrarily many flips. It is a toy way to choose uniform neighbours, not an implementation of the paper’s polynomial worst-case machine model.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

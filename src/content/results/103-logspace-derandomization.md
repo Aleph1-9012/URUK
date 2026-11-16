@@ -9,6 +9,7 @@ checked: 2026-10-20
 papers:
   - preprints/Exact-Derandomization-of-Logarithmic-Space-L-equals-RL-equals-BPL-September-23-2026/paper.pdf
 draft: false
+visual: maze-walk
 ---
 
 Imagine a computer that can read its input as often as it likes but can write down only a handful of numbers, enough to count to the input's length and to point at a few positions in it. That is logarithmic space, the class $\mathsf L$, and it captures what can be computed with almost no memory. Now give that computer a coin to flip. In 1979 Aleliunas, Karp, Lipton, Lovász and Rackoff showed that with coins it can tell whether two points of a maze are connected, by walking randomly for a polynomial number of steps, and asked whether the coins could be removed: is randomized logarithmic space the same as deterministic logarithmic space? Nisan's pseudorandom generator of 1990 showed that $\log^{2}n$ bits of memory suffice; Saks and Zhou got to $\log^{3/2}n$ in 1999; Reingold removed the coins from the maze problem itself in 2005, in a result that won a Gödel Prize; but the general question, $\mathsf L=\mathsf{BPL}$, stayed open and became the central problem of its field. On 23 September 2026 OpenAI posted a 108-page paper claiming it. [1][3][4][5]

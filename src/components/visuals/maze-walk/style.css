@@ -1,0 +1,9 @@
+uruk-maze-walk .film-frame { container: ldfilm / inline-size; }
+
+@container ldfilm (600px <= width < 760px) {
+  uruk-maze-walk .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container ldfilm (width < 600px) {
+  uruk-maze-walk .film-stage { aspect-ratio: 4 / 7; }
+}
