@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/A-translational-tile-with-no-fully-periodic-tiling-in-dimension-three-September-23-2026/paper.pdf
 draft: false
+visual: same-tile
 ---
 
 Take a shape, make endless copies, and slide them around without turning until they cover all of space with no gaps and no overlaps. Squares do this, hexagons do this, so do many stranger shapes. Every shape anyone had found that can fill space this way can also do it in a repeating pattern, like wallpaper. The periodic tiling conjecture, stated explicitly by Lagarias and Wang in 1996, says that is always so: if a shape tiles by translation at all, it tiles periodically. It is true on a line, by a 1977 theorem of Newman, and true in the plane, by a 2020 theorem of Bhattacharya. In 2022 Rachel Greenfeld and Terence Tao shocked the field by disproving it in some enormous unspecified number of dimensions, using a tile whose tilings must solve a Sudoku-like puzzle that has no periodic solution. The question became whether the conjecture could fail in the first dimension where it was open, our own three. On 23 September 2026 OpenAI posted a twenty-six-page paper claiming a three-dimensional counterexample. [1][3][4][5][6]
