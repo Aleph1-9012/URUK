@@ -1,0 +1,38 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'tensor-left', tex: String.raw`p_i\otimes1` },
+  { id: 'tensor-right', tex: String.raw`1\otimes p_i` },
+  { id: 'multiply-map', tex: String.raw`m_F(x\otimes y)=xy` },
+  { id: 'square-matrix', tex: String.raw`P=` },
+  { id: 'square-residual', tex: String.raw`p_i^TPp_i=0\quad P_{\rm spatial}=I_2` },
+  { id: 'tensor-field', tex: String.raw`F=\mathbb Q,\quad\mathbb Q\otimes_{\mathbb Q}\mathbb Q\cong\mathbb Q` },
+] as const;
+---
+
+<Film
+  tag="uruk-circle-shapes"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="One circle is carried through finite point configurations. A schematic four-dimensional unit-distance simplex illustrates a computed same-category pair in each of 81 three-colour assignments, without claiming to compute a monochromatic simplex. Exact triangles, a square, a rectangle and a kite move onto the circle; collinear points cannot. Twelve rotations demonstrate a transitive twelve-point set. Seven schematic circle points identify a cited obstruction. A blue stroke marks the paper's unreviewed classification claim. The tensor illustration checks only a rational-square example and explicitly does not test the classification. Rounding exact coordinates destroys their common circle, with a magnified discrepancy. The ending distinguishes two catalogued Lean statements from five others linked without catalogue entries."
+  caption="However finitely you colour space, some finite configurations always appear in one colour. Lying on a sphere is necessary. The paper claims an exact algebraic test for the rest, and its proof remains unreviewed."
+  leftOut="The claimed proof's three stages, free-group paths, Hales–Jewett, the nine-point and twelve-point configurations themselves, a computation deciding whether any displayed set is Ramsey, and a proof that the illustrative kite is not subtransitive."
+>
+  <p class="film-method">How the film is made. One circle is retained while its marks move between configurations. The opening stipple is a finite picture of arbitrary colour categories. Solid, hollow and hatched ink glyphs distinguish the categories. It is not a computed colouring of all of Euclidean space. Blue identifies only the paper's claimed classification and its claimed consequences, rather than the older results or the displayed calculations.</p>
+  <p class="film-method">The pigeonhole picture uses four points <span set:html={renderFormula(String.raw`e_i/\sqrt2`, false)} /> in four dimensions. All six pairwise distances are one. The plane drawing is schematic, since four equidistant points do not lie on a plane circle. The browser enumerates all 81 assignments of three categories and finds a same-category pair in each. This proves only that pair statement for this finite example; no monochromatic simplex is computed. The article's statement about whole simplices concerns higher-dimensional Ramsey theorems.</p>
+  <p class="film-method">The browser solves the small circumcircle equations exactly with rational arithmetic. These checks include the 3-4-5 triangle, the unit square and the rational kite. A collinear triple has no common circle, including when the line is embedded in a higher-dimensional Euclidean space. These computations illustrate the known necessary spherical condition. They do not test the proposed classification.</p>
+  <p class="film-method">All twelve rotations of a regular twelve-gon are checked live. Its four vertices numbered 0, 1, 6 and 7 form a rectangle, giving an explicit subtransitive example. This transitive regular polygon is different from the paper's twelve-point non-Ramsey configuration, which is not drawn. The kite is a separate illustrative cyclic quadrilateral. The existence of cyclic kites that are not subtransitive is cited from Leader, Russell and Walters; this film does not prove that property for the particular rational kite drawn. The seven-point non-Ramsey configuration is cited from Pálvölgyi. Its positions are schematic and are not his actual coordinates.</p>
+  <p class="film-method">The tensor split and merge are schematic. For the unit square the browser computes a matrix with an identity spatial block and zero evaluations. Its coordinates are rational, so <span set:html={renderFormula(String.raw`\mathbb Q\otimes_{\mathbb Q}\mathbb Q\cong\mathbb Q`, false)} /> and the multiplication map is an isomorphism. This example therefore shows no difference between the tensor and ordinary sphere tests. It checks one rational-square identity only. It neither computes the general tensor obstruction nor tests the claimed equivalence with the Ramsey property.</p>
+  <p class="film-method">The exact rounding example uses rational points on the unit circle. Each rounded coordinate is treated as an exact multiple of one hundred. The browser fits the circle through three rounded points and checks the fourth exactly; its nonzero residual proves that no circle passes through all four. The visible displacement is tiny at phone scale, so a labelled magnifier enlarges the computed discrepancy. The marks return to exact configurations before the ending. The closing square and kite are two separate illustrations, not a verdict about their combined point set.</p>
+  <p class="film-method">The review ledger uses the article's evidence date, 20 October 2026. The paper is unreviewed. The release links seven comparator statements, of which the full-affine-span classification and the twelve-point non-Ramsey example are catalogued in <code>formalization.yaml</code>. Five other statements, including circle points, the nine-point example and the subtransitive case, are linked but not catalogued. A kernel check concerns the formal statement and does not establish that a mathematician has read or approved the paper. This film runs no Lean check.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

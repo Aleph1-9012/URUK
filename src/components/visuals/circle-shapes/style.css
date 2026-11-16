@@ -1,0 +1,11 @@
+uruk-circle-shapes .film-frame { container: erfilm / inline-size; }
+uruk-circle-shapes .film-label { font-size: .875rem; }
+
+@container erfilm (600px <= width < 760px) {
+  uruk-circle-shapes .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container erfilm (width < 600px) {
+  uruk-circle-shapes .film-stage { aspect-ratio: 4 / 9; }
+  uruk-circle-shapes .film-label { font-size: .75rem; }
+}

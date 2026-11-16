@@ -9,6 +9,7 @@ checked: 2026-10-20
 papers:
   - preprints/A-classification-of-finite-Euclidean-Ramsey-configurations-September-23-2026/paper.pdf
 draft: false
+visual: circle-shapes
 ---
 
 Colour every point of space with finitely many colours, as badly as you like. Some shapes cannot be avoided: in a high enough dimension, any colouring contains two points at distance one of the same colour, and in fact a whole equilateral triangle, a whole regular simplex. Which finite shapes have this property? Erdős, Graham, Montgomery, Rothschild, Spencer and Straus founded Euclidean Ramsey theory in 1973 and proved a necessary condition: the shape must lie on a sphere. Graham conjectured that lying on a sphere is also sufficient; Leader, Russell and Walters proposed in 2012 a rival answer, that a shape is Ramsey exactly when it sits inside a finite set with a transitive symmetry group. Frankl and Rödl proved all simplices Ramsey, Kříž all sets with soluble transitive symmetry, Cantwell the regular polytopes; but neither conjecture could be settled, and the two disagree about simple shapes, such as some cyclic quadrilaterals. In September 2026 both moved at once: Pálvölgyi posted a seven-point configuration on a circle that is not Ramsey, refuting Graham's conjecture in a manuscript he says was written by ChatGPT, and on 23 September OpenAI posted a paper claiming a complete algebraic classification, from which it follows that some cyclic quadrilaterals are Ramsey without being subtransitive, refuting the other conjecture too. [1][2][3]
