@@ -6,6 +6,7 @@ paperTitle: "The maximum number of mutually unbiased bases in dimension six"
 claim: "The maximum number of pairwise mutually unbiased orthonormal bases in C^6 is three: three exist, and a certified computation under stated floating-point conditions excludes four. A companion proves by exact arithmetic the Matolcsi-Ruzsa-Weiner Fourier-vanishing conjecture for order-six complex Hadamard matrices and an upper bound of five."
 status: unreviewed
 checked: 2026-10-18
+visual: three-of-seven
 papers:
   - preprints/The-maximum-number-of-mutually-unbiased-bases-in-dimension-six-September-24-2026/The-maximum-number-of-mutually-unbiased-bases-in-dimension-six-September-24-2026.pdf
   - preprints/Exact-Fourier-certificates-for-complex-Hadamard-matrices-of-order-six-September-24-2026/Exact-Fourier-certificates-for-complex-Hadamard-matrices-of-order-six-September-24-2026.pdf

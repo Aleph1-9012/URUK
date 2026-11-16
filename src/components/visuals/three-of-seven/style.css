@@ -1,0 +1,11 @@
+uruk-three-of-seven .film-frame { container: mbfilm / inline-size; }
+uruk-three-of-seven .film-label { font-size: .875rem; }
+
+@container mbfilm (600px <= width < 760px) {
+  uruk-three-of-seven .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container mbfilm (width < 600px) {
+  uruk-three-of-seven .film-stage { aspect-ratio: 4 / 9; }
+  uruk-three-of-seven .film-label { font-size: .75rem; }
+}

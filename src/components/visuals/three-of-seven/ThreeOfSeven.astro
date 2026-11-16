@@ -1,0 +1,42 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'dimension', tex: String.raw`d` },
+  { id: 'upper-bound', tex: String.raw`d+1` },
+  { id: 'six-by-six', tex: String.raw`6\times6` },
+  { id: 'overlap-rule', tex: String.raw`|\langle b,c\rangle|^2=\frac1d` },
+  { id: 'half', tex: String.raw`\frac12` },
+  { id: 'third', tex: String.raw`\frac13` },
+  { id: 'sixth', tex: String.raw`\frac16` },
+  { id: 'triple-factorization', tex: String.raw`\frac12\cdot\frac13=\frac16` },
+  { id: 'zauner-three', tex: String.raw`N(6)=3` },
+  { id: 'lean-five', tex: String.raw`\text{Lean model: at most }5` },
+] as const;
+---
+
+<Film
+  tag="uruk-three-of-seven"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="One two-by-two overlap table has every cell equal to one half. A selected row lifts into equal outcome bars, and the table grows to three-by-three with every overlap one third. The table joins complete prime-dimension constructions before carrying into a six-by-six table with every overlap one sixth. Two smaller tables display the other two pairs of the same three-basis construction. Seven basis slots appear with three filled. An ink bracket marks Zauner's conjecture. Two separate blue bars identify different claims: a conditional recorded computation excluding four bases, and an exact-arithmetic companion excluding seven. An ink completion annotation says that six bases would extend to seven. The closing ledger records Jaswal's computational replication and the linked, uncatalogued Lean model's weaker at-most-five bound."
+  caption="Unbiased bases give every outcome probability one over the dimension. The browser constructs the displayed triple in dimension six and complete sets in the shown prime dimensions; it does not search for a fourth basis or run a certified exclusion. The first blue bar is the paper's no-four claim for one recorded run, conditional on correct IEEE binary64 arithmetic and the stated compiler conditions. The separate second bar is the companion's exact-arithmetic no-seven claim. Weiner's known completion theorem says six bases would extend to seven. The page remains unreviewed."
+  leftOut="The Bloch sphere and the position-momentum example; tomography and key-distribution protocols; the seed cover and graph-search certificate; a fourth-basis search; Hadamard classification and the Fourier certificates; a formal proof replay."
+>
+  <p class="film-method">How the film is made. The browser constructs complex basis vectors and computes their Gram matrices and squared overlaps. It checks that the displayed bases are orthonormal and that every cross-basis overlap has probability <span set:html={renderFormula(String.raw`1/d`, false)} />, within floating-point tolerance. The table's stipple density illustrates that probability. The stipple itself is not a probability measurement. A row travels into equal outcome bars, showing the probabilities obtained when a definite state in one basis is measured in the other. No position-momentum pair or measurement protocol is simulated.</p>
+  <p class="film-method">The two-level and three-level stages use the direction's explicit bases. In dimension six the three bases are <span set:html={renderFormula(String.raw`U_r=A_r\otimes B_r`, false)} />. The large table is the first-second pair, and the two thumbnails are the first-third and second-third pairs. These are the three pair tables of one triple, not four different tables or a search. Their entries equal <span set:html={renderFormula(String.raw`\frac12\cdot\frac13=\frac16`, false)} />. The numerical checks establish only this displayed finite construction and do not certify an exclusion.</p>
+  <p class="film-method">For the primes two, three, five and seven, the browser constructs complete sets with three, four, six and eight bases. These attain the known upper bound <span set:html={renderFormula(String.raw`d+1`, false)} />. The prime-power dimensions four, eight and nine are known cases but are marked as not drawn here. The same table carries into the six-dimensional picture. Its three filled slots are constructed bases; the four open slots are placeholders, not tested candidates or failed search results.</p>
+  <p class="film-method">The two blue bars have different scope. The main paper's no-four conclusion concerns one fresh recorded computation under the appendix's arithmetic contract: the machine must perform IEEE binary64 arithmetic correctly and the compiler must behave as documented. This film runs none of that cover, graph search or recorded certificate. The companion claims an exact integer-and-rational certificate excluding seven bases, without the floating-point condition. Weiner's known completion theorem says that a family of six would extend to seven. It does not by itself exclude a six-member family. Combining that completion theorem with the companion's claimed no-seven result yields the weaker upper bound of five, not the main no-four claim.</p>
+  <p class="film-method">The broad Fourier-vanishing statement is not drawn. The companion's theorem concerns order-six complex Hadamard matrices outside Tao's cubic equivalence class and character sums at permutations of <span set:html={renderFormula(String.raw`(1,1,1,-1,-1,-1)`, false)} />. The exception is part of its scope. Neither the displayed basis triple nor the prime constructions test that theorem.</p>
+  <p class="film-method">The ledger preserves the article's unreviewed status and evidence date, 18 October 2026. Manvir Jaswal deposited an independent replication of the computation on 13 October. This is evidence about that computation, not an expert check of the proof. The pinned release links <code>MUBSix.lean</code>, which is not catalogued and states a weaker at-most-five bound in its mutually unbiased bases model, together with Fourier vanishing. It does not establish three as the maximum or exclude four arbitrary bases. The film performs no Lean proof replay or certified-computation replay.</p>
+  <p class="film-method">With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the eight exact canonical cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
