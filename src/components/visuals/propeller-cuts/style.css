@@ -1,0 +1,11 @@
+uruk-propeller-cuts .film-frame { container: gpfilm / inline-size; }
+uruk-propeller-cuts .film-label { font-size: .875rem; }
+
+@container gpfilm (600px <= width < 760px) {
+  uruk-propeller-cuts .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container gpfilm (width < 600px) {
+  uruk-propeller-cuts .film-stage { aspect-ratio: 4 / 7; }
+  uruk-propeller-cuts .film-label { font-size: .75rem; }
+}

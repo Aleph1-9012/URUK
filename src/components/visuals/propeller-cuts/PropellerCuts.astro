@@ -1,0 +1,38 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'objective', tex: String.raw`\mathcal F` },
+  { id: 'moment', tex: String.raw`z_i` },
+  { id: 'two-halves', tex: String.raw`1/\pi` },
+  { id: 'propeller', tex: String.raw`9/(8\pi)` },
+  { id: 'squared-sum', tex: String.raw`\sum_i\lVert z_i\rVert^2` },
+  { id: 'moment-definition', tex: String.raw`z_i=\int_{A_i}x\,d\gamma_n(x)` },
+  { id: 'sharp-range', tex: String.raw`n\ge2,\quad k\ge3` },
+] as const;
+---
+
+<Film
+  tag="uruk-propeller-cuts"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="One fixed illustrative Gaussian cloud is divided into planar pieces. Glyphs identify cells, and magnified arrows show their exact density-weighted first moments. Their squared true lengths form a gauge. Two halves, the three-sector propeller, other equal sectors and unequal sectors are compared. A finite affine-score grid comparison is distinct from the exact bound. Blue marks the all-dimensions claim; a dated review ledger and full transcript follow."
+  caption="A Gaussian cloud is cut into planar sectors and compared through density-weighted first moments. Exact sector values are separate from the finite-grid comparison of other cuts. Blue marks the claimed universal bound, not a conclusion established by the dots or the numerical search."
+  leftOut="the proof; its cases for five or more active cells; the computer-checked arithmetic; the kernel-clustering hardness consequence and its additional Unique Games assumption; the earlier three-dimensional proof."
+>
+  <p class="film-method">How the film is made. The dots are a fixed illustrative sample of a planar standard Gaussian cloud. The cuts move while the settled dots stay put. Ink glyphs identify the pieces. The dots do not supply the moment readouts: those come from the Gaussian density. Each vector is the unnormalized first moment <span set:html={renderFormula(String.raw`z_i=\int_{A_i}x\,d\gamma_n(x)`, false)} />, not the conditional mean obtained by dividing by the piece's probability mass.</p>
+  <p class="film-method">For a planar sector, polar integration gives its moment along the angle bisector, with length <span set:html={renderFormula(String.raw`\sin(\theta/2)/\sqrt{2\pi}`, false)} /> for sector angle theta. The displayed sector arrows and objective are computed from that formula. Arrows are magnified fourfold for readability and labelled accordingly. The gauge uses the squared true lengths, not the enlarged lengths on screen. Two half-spaces give <span set:html={renderFormula(String.raw`1/\pi`, false)} />; three equal sectors give <span set:html={renderFormula(String.raw`9/(8\pi)`, false)} />.</p>
+  <p class="film-method">The equal-sector comparisons and the whole-degree search concern a restricted family of planar partitions. Empty cells are allowed in the search. Having more labelled pieces therefore permits the same three-sector propeller with the remaining cells empty. A finite collection of sector examples or a whole-degree search does not prove a bound for every measurable partition.</p>
+  <p class="film-method">The other comparison uses finitely many partitions defined by the largest affine score. A worker computes their moments by midpoint quadrature on the finite box from minus five to five in each coordinate, with grid spacing 0.125. That computation searches neither every partition nor dimensions above two. The hatched band of plus or minus 0.003 is an illustrative comparison tolerance. It is not a certified quadrature error bound, a confidence interval or uncertainty in the exact sector constant. These numerical examples do not test the universal claim.</p>
+  <p class="film-method">The claimed upper bound applies in every positive integer dimension and for every finite number of labelled measurable cells, with empty cells permitted. Its constant is sharp from dimension two and three cells onward. The attaining construction is the planar propeller multiplied by an orthogonal Gaussian factor, with any additional cells empty. The film draws only the plane and does not illustrate the proof. Blue identifies the claimed universal bound on the gauge.</p>
+  <p class="film-method">The closing evidence follows the article's date, 20 October 2026. No mathematician had publicly reported reading or checking the proof. One Lean statement, GaussianPropeller.lean, contains both the bound and its attainment and is in the pinned catalogue. The kernel-clustering consequence is outside that statement and needs additional results, including the release's unreviewed Unique Games claim. A kernel check is evidence about the formal statement and is not counted as a reading or approval of the paper. Without JavaScript, the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

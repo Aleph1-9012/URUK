@@ -9,6 +9,7 @@ checked: 2026-10-20
 papers:
   - preprints/The-Gaussian-Propeller-Bound-in-Every-Dimension-September-24-2026/main.pdf
 draft: false
+visual: propeller-cuts
 ---
 
 Picture a cloud of points scattered around the origin according to the standard Gaussian distribution, in any number of dimensions. Cut it into $k$ pieces however you like and, for each piece, add up the position vectors of its points, weighted by the Gaussian density, to get an unnormalized centre of mass. How large can the sum of the squared lengths of these vectors be? Cutting into two half-spaces gives $1/\pi$. In 2008 Subhash Khot and Assaf Naor met this question while studying how well a clustering problem can be approximated, and conjectured the answer: three flat sectors of $120$ degrees, like the blades of a propeller, extended trivially in the other directions, are the best possible, with value $9/(8\pi)\approx0.358$, and no fourth or fifth piece ever helps. They proved it when the pieces are at most three; Heilman, Jagannath and Naor proved it in three dimensions in 2013, by a computer-assisted spherical-geometry argument; higher dimensions, and the possibility that five or more pieces might do better, stayed open. On 24 September 2026 OpenAI posted a paper claiming the conjecture in every dimension. [1][2][3]
