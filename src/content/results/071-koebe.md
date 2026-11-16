@@ -10,6 +10,7 @@ papers:
   - preprints/Koebes-Circle-Domain-Conjecture-September-23-2026/paper.pdf
   - preprints/Removable-Boundaries-and-Rigidity-of-Circle-Domains-September-23-2026/paper.pdf
 draft: false
+visual: round-holes
 ---
 
 The Riemann mapping theorem says that any region of the plane without holes, however jagged, can be mapped onto a round disc by a map that preserves angles. In 1908 Paul Koebe asked for the version with holes: can any region, with any number of holes of any shape, be mapped conformally onto a region whose holes are all round discs or points? He proved it himself for finitely many holes in 1920. In 1993 Zheng-Xu He and Oded Schramm proved it for countably many, in the paper that also launched the modern theory of circle packings, and conjectured that such a circle domain is unique up to Möbius maps exactly when its boundary is "removable". A survey posted on 30 September 2026 by two specialists, Ntalampekos and Younsi, says the problem "remains open after more than a hundred years". On 23 September 2026 OpenAI posted two papers: one claims the full conjecture, for uncountably many holes with no condition at all, and the other claims one direction of He and Schramm's rigidity conjecture. [1][2][3][4]

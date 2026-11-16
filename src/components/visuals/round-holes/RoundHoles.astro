@@ -1,0 +1,32 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'sphere-domain', tex: String.raw`G\subset\widehat{\mathbb C}` },
+] as const;
+---
+
+<Film
+  tag="uruk-round-holes"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A conformal net carries an elliptical boundary and a second irregular hole to round discs while keeping right angles. A countable family of discs accumulates at a point, then finite Cantor stages split into smaller discs. A blue bracket marks the claimed general circle-domain theorem. The maps in the worked example are exact; the later domain pictures are schematic. A full text transcript follows."
+  caption="A region on the Riemann sphere, with infinity included, bent into one with round holes while the net keeps right angles. A countable family and finite Cantor stages illustrate the complement. One worked example and a picture, not the proof."
+  leftOut="the proof; circle packings; rigidity and removability beyond the second paper's card; transboundary extremal length; the Lean statement's contents. The conformal map is one example built from its round model, not the paper's map. The countable and Cantor pictures illustrate possible complements."
+>
+  <p class="film-method">How the film is made. The worked example starts with the circle domain outside the disc of radius 1.4, with infinity included, and removes a second round disc centred at 2.3 with radius 0.6. The family <span set:html={renderFormula(String.raw`J_t(z)=z+t/z`, false)} /> maps this round model to the drawn domain for t between zero and one. Running t back to zero takes the irregular domain to its circle-domain model. The net is computed from five circles and sixteen rays in the model. The intermediate pictures use the actual conformal maps, not interpolated boundary curves.</p>
+  <p class="film-method">The model is built backwards from round holes so that its map is known. It is one illustration of the statement, not the paper's construction or a method for mapping an arbitrary region. On the Riemann sphere the exterior of one closed disc, including infinity, is simply connected; removing the second disc gives the two-component complement used for the multiply connected example.</p>
+  <p class="film-method">For the first boundary, the semi-axes are R + t/R and R − t/R. At t = 1 these are about 2.11 and 0.69. The second boundary is not round at t = 1 and becomes a circle at zero. The independent direction script checks inverse recovery, the boundary equations and right angles at net crossings. The browser computes the maps and geometry from the parameters R = 1.4, c = 2.3 and r = 0.6.</p>
+  <p class="film-method">The countable picture shows twelve members of a family with centres 1/k and radii 1/(3k(k + 1)), accumulating at zero. The drawn twelve circles do not depict the entire infinite family. The Cantor picture successively splits each interval into its outer thirds. Stage k has <span set:html={renderFormula(String.raw`2^k`, false)} /> disjoint discs centred in those intervals, each of radius <span set:html={renderFormula(String.raw`3^{-k}/4`, false)} />. These are different finite circle domains, not a refinement of one fixed domain. Their limiting Cantor set has uncountably many point components; the picture does not suggest uncountably many discs of positive radius.</p>
+  <p class="film-method">The net stays as a reference behind the later schematic scenes. The two paper cards distinguish the full uniformization claim from the companion's removable-boundary rigidity direction. The blue arrow and bracket identify claims, rather than independently verified theorems. The film does not illustrate the proof, its transfer machinery or transboundary extremal length.</p>
+  <p class="film-method">The closing evidence follows the article's date, 20 October 2026. No named mathematician had publicly reported reading or checking either proof. A Lean statement is linked but is not in the catalogue. A kernel check is evidence about that formal statement and is not counted as a reading or approval of the written paper.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

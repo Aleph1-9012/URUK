@@ -40,6 +40,7 @@ export const visualCatalog = [
   { key: 'promised-three', component: './promised-three/PromisedThree.astro' },
   { key: 'thick-enough', component: './thick-enough/ThickEnough.astro' },
   { key: 'few-distances', component: './few-distances/FewDistances.astro' },
+  { key: 'round-holes', component: './round-holes/RoundHoles.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);
