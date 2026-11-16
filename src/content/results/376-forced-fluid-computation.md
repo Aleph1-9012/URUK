@@ -17,6 +17,7 @@ papers:
   - preprints/Scalar-Potentials-and-Slow-Clocks-for-Forced-Fluid-Computation-September-27-2026/manuscript.pdf
   - preprints/Incompressible-Box-Transport-and-Finite-Computation-October-6-2026/manuscript.pdf
 draft: false
+visual: tape-shears
 ---
 
 Mark one particle in a fluid initially at rest. Apply a force specified by a finite program, and watch a fixed region. Can the particle enter that region exactly when the program finishes? OpenAI's family of nine papers claims such constructions for smooth viscous flows. The force carries the instructions; the fluid's exact motion carries the computation. Some constructions repeat their forcing, some eventually hold it constant, and others let it decay. A separate companion reads the answer from the velocity field itself. [1][2][3][4][5][6][7][8][9]

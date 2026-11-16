@@ -1,0 +1,44 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'material-label', tex: String.raw`a_*=(1/8,3/8,1/2)` },
+  { id: 'detector-strip', tex: String.raw`O=\{1/2<x_1<1\}` },
+  { id: 'force-input', tex: String.raw`f_{M,w}` },
+  { id: 'affine-step', tex: String.raw`(x,y)\mapsto(a+\lambda x,b+\lambda^{-1}y)` },
+  { id: 'scale-factors', tex: String.raw`\lambda=\frac15,\quad\lambda^{-1}=5` },
+  { id: 'shuttle-scales', tex: String.raw`\lambda_R=\frac15,\quad\lambda_L=5` },
+  { id: 'rectangle-area', tex: String.raw`A=\frac1{20}` },
+  { id: 'torus', tex: String.raw`\mathbb T^3` },
+  { id: 'input-code', tex: String.raw`\begin{gathered}0.333111\ldots_5=373/500\\=0.746\end{gathered}` },
+  { id: 'halting-equivalence', tex: String.raw`\begin{gathered}\exists t\ge0:\ X(t;a_*)\in O\\\Longleftrightarrow M\text{ halts on }w\end{gathered}` },
+] as const;
+---
+
+<Film
+  tag="uruk-tape-shears"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A ring marks one particle in a schematic fluid box with an ink detector strip. A schematic one-time loader carries the view into a toy base-five coding sheet, where no detector is drawn. Two coordinates represent the left and right tape halves. One exact toy machine halts after four instructions; another repeats its complete configuration after two. A branch rectangle is translated and carried through four determinant-one shears, preserving its area. Eight input records merge into four xy outputs under an overwriting instruction, then two history values separate them into eight distinct triples. The view returns as an explanatory torus overview, not a second loader. Blue marks identify the main paper's fixed-particle halting claim. The final ledger records the dated unreviewed status and the limited scope of six linked formal targets."
+  caption="The tape sheet, two toy machines, shears and history records are exact finite arithmetic. No force, fluid solution, torus trajectory or detector equivalence is computed. The main torus paper claims that a finite algorithm produces smooth zero-mean divergence-free forcing, from rest, so one fixed material particle enters one fixed strip exactly when a chosen machine halts on its input. The force may depend on that machine and input. These are designed smooth solutions, not a solution of the general Navier-Stokes regularity problem. The nine papers have different hypotheses and conclusions, and the linked formal statements do not cover every claim."
+  leftOut="The actual force, pressure, viscosity evolution and uniqueness proof; smooth cutoffs and detector-protection estimates; the companion clocks, geometries and velocity detectors; a physical fluid computer; a new formal proof replay."
+>
+  <p class="film-method">How the film is made. The opening fluid and detector are schematic and solve no PDE. The first zoom is labelled a schematic loader because the main paper has a one-time loader from a fixed starting material label to the input code. The later return to a cube is an explanatory overview, not another loader or a computed trajectory. The point <span set:html={renderFormula(String.raw`a_*`, false)} /> labels the particle's initial position. It is not an assertion that the particle stays at that spatial point. No detector strip is shown on the toy coding sheet.</p>
+  <p class="film-method">The two-symbol toy uses base five, with symbol zero encoded by digit one and symbol one by digit three. The blank tail is <span set:html={renderFormula(String.raw`0.111\ldots_5=1/4`, false)} />. The input of three ones has right coordinate <span set:html={renderFormula(String.raw`0.333111\ldots_5=373/500=0.746`, false)} />. The nearest tape cell is the leading digit. The digit-one band is <span set:html={renderFormula(String.raw`[1/4,7/20]`, false)} />, and the digit-three band is <span set:html={renderFormula(String.raw`[13/20,3/4]`, false)} />. Their intervening gap separates the branches. Only strings using digits one and three are tape codes; the displayed intervals are branch hulls, not sets consisting entirely of valid codes. The browser computes the toy with exact rational arithmetic; displayed decimal coordinates are presentations of those rational values.</p>
+  <p class="film-method">Machine A reaches its halt state after four steps. Machine S returns to its complete starting configuration after two steps, so this particular deterministic toy run repeats. This finite cycle check is not a general method of deciding nonhalting. Coordinate transitions between instruction endpoints are graphic motion on the sheet, not an integrated fluid trajectory. A tape step has the affine form <span set:html={renderFormula(String.raw`(x,y)\mapsto(a+\lambda x,b+\lambda^{-1}y)`, false)} />, with determinant one. The shifts, symbols and both exact runs are computed live.</p>
+  <p class="film-method">The branch rectangle has width one half, height one tenth and area <span set:html={renderFormula(String.raw`1/20`, false)} />. It is first centered, then transformed by the four shears for reciprocal scaling, and finally translated into its target. Matrix products act on column vectors from right to left. For <span set:html={renderFormula(String.raw`\lambda=1/5`, false)} />, the shear application order is <span set:html={renderFormula(String.raw`L(-1/5),\ U(4),\ L(1),\ U(-4/5)`, false)} />. Each continuous intermediate shear and each translation preserves area. This toy factorization does not construct the paper's smooth cutoffs or Navier-Stokes force.</p>
+  <p class="film-method">The history example has eight inputs but only four distinct output pairs <span set:html={renderFormula(String.raw`(x,y)`, false)} /> after one overwriting step. There are two history values over each of those four outputs, giving eight distinct triples. It does not produce eight different history values. The extra coordinate illustrates retained information; it does not implement the paper's full reversible compiler or prove disjointness for every instruction domain.</p>
+  <p class="film-method">The main claim fixes a positive computable viscosity, the unit flat three-torus, <span set:html={renderFormula(String.raw`a_*=(1/8,3/8,1/2)`, false)} /> and <span set:html={renderFormula(String.raw`O=\{1/2<x_1<1\}`, false)} /> before a finite machine and input are supplied. The effective smooth force may then depend on both. It is mean zero and solenoidal, and the velocity starts at rest. The theorem claims exact eventual entry if and only if the machine halts, along with its stated smoothness, derivative bounds and classical uniqueness. A nonhalting code must avoid the detector between instructions as well as at instruction times. The toy sheet checks none of those force or observation claims.</p>
+  <p class="film-method">The nine manuscripts use different time dependences, geometries and observations. Their strongest properties are not asserted for one common force. Every simulated finite stage occurs at finite physical time, and the constructions do not complete infinitely many computational steps in finite time. Unlimited waiting for a detector that never fires does not generally supply a finite certificate of nonhalting. These are particular global smooth solutions, not a regularity theorem or a breakdown example for the general Navier-Stokes problem.</p>
+  <p class="film-method">The ledger preserves the article's unreviewed status and evidence date, 7 November 2026. The pinned release links six comparator targets representing five statement groups. Some include complete halting equivalences; they do not cover every claim in all nine manuscripts, and family 376 is omitted from the formalization catalogue. The historical cert-machine ledger reports Lean and nanoda acceptance for all six on 10 October at an earlier release commit. This film performs no replay and treats that report separately from a specialist assessment of the manuscripts.</p>
+  <p class="film-method">With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the thirteen exact canonical cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

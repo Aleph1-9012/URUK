@@ -1,0 +1,13 @@
+uruk-tape-shears .film-frame { container: fffilm / inline-size; }
+uruk-tape-shears .film-label { font-size: .875rem; }
+uruk-tape-shears [data-label="material-label"],
+uruk-tape-shears [data-label="halting-equivalence"] { color: var(--blue); }
+
+@container fffilm (600px <= width < 760px) {
+  uruk-tape-shears .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container fffilm (width < 600px) {
+  uruk-tape-shears .film-stage { aspect-ratio: 4 / 9; }
+  uruk-tape-shears .film-label { font-size: .75rem; }
+}
