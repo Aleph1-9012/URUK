@@ -64,7 +64,7 @@ function bases(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
 
   const step = Math.min(phone ? 34 : 51, box.w / 8);
   const start = x - step * 3;
-  const row = box.y + (phone ? 74 : 110);
+  const row = box.y + (phone ? claimed ? 92 : 74 : 110);
   const title = claimed ? 'OPENAI · 4 OCTOBER 2026 · 92 PAGES' : time >= 54000 ? 'HEATH-BROWN 1986' : 'ARTIN TO HASSE · 27 SEPTEMBER 1927';
   text(pen, title, x, box.y + 13, phone ? 10 : 13, box.w - 5, colors);
   text(pen, claimed ? 'CLAIMED: EVERY ADMISSIBLE BASE' : time >= 54000 ? 'AT LEAST ONE · UNNAMED' : 'EVERY ADMISSIBLE BASE?', x, box.y + 35, phone ? 11 : 15, box.w - 6, colors, 'center', claimed ? colors.blue : colors.ink);
@@ -363,10 +363,10 @@ function family(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
   text(pen, `Q = ${grouped(FAMILY_EXAMPLES.open.largeFactor, phone)}`, center, startY, textSize, width, colors);
   text(pen, `p = ${grouped(FAMILY_EXAMPLES.open.prime, phone)}`, center, startY + rowGap, textSize, width, colors);
   text(pen, 'ALL GATES OPEN · 2 IS A PRIMITIVE ROOT', center, startY + rowGap + (phone ? 32 : 27), phone ? 9 : 12, width, colors);
-  const secondPrimeY = startY + rowGap * 2 + (phone ? 8 : 0);
+  const secondPrimeY = startY + rowGap * 2 + (phone ? 16 : 0);
   text(pen, `p = ${grouped(FAMILY_EXAMPLES.closed.prime, phone)}`, center, secondPrimeY, textSize, width, colors);
-  const secondTagY = secondPrimeY + (phone ? 32 : 27);
-  const noteY = secondTagY + (phone ? 16 : 30);
+  const secondTagY = secondPrimeY + (phone ? 28 : 27);
+  const noteY = secondTagY + (phone ? 12 : 30);
   text(pen, 'SECOND PRIME · GATE 11 SHUT', center, secondTagY, phone ? 10 : 13, width, colors);
   text(pen, '(2/p) = −1 · p ≡ 3 MOD 8: GATE 2 HELD OPEN', center, noteY, phone ? 9 : 12, width, colors);
   text(pen, 'REAL PRIMES OF THE FAMILY’S SHAPE', center, noteY + (phone ? 14 : 19), phone ? 9 : 12, width, colors);

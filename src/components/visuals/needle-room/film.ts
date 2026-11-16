@@ -205,7 +205,7 @@ export class NeedleRoomFilm {
     const triangles = time < 15000 ? whole : treeTriangles(shifts);
     const copies = smooth(time, 21700, 23100) * (1 - smooth(time, 24000, 24800));
 
-    if (time >= 24800 && time < 37250) this.grid(camera, time);
+    if (time >= 24800 && time < 37250) this.grid(camera, time, tall);
 
     pen.fillStyle = colors.ink;
     pen.globalAlpha = .75;
@@ -270,7 +270,7 @@ export class NeedleRoomFilm {
     }
   }
 
-  private grid(camera: Camera, time: number): void {
+  private grid(camera: Camera, time: number, tall: boolean): void {
     const index = time < 30000 ? 0 : Math.min(3, Math.floor(progress(time, 30000, 36500) * 3.99));
     const grid = this.cells[index];
 
@@ -300,11 +300,14 @@ export class NeedleRoomFilm {
     pen.stroke();
     const a = flat({ x: -.48, y: 0 }, camera);
     const b = flat({ x: -.48, y: 1 }, camera);
+    const inset = tall ? 0 : 12;
+    a.x += inset;
+    b.x += inset;
     this.needle(a, b);
 
     for (let row = 0; row < 1 / grid.delta; row++) {
       const cell = flat({ x: -.48, y: (row + 1) * grid.delta }, camera);
-      pen.strokeRect(cell.x, cell.y, grid.delta * camera.scale, grid.delta * camera.scale);
+      pen.strokeRect(cell.x + inset, cell.y, grid.delta * camera.scale, grid.delta * camera.scale);
     }
   }
 

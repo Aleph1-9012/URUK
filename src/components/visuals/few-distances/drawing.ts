@@ -62,7 +62,7 @@ export function subpolyPoint(plot: Box, tall: boolean): Point {
 }
 
 export function ratioChartBox(box: Box, tall: boolean): Box {
-  return { x: box.x + (tall ? 27 : 30), y: box.y + box.h * .70, w: box.w - (tall ? 43 : 46), h: box.h * .20 };
+  return { x: box.x + (tall ? 27 : 30), y: box.y + box.h * .70, w: box.w - (tall ? 43 : 46), h: box.h * (tall ? .17 : .20) };
 }
 
 export function ratioPoint(t: number, ratio: number, plot: Box): Point {

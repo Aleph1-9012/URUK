@@ -174,8 +174,8 @@ function diameterChart(pen: CanvasRenderingContext2D, box: Box, time: number, co
   }
 
   pen.fill();
-  place('rod', chart.right + 17, yMap(rod(1024)));
-  place('ordinary', chart.right + 19, yMap(ordinary(1024)));
+  place('rod', chart.right + 17, yMap(rod(1024)) - (tall && compact ? 9 : 0));
+  place('ordinary', chart.right + 19, yMap(ordinary(1024)) + (tall && compact ? 12 : 0));
 
   if (sawVisible) place('saw', chart.right + 20, yMap(saw(1024)));
 
@@ -199,7 +199,7 @@ function diameterChart(pen: CanvasRenderingContext2D, box: Box, time: number, co
 
 function ballChart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: PolymerModel, tall: boolean): void {
   const claimed = time >= 71750;
-  const chart = plot(box, tall, claimed ? 61 : 48);
+  const chart = plot(box, tall, claimed ? tall ? 72 : 61 : 48);
   const xMap = (radius: number) => chart.left + Math.log2(radius / 2) / 4 * (chart.right - chart.left);
   const yMap = (mass: number) => chart.bottom - Math.log(mass) / Math.log(600) * (chart.bottom - chart.top);
   const x = box.x + box.w / 2;

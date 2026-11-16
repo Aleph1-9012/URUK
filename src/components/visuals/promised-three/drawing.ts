@@ -12,7 +12,7 @@ export type GlyphStyle = { filled: boolean; strokeWidth: number };
 
 export function graphLayout(box: Box, tall: boolean): GraphLayout {
   const paletteY = box.y + box.h * (tall ? .66 : .69);
-  const top = box.y + (tall ? 46 : 60);
+  const top = box.y + (tall ? 56 : 60);
   const bottom = paletteY - (tall ? 32 : 35);
   const idOffset = tall ? 20 : 24;
 

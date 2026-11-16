@@ -359,7 +359,7 @@ function closingLadder(pen: CanvasRenderingContext2D, box: Box, colors: Colors):
       pen.strokeStyle = colors.blue;
       pen.lineWidth = 2.5;
       line(pen, at(lower), y - 8, at(lower), y + 7);
-      text(pen, '3', at(upper) - 11, y - 12, 10, 16, colors);
+      text(pen, '3', at(upper) - 25, y + 13, 10, 16, colors);
       text(pen, 'CLAIMED: 3+ε', at(3.5), y + 15, 10, 106, colors, 'center', colors.blue);
     } else {
       line(pen, at(lower), y - 5, at(lower), y + 5);

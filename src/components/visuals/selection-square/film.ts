@@ -55,14 +55,15 @@ export class SelectionSquareFilm {
     return { x: snap(box.x + (tall ? 31 : 108)), y: snap(box.y + (tall ? 92 : 94)), side, cell: side / this.model.size };
   }
 
-  private tile(value: number, ordinal: number, x: number, y: number, width: number, height: number, chosen: boolean, tall: boolean, ordinalVisible: boolean): void {
+  private tile(value: number, ordinal: number, x: number, y: number, width: number, height: number, chosen: boolean, tall: boolean, ordinalVisible: boolean, largeValues: boolean): void {
     const { pen, colors } = this;
     pen.fillStyle = chosen ? colors.ink : colors.paper;
     pen.strokeStyle = colors.ink;
     pen.lineWidth = chosen ? 1.4 : .6;
     pen.fillRect(x - width / 2, y - height / 2, width, height);
     pen.strokeRect(x - width / 2, y - height / 2, width, height);
-    pen.font = `${tall ? 8 : 13}px "Garamond Math", serif`;
+    const valueSize = tall ? (largeValues ? (chosen ? 11 : 9) : 8) : 13;
+    pen.font = `${valueSize}px "Garamond Math", serif`;
     pen.textAlign = 'center';
     pen.textBaseline = 'middle';
     pen.fillStyle = chosen ? colors.paper : colors.ink;
@@ -105,7 +106,7 @@ export class SelectionSquareFilm {
       const chosen = trialActive ? trial.selection.includes(index) : time >= 39500 && model.solution.includes(index);
       const lift = chosen ? (tall ? 5 : 9) : 0;
       const endWidth = index < model.half ? tall ? 28 : 56 : Math.min(tileWidth, square.side / model.half - 2);
-      this.tile(value, index + 1, mix(startX, endX, division), mix(startY - lift, endY, division), mix(tileWidth, endWidth, division), tileHeight, chosen, tall, division === 0 || division === 1);
+      this.tile(value, index + 1, mix(startX, endX, division), mix(startY - lift, endY, division), mix(tileWidth, endWidth, division), tileHeight, chosen, tall, division === 0 || division === 1, time >= 71500);
     }
 
     const targetY = time < 18250 ? box.y + (tall ? 122 : 174) : box.y + 8;

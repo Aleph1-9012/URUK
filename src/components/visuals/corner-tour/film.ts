@@ -368,7 +368,7 @@ export class CornerTourFilm {
     }
 
     if (amount === 1) {
-      for (const [camera, name] of [[cubeCamera, 'CUBE'], [prismCamera, 'PRISM'], [truncCamera, 'TRUNCATED']] as const) text(this.pen, name, camera.x, camera.y + camera.scale * (name === 'CUBE' ? 1.56 : 1.25), tall ? 8.5 : 13, camera.scale * 2.8, this.colors);
+      for (const [camera, name] of [[cubeCamera, 'CUBE'], [prismCamera, 'PRISM'], [truncCamera, 'TRUNCATED']] as const) text(this.pen, name, camera.x, camera.y + camera.scale * (name === 'CUBE' ? 1.56 : 1.25) - (tall && name === 'CUBE' ? 8 : 0), tall ? 8.5 : 13, camera.scale * 2.8, this.colors);
     }
   }
 }

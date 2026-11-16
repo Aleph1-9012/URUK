@@ -214,7 +214,7 @@ export class PairsRingsFilm {
       const direction = { x: world.x - model.ringCentre.x, y: world.y - model.ringCentre.y };
       const length = Math.hypot(direction.x, direction.y);
       const target = flat(world, camera);
-      const offset = tall ? 15 : 24;
+      const offset = 24;
       text(pen, index % 2 === 0 ? 'NEAR' : 'FAR', target.x + direction.x / length * offset, target.y - direction.y / length * offset, tall ? 8.5 : 12, tall ? 34 : 50, colors);
     }
 
@@ -238,7 +238,7 @@ export class PairsRingsFilm {
   private inset(box: Box, time: number, tall: boolean): void {
     const { pen, model, colors } = this;
     const amount = bipartiteProgress(time);
-    const area = { x: box.x + box.w * .015, y: box.y + box.h * .74, w: box.w * .27, h: box.h * .21 };
+    const area = { x: box.x + box.w * (tall ? .35 : .015), y: box.y + box.h * (tall ? .76 : .74), w: box.w * .27, h: box.h * (tall ? .17 : .21) };
     const minX = Math.min(...model.inset.positions.map(point => point.x));
     const maxX = Math.max(...model.inset.positions.map(point => point.x));
     const minY = Math.min(...model.inset.positions.map(point => point.y));

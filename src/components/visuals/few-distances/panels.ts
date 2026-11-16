@@ -61,8 +61,10 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
 
   if (time >= 74000) drawRatios(pen, box, time, colors, place, model, tall);
 
-  if (time >= 83500) label('UNREVIEWED · NO LEAN', .978, tall ? 11 : 14);
-  else if (time >= 66000) label('CLAIM: n ≥ 2 DISTINCT POINTS · FIXED d ≥ 3', .978, tall ? 10 : 12);
+  if (time >= 83500) {
+    const ledgerY = tall ? box.y + box.h - 7 : at(.978);
+    text(pen, 'UNREVIEWED · NO LEAN', x, ledgerY, tall ? 11 : 14, box.w - 6, colors);
+  } else if (time >= 66000) label('CLAIM: n ≥ 2 DISTINCT POINTS · FIXED d ≥ 3', .978, tall ? 10 : 12);
   else label('THE NEAR-TOP OFFSET IS SCHEMATIC', .978, tall ? 10 : 12);
 }
 

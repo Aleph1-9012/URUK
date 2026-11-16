@@ -87,7 +87,7 @@ function history(pen: CanvasRenderingContext2D, box: Box, time: number, colors: 
   if (zoom > 0) {
     const destination = leafDestination(box, time, tall);
     text(pen, '1962', destination.x, destination.y - (tall ? 17 : 23), tall ? 9 : 12, 42, colors);
-    text(pen, '27 PRODUCTS', destination.x, destination.y + (tall ? 18 : 25), tall ? 8 : 11, tall ? 80 : 110, colors);
+    text(pen, '27 PRODUCTS', destination.x, destination.y + (tall ? 10 : 25), tall ? 8 : 11, tall ? 80 : 110, colors);
   }
 }
 
@@ -248,7 +248,7 @@ function gapReadouts(pen: CanvasRenderingContext2D, stage: Box, time: number, co
 
   const x = stage.x + stage.w / 2;
   const compact = tall || stage.h < 450;
-  const start = stage.y + (compact ? 118 : 198);
+  const start = stage.y + (compact ? 118 : 198) + (tall ? 8 : 0);
   text(pen, 'RELATIVE SAVING FROM THE CLAIMED BOUND', x, start, tall ? 10 : 16, stage.w - 8, colors);
   place('gap-first', x, start + (compact ? 25 : 37));
   place('gap-second', x, start + (compact ? 51 : 76));

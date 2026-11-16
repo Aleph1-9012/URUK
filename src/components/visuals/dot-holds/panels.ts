@@ -131,8 +131,8 @@ function partialResult(pen: CanvasRenderingContext2D, box: Box, time: number, mo
     line(pen, tick, y - (tall ? 13 : 18), tick, y + 5);
     pen.setLineDash([]);
     pen.lineWidth = .5;
-    line(pen, tick, y + 6, x, y + (tall ? 26 : 40));
-    place('partial-example', x, y + (tall ? 42 : tight ? 51 : 61));
+    line(pen, tick, y + 6, x, y + (tall ? 18 : 40));
+    place('partial-example', x, y + (tall ? 34 : tight ? 51 : 61));
   }
 
   text(pen, `ILLUSTRATED AT DOT ${vertex.vertex + 1}`, x, box.y + (tall ? 208 : tight ? 255 : compact ? 284 : 345), tall ? 9.5 : 14, box.w - 6, colors);

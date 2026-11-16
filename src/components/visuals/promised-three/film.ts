@@ -224,7 +224,7 @@ export class PromisedThreeFilm {
 
     const x = box.x + box.w / 2;
 
-    if (time >= 12000 && revealProgress(time) < 1) {
+    if (time >= 12000 && time < 22250) {
       const opening = revealProgress(time);
       const half = box.w * .46;
       const arm = half * (1 - opening);

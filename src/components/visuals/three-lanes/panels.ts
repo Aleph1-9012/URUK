@@ -1,11 +1,11 @@
 import { type Box, type Colors, type Place, text } from './drawing';
 import type { SchedulingModel } from './math';
 
-function header(pen: CanvasRenderingContext2D, box: Box, rows: readonly string[], colors: Colors, tall: boolean): void {
+function header(pen: CanvasRenderingContext2D, box: Box, rows: readonly string[], colors: Colors, tall: boolean, lastGap = 0): void {
   const x = box.x + box.w / 2;
 
   for (const [index, row] of rows.entries()) {
-    text(pen, row, x, box.y + 6 + index * 16, tall ? 9.5 : 12, box.w - 6, colors);
+    text(pen, row, x, box.y + 6 + index * 16 + (index === rows.length - 1 ? lastGap : 0), tall ? 9.5 : 12, box.w - 6, colors);
   }
 }
 
@@ -43,14 +43,14 @@ function twoLanes(pen: CanvasRenderingContext2D, box: Box, time: number, colors:
 
 function compare(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, model: SchedulingModel, tall: boolean): void {
   if (time < 35000) {
-    header(pen, box, [`RETURNING THE SAME ${model.n} JOBS`, 'OPENING THREE LANES', 'GAREY–JOHNSON 1979 · OPEN FOR 47 YEARS'], colors, tall);
+    header(pen, box, [`RETURNING THE SAME ${model.n} JOBS`, 'OPENING THREE LANES', 'GAREY–JOHNSON 1979 · OPEN FOR 47 YEARS'], colors, tall, tall ? 8 : 0);
     footer(pen, box, 'CLEARING THE FIVE-HOUR PLAN', 'THE CARDS ARE RETURNING TO THE DEPENDENCY GRAPH', colors, tall);
 
     return;
   }
 
   if (time < 40250) {
-    header(pen, box, ['SAME RULE, THREE LANES', 'READY JOBS, HIGHEST LABEL FIRST', 'GAREY–JOHNSON 1979 · OPEN FOR 47 YEARS'], colors, tall);
+    header(pen, box, ['SAME RULE, THREE LANES', 'READY JOBS, HIGHEST LABEL FIRST', 'GAREY–JOHNSON 1979 · OPEN FOR 47 YEARS'], colors, tall, tall ? 8 : 0);
     footer(pen, box, 'PLACING THE THREE-LANE RULE', 'JOBS IN TRANSIT · NO FINISH-TIME VERDICT YET', colors, tall);
 
     return;

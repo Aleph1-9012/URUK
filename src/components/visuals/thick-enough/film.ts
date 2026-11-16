@@ -61,13 +61,13 @@ export class ThickEnoughFilm {
 
   private point(value: number, box: Box, time: number, tall: boolean): Point {
     const full = cellPoint(value, lineLayout(box, tall));
-    const short = value <= 14 ? cellPoint(value, lineLayout(box, tall, 14)) : { x: this.width + 40 + value * 5, y: full.y };
+    const short = value <= 14 ? cellPoint(value, lineLayout(box, tall, 14)) : full;
     const first = interpolate(full, short, shortenProgress(time));
 
     if (time < 55000) return first;
 
     const blocks = blockLayout(box, tall);
-    const next = value <= 31 ? blockCellPoint(value, blocks) : { x: this.width + 40 + value * 5, y: blocks.cellY };
+    const next = value <= 31 ? blockCellPoint(value, blocks) : { ...full };
     next.y = mix(next.y, box.y + box.h * .84, unstackProgress(time));
 
     return interpolate(first, next, blockProgress(time));
@@ -78,7 +78,7 @@ export class ThickEnoughFilm {
     const full = lineLayout(box, tall);
     const short = lineLayout(box, tall, 14);
     const blocks = blockLayout(box, tall);
-    const size = mix(mix(full.cellSize, short.cellSize, shortenProgress(time)), blocks.cellSize, blockProgress(time));
+    const baseSize = mix(mix(full.cellSize, short.cellSize, shortenProgress(time)), blocks.cellSize, blockProgress(time));
     const intro = time < 6000;
     const powers = time >= 29000 && time < 37000;
     const small = time >= 37000 && time < 55000;
@@ -96,6 +96,11 @@ export class ThickEnoughFilm {
       const shown = Math.max(0, Math.min(1, lineProgress(time) * model.line.length - value + 1));
 
       if (shown <= 0) continue;
+
+      const retained = value <= 14 ? 1 : 1 - shortenProgress(time) * (value <= 31 ? 1 - blockProgress(time) : 1);
+      const size = baseSize * retained;
+
+      if (size <= 0) continue;
 
       const point = this.point(value, box, time, tall);
 
@@ -263,12 +268,12 @@ export class ThickEnoughFilm {
       pen.arc(at.x, at.y, marker.key === 'POW' ? 3 : 2, 0, Math.PI * 2);
       pen.fill();
       pen.stroke();
-      text(pen, `${marker.key}: ${marker.label}`, x, y, tall ? 8.5 : 10, tall ? bounds.w * .44 : bounds.w * .95, colors);
+      text(pen, `${marker.key}: ${marker.label}`, x, y, tall ? 8.5 : 12, tall ? bounds.w * .44 : bounds.w * .95, colors);
     }
 
-    text(pen, `FINITE LIMIT: ${limit.toLocaleString('en-US')}`, bounds.x + bounds.w / 2, tall ? start.y + 33 : bounds.y + bounds.h + 23, tall ? 8 : 9, tall ? bounds.w : bounds.w * 1.2, colors);
+    text(pen, `FINITE LIMIT: ${limit.toLocaleString('en-US')}`, bounds.x + bounds.w / 2, tall ? start.y + 33 : bounds.y + bounds.h + 23, tall ? 8 : 10, tall ? bounds.w : bounds.w * 1.2, colors);
 
-    if (time >= 29000) text(pen, `POW: FIRST ${powerCount} TERMS · BELOW 2`, box.x + box.w * (tall ? .5 : .90), tall ? bounds.y - 37 : bounds.y - 17, tall ? 8 : 9, tall ? bounds.w : bounds.w * 1.4, colors);
+    if (time >= 29000) text(pen, `POW: FIRST ${powerCount} TERMS · BELOW 2`, box.x + box.w * (tall ? .5 : .90), tall ? bounds.y - 37 : bounds.y - 17, tall ? 8 : 10, tall ? bounds.w : bounds.w * 1.4, colors);
   }
 
   private completions(box: Box, time: number, tall: boolean): void {

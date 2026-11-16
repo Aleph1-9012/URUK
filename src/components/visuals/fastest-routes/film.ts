@@ -372,7 +372,7 @@ export class FastestRoutesFilm {
       }
 
       pen.strokeStyle = colors.ink;
-      pen.lineWidth = index === 2 ? tall ? .65 : .9 : .5;
+      pen.lineWidth = tall ? index === 2 ? 1.2 : 1 : index === 2 ? .9 : .5;
       pen.setLineDash(index === 0 ? [2, 3] : index === 1 ? [5, 3] : []);
       pen.stroke();
     }

@@ -22,7 +22,7 @@ export const CUES = [
   {
     at: 19500,
     title: "Artin writes to Hasse",
-    text: "On 27 September 1927 Emil Artin told Helmut Hasse that every integer other than $-1$ and the perfect squares should be a primitive root for infinitely many primes.",
+    text: "Every integer other than $-1$ and the perfect squares should be a primitive root for infinitely many primes.",
     sources: [5],
   },
   {
@@ -40,13 +40,13 @@ export const CUES = [
   {
     at: 45750,
     title: "Hooley under GRH",
-    text: "Hooley proved it in 1967 assuming the generalized Riemann hypothesis, which gives a uniform count of such $p$ for every $q$.",
+    text: "Hooley proved it in 1967 assuming the generalized Riemann hypothesis.",
     sources: [3],
   },
   {
     at: 54000,
     title: "One of three bases",
-    text: "Heath-Brown proved in 1986 that at least one of $2$, $3$ and $5$ works, without being able to say which.",
+    text: "At least one of $2$, $3$ and $5$ works, without being able to say which.",
     sources: [4],
   },
   {
@@ -58,7 +58,7 @@ export const CUES = [
   {
     at: 67000,
     title: "Every admissible base, claimed",
-    text: "On 4 October 2026 OpenAI posted a paper claiming the infinitude statement for every admissible base, with a weaker count than Artin predicted.",
+    text: "On 4 October 2026, two days before its release, OpenAI posted a ninety-two-page paper claiming the infinitude statement for every admissible base.",
     sources: [1],
   },
   {
@@ -70,25 +70,25 @@ export const CUES = [
   {
     at: 84250,
     title: "A family of primes",
-    text: "The paper builds a special family of primes with $p-1=crQ$, $Q$ a large prime, where the Legendre symbol $(a/p)=-1$ excludes $q=2$ as an index divisor.",
+    text: "The residue class $u$ is chosen so that the Legendre symbol $(a/p)=-1$, which excludes $q=2$ as an index divisor.",
     sources: [1],
   },
   {
     at: 93250,
     title: "A common zero-free width, claimed",
-    text: "In place of GRH it claims a zero-free region, $\\operatorname{Re}s>1-10^{-6}$, with a width common to every cyclotomic field containing the twelfth roots of unity.",
+    text: "For every finite-order Hecke character $\\eta$ of $F$, the $L$-function $L_F(s,\\eta)$ has no zeros with $\\operatorname{Re}s>1-10^{-6}$.",
     sources: [1],
   },
   {
     at: 102000,
     title: "Summing the gates",
-    text: "Summing over the window's primes $q$, whose reciprocals $1/(q(q-1))$ sum to something small, leaves a positive proportion of the family.",
+    text: "The factors of $r$ lie exactly in the range where Proposition 2.2 applies with a saving that beats the sum over $q$.",
     sources: [1],
   },
   {
     at: 110250,
     title: "Where the claim stands",
-    text: "Unreviewed: no mathematician has said publicly that they have checked the proof, which imports a theorem from another unreviewed paper. No Lean formalization.",
+    text: "As of 18 October 2026 no mathematician has said publicly that they have read or checked the proof.",
     sources: [1, 6, 7],
   },
 ] as const;

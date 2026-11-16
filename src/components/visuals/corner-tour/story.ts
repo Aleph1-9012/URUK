@@ -12,7 +12,7 @@ export const CUES = [
   { at: 47000, title: 'Faces with at most eight sides', text: 'Schnieders proved the case of faces with at most eight sides in 2025; computers had checked every graph up to a few dozen vertices.', sources: [1] },
   { at: 55500, title: 'The claimed full conjecture', text: 'On 24 September 2026 OpenAI posted a nine-hundred-line paper claiming the conjecture in full.', sources: [1] },
   { at: 64500, title: 'A tour borders two trees', text: 'By a formulation going back to Stein and made precise by Alt, Payne, Schmidt and Wood, a Hamiltonian cycle in the original graph corresponds to a partition of the vertices of $T$ into two sets each inducing a tree.', sources: [1] },
-  { at: 78000, title: 'Avoid one prescribed edge', text: 'The cycle can be chosen to avoid any single prescribed edge.', sources: [1] },
+  { at: 78000, title: 'Avoid one prescribed edge', text: "The Hamiltonian cycle can be chosen to avoid any single prescribed edge.", sources: [1] },
   { at: 86000, title: 'Existence without a fast recipe', text: 'The argument is an existence proof through a finite weighted sum; it "does not assert a polynomial-time construction of the cycle".', sources: [1] },
   { at: 94500, title: 'Where the proof stands', text: 'As of 20 October 2026 no mathematician has said publicly that they have read or checked the proof.', sources: [1] },
 ] as const;

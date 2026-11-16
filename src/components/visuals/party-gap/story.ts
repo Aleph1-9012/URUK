@@ -13,7 +13,7 @@ export const CUES = [
   { at: 72250, title: 'No clique, a large stranger group', text: 'Linear independence of $d+1$ points on each other\'s hyperplanes is impossible, so the graph has no $K_{d+1}$.', sources: [2] },
   { at: 79250, title: 'The claimed logarithmic exponent', text: 'On 24 September 2026 OpenAI posted two papers claiming to close that gap for every $s\\ge5$.', sources: [1, 2] },
   { at: 87250, title: 'An information contradiction', text: 'Any long independent set selected from the random stream of flags must carry a certain minimum amount of information, and the papers describe such sets in fewer bits than that, a contradiction.', sources: [1, 2] },
-  { at: 99500, title: 'What is and is not claimed', text: 'Both papers are explicit that they determine the exponent of the logarithm and not the constant. The case $s=4$ is not covered.', sources: [1, 2] },
+  { at: 99500, title: 'What is and is not claimed', text: "Both papers are explicit that they determine the exponent of the logarithm and not the constant.", sources: [1, 2] },
   { at: 107750, title: 'Where the proofs stand', text: 'As of 18 October 2026 no mathematician has said publicly that they have read or checked the proofs.', sources: [7, 8, 9] },
 ] as const;
 

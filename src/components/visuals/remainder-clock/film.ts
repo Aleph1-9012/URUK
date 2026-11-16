@@ -275,9 +275,9 @@ function drawGates(pen: CanvasRenderingContext2D, box: Box, time: number, colors
   pen.lineWidth = .9;
 
   if (family) {
-    text(pen, secondExample ? 'SECOND EXAMPLE · GATE 11 SHUT' : 'FIRST EXAMPLE · ALL GATES OPEN', box.x + box.w / 2, box.y - (tall ? 7 : 13), tall ? 9 : 12, box.w, colors);
+    if (familyScene || !tall) text(pen, secondExample ? 'SECOND EXAMPLE · GATE 11 SHUT' : 'FIRST EXAMPLE · ALL GATES OPEN', box.x + box.w / 2, box.y - (tall ? 7 : 13), tall ? 9 : 12, box.w, colors);
 
-    if (!familyScene || !tall) text(pen, 'GATE 2: (2/p) = −1 · OPEN', box.x + box.w / 2, box.y + (tall ? 17 : 29), tall ? 9.5 : 13, box.w, colors);
+    if (!familyScene || !tall) text(pen, 'GATE 2: (2/p) = −1 · OPEN', box.x + box.w / 2, box.y + (tall ? -17 : 29), tall ? 9.5 : 13, box.w, colors);
   }
 
   for (const [index, gate] of rows.entries()) {
