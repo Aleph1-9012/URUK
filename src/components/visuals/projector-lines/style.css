@@ -1,0 +1,11 @@
+uruk-projector-lines .film-frame { container: bnfilm / inline-size; }
+uruk-projector-lines .film-label { font-size: .875rem; }
+
+@container bnfilm (600px <= width < 760px) {
+  uruk-projector-lines .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container bnfilm (width < 600px) {
+  uruk-projector-lines .film-stage { aspect-ratio: 4 / 9; }
+  uruk-projector-lines .film-label { font-size: .75rem; }
+}

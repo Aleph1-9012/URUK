@@ -1,0 +1,41 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'sqrt-two', tex: String.raw`\sqrt2` },
+  { id: 'kahn-1325', tex: String.raw`1{,}325` },
+  { id: 'kahn-2014', tex: String.raw`2{,}014` },
+  { id: 'd-plus-one', tex: String.raw`d+1` },
+  { id: 'distance', tex: String.raw`\lVert P_u-P_v\rVert_F=\sqrt2\sin\theta` },
+  { id: 'projector', tex: String.raw`P_u=uu^{\mathsf T}=P_{-u}` },
+  { id: 'ambient-dimension', tex: String.raw`4\cdot5/2-1=9` },
+  { id: 'threshold', tex: String.raw`10=4\cdot5/2` },
+] as const;
+---
+
+<Film
+  tag="uruk-projector-lines"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A disc is illustrated by rim and interior points. Closed straight cuts show diameter pairs, while three sectors have smaller diameter. Opposite rim points pair into planar lines and rank-one projectors on a circle. A distance bar uses the exact Frobenius metric. Four orthogonal axes in four dimensions supply a separate four-point simplex illustration. The full projector set has intrinsic dimension three and lies in a nine-dimensional affine ambient space. Ten blue empty labels mark the unreviewed covering claim, not a computed cover. A dated ledger distinguishes the catalogued Lean statement from approval."
+  caption="A disc can be covered by three sets of smaller diameter. Lines in four dimensions become projector points in a nine-dimensional affine space; the drawn circle is a planar slice. The paper claims that the full projector set cannot be covered by ten smaller-diameter sets. The blue tiles are empty claim labels, not a cover."
+  leftOut="Walkup's bound; the odd map and support complex; the combinatorial obstruction; the detailed race through dimensions 63–64; a numerical or constructed ten-set cover; any determination of the smallest failing dimension."
+>
+  <p class="film-method">How the film is made. The opening disc has radius one and diameter two. Its stipple is an illustration, not a finite computation of the disc's diameter. The moving cuts show closed pieces formed by straight lines. For those drawings, opposite rim points provide a full-diameter pair. This is not a proof about every possible division into two arbitrary pieces. Diameter is a supremum: arbitrary nonclosed pieces can have full diameter without containing a pair that attains it. The strict requirement is that each piece have diameter less than two.</p>
+  <p class="film-method">Three closed sectors of angle 120 degrees have diameter <span set:html={renderFormula(String.raw`\sqrt3<2`, false)} />. That width comes from the sector geometry, not the maximum distance between the 24 illustrative rim dots. Boundary overlaps can be removed without increasing diameters. The four-piece ball example is a count-only schematic; the film does not compute a partition of a ball.</p>
+  <p class="film-method">A line represented by a unit vector <span set:html={renderFormula(String.raw`u`, false)} /> is the same line as the one represented by <span set:html={renderFormula(String.raw`-u`, false)} />. Both give the rank-one projector <span set:html={renderFormula(String.raw`P_u=uu^{\mathsf T}`, false)} />. For planar unit vectors, the coordinates <span set:html={renderFormula(String.raw`((P_{11}-P_{22})/\sqrt2,\sqrt2P_{12})`, false)} /> put these projectors on a circle of radius <span set:html={renderFormula(String.raw`1/\sqrt2`, false)} />, with angle doubled. The circle has diameter <span set:html={renderFormula(String.raw`\sqrt2`, false)} /> in the Frobenius metric.</p>
+  <p class="film-method">The drawn circle concerns lines in a fixed two-dimensional plane. It is a slice of the full four-dimensional-line construction, not the full claimed counterexample. The space of real symmetric 4 by 4 matrices has dimension ten; fixing trace one gives an affine Euclidean space of dimension nine. The rank-one projector set itself is a copy of real projective three-space, with intrinsic dimension three. The nine-dimensional label refers to the ambient affine space.</p>
+  <p class="film-method">For the smaller angle <span set:html={renderFormula(String.raw`\theta\in[0,\pi/2]`, false)} /> between unoriented lines, the exact distance rule is <span set:html={renderFormula(String.raw`\lVert P_u-P_v\rVert_F^2=2(1-\cos^2\theta)`, false)} />, so distance is <span set:html={renderFormula(String.raw`\sqrt2\sin\theta`, false)} />. Full diameter occurs for perpendicular lines. The moving bar and fixed examples are computed from that identity; they do not check the paper's covering obstruction.</p>
+  <p class="film-method">Four orthogonal coordinate axes in <span set:html={renderFormula(String.raw`\mathbb R^4`, false)} /> give four projectors whose six pair distances are all <span set:html={renderFormula(String.raw`\sqrt2`, false)} />. That four-point set is a regular simplex and needs four smaller-diameter sets. Its drawn projection does not preserve screen lengths. Moving from the planar-circle illustration to this four-dimensional example is not an isometry of four planar points into four orthogonal lines. The example forces four pieces only and does not establish the claimed failure of ten for all lines.</p>
+  <p class="film-method">The claimed obstruction concerns the full infinite compact projector set. Its affine ambient dimension is nine, and ten is the threshold <span set:html={renderFormula(String.raw`4\cdot5/2`, false)} /> discussed in the article. The ten empty blue tiles are schematic labels, not subsets of a computed cover, a search over covers or a proof of impossibility. The slice inset and simplex give geometry examples only. The claim does not determine the exact covering number or the smallest dimension where Borsuk's assertion fails.</p>
+  <p class="film-method">The closing evidence follows the article's date, 18 October 2026. No mathematician had publicly reported reading or checking the proof. BorsukNine.lean is a 34-line statement listed in the pinned catalogue; it states the projector-set diameter and the absence of a ten-set cover by strictly smaller-diameter sets. No outside replay was found. A kernel check is evidence about a formal statement, not approval or a reading of the paper. Without JavaScript, the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

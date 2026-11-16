@@ -9,6 +9,7 @@ checked: 2026-10-18
 papers:
   - preprints/A-nine-dimensional-counterexample-to-Borsuks-covering-assertion-September-23-2026/paper.pdf
 draft: false
+visual: projector-lines
 ---
 
 Take a disc. Can you cut it into two pieces each narrower than the disc? No: any two pieces of a disc, one of them contains two diametrically opposite points. Three pieces suffice. In 1933 Karol Borsuk asked whether every bounded set in $d$-dimensional space can be cut into $d+1$ pieces of strictly smaller diameter, as the disc can be cut into three and a ball into four. The answer is yes in dimensions one, two and three, and for sixty years it was believed to be yes always. Then in 1993 Jeff Kahn and Gil Kalai found counterexamples in dimension $1{,}325$ and every dimension above $2{,}014$, and a race began to find the smallest dimension where Borsuk fails: $946$, $561$, $323$, $298$, then in 2014 $65$ and $64$, and in 2026 a human note at $63$. On 23 September 2026 OpenAI posted an eighteen-page paper claiming a counterexample in dimension nine, built from the lines through the origin in four-dimensional space. [1][3][4][5]
