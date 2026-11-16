@@ -70,6 +70,7 @@ export const visualCatalog = [
   { key: 'tape-shears', component: './tape-shears/TapeShears.astro' },
   { key: 'cheapest-edges', component: './cheapest-edges/CheapestEdges.astro' },
   { key: 'flat-walls', component: './flat-walls/FlatWalls.astro' },
+  { key: 'random-floor', component: './random-floor/RandomFloor.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

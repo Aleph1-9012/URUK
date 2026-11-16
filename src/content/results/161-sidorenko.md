@@ -8,6 +8,7 @@ status: unreviewed
 checked: 2026-10-20
 papers:
   - preprints/A-counterexample-to-Sidorenkos-conjecture-September-23-2026/paper.pdf
+visual: random-floor
 draft: false
 ---
 

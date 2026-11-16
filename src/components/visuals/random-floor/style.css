@@ -1,0 +1,12 @@
+uruk-random-floor .film-frame { container: sdfilm / inline-size; }
+uruk-random-floor .film-label { font-size: .875rem; }
+uruk-random-floor [data-label="claimed-inequality"] { color: var(--blue); }
+
+@container sdfilm (600px <= width < 760px) {
+  uruk-random-floor .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container sdfilm (width < 600px) {
+  uruk-random-floor .film-stage { aspect-ratio: 4 / 9; }
+  uruk-random-floor .film-label { font-size: .75rem; }
+}

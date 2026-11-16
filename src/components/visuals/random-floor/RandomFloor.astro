@@ -1,0 +1,46 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'pattern-name', tex: String.raw`H` },
+  { id: 'host-name', tex: String.raw`G` },
+  { id: 'density-definition', tex: String.raw`t(H,G)=\frac{\mathrm{Hom}(H,G)}{|V(G)|^{|V(H)|}}` },
+  { id: 'edge-density', tex: String.raw`p(G)=\frac{2|E(G)|}{|V(G)|^2}` },
+  { id: 'gauge-density', tex: String.raw`t(H,G)` },
+  { id: 'gauge-kernel-density', tex: String.raw`t(H,W)` },
+  { id: 'gauge-benchmark', tex: String.raw`p^{e(H)}` },
+  { id: 'constant-kernel', tex: String.raw`W(i,j)=p=\tfrac12` },
+  { id: 'constant-density', tex: String.raw`t(H,W)=p^{e(H)}=\tfrac14` },
+  { id: 'conjectured-inequality', tex: String.raw`t(H,G)\ge p(G)^{e(H)}` },
+  { id: 'ratio', tex: String.raw`t(H,G)/p(G)^{e(H)}` },
+  { id: 'paper-vertices', tex: String.raw`13+22=35` },
+  { id: 'paper-edges', tex: String.raw`22\cdot3=66` },
+  { id: 'paper-pairs', tex: String.raw`66=2\cdot33` },
+  { id: 'claimed-inequality', tex: String.raw`t(H,G)<p(G)^{66}` },
+] as const;
+---
+
+<Film
+  tag="uruk-random-floor"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A three-vertex path is mapped onto a six-vertex complete bipartite host. Two nonadjacent pattern vertices share an image, illustrating that homomorphisms allow repeats. A persistent gauge compares its exact density with the random benchmark. The host becomes a constant weighted kernel on every ordered pair, including the diagonal, then returns to the simple graph. The pattern grows to a four-cycle and a cube. A separate finite sweep tests all 1,023 nonempty labelled graphs on five vertices. The cube is redrawn as four points and four triples, with each pair occurring twice. The toy then gives way to empty outlines for the paper's pattern and host, whose actual edges are not drawn. Blue marks the claimed strict inequality and the unknown host frame. That final gauge is schematic and gives no deficit size. A dated review ledger and full transcript follow."
+  caption="Count edge-preserving maps of a small pattern onto a host, with repeated images allowed. Exact toy counts stay above the random benchmark. The paper claims a 35-vertex pattern and a finite simple host below that benchmark; neither paper graph is reconstructed here."
+  leftOut="the paper's Table 1 and its actual 22 triples; the kernel construction, finite-field model and proof; the forcing conjecture and other corollaries; the full history of positive results. The finite toy checks do not establish or test the paper's counterexample."
+>
+  <p class="film-method">How the film is made. The toy host is the complete bipartite graph with three vertices in each part. It has six vertices and nine edges, so its density is <span set:html={renderFormula(String.raw`p(G)=2|E(G)|/|V(G)|^2=1/2`, false)} />. The denominator counts ordered pairs, including pairs with the same vertex. A homomorphism maps all pattern vertices independently to host vertices and preserves every edge. Repeated images are permitted. The two leaves of the first three-vertex path may share an image because they are not adjacent; endpoints of an edge cannot share an image in a simple host.</p>
+  <p class="film-method">A worker computes the homomorphism counts, their densities, the benchmark powers and ratios. It enumerates the path's 216 maps, counts the four-cycle and cube maps exactly, and checks the three patterns on four six-vertex hosts. The gauge shows only the complete bipartite host's counts. Geometric transitions are labelled as morphs, and exact readouts wait for the settled graph. The separate exhaustive sweep covers all 1,023 labelled graphs on five vertices with at least one edge. Its minimum ratios are separate from the six-vertex host's gauge. These finite checks illustrate known positive theorems for the toy patterns and do not prove Sidorenko's conjecture.</p>
+  <p class="film-method">The uniform benchmark uses the constant weighted kernel <span set:html={renderFormula(String.raw`W(i,j)=p`, false)} /> on every ordered pair, including the diagonal. Its density is exactly <span set:html={renderFormula(String.raw`p^{e(H)}`, false)} /> because each pattern edge contributes the same factor. It is not a random six-vertex simple graph. In finite simple random graphs, repeated vertex images create dependencies and may collapse an edge; the usual random-graph benchmark is asymptotic. The film distinguishes that benchmark from its exact constant-kernel illustration.</p>
+  <p class="film-method">The cube toy is the incidence graph of all four triples on four points. Its six point pairs each occur in two triples. The worker checks those incidences. The paper instead uses 22 particular triples on 13 points. They are not supplied in the article, so the later 13-point and 22-triple outlines have no drawn edges. The displayed arithmetic gives 35 vertices, 66 incidences and 33 used point pairs occurring twice. It does not say that all 78 possible point pairs occur, and it does not reconstruct or verify the paper's triple system.</p>
+  <p class="film-method">The blue inequality is the paper's claim for that fixed connected bipartite pattern with 35 vertices and 66 edges. It asserts the existence of a finite simple undirected host with at least one edge and strictly smaller homomorphism density than <span set:html={renderFormula(String.raw`p(G)^{66}`, false)} />. The blank host frame represents an existence statement obtained by sampling from a kernel, not an explicit six-vertex host. Its gauge has schematic bar heights, no numerical deficit and no numerical scale. Neither the paper's pattern nor a counterexample host is computed by the film. The forcing consequence is left out.</p>
+  <p class="film-method">The closing evidence follows the article's date, 20 October 2026. No mathematician had publicly reported reading or checking the proof. The release links SidorenkoCounterexample.lean, a comparator statement about a finite simple host for the paper's fixed pattern. It is not listed in the pinned formalization catalogue; the forcing consequence is outside that statement. The release also contains 35 Sidorenko solution modules. That is an inventory count, not a check of their bodies or a proof replay. A kernel check is evidence about the formal statement and is not counted as a reading or approval of the written paper. No local kernel replay is performed here. With JavaScript disabled the article and transcript remain available. Reduced motion uses one completed drawing per cue.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
