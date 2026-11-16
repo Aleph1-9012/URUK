@@ -8,6 +8,7 @@ status: unreviewed
 checked: 2026-10-20
 papers:
   - preprints/De-Giorgis-conjecture-in-dimension-eight-September-26-2026/article.pdf
+visual: flat-walls
 draft: false
 ---
 
