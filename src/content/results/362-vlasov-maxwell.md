@@ -6,6 +6,7 @@ paperTitle: "Global classical solutions of the three-dimensional relativistic Vl
 claim: "Every smooth, compactly supported, nonnegative initial particle density, together with smooth finite-energy initial fields satisfying the Gauss constraints, generates a unique global classical solution of the three-dimensional one-species relativistic Vlasov-Maxwell system, smooth on every finite time interval with compact momentum support there. No smallness or symmetry is assumed."
 status: unreviewed
 checked: 2026-10-18
+visual: doubling-clock
 papers:
   - preprints/Global-classical-solutions-of-the-three-dimensional-relativistic-Vlasov-Maxwell-system-September-23-2026/paper.pdf
 draft: false

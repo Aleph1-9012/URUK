@@ -1,0 +1,12 @@
+uruk-doubling-clock .film-frame { container: vmfilm / inline-size; }
+uruk-doubling-clock .film-label { font-size: .875rem; }
+uruk-doubling-clock [data-label="gap-bound"] { color: var(--blue); }
+
+@container vmfilm (600px <= width < 760px) {
+  uruk-doubling-clock .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container vmfilm (width < 600px) {
+  uruk-doubling-clock .film-stage { aspect-ratio: 4 / 9; }
+  uruk-doubling-clock .film-label { font-size: .75rem; }
+}

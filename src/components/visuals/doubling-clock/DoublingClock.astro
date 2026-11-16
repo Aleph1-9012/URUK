@@ -1,0 +1,41 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'velocity-rule', tex: String.raw`u(v)=v/\sqrt{1+|v|^2}` },
+  { id: 'energy', tex: String.raw`Q(t)=\max_z\sqrt{1+|V(t,z)|^2}` },
+  { id: 'energy-doubling', tex: String.raw`Q:\;2^{n-1}\longrightarrow2^n` },
+  { id: 'gap-bound', tex: String.raw`\Delta_n\ge c/\log(2+1024\cdot2^n)` },
+  { id: 'harmonic-floor', tex: String.raw`g_n\ge\frac1{(n+11)\ln2}` },
+  { id: 'toy-constant', tex: String.raw`c=1` },
+  { id: 'max-time', tex: String.raw`T_{\max}` },
+  { id: 'finite-interval', tex: String.raw`[0,T]` },
+] as const;
+---
+
+<Film
+  tag="uruk-doubling-clock"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A ringed dot is selected from a schematic swarm with feedback loops. It carries into exact momentum-speed examples, whose velocities approach the light-speed line from below. The proof display then changes to a ladder of maximal relativistic energy, rather than following that one particle. A ring serves as a carried display marker while a horizontal assumed finite maximum time appears. Claimed waiting-gap outlines feed a toy cumulative-time chart with log10 of the doubling index horizontally and the sum of chosen gaps vertically. Waits are vertical height differences, not horizontal widths. A blue vertical bracket stays inside the chart for the global claim. Later support caps are explicitly schematic and separated from numeric ladder values. The closing ledger preserves the dated unreviewed status and the catalogue's statement-only scope."
+  caption="The velocity examples are exact arithmetic, not a plasma simulation. The proof ladder tracks maximal energy Q, and its carried ring may change particle label. With the illustrative constant c set to one, the plotted gap sum diverges; those numbers are not PDE bounds. In the real argument c depends on the datum and a fixed finite horizon, and the claimed doubling bound holds for all sufficiently large indices. The paper claims a unique global classical solution for every smooth admissible datum of the three-dimensional one-species relativistic Vlasov-Maxwell system, with no smallness or symmetry restriction. Support bounds are on each finite interval, not uniform for all time."
+  leftOut="A numerical plasma or field solution; the backward light cone and signed-force estimate; the bootstrap constants and field-class continuation argument; any numerical PDE support bound; nonrelativistic or several-species models; a proof replay."
+>
+  <p class="film-method">How the film is made. The opening swarm and feedback loops are schematic and solve no particle-field equations. The selected ring is carried into an exact arithmetic example of relativistic velocity at positive momentum magnitudes <span set:html={renderFormula(String.raw`2^n`, false)} />. Its speed is below one. At large momentum the displayed deficit from one is computed in a numerically stable form, rather than inferred from a speed rounded to six decimal places.</p>
+  <p class="film-method">The proof ladder then changes quantity. In the primary argument <span set:html={renderFormula(String.raw`Q(t)=\max_zq(V(t,z))`, false)} /> with <span set:html={renderFormula(String.raw`q(v)=\sqrt{1+|v|^2}`, false)} /> is the maximum energy over particle labels. At each sufficiently large dyadic level the proof may choose a different label attaining that maximum. The ring is a display marker for the level and clock; it is not one physical characteristic whose momentum is asserted to pass through every rung. The Glassey-Strauss continuation criterion is known input. The film does not derive it from the velocity graph.</p>
+  <p class="film-method">The paper's claimed gap estimate is <span set:html={renderFormula(String.raw`\Delta_n\ge c/\log(2+1024\cdot2^n)`, false)} /> for all sufficiently large integers <span set:html={renderFormula(String.raw`n`, false)} />. The positive constant depends on the initial datum and a fixed finite horizon, through the signed-estimate constants. The browser instead defines the independent arithmetic toy <span set:html={renderFormula(String.raw`g_n=1/\log(2+1024\cdot2^n)`, false)} /> for indices one through one hundred thousand. This sets the illustrative constant to one and starts its cumulative time at zero. None of the resulting waits, crossing rungs or sums is a numerical bound for a PDE solution.</p>
+  <p class="film-method">On the final toy chart the horizontal coordinate is <span set:html={renderFormula(String.raw`\log_{10}N`, false)} /> and the vertical coordinate is <span set:html={renderFormula(String.raw`\sum_{n=1}^Ng_n`, false)} />. Each wait is a vertical difference between cumulative times. Horizontal widths arise from the log-index coordinate and do not measure waiting time. The assumed finite maximum time is a horizontal line. The global-claim bracket is vertical and wholly inside the canvas. These choices correct the direction's conflicting axis descriptions without changing any subtitle.</p>
+  <p class="film-method">The arithmetic divergence is separate from the PDE estimate. For every toy index <span set:html={renderFormula(String.raw`n\ge1`, false)} />, <span set:html={renderFormula(String.raw`2+1024\cdot2^n\le2^{n+11}`, false)} />, hence <span set:html={renderFormula(String.raw`g_n\ge1/((n+11)\ln2)`, false)} />. This harmonic tail diverges. The browser recomputes the gaps, partial sums and illustrative horizon crossings; it does not verify the signed-force argument that would give the PDE gap estimate. Blue outlines and formula tags identify that claimed input, while numerical toy fills and the elementary comparison stay in ink.</p>
+  <p class="film-method">The full theorem concerns one species with no background in three spatial dimensions. Admissible data have a smooth nonnegative particle density compactly supported in phase space, and smooth finite-energy initial fields with all spatial derivatives bounded and satisfying the Gauss constraints. The claim gives a unique global classical solution, smooth on every finite interval, with compact phase-space support there and propagated constraints. No smallness or symmetry is required. It gives no uniform-in-time support bound, numerical threshold or large-time asymptotic. The later interval-dependent caps are symbolic, with no numeric support height or attachment to numbered energy ticks.</p>
+  <p class="film-method">The ledger preserves the article's unreviewed status and evidence date, 18 October 2026. The pinned release links and catalogues the one-hundred-and-twelve-line <code>VlasovMaxwell.lean</code> statement. It builds its own definitions of the system and admissibility and ends in a placeholder proof declaration; it is a statement, not a replay performed by this film. Its correspondence to the manuscript requires a separate assessment. The article's dated search found no outside replay. The film performs no current replay or new evidence search, and a kernel check would not count as reading or approving the paper.</p>
+  <p class="film-method">With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the ten exact canonical cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
