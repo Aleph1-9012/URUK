@@ -5,6 +5,7 @@ title: "Does a random mosaic cross a shape with the same probability as a perfec
 paperTitle: "Cardy's formula for critical Poisson-Voronoi percolation"
 claim: "For critical Poisson-Voronoi percolation in the plane, with cells coloured black or white with probability 1/2, the annealed probability that black cells connect two opposite arcs of any bounded Jordan domain converges, as the point intensity grows, to Cardy's formula F(x) evaluated at the conformal cross-ratio of the four marked boundary points. Companion papers derive the pivotal-cell amplitude ε^(−3/4) and show that the quenched near-critical crossing thresholds have the same universal joint law as on the triangular lattice."
 status: unreviewed
+visual: random-mosaic
 checked: 2026-10-20
 papers:
   - preprints/Cardys-formula-for-critical-Poisson-Voronoi-percolation-September-23-2026/paper.pdf

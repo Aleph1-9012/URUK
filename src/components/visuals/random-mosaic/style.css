@@ -1,0 +1,13 @@
+uruk-random-mosaic .film-frame { container: vpfilm / inline-size; }
+uruk-random-mosaic .film-label { font-size: .875rem; }
+uruk-random-mosaic [data-label="crossing-limit"],
+uruk-random-mosaic [data-label="pivotal-law"] { color: var(--blue); }
+
+@container vpfilm (600px <= width < 760px) {
+  uruk-random-mosaic .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container vpfilm (width < 600px) {
+  uruk-random-mosaic .film-stage { aspect-ratio: 4 / 9; }
+  uruk-random-mosaic .film-label { font-size: .75rem; }
+}
