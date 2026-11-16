@@ -50,6 +50,7 @@ export const visualCatalog = [
   { key: 'overlap-fill', component: './overlap-fill/OverlapFill.astro' },
   { key: 'same-tile', component: './same-tile/SameTile.astro' },
   { key: 'projector-lines', component: './projector-lines/ProjectorLines.astro' },
+  { key: 'branch-sets', component: './branch-sets/BranchSets.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

@@ -1,0 +1,45 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'conjecture', tex: String.raw`\chi(G)\le h(G)` },
+  { id: 'h-three', tex: String.raw`h=3` },
+  { id: 'alpha', tex: String.raw`\alpha(G)\le2` },
+  { id: 'half', tex: String.raw`m/2` },
+  { id: 'matching', tex: String.raw`\mathrm{cm}(G)` },
+  { id: 'count-bound', tex: String.raw`h(G)\le\frac{m+4\,\mathrm{cm}(G)+2}{3}` },
+  { id: 'chart-half', tex: String.raw`\chi_f(G)\ge m/2` },
+  { id: 'chart-third', tex: String.raw`h(G)\ge m/3` },
+  { id: 'claim-fraction', tex: String.raw`\chi_f(G)>h(G)` },
+  { id: 'claim-matching', tex: String.raw`\alpha(G)\le2,\quad\mathrm{cm}(G)<m/100` },
+  { id: 'claim-upper', tex: String.raw`h(G)<26m/75+2/3` },
+  { id: 'asymptotic-ratio', tex: String.raw`\frac{75}{52}\approx1.44` },
+] as const;
+---
+
+<Film
+  tag="uruk-branch-sets"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A five-cycle is coloured with distinct ink glyphs, revealing why it needs three colours. Contracting two adjacent edges produces a triangle minor. Exact complements of cycles on five through eight vertices illustrate the no-three-strangers condition, branch sets and pairwise joined matching edges. A separate cloud of layout marks is a schematic placeholder for the paper's unspecified large graphs; their adjacencies are not drawn. Blue marks and a conditional upper-bound line state the unreviewed claim, followed by the dated review and formal-statement ledger."
+  caption="A five-cycle needs three colours and contains a triangle as a minor. For graphs with no three pairwise non-adjacent vertices, Hadwiger's conjecture asks for a complete minor on at least half the vertices. The paper claims arbitrarily large examples where connected matchings are too small to reach that order. The large-graph cloud is schematic and shows no counterexample graph."
+  leftOut="The random construction, finite-field hole identities, distribution theorem and container argument; the proof of the general minor bound; the Colin de Verdière and list-colouring companions; the linear conjecture; the history of the six-colour case; any explicit counterexample graph or size."
+>
+  <p class="film-method">How the film is made. The opening graph is the five-cycle. Three colours are represented by distinct ink glyphs rather than coloured fills. The browser checks all 32 two-colour assignments, each of which has an edge whose ends agree, and finds a valid three-colour assignment. It also computes the independence number and complete-minor order. Two adjacent cycle edges contract by merging their three incident vertices into one connected branch set; the other two vertices remain separate, giving a triangle.</p>
+  <p class="film-method">A complete minor of order <span set:html={renderFormula(String.raw`t`, false)} /> consists of <span set:html={renderFormula(String.raw`t`, false)} /> disjoint connected vertex sets, with an edge between every pair of sets. Each set can be contracted to one point. The smaller displayed examples are the complements of cycles on five, six, seven and eight vertices. Every pair is joined except consecutive vertices of the underlying cycle. The five-vertex complement is isomorphic to the opening five-cycle; the drawing explicitly relabels it before the later growth. Changing the number of vertices also changes the links, so intermediate carried layouts are not new mathematical examples.</p>
+  <p class="film-method">Exhaustive searches run in the browser for each completed small example. Their vertex counts, chromatic numbers, complete-minor orders and maximum connected-matching sizes are respectively <span set:html={renderFormula(String.raw`(5,3,3,2),\ (6,3,4,3),\ (7,4,5,3),\ (8,4,6,4)`, false)} />. Each has independence number two and obeys <span set:html={renderFormula(String.raw`h\ge\chi`, false)} />. None is a counterexample. A hypothetical triple of pairwise missing edges illustrates the configuration excluded by the independence condition; it is not a triple present in any of these graphs.</p>
+  <p class="film-method">A connected matching means disjoint edges that are pairwise joined. For every two selected matching edges, at least one edge must join an end of one to an end of the other. It does not require all four possible cross pairs to be edges. The definition is drawn on the exact eight-vertex example, using actual selected edges and cross-edge witnesses from the computed graph. Its four-edge maximum is a fact about that example only.</p>
+  <p class="film-method">The later cloud contains fixed seeded layout points with the unknown adjacencies left unspecified, not an edgeless graph. It has no stated graph order. It stands for the unspecified large graphs in the claim. Its dot count is not a claimed counterexample size, and the film does not compute a matching number for it. The small exact example retires into its own labelled inset while the cloud is introduced, returns for the matching definition, and then retires again. Objects move and change their geometry; they do not dissolve between scenes.</p>
+  <p class="film-method">For a graph with independence number at most two, each independent set contains at most two vertices. Consequently the fractional chromatic number is at least <span set:html={renderFormula(String.raw`m/2`, false)} />. The ink line <span set:html={renderFormula(String.raw`m/3`, false)} /> is the known Duchet–Meyniel lower bound on complete-minor order. The blue line <span set:html={renderFormula(String.raw`26m/75+2/3`, false)} /> is a conditional upper envelope for the claimed examples, obtained by substituting the strict matching bound into the paper's general inequality. It is not their measured complete-minor order. The chart omits the known lower line on phones but keeps the distinct roles of the other two lines.</p>
+  <p class="film-method">The cloud and the blue curve concern an unspecified family with arbitrarily large orders, not every integer shown on the chart. An edge is itself a connected matching of size one, so the claimed matching inequality requires an order above 100. This necessary condition does not say that an example exists at 101 or at any other displayed order. The ratio <span set:html={renderFormula(String.raw`75/52`, false)} /> compares the leading linear coefficients as the order tends to infinity. At a finite order the additive <span set:html={renderFormula(String.raw`2/3`, false)} /> remains, so the limiting ratio is not a finite-order equality. The browser checks the general inequality on the four small graphs, where it is loose; those checks do not prove the inequality for all graphs.</p>
+  <p class="film-method">The ledger preserves the article's evidence date, 17 October 2026, and its unreviewed status. The 56-line comparator statement <code>HadwigerCounterexample.lean</code> is in the pinned catalogue. It defines the graph quantities and states the ordinary chromatic counterexample and connected-matching bounds. The fractional strengthening is outside that formal statement. No outside replay was found, and neither a kernel check nor a formal statement is counted as a reading or human approval of the paper. Without JavaScript, the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

@@ -1,0 +1,12 @@
+uruk-branch-sets .film-frame { container: hcfilm / inline-size; }
+uruk-branch-sets .film-label { font-size: .875rem; }
+uruk-branch-sets [data-label^="claim-"] { color: var(--blue); }
+
+@container hcfilm (600px <= width < 760px) {
+  uruk-branch-sets .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container hcfilm (width < 600px) {
+  uruk-branch-sets .film-stage { aspect-ratio: 4 / 9; }
+  uruk-branch-sets .film-label { font-size: .75rem; }
+}

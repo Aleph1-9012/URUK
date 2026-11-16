@@ -10,6 +10,7 @@ papers:
   - preprints/A-counterexample-to-Hadwigers-conjecture-September-23-2026/paper.pdf
   - preprints/A-counterexample-to-the-Colin-de-Verdiere-chromatic-conjecture-September-23-2026/paper.pdf
 draft: false
+visual: branch-sets
 ---
 
 Colour the points of a network so that no two linked points share a colour. Some networks need many colours. The four-colour theorem says a map never needs more than four, and the reason, roughly, is that a flat map cannot contain five regions that all touch each other. In 1943 Hugo Hadwiger proposed that this is the whole story for every network, flat or not: if a network needs $t$ colours, then it must contain the complete network on $t$ points, in which every pair is linked, in a loosened sense called a minor. The conjecture was proved for up to six colours, the last case in 1993, and Plummer, Stiebitz and Toft called it "the major unsolved problem in graph coloring theory". On 23 September 2026 OpenAI posted a paper claiming that it is false, with counterexamples in the special family that experts had long suspected might hide one. Two companion papers in the same family claim a second counterexample by a different route and a positive result in the other direction. [1][2][3][4][5]
