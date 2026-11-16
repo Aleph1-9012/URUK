@@ -43,6 +43,7 @@ export const visualCatalog = [
   { key: 'round-holes', component: './round-holes/RoundHoles.astro' },
   { key: 'dust-reach', component: './dust-reach/DustReach.astro' },
   { key: 'rough-sums', component: './rough-sums/RoughSums.astro' },
+  { key: 'polar-product', component: './polar-product/PolarProduct.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

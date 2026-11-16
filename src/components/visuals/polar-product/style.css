@@ -1,0 +1,11 @@
+uruk-polar-product .film-frame { container: mhfilm / inline-size; }
+uruk-polar-product .film-label { font-size: .875rem; }
+
+@container mhfilm (600px <= width < 760px) {
+  uruk-polar-product .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container mhfilm (width < 600px) {
+  uruk-polar-product .film-stage { aspect-ratio: 4 / 7; }
+  uruk-polar-product .film-label { font-size: .75rem; }
+}

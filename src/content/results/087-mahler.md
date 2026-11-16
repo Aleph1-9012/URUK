@@ -10,6 +10,7 @@ papers:
   - preprints/The-symmetric-Mahler-conjecture-and-its-equality-cases-September-22-2026/paper.pdf
   - preprints/The-Mahler-Conjecture-for-General-Convex-Bodies-September-22-2026/paper.pdf
 draft: false
+visual: polar-product
 ---
 
 Every convex shape has a dual, called its polar: a big shape has a small polar and a long thin shape has a short wide one, so that multiplying the two volumes together gives a number that does not change when the shape is stretched or rotated. For a disk that number is $\pi^{2}\approx9.87$, for a regular hexagon it is $9$, for a square it is $8$. In 1939 Kurt Mahler asked how small it can be. He proved that in the plane the square is the answer, and conjectured that in every dimension the cube is, together with the cube's dual, the octahedron, and a family of hybrids. The largest value is classical, the ball, by a theorem of Blaschke and Santaló. The smallest resisted everyone. Bourgain and Milman proved in 1987 that it is at least a fixed fraction of the conjectured value, raised to the power of the dimension; Iriyeh and Shibata proved the three-dimensional case in 2020 after eighty years, for which the Mathematical Society of Japan gave them its Geometry Prize with a citation saying the conjecture had been considered impregnable even among experts. On 22 September 2026 OpenAI posted three papers claiming the full conjecture in every dimension, with the equality cases, together with the version for shapes without a center of symmetry, where the answer is the triangle's higher-dimensional cousin. [1][2][3][4][6][7]

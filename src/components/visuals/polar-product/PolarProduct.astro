@@ -1,0 +1,38 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'body', tex: String.raw`K` },
+  { id: 'polar', tex: String.raw`K^\circ` },
+  { id: 'product', tex: String.raw`|K|\,|K^\circ|` },
+  { id: 'disk', tex: String.raw`\pi^2` },
+  { id: 'floor', tex: String.raw`\frac{4^n}{n!}` },
+  { id: 'cube-product', tex: String.raw`\frac{64}{6}` },
+  { id: 'equality', tex: String.raw`K=AH` },
+] as const;
+---
+
+<Film
+  tag="uruk-polar-product"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="An origin-symmetric convex polygon and its polar change together. Their computed area product stays fixed under linear transformations and moves between the disk, hexagon and square examples. A finite cloud is compared with the proved planar minimum of eight. A flat three-dimensional diagram has exact cube and octahedron data. Blue marks the claimed universal minimum and equality classification; a dated review ledger and full transcript follow."
+  caption="An origin-symmetric convex body and its computed polar move together while their area product is measured. The disk is approximated by a polygon, and the finite cloud illustrates the proved planar floor without proving it. Blue marks the all-dimensional minimum and equality claim."
+  leftOut="the proofs; the nonsymmetric conjecture and Santaló point; the symplectic construction and Gromov width; Hanner polytopes beyond the cube and octahedron."
+>
+  <p class="film-method">How the film is made. The planar examples are convex polygons symmetric about the origin. Each polar vertex is calculated from a current edge of the body using its outward supporting line. Areas are computed from the resulting ordered vertices, and their product supplies the readout. During a morph the body remains convex and symmetric, and its polar is recomputed from that current body. The polar is not independently interpolated between endpoint pictures.</p>
+  <p class="film-method">For an invertible linear map A, <span set:html={renderFormula(String.raw`(AK)^\circ=A^{-\mathsf T}K^\circ`, false)} />. A stretch therefore transforms the polar by the inverse transpose. A rotation is orthogonal, so the body and polar rotate in the same direction. Their areas change by reciprocal determinant factors and their product stays fixed. The demonstration uses these actual linear maps.</p>
+  <p class="film-method">The disk is drawn as a regular polygon with one thousand sides. Its computed product approximates the disk's exact value <span set:html={renderFormula(String.raw`\pi^2`, false)} />. The regular hexagon and square have exact reference products nine and eight. The corner-cut family and finite cloud are examples in the plane. A finite computation cannot establish a minimum over all convex bodies. The planar floor of eight is a known theorem, not a conclusion drawn from this cloud.</p>
+  <p class="film-method">The three-dimensional cube and octahedron use exact vertices and exact volume formulas. Their flat line drawing is a schematic projection; projected areas do not represent volumes. The cube has volume eight and its polar octahedron has volume eight sixths, giving product <span set:html={renderFormula(String.raw`64/6`, false)} />. The dimension table evaluates the cube and cross-polytope product <span set:html={renderFormula(String.raw`4^n/n!`, false)} />. Those example values do not prove a universal lower bound.</p>
+  <p class="film-method">The symmetric minimum is already known in dimensions one, two and three. Blue identifies the claim in all dimensions, including its equality cases. Equality means a linear image of a Hanner polytope: in the label <span set:html={renderFormula(String.raw`K=AH`, false)} />, A is invertible and H is a Hanner polytope. It does not mean only a literal axis-aligned cube. Only the cube and octahedron are drawn. The nonsymmetric and symplectic claims are separate and are left out.</p>
+  <p class="film-method">The closing evidence follows the article's date, 18 October 2026. No mathematician had publicly reported checking the proofs. Public illustrations of the symplectic construction are engagement rather than a claimed review. Three Lean statements are in the pinned catalogue: the symmetric inequality, its equality classification and the symplectic statement. The linked general statement is not catalogued. A kernel check concerns the formal statement and is not counted as a reading or approval of the paper. Without JavaScript, the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
