@@ -46,6 +46,7 @@ export const visualCatalog = [
   { key: 'polar-product', component: './polar-product/PolarProduct.astro' },
   { key: 'propeller-cuts', component: './propeller-cuts/PropellerCuts.astro' },
   { key: 'maze-walk', component: './maze-walk/MazeWalk.astro' },
+  { key: 'fewer-butterflies', component: './fewer-butterflies/FewerButterflies.astro' },
 ] as const;
 
 export const visualKeys = visualCatalog.map(({ key }) => key);

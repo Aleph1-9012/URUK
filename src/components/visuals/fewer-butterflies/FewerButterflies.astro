@@ -1,0 +1,28 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+---
+
+<Film
+  tag="uruk-fewer-butterflies"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  description="Eight values travel through three classical FFT layers containing twelve butterfly gates. The diagram doubles to sixteen and thirty-two rails, then folds into a normalized reference plot. Blue marks the claimed unrestricted-arithmetic results. Schematic companion dots assert existence without particular lengths or operation counts. A magnified plot isolates the main paper's logarithmic factor, followed by a dated review ledger distinguishing the two catalogued Lean statements from a reading of the papers."
+  caption="Eight values pass through three layers of four classical FFT butterflies: 12 butterflies, compared with 64 scalar products in the transform's definition. The claimed bound uses exact arithmetic with unrestricted coefficients and a supplied root of unity. The plot isolates one logarithmic factor close to 1; it does not draw the full operation count, its constants or its additional log-log factor."
+  leftOut="the tensor network, the compiler and the constants' construction; floating-point behaviour and bit complexity; a chart of record constants; the companion paper's price-function argument."
+>
+  <p class="film-method">How the film is made. The classical diagrams use radix-two Cooley–Tukey butterflies. There are <span set:html={renderFormula(String.raw`\tfrac n2\log_2n`, false)} /> butterfly gates: 12 at length 8, 32 at length 16 and 80 at length 32. A butterfly combines two values into two outputs using a twiddle multiplication and two additions or subtractions. It is not one scalar operation. The 64 products in the length-eight definition count scalar multiplications only, before adding the terms. The two counters count different objects and are labelled accordingly.</p>
+  <p class="film-method">The live classical FFT is compared with the defining matrix <span set:html={renderFormula(String.raw`F_n=(\zeta_n^{jk})_{0\le j,k<n},\qquad\zeta_n=e^{2\pi i/n}`, false)} />, using the article's positive-root convention and no normalization. These browser calculations use ordinary IEEE floating-point arithmetic. Their small numerical discrepancy checks the classical implementation; it is not an execution or verification of either paper's exact-arithmetic algorithm.</p>
+  <p class="film-method">The diagram's rails are carried into a plot whose selected classical reference is normalized to 1. That reference is an illustrative scale for the order <span set:html={renderFormula(String.raw`n\log n`, false)} />; it is not an exact runtime or a measured operation count. Morgenstern's lower bound concerns bounded multipliers. The papers make their claims in a different model with unrestricted coefficients, so the blue marks do not contradict that restricted-model bound.</p>
+  <p class="film-method">The companion's dots mark a claim of existence along an unbounded sequence of lengths. Their positions are schematic. They do not give actual lengths, circuit sizes, a constant-factor saving or a rate of convergence to zero. The film supplies no invented operation counts for those circuits.</p>
+  <p class="film-method">For the main paper, the plotted factor is only <span set:html={renderFormula(String.raw`(\ln n)^{-(1-\theta)}`, false)} />, with the paper's specified constants and <span set:html={renderFormula(String.raw`1-\theta\approx2.1064\times10^{-13}`, false)} />. Its deficit below 1 is evaluated in logarithmic coordinates, without trying to store the enormous length itself. The vertical magnification makes this isolated deficit visible. The plot omits the multiplicative constants and the additional <span set:html={renderFormula(String.raw`(\log\log n)^{4-\theta}`, false)} /> factor. It therefore does not estimate the claimed algorithm's full operation count or compare its practical speed with a classical FFT.</p>
+  <p class="film-method">The claimed algorithm permits exact complex arithmetic and unrestricted coefficients, with one specified root of unity supplied. The article reports enormous constants, no useful crossover estimate and no numerical-stability assertion. Nothing in the plot establishes an improvement for stable floating-point transforms or bit complexity.</p>
+  <p class="film-method">The closing evidence preserves the article's dates and scope. The proofs are unreviewed. Two Lean statements are listed in the pinned catalogue: one concerns the companion's subsequential circuit claim; the other concerns uniform exact transforms and convolution and defines its own cost model. The synthesis appendix's extraction and search are outside the uniform statement. That model needs comparison with the paper's model, and no outside replay was found. A kernel check is evidence about a formal statement, not a reading or approval of the papers. Without JavaScript, the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

@@ -1,0 +1,9 @@
+uruk-fewer-butterflies .film-frame { container: xffilm / inline-size; }
+
+@container xffilm (600px <= width < 760px) {
+  uruk-fewer-butterflies .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container xffilm (width < 600px) {
+  uruk-fewer-butterflies .film-stage { aspect-ratio: 4 / 7; }
+}

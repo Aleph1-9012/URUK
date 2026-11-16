@@ -10,6 +10,7 @@ papers:
   - preprints/An-explicit-power-saving-for-the-exact-discrete-Fourier-transform-September-25-2026/main.pdf
   - preprints/Finite-tensor-savings-and-exact-Fourier-circuits-September-25-2026/main.pdf
 draft: false
+visual: fewer-butterflies
 ---
 
 The fast Fourier transform is the most used algorithm in the world. It turns a signal of $n$ samples into its $n$ frequencies in about $n\log n$ operations instead of $n^{2}$, and it is inside every phone call, image file and radio receiver. Cooley and Tukey published it in 1965, Gauss had it in 1805, and since then the only question has been the constant in front of $n\log n$; a 2023 paper of Alman and Rao that shaved the constant for power-of-two lengths was news. Whether the $n\log n$ itself could be beaten was believed impossible, and in restricted models it is: Morgenstern proved in 1973 that any algorithm using only bounded multipliers needs $n\log n$ operations. On 25 September 2026 OpenAI posted two papers. One shows that in the unrestricted model, where any complex number may be used as a multiplier, Fourier circuits smaller than $n\log n$ exist for infinitely many lengths. The other gives a single algorithm that computes the exact transform at every length in $n(\log n)^{1-10^{-13}}$ operations. [1][2][3][4]
