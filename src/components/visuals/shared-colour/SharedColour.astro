@@ -1,0 +1,44 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'colour-rule', tex: String.raw`\begin{gathered}k=\lfloor\log_2n\rfloor\\\chi(n)=(\lfloor k/2\rfloor+\Omega(n))\bmod2\end{gathered}` },
+  { id: 'omega', tex: String.raw`\Omega(n)` },
+  { id: 'schur', tex: String.raw`x+y` },
+  { id: 'subset-example', tex: String.raw`\mathrm{FS}(A)` },
+  { id: 'subset-products', tex: String.raw`\mathrm{FP}(A)` },
+  { id: 'exponent-colour', tex: String.raw`\widetilde\chi(k)=\chi(2^k)` },
+  { id: 'exponent-sum', tex: String.raw`u+v` },
+  { id: 'power-product', tex: String.raw`2^u\,2^v=2^{u+v}` },
+  { id: 'mixed-four', tex: String.raw`\{x,y,x+y,xy\}` },
+  { id: 'union-count', tex: String.raw`2(2^m-1)-m` },
+  { id: 'separation', tex: String.raw`\begin{gathered}a_1>R\\a_d>R\bigl(\sum_{k<d}a_k+\prod_{k<d}a_k\bigr)^D\end{gathered}` },
+] as const;
+---
+
+<Film
+  tag="uruk-shared-colour"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="Positive integers are shown in one fixed two-colouring, encoded by solid and hatched ink cells. Small computed searches find an additive example, a multiplicative example through exponents, and simultaneous sum-and-product examples. The same cells bend into a logarithmic ribbon for larger values. A dilation of the inputs illustrates why sums and products scale differently. Eleven exact values from a separated triple share one category. A blue bracket identifies the paper's claim for every finite colouring and every prescribed finite set size. The closing ledger distinguishes the release's lack of a Lean statement from reported outside formal evidence without the separation clause, and from human approval."
+  caption="One fixed colouring of the positive integers in two ink patterns. Search finds examples whose subset sums and subset products share a colour for this colouring. The paper claims sets of every prescribed finite size for every finite colouring. The drawing illustrates computed finite cases; the dated review status remains unreviewed."
+  leftOut="The claimed proof, nilsequences, the Prediction and Alignment Principles, the rational case and most earlier results; a four-generator example; an infinite simultaneous sequence; a numerical bound for the first configuration. The outside Lean proof and its two reported replays are described, not rerun by this film."
+>
+  <p class="film-method">How the film is made. One fixed colouring of the positive integers is used throughout. The browser first computes <span set:html={renderFormula(String.raw`k=\lfloor\log_2n\rfloor`, false)} />. It then sets <span set:html={renderFormula(String.raw`\chi(n)=(\lfloor k/2\rfloor+\Omega(n))\bmod2`, false)} />, where <span set:html={renderFormula(String.raw`\Omega(n)`, false)} /> counts prime factors with multiplicity and is zero at one. Solid and hatched ink cells represent its two colour categories. The initial window contains the integers one through 64. It is one example colouring, not a proof about all colourings.</p>
+  <p class="film-method">The Schur example and the three-generator finite-sums example are found by live finite searches. For the latter, each nonempty subset is used once and its elements are added; the resulting seven sums have one colour. This example tests the additive statement only. The multiplication example uses the induced colouring of exponents <span set:html={renderFormula(String.raw`\widetilde\chi(k)=\chi(2^k)`, false)} />. The row of exponents carries the powers' colours, rather than the original colouring of the exponent integers. Addition of exponents becomes multiplication of powers.</p>
+  <p class="film-method">For a set <span set:html={renderFormula(String.raw`A`, false)} />, the finite-sums set and finite-products set use nonempty subsets, with every chosen element used at most once and singleton subsets included. The browser searches for a pair for which both sets have the same colour. It then searches for a triple under the paper's separation condition with the fixed parameters <span set:html={renderFormula(String.raw`R=2,\ D=1`, false)} />. All displayed sums, products, colours, intersections and counts are recomputed from the found generators. No numerical search output is shipped as a data asset.</p>
+  <p class="film-method">The strip's cells keep their integer identities while they move into the logarithmic ribbon. The original window remains part of that layout. Larger values are added as explicit computed marks. Leaders make crowded marks readable without moving their numerical axis locations. A finite sum-and-product search for one fixed colouring cannot establish the paper's quantifiers over every colouring and every prescribed finite size.</p>
+  <p class="film-method">The dilation example replaces each generator by three times that generator. Its two-term sum is multiplied by three, but its two-term product is multiplied by nine. It is not a uniform multiplication of the whole original union by three. The new sums and products are recoloured from their actual integer values, revealing a change of category. The displayed return restores the original pair before the separated triple is introduced. This is an example of a failed preservation of colour under dilation, not a proof that rational solutions can never be used over the integers.</p>
+  <p class="film-method">For the separated triple, each of the seven nonempty subsets has a distinct sum and a distinct product. The two lists meet exactly at the three generators, so their union contains eleven values. The film draws the two lists separately and counts their common singletons only once. The general union formula is <span set:html={renderFormula(String.raw`2(2^m-1)-m`, false)} />. The search checks the stronger spacing rule, but only the three-generator example is drawn. The reference to the four-element pattern in the subtitle means <span set:html={renderFormula(String.raw`\{x,y,x+y,xy\}`, false)} />, not a four-generator example.</p>
+  <p class="film-method">The historical infinite obstruction concerns a colouring for which no infinite simultaneous set exists. It is not a universal assertion that every colouring forbids one: a constant colouring admits infinite examples. The film preserves the article's exact subtitle wording and labels that beat as a historical obstruction for some colourings. It does not show that the displayed colouring has this obstruction or infer an infinite conclusion from the 64-cell window. The claimed result instead fixes a finite size in advance. The paper gives no numerical bound for the required configuration.</p>
+  <p class="film-method">The final ledger preserves the article's review date, 20 October 2026. No mathematician had publicly reported reading or checking the paper. The release itself contains no Lean statement for this family. The article reports an outside Lean 4 proof without the separation clause, replayed by two independent checkers. The film reports those checks rather than presenting a new replay. The outside proof follows the paper's deduction but rests partly on the release's own library and replaces an input; it is not a check of every section as written. The outside author's standing was not assessed, and this machine evidence is not counted as human approval. Without JavaScript, the article and this transcript remain available.</p>
+</Film>
+
+<script>
+  import './element';
+</script>

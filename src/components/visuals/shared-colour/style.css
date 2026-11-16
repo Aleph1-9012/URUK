@@ -1,0 +1,11 @@
+uruk-shared-colour .film-frame { container: hsfilm / inline-size; }
+uruk-shared-colour .film-label { font-size: .875rem; }
+
+@container hsfilm (600px <= width < 760px) {
+  uruk-shared-colour .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container hsfilm (width < 600px) {
+  uruk-shared-colour .film-stage { aspect-ratio: 4 / 9; }
+  uruk-shared-colour .film-label { font-size: .75rem; }
+}

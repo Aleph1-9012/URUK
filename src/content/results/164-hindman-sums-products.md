@@ -9,6 +9,7 @@ checked: 2026-10-20
 papers:
   - preprints/Monochromatic-finite-sums-and-products-in-the-positive-integers-September-23-2026/paper.pdf
 draft: false
+visual: shared-colour
 ---
 
 Paint every positive integer one of finitely many colours. In 1916 Schur proved that some $x$, $y$ and $x+y$ share a colour; Folkman, Rado and Sanders extended this to arbitrarily large finite sets all of whose subset sums share a colour; and in 1974 Neil Hindman proved it for an infinite set. Multiplication alone behaves the same way, by colouring exponents. The hard question is both at once. Hindman showed in 1980 that no infinite set can have all its elements, pairwise sums and pairwise products in one colour, and in 1979 he conjectured that finite sets of every size can: for every $m$ there are $m$ numbers whose subset sums and subset products are all the same colour. Even the four-element case $\{x,y,x+y,xy\}$ for two colours needed computer help from Graham and Hindman; Moreira's 2017 Annals paper gave $\{x,x+y,xy\}$ for any number of colours; Bowen and Sabok proved the four-element case over the rationals, and Alweiss proved the full conjecture over the rationals in a paper accepted at Duke. The integers resisted, because scaling a sum and scaling a product behave differently, so rational solutions cannot simply be cleared of denominators. The problem is number 172 on the Erdős problems list. On 23 September 2026 OpenAI posted a seventy-page paper claiming it. [1][2][3]
