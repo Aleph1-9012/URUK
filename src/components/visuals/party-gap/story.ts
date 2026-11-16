@@ -1,5 +1,6 @@
 import { createTimeline } from '../../plate/timeline';
 import { smooth } from '../../../lib/animation';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import type { Box } from './drawing';
 
 export const CUES = [
@@ -22,7 +23,7 @@ export const FILM_DURATION = 115750;
 export const TIMELINE = createTimeline(CUES, FILM_DURATION, 180);
 
 export function layout(width: number, height: number, time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {
     return {

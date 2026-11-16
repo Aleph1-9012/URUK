@@ -1,10 +1,8 @@
 export const visualCatalog = [
-  { key: 'zero-free-strip', component: './prime-waves/PrimeWaves.astro' },
+  { key: 'prime-waves', component: './prime-waves/PrimeWaves.astro' },
   { key: 'fraction-nets', component: './fraction-nets/FractionNets.astro' },
   { key: 'catalan-bounds', component: './catalan-bounds/CatalanBounds.astro' },
   { key: 'standard-map', component: './standard-map/StandardMap.astro' },
-  { key: 'unit-ruler', component: './unit-ruler/UnitRuler.astro' },
-  { key: 'thompson-bands', component: './thompson/ThompsonBands.astro' },
   { key: 'switch-groups', component: './switch-groups/SwitchGroups.astro' },
   { key: 'fraction-rulers', component: './fraction-rulers/FractionRulers.astro' },
   { key: 'unique-rules', component: './unique-rules/UniqueRules.astro' },

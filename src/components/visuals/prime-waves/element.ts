@@ -1,21 +1,22 @@
 import { defineFilm } from '../../plate/controller';
+import { runNumerics } from '../../plate/numerics';
 import { PrimeFilm } from './film';
 import { TIMELINE } from './story';
 import type { FilmMessage } from './worker';
 
-defineFilm('uruk-prime-film', TIMELINE, ({ canvas, labels, signal, redraw }) => {
-  const drawing = new PrimeFilm(canvas, labels);
-  const worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
+defineFilm('uruk-prime-waves', TIMELINE, (film) => {
+  const drawing = new PrimeFilm(film.canvas, film.labels);
 
-  signal.addEventListener('abort', () => worker.terminate(), { once: true });
-  worker.addEventListener('message', (event: MessageEvent<FilmMessage>) => {
-    const message = event.data;
+  runNumerics<FilmMessage>(film, {
+    start: () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' }),
+    onMessage(message, numerics) {
+      if (message.kind === 'complete') numerics.ready();
+      else if (message.kind === 'map') drawing.addMap(message.map);
+      else drawing.setWaves(message.table);
 
-    if (message.kind === 'map') drawing.addMap(message.map);
-    else drawing.setWaves(message.table);
-
-    redraw();
-  }, { signal });
+      film.redraw();
+    },
+  });
 
   return drawing;
 });

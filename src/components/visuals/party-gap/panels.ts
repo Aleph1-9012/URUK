@@ -1,5 +1,6 @@
 import { mix, progress, smooth } from '../../../lib/animation';
-import { type Box, type Colors, type Place, hatch, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, hatch, text } from './drawing';
 import { curveValue, type PartyModel } from './math';
 
 type CurveLabel = { id: 'classical' | 'aks' | 'bradac' | 'spencer' | 'curve-claim'; value: number; tone: string; y: number };

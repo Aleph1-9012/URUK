@@ -1,0 +1,7 @@
+uruk-barker-echoes .film-label { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-barker-echoes .film-stage { aspect-ratio: 4 / 5; }
+  uruk-barker-echoes .film-label { font-size: .75rem; }
+  uruk-barker-echoes .film-label[data-label="fold"] { font-size: .65rem; }
+}

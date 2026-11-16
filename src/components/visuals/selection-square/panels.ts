@@ -1,4 +1,5 @@
-import { type Box, type Colors, type Place, chartPoint, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, chartPoint, text } from './drawing';
 import { chartAt, type SelectionModel } from './math';
 import { chartProgress, chartView, claimProgress, fillProgress, humanProgress, sortProgress, trialIndex, walkProgress, zoomProgress } from './story';
 

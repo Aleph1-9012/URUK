@@ -1,0 +1,9 @@
+uruk-trapped-waves .film-label--blue { color: var(--blue); }
+uruk-trapped-waves .film-label--small { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-trapped-waves .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-trapped-waves .film-label { font-size: .9375rem; }
+  uruk-trapped-waves .film-label--small { font-size: .8125rem; }
+}

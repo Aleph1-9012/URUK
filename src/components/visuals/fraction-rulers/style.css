@@ -1,0 +1,14 @@
+uruk-fraction-rulers .film-label > span { background: none; padding: 0; }
+
+uruk-fraction-rulers .film-label--small { font-size: .9375rem; }
+uruk-fraction-rulers .film-label--large { font-size: 1.375rem; }
+uruk-fraction-rulers .film-label--blue { color: var(--blue); }
+uruk-fraction-rulers .film-label--paper > span { background: var(--paper); padding: 2px 4px; }
+
+@container plate (max-width: 599px) {
+  uruk-fraction-rulers .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-fraction-rulers .film-label { font-size: .9375rem; }
+  uruk-fraction-rulers .film-label--small { font-size: .8125rem; }
+  uruk-fraction-rulers .film-label--large { font-size: 1.125rem; }
+}

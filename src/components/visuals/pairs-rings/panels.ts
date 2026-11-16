@@ -1,4 +1,5 @@
-import { type Box, type Colors, type Place, line, runtimeChartBox, runtimeChartPoint, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, runtimeChartBox, runtimeChartPoint, text } from './drawing';
 import { freeVertices, runtimeAt, type PairModel } from './math';
 import { blossomProgress, claimProgress, classicalProgress, flipProgress, greedyProgress, inputProgress } from './story';
 

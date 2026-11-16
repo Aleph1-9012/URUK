@@ -1,4 +1,7 @@
-import { patterns, type Pattern } from '../../../lib/engraving-patterns';
+/** The engraving patterns that stand for the seven colour classes. */
+const patterns = ['blank', 'h', 'd', 'o', 'v', 'a', 'x'] as const;
+
+type Pattern = (typeof patterns)[number];
 
 export type Point = { x: number; y: number };
 

@@ -1,6 +1,21 @@
 .film-host { display: block; }
 .result-opening:has(.film-host) { grid-template-columns: minmax(0, 920fr) minmax(0, 368fr); gap: 32px; }
 
+/* The first painted visual is the film's initialized opening frame. Keep its layout while it loads. */
+.film-host:not([data-ready]) [data-film-viewport] { opacity: 0; }
+
+.film-frame { border: 1px solid var(--muted); background: var(--paper); }
+.film-stage { position: relative; aspect-ratio: 16 / 10; overflow: clip; }
+.film-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.film-host:not([data-ready]) .film-canvas { visibility: hidden; }
+
+/* Formulas laid over the drawing. The film places each label every frame; a film's own stylesheet sets sizes and tones. */
+.film-formulas { position: absolute; inset: 0; pointer-events: none; }
+.film-label { position: absolute; top: 0; left: 0; width: 0; height: 0; visibility: hidden; opacity: 0; color: var(--ink); font-size: 1rem; line-height: 1.25; white-space: nowrap; }
+.film-label > span { display: block; width: max-content; transform: translate(-50%, -50%); background: var(--paper); padding: 2px 4px; }
+/* A review-status stamp among the formulas. */
+.film-label.film-label--stamp > span { padding: 5px 8px; border: 1px solid var(--blue); background: var(--paper); color: var(--blue); font: .6875rem/1.4 var(--font-special-elite); }
+
 .film-subtitles { display: grid; place-items: center; padding: 14px 26px 20px; }
 .plate .film-cue { grid-area: 1 / 1; width: min(100%, 45rem); visibility: hidden; margin: 0; font: 1.1875rem/1.5 var(--font-alegreya); text-align: center; text-wrap: balance; }
 .film-cue.is-active { visibility: visible; }
@@ -8,7 +23,7 @@
 .film-citations { font-size: .8em; color: var(--muted); white-space: nowrap; }
 
 .film-controls { padding-top: 16px; }
-.film-host:not([data-ready]) .film-controls { display: none; }
+.film-host:not([data-ready]) .film-controls { visibility: hidden; }
 .film-buttons { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .plate .film-clock { margin: 0; font: .75rem/1.5 var(--font-special-elite); font-variant-numeric: tabular-nums; }
 .film-timeline { appearance: none; display: block; width: 100%; height: 32px; margin: 8px 0 0; cursor: pointer; background: url('../../assets/plate/track.png') center / 100% 12px no-repeat; }

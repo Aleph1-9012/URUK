@@ -1,0 +1,11 @@
+uruk-curve-budget .film-label--blue { color: var(--blue); }
+uruk-curve-budget .film-label--small { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-curve-budget .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-curve-budget .film-label { font-size: .9375rem; }
+  uruk-curve-budget .film-label--small { font-size: .8125rem; }
+}
+
+uruk-curve-budget:not([data-ready]) .film-stage { aspect-ratio: auto; }

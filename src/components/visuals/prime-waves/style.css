@@ -1,0 +1,20 @@
+/* 003's Plate I film, from the primes to the claimed fence. The plate takes the wider column; below 75rem it takes the full width above the introduction. */
+
+/* Formulas pinned to the drawing; the script places each one every frame and keeps it inside the frame while its point is.
+   A pin has no size of its own, so only the formula's box counts; a formula can leave the frame with its drawing mid-move. */
+uruk-prime-waves .film-label { font-size: 1.125rem; line-height: 1.2; }
+uruk-prime-waves .film-label > span { transform: none; background: none; padding: 0; }
+uruk-prime-waves .film-label--above > span { transform: translate(-50%, -100%); }
+uruk-prime-waves .film-label--right > span { transform: translate(0, -50%); }
+uruk-prime-waves .film-label--blue { color: var(--blue); }
+uruk-prime-waves .film-label--large { font-size: 1.625rem; }
+uruk-prime-waves .film-label--small { font-size: .9375rem; }
+uruk-prime-waves .film-label--halo { text-shadow: 0 0 2px var(--paper), 0 0 3px var(--paper), 0 0 5px var(--paper); }
+
+@container plate (max-width: 599px) {
+  uruk-prime-waves .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-prime-waves .film-label { font-size: 1rem; }
+  uruk-prime-waves .film-label--large { font-size: 1.25rem; }
+  uruk-prime-waves .film-label--small { font-size: .8125rem; }
+}

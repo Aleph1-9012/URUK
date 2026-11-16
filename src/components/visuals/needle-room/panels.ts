@@ -1,5 +1,6 @@
 import { mix, progress, smooth } from '../../../lib/animation';
-import { type Box, type Colors, type Place, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, text } from './drawing';
 import { bushUnionBounds, type KakeyaModel } from './math';
 import { shadedFractionAt, shadedFractionLabel } from './story';
 

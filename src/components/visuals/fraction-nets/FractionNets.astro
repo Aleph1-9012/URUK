@@ -1,13 +1,8 @@
 ---
-import Plate from '../../plate/Plate.astro';
-import FilmControls from '../../plate/FilmControls.astro';
-import FilmSubtitles from '../../plate/FilmSubtitles.astro';
-import FilmTranscript from '../../plate/FilmTranscript.astro';
-import '../../plate/film.css';
+import Film from '../../plate/Film.astro';
 import { renderFormula } from '../../../lib/formulas/render';
-import { CUBIC_KNOTS, CUBIC_NET, cubicY } from './nets';
 import { CUES, TIMELINE, SCENES } from './story';
-import './fraction-nets.css';
+import './style.css';
 
 const math = (tex: string) => renderFormula(tex, false);
 type Anchor = 'above' | 'right';
@@ -25,79 +20,27 @@ const labels: { id: string; tex: string; anchor: Anchor; tone?: 'blue'; size?: '
   { id: 'growth', tex: String.raw`h\approx c\,B^{2}`, anchor: 'right', size: 'small', halo: true },
   { id: 'bound', tex: String.raw`h\le C\,B`, anchor: 'right', size: 'small', halo: true },
 ];
-
-const low = 0.485;
-const high = 2.085;
-const unit = 480 / (high - low);
-const x = (value: number) => 160 + (value - low) * unit;
-const y = (value: number) => 490 - (value - low) * unit;
-const spacing = unit / CUBIC_NET;
-const firstKnot = Math.ceil(low * CUBIC_NET) / CUBIC_NET;
-const curve = Array.from({ length: 121 }, (_, index) => {
-  const value = 0.3 + 1.6 * index / 120;
-
-  return `${index === 0 ? 'M' : 'L'}${x(value).toFixed(1)} ${y(cubicY(value)).toFixed(1)}`;
-}).join('');
-const knots = CUBIC_KNOTS.map((knot) => ({ x: x(knot.a / knot.c).toFixed(1), y: y(knot.b / knot.c).toFixed(1) }));
 ---
 
-<Plate
+<Film
+  tag="uruk-fraction-nets"
+  cues={CUES}
+  timeline={TIMELINE}
+  scenes={SCENES}
+  layout="classic"
+  description="An animated film, drawn from computed values. A computer casts finer and finer nets of fractions over the curve x cubed plus y cubed equals 6 and catches a solution on the net of 21sts, but no net catches a point of x squared plus y squared equals 3, where a remainder argument settles it. The whole numbers then drop their shadow onto a line, a curve with two pieces drops two stretches, and the proof ends with growing points that a bound can't hold for ever. Its subtitles are also in the transcript below."
   caption="A film from a computer's nets of fractions to the paper's claim: why a search can't say “none”, why the old route was blocked, and the clash of sizes at the heart of the proof."
   leftOut="the local comparisons at primes, the formal logarithm, the five-point height estimate, the parity condition and the prime patterns; the Turing-degree corollary. The nets stop at 40ths. The curve is a small example with the paper's curve's shape, not the paper's curve over Q(√2). The tests, the larger number system and the line C·B are schematic."
 >
-  <uruk-fraction-nets class="film-host film-host--classic">
-    <div class="fnets">
-      <div class="fnets-screen" data-film-viewport>
-        <canvas
-          class="fnets-canvas"
-          role="img"
-          aria-label="An animated film, drawn from computed values. A computer casts finer and finer nets of fractions over the curve x cubed plus y cubed equals 6 and catches a solution on the net of 21sts, but no net catches a point of x squared plus y squared equals 3, where a remainder argument settles it. The whole numbers then drop their shadow onto a line, a curve with two pieces drops two stretches, and the proof ends with growing points that a bound can't hold for ever. Its subtitles are also in the transcript below."
-          data-film-canvas
-        ></canvas>
-
-        <div class="fnets-still" aria-hidden="true">
-          <svg viewBox="0 0 800 500">
-            <defs>
-              <pattern id="fnets-still-net" patternUnits="userSpaceOnUse" x={(x(firstKnot) - spacing / 2).toFixed(2)} y={(y(firstKnot) - spacing / 2).toFixed(2)} width={spacing.toFixed(3)} height={spacing.toFixed(3)}>
-                <circle cx={(spacing / 2).toFixed(2)} cy={(spacing / 2).toFixed(2)} r="1.6" fill="var(--ink)" opacity="0.55" />
-              </pattern>
-              <clipPath id="fnets-still-window"><rect x="160" y="10" width="480" height="480" /></clipPath>
-            </defs>
-            <g clip-path="url(#fnets-still-window)">
-              <rect x="160" y="10" width="480" height="480" fill="url(#fnets-still-net)" />
-              <path d={curve} fill="none" stroke="currentColor" stroke-width="2" />
-            </g>
-            {knots.map((knot) => (
-              <>
-                <circle cx={knot.x} cy={knot.y} r="5" fill="var(--blue)" />
-                <circle cx={knot.x} cy={knot.y} r="10" fill="none" stroke="var(--blue)" stroke-width="1.2" />
-              </>
-            ))}
-            <text x="176" y="44" class="fnets-still__name">x³ + y³ = 6, on the net of 21sts</text>
-            <text x={Number(knots[0]?.x ?? 0) + 16} y={Number(knots[0]?.y ?? 0) - 14} class="fnets-still__found">(17/21, 37/21)</text>
-            <text x={Number(knots[1]?.x ?? 0) + 16} y={Number(knots[1]?.y ?? 0) - 14} class="fnets-still__found">(37/21, 17/21)</text>
-          </svg>
-        </div>
-
-        <div class="fnets-labels" aria-hidden="true" data-bleed>
-          {labels.map((label) => (
-            <span class:list={['fnets-label', `fnets-label--${label.anchor}`, label.tone && `fnets-label--${label.tone}`, label.size && `fnets-label--${label.size}`, { 'fnets-label--halo': label.halo }]} data-label={label.id}>
-              <span set:html={math(label.tex)} />
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <FilmSubtitles cues={CUES} />
-    </div>
-
-    <FilmControls id="fnets-timeline" timeline={TIMELINE} />
-
-    <FilmTranscript cues={CUES} scenes={SCENES}>
-      <p class="film-method">How the film is made. The net of c is every point (a/c, b/c) with whole a and b; the film shows the nets of 1, 2, 3 and so on in turn. Over the whole picture the finer nets would be a grey smudge (11,881 knots at c = 21), so the camera closes in on a window as the nets get finer and keeps the knots at least 7 pixels apart. In that window the first net with a knot exactly on x³ + y³ = 6 is the net of 21sts, at (17/21, 37/21) and (37/21, 17/21); a³ + b³ = 6c³ is checked in whole numbers. No net up to 60ths has a knot on x² + y² = 3. The ringed knot on each net is the one nearest the circle, by |a² + b² − 3c²|; the miss shrinks (0.04 at c = 5, 0.0023 at c = 21, 0.00063 at c = 40) but never reaches 0, and the remainders of squares on division by 3 show it never can. The shadow reading of Mazur's observation follows the article: an equation that picks out the whole numbers would have solutions whose first coordinates are exactly the whole numbers, and finitely many pieces can only cast finitely many stretches. The curve on screen is a small example, y² = x³ − 25x with P = (−4, 6); its multiples are found by the chord rule in exact fraction arithmetic, and the dots that fill its two pieces use the same steps in floating point, within a millionth of the exact points. The paper's own curve is E: y² = x³ − d²x over Q(√2), with d = 75 − 53√2; under either real embedding d is positive, and scaling turns both curves into v² = u³ − u, so they have the same shape. The chart counts the digits of x(nP), about 0.83 n². The test boxes, the two cursors, the stretched line with its larger number system and the line C·B are schematic.</p>
-    </FilmTranscript>
-  </uruk-fraction-nets>
-</Plate>
+  <Fragment slot="labels">
+    {labels.map((label) => (
+      <span class:list={['film-label', `film-label--${label.anchor}`, label.tone && `film-label--${label.tone}`, label.size && `film-label--${label.size}`, { 'film-label--halo': label.halo }]} data-label={label.id}>
+        <span set:html={math(label.tex)} />
+      </span>
+    ))}
+  </Fragment>
+  <p class="film-method">How the film is made. The net of c is every point (a/c, b/c) with whole a and b; the film shows the nets of 1, 2, 3 and so on in turn. Over the whole picture the finer nets would be a grey smudge (11,881 knots at c = 21), so the camera closes in on a window as the nets get finer and keeps the knots at least 7 pixels apart. In that window the first net with a knot exactly on x³ + y³ = 6 is the net of 21sts, at (17/21, 37/21) and (37/21, 17/21); a³ + b³ = 6c³ is checked in whole numbers. No net up to 60ths has a knot on x² + y² = 3. The ringed knot on each net is the one nearest the circle, by |a² + b² − 3c²|; the miss shrinks (0.04 at c = 5, 0.0023 at c = 21, 0.00063 at c = 40) but never reaches 0, and the remainders of squares on division by 3 show it never can. The shadow reading of Mazur's observation follows the article: an equation that picks out the whole numbers would have solutions whose first coordinates are exactly the whole numbers, and finitely many pieces can only cast finitely many stretches. The curve on screen is a small example, y² = x³ − 25x with P = (−4, 6); its multiples are found by the chord rule in exact fraction arithmetic, and the dots that fill its two pieces use the same steps in floating point, within a millionth of the exact points. The paper's own curve is E: y² = x³ − d²x over Q(√2), with d = 75 − 53√2; under either real embedding d is positive, and scaling turns both curves into v² = u³ − u, so they have the same shape. The chart counts the digits of x(nP), about 0.83 n². The test boxes, the two cursors, the stretched line with its larger number system and the line C·B are schematic.</p>
+</Film>
 
 <script>
   import './element';

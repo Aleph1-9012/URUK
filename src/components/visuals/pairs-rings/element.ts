@@ -3,5 +3,5 @@ import { PairsRingsFilm } from './film';
 import { createPairsModel } from './math';
 import { TIMELINE } from './story';
 
-defineFilm('uruk-pairs-rings', TIMELINE, ({ root, canvas, context }) =>
-  new PairsRingsFilm(root, canvas, context, createPairsModel()));
+defineFilm('uruk-pairs-rings', TIMELINE, ({ root, context }) =>
+  new PairsRingsFilm(root, context, createPairsModel()));

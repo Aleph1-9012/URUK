@@ -1,0 +1,9 @@
+uruk-five-colours .film-label--blue { color: var(--blue); }
+uruk-five-colours .film-label--small { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-five-colours .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-five-colours .film-label { font-size: .9375rem; }
+  uruk-five-colours .film-label--small { font-size: .8125rem; }
+}

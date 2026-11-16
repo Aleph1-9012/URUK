@@ -1,5 +1,6 @@
 import { createTimeline } from '../../plate/timeline';
 import { smooth } from '../../../lib/animation';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import type { Box } from './drawing';
 import type { TableKey } from './math';
 
@@ -79,7 +80,7 @@ export function checkpointAt(time: number): number {
 }
 
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {
     return {

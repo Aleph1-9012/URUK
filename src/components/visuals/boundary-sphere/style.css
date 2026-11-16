@@ -1,0 +1,10 @@
+uruk-boundary-sphere .film-label--blue { color: var(--blue); }
+uruk-boundary-sphere .film-label--small { font-size: .9375rem; }
+.bfilm-energy > span { color: var(--blue); font: .75rem/1.4 var(--font-special-elite); }
+
+@container plate (max-width: 599px) {
+  uruk-boundary-sphere .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-boundary-sphere .film-label { font-size: .9375rem; }
+  uruk-boundary-sphere .film-label--small { font-size: .8125rem; }
+}

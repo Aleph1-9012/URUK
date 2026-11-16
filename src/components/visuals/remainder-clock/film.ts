@@ -1,7 +1,9 @@
 import { mix, progress, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
+import { PAGE_TONES, PHONE_STAGE_WIDTH, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { FAMILY_EXAMPLES } from './data';
-import { type Box, type Colors, type Place, line, text } from './drawing';
+import { type Box, type Colors, type Place, text } from './drawing';
 import { createArtinModel, gates, orbit, type ArtinModel, type Orbit } from './math';
 import { drawPanel } from './panels';
 
@@ -38,7 +40,7 @@ function clockAt(time: number): { current: Clock; previous: Clock; morph: number
 }
 
 function layout(width: number, height: number, time: number): { clock: Box; gates: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {
     return {
@@ -308,25 +310,17 @@ function drawGates(pen: CanvasRenderingContext2D, box: Box, time: number, colors
   }
 }
 
-export function createRemainderClock(root: HTMLElement, canvas: HTMLCanvasElement, pen: CanvasRenderingContext2D) {
+export function createRemainderClock(root: HTMLElement, pen: CanvasRenderingContext2D) {
   const labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
   const model = createArtinModel();
-  const colors: Colors = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  let colors: Colors = PAGE_TONES;
   let width = 1;
   let height = 1;
   let density = 1;
 
   return {
-    resize(nextWidth: number, nextHeight: number, nextDensity: number): void {
-      width = nextWidth;
-      height = nextHeight;
-      density = nextDensity;
-      canvas.width = Math.round(width * density);
-      canvas.height = Math.round(height * density);
-      const style = getComputedStyle(root);
-
-      for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) colors[tone] = style.getPropertyValue(`--${tone}`).trim() || colors[tone];
-
+    resize(frame: FilmFrame): void {
+      ({ width, height, density, tones: colors } = frame);
       labels.resize(width, height);
     },
     draw(time: number): void {

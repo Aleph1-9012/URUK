@@ -1,5 +1,6 @@
 import { mix } from '../../../lib/animation';
-import { type Box, type Colors, type Place, growthChartBox, growthPoint, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, growthChartBox, growthPoint, text } from './drawing';
 import { growthAt, type ColourModel } from './math';
 import { chartProgress, firstFitProgress, humanProgress, isolatePhase, revealProgress } from './story';
 

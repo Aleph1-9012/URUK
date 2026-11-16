@@ -1,6 +1,7 @@
 import { mix, progress, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
 import { FAMILY_EXAMPLES, FOOTNOTE_FIRST, FOOTNOTE_TOTAL, MEASURED_GATE_SHARES } from './data';
-import { type Box, type Colors, type Place, hatch, line, text } from './drawing';
+import { type Box, type Colors, type Place, hatch, text } from './drawing';
 import type { ArtinModel } from './math';
 
 const BASES = [2, 3, 5, 6, 7, 8, 10];

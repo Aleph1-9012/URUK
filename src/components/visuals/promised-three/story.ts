@@ -1,5 +1,6 @@
 import { createTimeline } from '../../plate/timeline';
 import { progress, smooth } from '../../../lib/animation';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import type { Box } from './drawing';
 
 export const CUES = [
@@ -45,7 +46,7 @@ export function isolatePhase(time: number): 'none' | 'arriving' | 'extended' | '
 }
 
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) return { stage: { x: width * .03, y: height * .012, w: width * .94, h: height * .54 }, panel: { x: width * .055, y: height * .56, w: width * .89, h: height * .42 }, tall };
 

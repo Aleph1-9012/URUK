@@ -1,5 +1,6 @@
 import { createTimeline } from '../../plate/timeline';
 import { progress, smooth } from '../../../lib/animation';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import type { Box } from './drawing';
 
 export const CUES = [
@@ -37,7 +38,7 @@ export function ratioProgress(time: number): number { return progress(time, 7400
 export function cameraAngle(time: number): number { return .41 + time / 1000 * .018; }
 
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) return { stage: { x: width * .03, y: height * .018, w: width * .94, h: height * .45 }, panel: { x: width * .04, y: height * .48, w: width * .92, h: height * .50 }, tall };
 

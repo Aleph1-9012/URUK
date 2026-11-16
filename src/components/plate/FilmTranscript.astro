@@ -3,10 +3,10 @@ import { renderFilmText, type FilmCue, type FilmScene } from './text';
 
 interface Props {
   cues: readonly FilmCue[];
-  scenes?: readonly FilmScene[];
+  scenes: readonly FilmScene[];
 }
 
-const { cues, scenes = cues.map((cue, first) => ({ title: cue.title ?? '', first })) } = Astro.props;
+const { cues, scenes } = Astro.props;
 ---
 
 <details class="film-transcript">

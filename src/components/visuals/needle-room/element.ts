@@ -3,5 +3,5 @@ import { NeedleRoomFilm } from './film';
 import { createKakeyaModel } from './math';
 import { TIMELINE } from './story';
 
-defineFilm('uruk-needle-room', TIMELINE, ({ root, canvas, context }) =>
-  new NeedleRoomFilm(root, canvas, context, createKakeyaModel()));
+defineFilm('uruk-needle-room', TIMELINE, ({ root, context }) =>
+  new NeedleRoomFilm(root, context, createKakeyaModel()));

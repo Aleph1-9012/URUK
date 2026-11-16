@@ -1,6 +1,8 @@
 import { mix, progress, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
+import { PAGE_TONES, PHONE_STAGE_WIDTH, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { type Box, type Colors, line, text } from './drawing';
+import { type Box, type Colors, text } from './drawing';
 import { countInBall, enumerateWalks, neighbours, position, snap, type Point, type PolymerModel } from './math';
 import { drawCharts } from './panels';
 
@@ -64,7 +66,7 @@ function circle(pen: CanvasRenderingContext2D, point: Point, radius: number, fil
 }
 
 function layout(width: number, height: number, time: number): { walk: Box; chart: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {
     return { walk: { x: width * .025, y: height * .035, w: width * .47, h: height * .92 }, chart: { x: width * .535, y: height * .035, w: width * .435, h: height * .92 }, tall };
@@ -81,23 +83,19 @@ export class PolymerWalkFilm {
   private height = 1;
   private density = 1;
   private readonly labels: FilmLabels;
-  private readonly colors: Colors = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private readonly fan3 = enumerateWalks(3);
   private readonly fan4 = enumerateWalks(4);
 
-  constructor(private readonly root: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D, private readonly model: PolymerModel) {
+  constructor(private readonly root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: PolymerModel) {
     this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
-    const style = getComputedStyle(this.root);
-
-    for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || this.colors[tone];
+    this.colors = tones;
 
     this.labels.resize(width, height);
   }

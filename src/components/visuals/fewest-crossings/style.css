@@ -1,0 +1,8 @@
+uruk-fewest-crossings .film-label--formula { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-fewest-crossings .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-fewest-crossings .film-label { font-size: .9375rem; }
+  uruk-fewest-crossings .film-label--formula { font-size: .75rem; }
+}

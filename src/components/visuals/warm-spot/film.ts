@@ -1,6 +1,8 @@
 import { mix, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { type Box, type Colors, line, stippleSample, text } from './drawing';
+import { type Box, type Colors, stippleSample, text } from './drawing';
 import { contours, extrema, fieldSample, gradients, normalizeField, type Point, type WarmModel } from './math';
 import { drawPanels } from './panels';
 import { heatTime, insetProgress, layout, modeProgress } from './story';
@@ -28,27 +30,23 @@ export class WarmSpotFilm {
   private height = 1;
   private density = 1;
   private readonly labels: FilmLabels;
-  private readonly colors: Colors = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private readonly modeValues: Float64Array;
   private readonly initialSpread: number;
   private readonly modeGradients: ReturnType<typeof gradients>;
 
-  constructor(private readonly root: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D, private readonly model: WarmModel) {
+  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: WarmModel) {
     this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
     this.modeValues = normalizeField(model.phi1);
     this.initialSpread = extrema(model.u0).spread;
     this.modeGradients = gradients(model, model.phi1, true);
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
-    const style = getComputedStyle(this.root);
-
-    for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || this.colors[tone];
+    this.colors = tones;
 
     this.labels.resize(width, height);
   }

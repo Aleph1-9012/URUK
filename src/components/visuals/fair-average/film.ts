@@ -1,3 +1,4 @@
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { smooth, fade } from '../../../lib/animation';
 import { freeBall, leftMultiply, diskMap, FIXED_POINT, integerShare, freeShare } from './math';
@@ -41,23 +42,19 @@ export class FairAverageFilm {
   private density = 1;
   private tall = false;
   private time = 0;
-  private colors: Record<Tone, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
+  private colors: Record<Tone, string> = PAGE_TONES;
   private readonly labels: FilmLabels;
 
-  constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
+  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D) {
+    this.labels = new FilmLabels(root, { horizontal: 7, vertical: 6 });
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
     this.tall = height > width;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
-    const style = getComputedStyle(this.canvas);
-
-    for (const key of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
+    this.colors = tones;
 
     this.labels.resize(width, height);
   }

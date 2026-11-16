@@ -1,5 +1,6 @@
 import { createTimeline } from '../../plate/timeline';
 import { smooth } from '../../../lib/animation';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import type { Box } from './drawing';
 import type { SolidKey } from './math';
 
@@ -46,7 +47,7 @@ export function solidAt(time: number): { key: SolidKey; from: SolidKey; to: Soli
 }
 
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {
     return {

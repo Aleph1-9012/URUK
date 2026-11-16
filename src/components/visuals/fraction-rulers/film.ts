@@ -1,3 +1,4 @@
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { fade, mix, smooth as span } from '../../../lib/animation';
 import { CEILINGS, CONVERGENTS, PI_SCALED, PI_SCALE, type Convergent } from './approximations';
 import type { SeriesData } from './series';
@@ -13,7 +14,7 @@ function miss(fraction: Convergent): number {
 
 export class FractionRulersFilm {
   private readonly pen: CanvasRenderingContext2D;
-  private colors: Record<Ink, string> = { ink: '#1c1a17', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Record<Ink, string> = PAGE_TONES;
   private width = 1;
   private height = 1;
   private dpr = 1;
@@ -23,7 +24,7 @@ export class FractionRulersFilm {
   private readonly shown = new Set<string>();
   private readonly labelSizes = new Map<string, { width: number; height: number }>();
 
-  constructor(private readonly canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
+  constructor(canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
     const context = canvas.getContext('2d');
 
     if (!context) throw new Error('The fraction rulers film needs a canvas context.');
@@ -35,20 +36,12 @@ export class FractionRulersFilm {
     this.series = data;
   }
 
-  resize(): void {
-    const bounds = this.canvas.getBoundingClientRect();
-    this.width = Math.max(1, bounds.width);
-    this.height = Math.max(1, bounds.height);
-    this.layout = this.width >= this.height ? 'wide' : 'tall';
-    this.dpr = window.devicePixelRatio || 1;
-    this.canvas.width = Math.round(this.width * this.dpr);
-    this.canvas.height = Math.round(this.height * this.dpr);
-    const style = getComputedStyle(this.canvas);
-
-    for (const key of ['ink', 'blue', 'muted', 'paper'] as const) {
-      this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
-    }
-
+  resize({ width, height, density, tones }: FilmFrame): void {
+    this.width = width;
+    this.height = height;
+    this.layout = width >= height ? 'wide' : 'tall';
+    this.dpr = density;
+    this.colors = tones;
     this.labelSizes.clear();
   }
 

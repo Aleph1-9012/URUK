@@ -1,6 +1,7 @@
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { mix as between, smooth as ease, fade as presence } from '../../../lib/animation';
 import { BENT_COEFFICIENTS, BETTER_METHODS, CROSSING_RULES, GROUP_COUNTS, GROUP_RULES, GROUP_SIZE, LEDGER, OPENING_COUNT, STOP_DATA, SWITCHES, TRUE_COUNT, evaluate, nodeOf, settingOf } from './sat';
-import { ADDED, BREAK_U, GROUP_STEP, REGROUP, THRESHOLD_U, TREE_ROWS, WALKS, arrivalOf, bendAt, boxesFor, depthOf, dialAt, pinPlace, walkAt, walkedOn, type Box, type Layout } from './timeline';
+import { ADDED, BREAK_U, GROUP_STEP, REGROUP, THRESHOLD_U, TREE_ROWS, WALKS, arrivalOf, bendAt, boxesFor, depthOf, dialAt, pinPlace, walkAt, walkedOn, type Box, type Layout } from './story';
 
 type Tone = 'ink' | 'blue' | 'muted' | 'paper';
 
@@ -11,7 +12,6 @@ type Kind = 'tag' | 'note' | 'number' | 'count';
 
 type Writing = { kind?: Kind; tone?: Tone; alpha?: number; align?: 'left' | 'center' | 'right'; patch?: boolean; size?: number };
 
-const FALLBACK: Record<Tone, string> = { ink: '#1c1a17', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
 
 // Font sizes in CSS pixels, wide and tall.
 const SIZES: Record<Kind, readonly [number, number]> = { tag: [11, 10], note: [16, 13], number: [13, 11], count: [24, 18] };
@@ -73,7 +73,7 @@ class Pen {
   height = 1;
   ratio = 1;
   tall = false;
-  colors: Record<Tone, string> = { ...FALLBACK };
+  colors: Record<Tone, string> = PAGE_TONES;
 
   constructor(private readonly context: CanvasRenderingContext2D) {}
 
@@ -289,7 +289,7 @@ export class SwitchFilm {
   private radius = 8;
   private time = 0;
 
-  constructor(private readonly canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
+  constructor(canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
     const context = canvas.getContext('2d');
 
     if (!context) throw new Error('The 378 film needs a 2D canvas.');
@@ -298,23 +298,15 @@ export class SwitchFilm {
     this.pen = new Pen(context);
   }
 
-  resize(): void {
-    const rect = this.canvas.getBoundingClientRect();
-    const style = getComputedStyle(this.canvas);
+  resize({ width, height, density, tones }: FilmFrame): void {
     const pen = this.pen;
-    pen.width = Math.max(1, rect.width);
-    pen.height = Math.max(1, rect.height);
-    pen.ratio = window.devicePixelRatio || 1;
-    this.layout = pen.width >= pen.height ? 'wide' : 'tall';
+    pen.width = width;
+    pen.height = height;
+    pen.ratio = density;
+    this.layout = width >= height ? 'wide' : 'tall';
     pen.tall = this.layout === 'tall';
     ({ board: this.board, panel: this.panel } = boxesFor(this.layout));
-    this.canvas.width = Math.round(pen.width * pen.ratio);
-    this.canvas.height = Math.round(pen.height * pen.ratio);
-
-    for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) {
-      pen.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || FALLBACK[tone];
-    }
-
+    pen.colors = tones;
     this.sizes.clear();
   }
 

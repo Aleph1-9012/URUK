@@ -1,5 +1,6 @@
 import { mix, smooth } from '../../../lib/animation';
 import { createTimeline } from '../../plate/timeline';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 
 export const CUES = [
   {
@@ -113,7 +114,7 @@ export interface Layout {
 }
 
 export function layout(width: number, height: number, time = 0): Layout {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {
     const expansion = smooth(time, 35750, 36750) * (1 - smooth(time, 41500, 43000));

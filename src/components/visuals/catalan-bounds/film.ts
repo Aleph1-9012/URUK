@@ -1,3 +1,4 @@
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { fade, mix, progress as share, smooth as span } from '../../../lib/animation';
 import { CATALAN, EXAMPLES, SUMS, LOWER_BOUND, UPPER_BOUND } from './catalan';
 import { geometryAt, termsAt, type Layout } from './story';
@@ -18,14 +19,14 @@ export class CatalanFilm {
   private readonly context: CanvasRenderingContext2D;
   private readonly visible = new Set<string>();
   private readonly measured = new Map<string, { width: number; height: number }>();
-  private colors: Colors = { ink: '#1c1a17', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private width = 1;
   private height = 1;
   private ratio = 1;
   private layout: Layout = 'wide';
   private time = 0;
 
-  constructor(private readonly canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
+  constructor(canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
     const context = canvas.getContext('2d');
 
     if (!context) throw new Error('The Catalan film needs a 2D canvas.');
@@ -33,21 +34,12 @@ export class CatalanFilm {
     this.context = context;
   }
 
-  resize(): void {
-    const rect = this.canvas.getBoundingClientRect();
-    const style = getComputedStyle(this.canvas);
-    this.width = Math.max(1, rect.width);
-    this.height = Math.max(1, rect.height);
-    this.ratio = window.devicePixelRatio || 1;
-    this.layout = this.width >= this.height ? 'wide' : 'tall';
-    this.canvas.width = Math.round(this.width * this.ratio);
-    this.canvas.height = Math.round(this.height * this.ratio);
-    this.colors = {
-      ink: style.getPropertyValue('--ink').trim() || this.colors.ink,
-      blue: style.getPropertyValue('--blue').trim() || this.colors.blue,
-      muted: style.getPropertyValue('--muted').trim() || this.colors.muted,
-      paper: style.getPropertyValue('--paper').trim() || this.colors.paper,
-    };
+  resize({ width, height, density, tones }: FilmFrame): void {
+    this.width = width;
+    this.height = height;
+    this.ratio = density;
+    this.layout = width >= height ? 'wide' : 'tall';
+    this.colors = tones;
     this.measured.clear();
   }
 

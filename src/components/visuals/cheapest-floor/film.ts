@@ -1,6 +1,8 @@
 import { mix, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { type Box, type Colors, line, text } from './drawing';
+import { type Box, type Colors, text } from './drawing';
 import { latticeEnergy, latticePoints, nearPairs, relaxAtStep, torusDelta, type FloorModel, type LatticeKind, type Point } from './math';
 import { contactTargets, drawCharts } from './panels';
 import { CONTACT_ARRIVALS, layout, relaxationStepAt } from './story';
@@ -67,13 +69,13 @@ export class CheapestFloorFilm {
   private height = 1;
   private density = 1;
   private readonly labels: FilmLabels;
-  private readonly colors: Colors = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private readonly reference: Point[];
   private readonly centre: number;
   private readonly shellPoints: ShellPoint[] = [];
   private readonly comparisons = (['triangular', 'square', 'honeycomb'] as const).map(kind => ({ kind, points: latticePoints(kind, 3), energy: latticeEnergy(kind) }));
 
-  constructor(private readonly root: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D, private readonly model: FloorModel) {
+  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: FloorModel) {
     this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
     this.reference = assignReference(model);
     let nearest = Infinity;
@@ -105,15 +107,11 @@ export class CheapestFloorFilm {
     if (this.shellPoints.length !== 18) throw new Error('The three ideal contact shells each contain six points.');
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
-    const style = getComputedStyle(this.root);
-
-    for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || this.colors[tone];
+    this.colors = tones;
 
     this.labels.resize(width, height);
   }

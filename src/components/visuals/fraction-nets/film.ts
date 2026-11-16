@@ -1,3 +1,4 @@
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { crossfade as fade, progress as share, smoothStep as span } from '../../../lib/animation';
 import {
   CUBIC_KNOTS, CUBIC_NET, SQUARE_REMAINDERS, TORSION, cubicY, curvePieces, exactMultiples, floatMultiples, fractionText, nearestMiss,
@@ -91,14 +92,14 @@ export class FractionNetsFilm {
   private readonly boxes = new Map<string, LabelBox>();
   private readonly tile = document.createElement('canvas');
   private readonly patterns = new Map<string, CanvasPattern>();
-  private colors: Colors = { ink: '#1c1a17', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private width = 1;
   private height = 1;
   private ratio = 1;
   private layout: Layout = 'wide';
   private time = 0;
 
-  constructor(private readonly canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
+  constructor(canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
     const context = canvas.getContext('2d');
 
     if (!context) throw new Error('The film needs a 2D canvas.');
@@ -106,22 +107,12 @@ export class FractionNetsFilm {
     this.context = context;
   }
 
-  resize(): void {
-    const box = this.canvas.getBoundingClientRect();
-    const style = getComputedStyle(this.canvas);
-    this.colors = {
-      ink: style.getPropertyValue('--ink').trim() || this.colors.ink,
-      blue: style.getPropertyValue('--blue').trim() || this.colors.blue,
-      muted: style.getPropertyValue('--muted').trim() || this.colors.muted,
-      paper: style.getPropertyValue('--paper').trim() || this.colors.paper,
-    };
-
-    this.width = Math.max(1, box.width);
-    this.height = Math.max(1, box.height);
-    this.ratio = window.devicePixelRatio || 1;
-    this.layout = this.width >= this.height ? 'wide' : 'tall';
-    this.canvas.width = Math.round(this.width * this.ratio);
-    this.canvas.height = Math.round(this.height * this.ratio);
+  resize({ width, height, density, tones }: FilmFrame): void {
+    this.width = width;
+    this.height = height;
+    this.ratio = density;
+    this.layout = width >= height ? 'wide' : 'tall';
+    this.colors = tones;
     this.boxes.clear();
   }
 

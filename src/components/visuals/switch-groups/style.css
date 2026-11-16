@@ -1,0 +1,15 @@
+/* 378's Plate I film: switches, the cost of one more, and the claimed proof. The plate takes the wide column; below 75rem it spans the page above the introduction. */
+
+uruk-switch-groups .film-label { font-size: 1.0625rem; line-height: 1.2; }
+uruk-switch-groups .film-label > span { padding: 1px 4px; }
+uruk-switch-groups .film-label--blue { color: var(--blue); }
+uruk-switch-groups .film-label--small { font-size: .875rem; }
+uruk-switch-groups .film-label--large { font-size: 1.375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-switch-groups .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-switch-groups .film-label { font-size: .9375rem; }
+  uruk-switch-groups .film-label--small { font-size: .8125rem; }
+  uruk-switch-groups .film-label--large { font-size: 1.125rem; }
+}

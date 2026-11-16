@@ -1,0 +1,16 @@
+/* Garamond Math's radical end advance otherwise separates caption punctuation. */
+uruk-silent-lines .film-frame .film-cue .formula-inline:has(msqrt) { margin-inline-end: -.43em; }
+uruk-silent-lines[data-numerics-error] .film-canvas { visibility: hidden; }
+uruk-silent-lines .film-label { font-size: .875rem; }
+.slfilm-error-note { display: none; }
+.plate .slfilm-error-note { margin: 14px 16px; font: italic 1rem/1.4 var(--font-alegreya); text-align: center; }
+uruk-silent-lines[data-numerics-error] .film-formulas,
+uruk-silent-lines[data-numerics-error] .film-subtitles,
+uruk-silent-lines[data-numerics-error] .film-controls { display: none; }
+uruk-silent-lines[data-numerics-error] .slfilm-error-note { display: block; }
+
+@container plate (max-width: 599px) {
+  uruk-silent-lines .film-stage { aspect-ratio: 4 / 6; }
+  uruk-silent-lines .film-label { font-size: .75rem; }
+  uruk-silent-lines .film-label[data-label^="neighbourhoods"] { font-size: .6875rem; }
+}

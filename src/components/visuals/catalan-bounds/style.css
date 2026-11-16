@@ -1,0 +1,19 @@
+/* 005's Plate I film, from an alternating sum to the claimed bounds. The plate takes the wider column; below 75rem it takes the full width above the introduction. */
+
+/* Formulas pinned to the drawing; the script places each one every frame and keeps it inside the frame while its point is. */
+uruk-catalan-bounds .film-label { font-size: 1.125rem; line-height: 1.2; }
+uruk-catalan-bounds .film-label > span { background: none; padding: 0; }
+uruk-catalan-bounds .film-label[data-label="unwanted"] > span { position: relative; }
+uruk-catalan-bounds .film-label[data-label="unwanted"] > span::after { content: ""; position: absolute; top: 50%; left: -4px; right: -4px; height: 1.5px; background: var(--blue); }
+uruk-catalan-bounds .film-label--large { font-size: 1.375rem; }
+uruk-catalan-bounds .film-label--blue { color: var(--blue); }
+uruk-catalan-bounds .film-label--small { font-size: .9375rem; }
+uruk-catalan-bounds .film-label--paper > span { background: var(--paper); padding: 3px 5px; }
+
+@container plate (max-width: 599px) {
+  uruk-catalan-bounds .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-catalan-bounds .film-label { font-size: 1rem; }
+  uruk-catalan-bounds .film-label--small { font-size: .8125rem; }
+  uruk-catalan-bounds .film-label--large { font-size: 1.125rem; }
+}

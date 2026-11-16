@@ -1,5 +1,6 @@
 import { smooth } from '../../../lib/animation';
-import { type Box, type Colors, type Place, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, text } from './drawing';
 import { type BounceModel, type TableKey, directionStats, samplePackedRunByDistance, sampleRunByDistance, timeShareLeft } from './math';
 import { checkpointAt, playbackDistance, tableAt } from './story';
 

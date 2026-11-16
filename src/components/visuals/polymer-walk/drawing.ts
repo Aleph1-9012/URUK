@@ -1,15 +1,10 @@
+import { line } from '../../plate/canvas/strokes';
+
 export type Box = { x: number; y: number; w: number; h: number };
 
 export type Colors = Record<'ink' | 'blue' | 'muted' | 'paper', string>;
 
 export type Place = (id: string, x: number, y: number, opacity?: number) => void;
-
-export function line(pen: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, amount = 1): void {
-  pen.beginPath();
-  pen.moveTo(x1, y1);
-  pen.lineTo(x1 + (x2 - x1) * amount, y1 + (y2 - y1) * amount);
-  pen.stroke();
-}
 
 export function text(pen: CanvasRenderingContext2D, words: string, x: number, y: number, size: number, maxWidth: number, colors: Colors, align: CanvasTextAlign = 'center', tone = colors.ink): void {
   const family = /[α-ωΑ-Ω⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉∞∈⊇ℓ]/u.test(words) ? '"Garamond Math", serif' : '"Special Elite", monospace';

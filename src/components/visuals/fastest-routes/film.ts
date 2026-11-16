@@ -1,6 +1,8 @@
 import { mix, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { type Box, type Colors, line, text } from './drawing';
+import { type Box, type Colors, text } from './drawing';
 import { outerBallSegments, clipRoute, gridPoint, schematicGuide, treeRoute, type Point, type RouteModel, type RouteResult, type Segment } from './math';
 import { drawPanels } from './panels';
 import { ballTime, branchRadius, cameraProgress, claimProgress, huntIndex, huntProgress, layout, outlineProgress, strikeProgress, treeProgress } from './story';
@@ -26,7 +28,7 @@ export class FastestRoutesFilm {
   private height = 1;
   private density = 1;
   private readonly labels: FilmLabels;
-  private readonly colors: Colors = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private readonly raster: HTMLCanvasElement;
   private readonly rasterPen: CanvasRenderingContext2D;
   private readonly pixels: ImageData;
@@ -36,7 +38,7 @@ export class FastestRoutesFilm {
   private outlines: Outline[] = [];
   private guide: Point[] = [];
 
-  constructor(private readonly root: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D, private readonly model: RouteModel) {
+  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: RouteModel) {
     this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
     this.raster = document.createElement('canvas');
     this.raster.width = model.N;
@@ -49,15 +51,11 @@ export class FastestRoutesFilm {
     this.pixels = context.createImageData(model.N, model.N);
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
-    const style = getComputedStyle(this.root);
-
-    for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || this.colors[tone];
+    this.colors = tones;
 
     this.rasterTime = -1;
     this.previewRaster = false;

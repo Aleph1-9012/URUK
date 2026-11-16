@@ -1,13 +1,8 @@
 ---
-import Plate from '../../plate/Plate.astro';
-import FilmControls from '../../plate/FilmControls.astro';
-import FilmSubtitles from '../../plate/FilmSubtitles.astro';
-import FilmTranscript from '../../plate/FilmTranscript.astro';
-import '../../plate/film.css';
+import Film from '../../plate/Film.astro';
 import { renderFormula } from '../../../lib/formulas/render';
-import { CHART_END, PRIMES, offsetLi } from './primes';
 import { CUES, TIMELINE, SCENES } from './story';
-import './prime-film.css';
+import './style.css';
 
 const math = (tex: string) => renderFormula(tex, false);
 type Anchor = 'above' | 'right';
@@ -24,72 +19,27 @@ const labels: { id: string; tex: string; anchor: Anchor; tone?: 'blue'; size?: '
   { id: 'eisenstein', tex: String.raw`a+b\omega,\ \ \omega=e^{2\pi i/3}`, anchor: 'above', size: 'small' },
   { id: 'reciprocal', tex: String.raw`1/\zeta\ \text{large}`, anchor: 'right', halo: true },
 ];
-
-const x = (value: number) => 90 + 640 * value / CHART_END;
-const y = (count: number) => 440 - 360 * count / 30;
-let level = 0;
-let stairs = `M${x(0)} ${y(0)}`;
-
-for (const prime of PRIMES) {
-  stairs += `H${x(prime).toFixed(1)}V${y(level + 1).toFixed(1)}`;
-  level += 1;
-}
-
-stairs += `H${x(CHART_END)}`;
-const curve = Array.from({ length: 80 }, (_, index) => {
-  const value = 2 + (CHART_END - 2) * index / 79;
-
-  return `${index === 0 ? 'M' : 'L'}${x(value).toFixed(1)} ${y(offsetLi(value)).toFixed(1)}`;
-}).join('');
 ---
 
-<Plate
+<Film
+  tag="uruk-prime-waves"
+  cues={CUES}
+  timeline={TIMELINE}
+  scenes={SCENES}
+  layout="classic"
+  description="An animated film, drawn from computed values. It counts the primes up to 100, rebuilds the count from waves given by the zeros of the zeta function, shows how a zero's place sets the size of its wave, and ends with the claimed boundary at seven eighths and the shape of the argument. Its subtitles are also in the transcript below."
   caption="A film from the primes to the paper's claim: their count, the waves from the zeros of ζ that rebuild it, the claimed fence at 7/8 and the shape of the proof."
   leftOut="the waves use only the first hundred zeros, and the maps stop at height 64; the proof's estimates; the separate Siegel-zero proof. The supposed zero, the squeeze and the two rows of arrows are schematic."
 >
-  <uruk-prime-film class="film-host film-host--classic">
-    <div class="pfilm">
-      <div class="pfilm-screen" data-film-viewport>
-        <canvas
-          class="pfilm-canvas"
-          role="img"
-          aria-label="An animated film, drawn from computed values. It counts the primes up to 100, rebuilds the count from waves given by the zeros of the zeta function, shows how a zero's place sets the size of its wave, and ends with the claimed boundary at seven eighths and the shape of the argument. Its subtitles are also in the transcript below."
-          data-film-canvas
-        ></canvas>
-
-        <div class="pfilm-still" aria-hidden="true">
-          <svg viewBox="0 0 800 500">
-            <path d={`M${x(0)} ${y(0)}H${x(CHART_END)}`} fill="none" stroke="currentColor" stroke-width="1.5" />
-            <path d={stairs} fill="none" stroke="currentColor" stroke-width="2" />
-            <path d={curve} fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="7 5" />
-            {PRIMES.map((prime, index) => <circle cx={x(prime).toFixed(1)} cy={y(index + 1).toFixed(1)} r="3.5" fill="var(--blue)" />)}
-            <text x={x(0)} y={y(0) + 30} text-anchor="middle" class="pfilm-still__number">0</text>
-            <text x={x(50)} y={y(0) + 30} text-anchor="middle" class="pfilm-still__number">50</text>
-            <text x={x(CHART_END)} y={y(0) + 30} text-anchor="middle" class="pfilm-still__number">100</text>
-            <text x={x(CHART_END) + 10} y={y(25) + 8} class="pfilm-still__name">π(x)</text>
-            <text x={x(CHART_END) + 10} y={y(offsetLi(CHART_END)) + 2} class="pfilm-still__name">Li(x)</text>
-          </svg>
-        </div>
-
-        <div class="pfilm-labels" aria-hidden="true" data-bleed>
-          {labels.map((label) => (
-            <span class:list={['pfilm-label', `pfilm-label--${label.anchor}`, label.tone && `pfilm-label--${label.tone}`, label.size && `pfilm-label--${label.size}`, { 'pfilm-label--halo': label.halo }]} data-label={label.id}>
-              <span set:html={math(label.tex)} />
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <FilmSubtitles cues={CUES} />
-    </div>
-
-    <FilmControls id="pfilm-timeline" timeline={TIMELINE} />
-
-    <FilmTranscript cues={CUES} scenes={SCENES}>
-      <p class="film-method">How the film is made. The staircase counts the primes up to 100, and the dashed curve is Li(x), the integral of 1/log t from 2. The blue curve is Riemann's explicit formula: a smooth part (li(x) with its corrections from x^(1/2), x^(1/3), …, and two small constants) plus one wave for each pair of zeros among the first hundred of Odlyzko's table [5]. The waves add to that smooth part, not to Li(x) itself, which is why the rebuilt curve lands on the staircase. The single wave is the first zero's, moved across the strip to show what its real part does; no zero is known off the line ½. The maps are computed by Euler–Maclaurin sums for ζ and for L(s, χ₋₄), drawn as lines where the value points in one of eight directions, so eight lines meet at every zero. The rings around ζ's zeros are where |ζ| is small, so 1/ζ is large. The grid is the Eisenstein integers a + bω, with the norms 1, 3, 4 and 7 circled. The supposed zero, the squeeze and the rows of arrows are schematic.</p>
-    </FilmTranscript>
-  </uruk-prime-film>
-</Plate>
+  <Fragment slot="labels">
+    {labels.map((label) => (
+      <span class:list={['film-label', `film-label--${label.anchor}`, label.tone && `film-label--${label.tone}`, label.size && `film-label--${label.size}`, { 'film-label--halo': label.halo }]} data-label={label.id}>
+        <span set:html={math(label.tex)} />
+      </span>
+    ))}
+  </Fragment>
+  <p class="film-method">How the film is made. The staircase counts the primes up to 100, and the dashed curve is Li(x), the integral of 1/log t from 2. The blue curve is Riemann's explicit formula: a smooth part (li(x) with its corrections from x^(1/2), x^(1/3), …, and two small constants) plus one wave for each pair of zeros among the first hundred of Odlyzko's table [5]. The waves add to that smooth part, not to Li(x) itself, which is why the rebuilt curve lands on the staircase. The single wave is the first zero's, moved across the strip to show what its real part does; no zero is known off the line ½. The maps are computed by Euler–Maclaurin sums for ζ and for L(s, χ₋₄), drawn as lines where the value points in one of eight directions, so eight lines meet at every zero. The rings around ζ's zeros are where |ζ| is small, so 1/ζ is large. The grid is the Eisenstein integers a + bω, with the norms 1, 3, 4 and 7 circled. The supposed zero, the squeeze and the rows of arrows are schematic.</p>
+</Film>
 
 <script>
   import './element';

@@ -1,13 +1,9 @@
 ---
-import Plate from '../../plate/Plate.astro';
-import FilmControls from '../../plate/FilmControls.astro';
-import FilmSubtitles from '../../plate/FilmSubtitles.astro';
-import FilmTranscript from '../../plate/FilmTranscript.astro';
-import '../../plate/film.css';
+import Film from '../../plate/Film.astro';
 import { renderFormula } from '../../../lib/formulas/render';
-import { CATALAN, SUMS } from './catalan';
+import { SUMS } from './catalan';
 import { CUES, TIMELINE, SCENES } from './story';
-import './catalan-film.css';
+import './style.css';
 
 const math = (tex: string) => renderFormula(tex, false);
 
@@ -41,71 +37,30 @@ for (const [index, sum] of SUMS.slice(0, 6).entries()) {
 
   labels.push({ id: `sum-${index}`, tex: `S_{${index + 1}}=${fraction}` });
 }
-
-const opening = SUMS.slice(0, 4);
-
-const x = (value: number) => 40 + 280 * (value - 0.88) / 0.13;
-
-const y = (index: number) => 30 + 44 * index;
-
-const path = opening.map((sum, index) => `${index === 0 ? 'M' : 'L'}${x(sum.value).toFixed(2)} ${y(index)}`).join('');
 ---
 
-<Plate
+<Film
+  tag="uruk-catalan-bounds"
+  cues={CUES}
+  timeline={TIMELINE}
+  scenes={SCENES}
+  layout="classic"
+  description="A film about Catalan's constant. The alternating partial sums approach G, but clearing their denominators loses the small error. A schematic proof map then shows cancellation in a determinant, a nonzero guarantee, and two incompatible bounds. The film's explanation is available in the transcript below."
   caption="An alternating sum, the cost of clearing its denominators, and the two incompatible bounds in the claimed proof."
   leftOut="the actual determinant entries and their certificates; the proof's detailed estimates; the separate Sun preprint. The proof drawings are schematic."
 >
-  <uruk-catalan-film class="film-host film-host--classic">
-    <div class="cfilm">
-      <div class="cfilm-screen" data-film-viewport>
-        <canvas
-          class="cfilm-canvas"
-          role="img"
-          aria-label="A film about Catalan's constant. The alternating partial sums approach G, but clearing their denominators loses the small error. A schematic proof map then shows cancellation in a determinant, a nonzero guarantee, and two incompatible bounds. The film's explanation is available in the transcript below."
-          data-film-canvas
-        ></canvas>
-
-        <div class="cfilm-still" aria-hidden="true">
-          <div class="cfilm-still__formula" set:html={math(String.raw`1-\frac19+\frac1{25}-\frac1{49}+\cdots`)} />
-          <svg viewBox="0 0 360 250">
-            <path d={`M${x(CATALAN)} 12V194`} fill="none" stroke="var(--blue)" stroke-width="1.3" stroke-dasharray="4 4" />
-            <path d={path} fill="none" stroke="currentColor" stroke-width="1.4" />
-            {opening.map((sum, index) => (
-              <>
-                <path d={`M${x(CATALAN)} ${y(index)}H${x(sum.value)}`} fill="none" stroke="var(--muted)" stroke-width=".8" />
-                <circle cx={x(sum.value)} cy={y(index)} r="3.5" fill="var(--blue)" />
-                <text x="12" y={y(index) + 5} class="cfilm-still__number">{index + 1}</text>
-              </>
-            ))}
-            <path d="M40 194H320" fill="none" stroke="currentColor" stroke-width="1" />
-            <text x="40" y="217" class="cfilm-still__number" text-anchor="middle">0.88</text>
-            <text x={x(1)} y="217" class="cfilm-still__number" text-anchor="middle">1</text>
-            <text x={x(CATALAN)} y="241" class="cfilm-still__name" text-anchor="middle">G ≈ 0.9159655…</text>
-          </svg>
-        </div>
-
-        <div class="cfilm-labels" aria-hidden="true" data-bleed>
-          {labels.map((label) => (
-            <span
-              class:list={['cfilm-label', label.tone && `cfilm-label--${label.tone}`, label.size && `cfilm-label--${label.size}`, { 'cfilm-label--paper': label.paper }]}
-              data-label={label.id}
-            >
-              <span set:html={math(label.tex)} />
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <FilmSubtitles cues={CUES} />
-    </div>
-
-    <FilmControls id="cfilm-timeline" timeline={TIMELINE} />
-
-    <FilmTranscript cues={CUES} scenes={SCENES}>
-      <p class="film-method">How the film is made. The partial sums use exact integer arithmetic to add and reduce fractions. G is computed separately with an accelerated alternating series. The comparison uses the first six partial sums. Their errors shrink, while their errors multiplied by the reduced denominators grow. This is a finite example of the denominator cost; those multiplied errors do not increase at every later step. These sums are not continued-fraction convergents. The charts label their logarithmic scales. The determinant grids, cancellation and two branches are schematic, and do not calculate or check the paper's matrices or certificates. The final bounds are the paper's exact asymptotic bounds for the normalized logarithm along a sequence of nonzero determinants indexed by primes. Their printed thresholds differ by 0.000099875; no finite-index determinant values are shown. The status is the article's assessment as of 18 October 2026.</p>
-    </FilmTranscript>
-  </uruk-catalan-film>
-</Plate>
+  <Fragment slot="labels">
+    {labels.map((label) => (
+      <span
+        class:list={['film-label', label.tone && `film-label--${label.tone}`, label.size && `film-label--${label.size}`, { 'film-label--paper': label.paper }]}
+        data-label={label.id}
+      >
+        <span set:html={math(label.tex)} />
+      </span>
+    ))}
+  </Fragment>
+  <p class="film-method">How the film is made. The partial sums use exact integer arithmetic to add and reduce fractions. G is computed separately with an accelerated alternating series. The comparison uses the first six partial sums. Their errors shrink, while their errors multiplied by the reduced denominators grow. This is a finite example of the denominator cost; those multiplied errors do not increase at every later step. These sums are not continued-fraction convergents. The charts label their logarithmic scales. The determinant grids, cancellation and two branches are schematic, and do not calculate or check the paper's matrices or certificates. The final bounds are the paper's exact asymptotic bounds for the normalized logarithm along a sequence of nonzero determinants indexed by primes. Their printed thresholds differ by 0.000099875; no finite-index determinant values are shown. The status is the article's assessment as of 18 October 2026.</p>
+</Film>
 
 <script>
   import './element';

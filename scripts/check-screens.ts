@@ -1,8 +1,8 @@
 import { spawn } from 'node:child_process';
-import { preview } from 'astro';
 import { mkdir, readdir } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
-import { chromium, type Browser, type Page } from 'playwright-core';
+import type { Page } from 'playwright-core';
+import { withSiteBrowser } from './site-browser';
 
 const REPO_ROOT = process.cwd();
 const VIEWPORTS = [
@@ -19,8 +19,6 @@ const VIEWPORTS = [
   { name: '640x400-dsf2', width: 640, height: 400, deviceScaleFactor: 2 },
 ] as const;
 const EXTRA_URLS = ['/results/?q=colour', '/results/?status=under-review', '/results/?q=collatz', '/results/158/?sources=open'];
-const PREVIEW_HOST = '127.0.0.1';
-const CHROMIUM_PATH = '/usr/bin/chromium';
 
 type LayoutFailure = {
   check: 'A' | 'B' | 'C' | 'D' | 'E';
@@ -428,16 +426,7 @@ async function runScreenChecks(): Promise<void> {
   discoveredPaths.push(...EXTRA_URLS);
 
   const pagePaths = selectPagePaths(discoveredPaths, process.argv.slice(2));
-  const server = await preview({ root: REPO_ROOT, server: { host: PREVIEW_HOST }, logLevel: 'error' });
-  const port = server.port;
-  let browser: Browser | undefined;
-
-  try {
-    browser = await chromium.launch({
-      executablePath: CHROMIUM_PATH,
-      headless: true,
-    });
-
+  await withSiteBrowser(async (browser, origin) => {
     const outputDirectory = join('/tmp/uruk-work/screens', timestamp());
     await mkdir(outputDirectory, { recursive: true });
 
@@ -456,7 +445,7 @@ async function runScreenChecks(): Promise<void> {
 
         try {
           const page = await context.newPage();
-          const pageUrl = `http://${PREVIEW_HOST}:${port}${pathname}`;
+          const pageUrl = `${origin}${pathname}`;
           const screenshotPath = join(
             outputDirectory,
             `${pageSlug(pathname)}-${viewport.name}.png`,
@@ -492,13 +481,7 @@ async function runScreenChecks(): Promise<void> {
     if (failureCount > 0) {
       process.exitCode = 1;
     }
-  } finally {
-    try {
-      await browser?.close();
-    } finally {
-      await server.stop();
-    }
-  }
+  });
 }
 
 try {

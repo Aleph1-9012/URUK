@@ -1,5 +1,6 @@
 import { createTimeline } from '../../plate/timeline';
 import { progress, smooth } from '../../../lib/animation';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import type { Box } from './drawing';
 
 export const CUES = [
@@ -51,7 +52,7 @@ export function claimProgress(time: number): number { return progress(time, 5800
 export function tapeProgress(time: number): number { return progress(time, 63500, 66000); }
 
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) return { stage: { x: width * .03, y: height * .018, w: width * .94, h: height * .45 }, panel: { x: width * .05, y: height * .49, w: width * .90, h: height * .49 }, tall };
 

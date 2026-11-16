@@ -1,5 +1,6 @@
 import { createTimeline } from '../../plate/timeline';
 import { mix, progress, smooth } from '../../../lib/animation';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import type { Box, ChartView } from './drawing';
 
 export const CUES = [
@@ -52,7 +53,7 @@ export function chartView(time: number): ChartView {
 }
 
 export function layout(width: number, height: number, time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {
     const expanded = smooth(time, 71500, 71900);

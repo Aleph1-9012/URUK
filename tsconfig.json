@@ -1,4 +1,4 @@
 {
   "extends": "astro/tsconfigs/strictest",
-  "exclude": ["scripts", "tests", "dist", "node_modules"]
+  "exclude": ["scripts", "tests", "**/*.test.ts", "dist", "node_modules"]
 }

@@ -1,0 +1,6 @@
+@container plate (max-width: 599px) {
+  uruk-thorp-cube .film-stage { aspect-ratio: 4 / 5; }
+  uruk-thorp-cube .film-label { font-size: 1rem; }
+  uruk-thorp-cube .film-label[data-label="counting"] { font-size: .875rem; }
+  uruk-thorp-cube .film-label[data-label="energy"] { font-size: .8125rem; }
+}

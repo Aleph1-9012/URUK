@@ -1,0 +1,10 @@
+uruk-factor-two .film-label--matrix { font-size: 1.0625rem; }
+uruk-factor-two .film-label--wide { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-factor-two .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-factor-two .film-label { font-size: .9375rem; }
+  uruk-factor-two .film-label--matrix { font-size: .8125rem; }
+  uruk-factor-two .film-label--wide { font-size: .8125rem; }
+}

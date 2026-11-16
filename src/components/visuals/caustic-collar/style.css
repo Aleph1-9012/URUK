@@ -1,0 +1,8 @@
+uruk-caustic-collar .film-label--equation { font-size: .875rem; }
+
+@container plate (max-width: 599px) {
+  uruk-caustic-collar .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-caustic-collar .film-label { font-size: .9375rem; }
+  uruk-caustic-collar .film-label--equation { font-size: .75rem; }
+}

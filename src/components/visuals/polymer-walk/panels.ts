@@ -1,5 +1,6 @@
 import { progress, smooth } from '../../../lib/animation';
-import { type Box, type Colors, type Place, hatch, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, hatch, text } from './drawing';
 import type { PolymerModel } from './math';
 
 type Plot = Box & { left: number; right: number; top: number; bottom: number };

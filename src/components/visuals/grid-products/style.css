@@ -1,0 +1,9 @@
+uruk-grid-products .film-label--blue { color: var(--blue); }
+uruk-grid-products .film-label--small { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-grid-products .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-grid-products .film-label { font-size: .9375rem; }
+  uruk-grid-products .film-label--small { font-size: .8125rem; }
+}

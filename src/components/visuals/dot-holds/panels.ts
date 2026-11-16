@@ -1,4 +1,5 @@
-import { type Box, type Colors, type Place, insetBox, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, insetBox, text } from './drawing';
 import type { GraphSnapshot, HoldModel, VertexData } from './math';
 import { focusAt, insetProgress, ruleProgress, selectedState } from './story';
 

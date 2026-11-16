@@ -1,0 +1,9 @@
+uruk-unit-links .film-label--blue { color: var(--blue); }
+uruk-unit-links .film-label--small { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-unit-links .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-unit-links .film-label { font-size: .9375rem; }
+  uruk-unit-links .film-label--small { font-size: .8125rem; }
+}

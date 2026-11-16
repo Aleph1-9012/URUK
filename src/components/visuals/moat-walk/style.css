@@ -1,0 +1,9 @@
+uruk-moat-walk .film-label--data { font-size: .875rem; }
+uruk-moat-walk .film-label[data-label="cluster-bound"] { color: var(--blue); }
+
+@container plate (max-width: 599px) {
+  uruk-moat-walk .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-moat-walk .film-label { font-size: .9375rem; }
+  uruk-moat-walk .film-label--data { font-size: .75rem; }
+}

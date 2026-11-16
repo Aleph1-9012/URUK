@@ -4,10 +4,10 @@ import type { FilmTimeline } from './timeline';
 interface Props {
   id: string;
   timeline: FilmTimeline;
-  step?: number;
+  step: number;
 }
 
-const { id, timeline, step = 100 } = Astro.props;
+const { id, timeline, step } = Astro.props;
 ---
 
 <div class="film-controls" data-script-only>

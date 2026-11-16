@@ -1,7 +1,9 @@
 import { mix, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { type ColourModel, type FirstFitStep } from './math';
-import { type Box, type Colors, type Point, drawGlyph, graphLayout, line, text, vertexPoint } from './drawing';
+import { type Box, type Colors, type Point, drawGlyph, graphLayout, text, vertexPoint } from './drawing';
 import { claimProgress, edgeProgress, firstFitProgress, isolatedProgress, layout, liftProgress, nodeProgress, revealProgress } from './story';
 import { drawPanels } from './panels';
 
@@ -12,21 +14,17 @@ export class PromisedThreeFilm {
   private height = 1;
   private density = 1;
   private readonly labels: FilmLabels;
-  private readonly colors: Colors = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
 
-  constructor(private readonly root: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D, private readonly model: ColourModel) {
+  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: ColourModel) {
     this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
-    const style = getComputedStyle(this.root);
-
-    for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || this.colors[tone];
+    this.colors = tones;
 
     this.labels.resize(width, height);
   }

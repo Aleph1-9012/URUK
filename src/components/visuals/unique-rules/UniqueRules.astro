@@ -1,13 +1,8 @@
 ---
-import Plate from '../../plate/Plate.astro';
-import FilmControls from '../../plate/FilmControls.astro';
-import FilmSubtitles from '../../plate/FilmSubtitles.astro';
-import FilmTranscript from '../../plate/FilmTranscript.astro';
-import '../../plate/film.css';
+import Film from '../../plate/Film.astro';
 import { renderFormula } from '../../../lib/formulas/render';
-import { BAD_EDGES, BEST_LABELS, DELTA, EPSILON, keptCount, keepsRule } from './math';
 import { CUES, TIMELINE } from './story';
-import './unique-rules.css';
+import './style.css';
 
 const formula = (tex: string) => renderFormula(tex, false);
 
@@ -20,104 +15,26 @@ const labels = [
   { id: 'gamma', tex: String.raw`\gamma`, blue: true },
   { id: 'k', tex: 'k', blue: false },
 ];
-
-const points = [{ x: 150, y: 140 }];
-
-for (let index = 0; index < 6; index += 1) {
-  const angle = -Math.PI / 2 + index * Math.PI / 3;
-  points.push({ x: 150 + 105 * Math.cos(angle), y: 140 + 105 * Math.sin(angle) });
-}
-
-const edges = BAD_EDGES.map((edge) => {
-  const from = points[edge.from];
-  const to = points[edge.to];
-
-  if (!from || !to) throw new Error('The wheel requires a point at each end of a rule.');
-
-  const x = (from.x + to.x) / 2;
-  const y = (from.y + to.y) / 2;
-  const length = Math.hypot(to.x - from.x, to.y - from.y);
-  const dx = -(to.y - from.y) / length * 6;
-  const dy = (to.x - from.x) / length * 6;
-
-  return { ...edge, from, to, x, y, dx, dy, kept: keepsRule(BEST_LABELS, edge) };
-});
-
-const kept = keptCount(BEST_LABELS, BAD_EDGES);
 ---
 
-<Plate
+<Film
+  tag="uruk-unique-rules"
+  cues={CUES}
+  timeline={TIMELINE}
+  description="A film about a network whose rules allow exactly one reply. It follows the labels through one changed rule, compares approximation guarantees, and illustrates the claimed proof. The complete text transcript is below."
   caption="A network of one-reply rules, why one bad rule is hard to find, what the conjecture would settle, and the claimed proof's code that survives noise."
   leftOut="Håstad's starting problem and the construction's quadratic blocks; folding and shared keys; the inverse shortcode theorem and advice experiment; the Arora–Barak–Steurer algorithm; Minzer's related paper; the four companion papers. The proof drawings are schematic."
 >
-  <uruk-unique-rules class="film-host">
-    <div class="ufilm">
-      <div class="ufilm-stage" data-film-viewport>
-        <canvas class="ufilm-canvas" data-film-canvas role="img" aria-label="A film about a network whose rules allow exactly one reply. It follows the labels through one changed rule, compares approximation guarantees, and illustrates the claimed proof. The complete text transcript is below."></canvas>
-        <div class="ufilm-still" aria-hidden="true">
-          <div class="ufilm-still-wheel">
-            <svg viewBox="0 0 300 280" role="presentation">
-              {edges.map((edge) => (
-                <>
-                  <line x1={edge.from.x} y1={edge.from.y} x2={edge.to.x} y2={edge.to.y} stroke={edge.kept ? 'var(--ink)' : 'var(--blue)'} stroke-width={edge.kept ? 1 : 2} />
-                  {edge.opposite && <line x1={edge.x - edge.dx} y1={edge.y - edge.dy} x2={edge.x + edge.dx} y2={edge.y + edge.dy} stroke="var(--ink)" stroke-width="1.3" />}
-                  {!edge.kept && <circle cx={edge.x} cy={edge.y} r="11" fill="none" stroke="var(--blue)" stroke-width="1.4" />}
-                </>
-              ))}
-              {points.map((point, index) => (
-                <>
-                  <circle cx={point.x} cy={point.y} r="9" fill={BEST_LABELS[index] === 1 ? 'var(--blue)' : 'var(--paper)'} stroke={BEST_LABELS[index] === 1 ? 'var(--blue)' : 'var(--ink)'} stroke-width="1.5" />
-                  <text x={point.x + (index === 0 ? 18 : (point.x - 150) / 105 * 19)} y={point.y + (index === 0 ? 4 : (point.y - 140) / 105 * 19 + 4)} text-anchor="middle" fill="var(--muted)" font-family="var(--font-special-elite)" font-size="11">{index}</text>
-                </>
-              ))}
-            </svg>
-            <div class="ufilm-rule-key">
-              <span><i class="ufilm-key-rule"></i> SAME</span>
-              <span><i class="ufilm-key-rule ufilm-key-rule--opposite"></i> OPPOSITE</span>
-            </div>
-          </div>
-          <div class="ufilm-still-gauge">
-            <h3>SHARE OF RULES KEPT</h3>
-            <p class="ufilm-still-count">Best labelling: {kept} of {BAD_EDGES.length}</p>
-            <div class="ufilm-still-axis">
-              <svg viewBox="0 0 300 62" preserveAspectRatio="none" role="presentation">
-                <defs>
-                  <pattern id="ufilm-still-hatch" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 7L7 0" stroke="var(--muted)" stroke-width=".6" /></pattern>
-                </defs>
-                <rect x={DELTA * 300} y="16" width={(1 - EPSILON - DELTA) * 300} height="20" fill="url(#ufilm-still-hatch)" opacity=".5" />
-                <line x1="0" y1="26" x2="300" y2="26" stroke="var(--ink)" />
-                <line x1="0" y1="26" x2={DELTA * 300} y2="26" stroke="var(--blue)" stroke-width="4" />
-                <line x1={(1 - EPSILON) * 300} y1="26" x2="300" y2="26" stroke="var(--blue)" stroke-width="4" />
-                <circle cx={kept / BAD_EDGES.length * 300} cy="26" r="4" fill="var(--blue)" />
-              </svg>
-              <span class="ufilm-still-zero">0</span>
-              <span class="ufilm-still-one">1</span>
-              <span class="ufilm-still-value" set:html={formula(String.raw`\frac{11}{12}`)} />
-            </div>
-            <div class="ufilm-still-zones">
-              <span>NO: at most <span set:html={formula(String.raw`\delta`)} /></span>
-              <span>YES: at least <span set:html={formula(String.raw`1-\varepsilon`)} /></span>
-            </div>
-            <p class="ufilm-still-note">The conjecture's zones are schematic.<br />This small example falls between them.</p>
-          </div>
-        </div>
-        <div class="ufilm-formulas" aria-hidden="true" data-bleed>
-          {labels.map((label) => (
-            <span class:list={['ufilm-label', 'ufilm-label--small', { 'ufilm-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>
-          ))}
-          <span class="ufilm-label ufilm-status" data-label="status"><span>CLAIMED · UNDER REVIEW</span></span>
-        </div>
-      </div>
-      <FilmSubtitles cues={CUES} />
-    </div>
-    <FilmControls id="ufilm-timeline" timeline={TIMELINE} />
-    <FilmTranscript cues={CUES}>
-      <p class="film-method">How the film is made. The wheel has seven vertices and twelve edges. Its best values come from trying all 128 binary labellings. Initially all twelve rules can be kept. Changing the rule between vertices 3 and 4 leaves a best value of eleven out of twelve. Following the ring from vertex 1, then setting the hub through edge 1–0, keeps eight. Making every rule OPPOSITE gives a maximum cut of nine edges. The eleven-out-of-twelve example illustrates a failed walk; it is not a hard instance of the conjecture.</p>
-      <p class="film-method">The Max-Cut gauge measures a share of the best cut, not a share of all edges. Its threshold is approximately 0.87856. The approximation limits for Max-Cut and Vertex Cover assume both the Unique Games Conjecture and P ≠ NP. The constants 2 and 1/8 come from the article.</p>
-      <p class="film-method">The promise widths, the half-complete zone, the bit-row close-ups and the network made from a formula are schematic. The eight-bit sketch illustrates the two properties of the code; it does not construct the paper's code. The agreement curve has the article's form <span set:html={formula(String.raw`e^{-ck^{1/3}}`)} />, with illustrative constants <span set:html={formula(String.raw`c=0.6,\ \gamma=0.15`)} />. A finite drawing does not verify the reduction or its proof. Review status follows the article's dated evidence.</p>
-    </FilmTranscript>
-  </uruk-unique-rules>
-</Plate>
+  <Fragment slot="labels">
+    {labels.map((label) => (
+      <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>
+    ))}
+    <span class="film-label film-label--stamp" data-label="status"><span>CLAIMED · UNDER REVIEW</span></span>
+  </Fragment>
+  <p class="film-method">How the film is made. The wheel has seven vertices and twelve edges. Its best values come from trying all 128 binary labellings. Initially all twelve rules can be kept. Changing the rule between vertices 3 and 4 leaves a best value of eleven out of twelve. Following the ring from vertex 1, then setting the hub through edge 1–0, keeps eight. Making every rule OPPOSITE gives a maximum cut of nine edges. The eleven-out-of-twelve example illustrates a failed walk; it is not a hard instance of the conjecture.</p>
+  <p class="film-method">The Max-Cut gauge measures a share of the best cut, not a share of all edges. Its threshold is approximately 0.87856. The approximation limits for Max-Cut and Vertex Cover assume both the Unique Games Conjecture and P ≠ NP. The constants 2 and 1/8 come from the article.</p>
+  <p class="film-method">The promise widths, the half-complete zone, the bit-row close-ups and the network made from a formula are schematic. The eight-bit sketch illustrates the two properties of the code; it does not construct the paper's code. The agreement curve has the article's form <span set:html={formula(String.raw`e^{-ck^{1/3}}`)} />, with illustrative constants <span set:html={formula(String.raw`c=0.6,\ \gamma=0.15`)} />. A finite drawing does not verify the reduction or its proof. Review status follows the article's dated evidence.</p>
+</Film>
 
 <script>
   import './element';

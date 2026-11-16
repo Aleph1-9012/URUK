@@ -3,7 +3,7 @@ import { zeroHeights } from './zeta/zeros';
 import { waveTable, type WaveTable } from './primes';
 import { DIAL_FROM, DIAL_TO, FIRST_HEIGHT } from './story';
 
-export type FilmMessage = { kind: 'map'; map: MapData } | { kind: 'waves'; table: WaveTable };
+export type FilmMessage = { kind: 'map'; map: MapData } | { kind: 'waves'; table: WaveTable } | { kind: 'complete' };
 
 // Evenly in log x: about eight samples to each turn of the hundredth zero's wave, the fastest.
 const SAMPLES = 1200;
@@ -22,3 +22,4 @@ const table = waveTable(zeroHeights, SAMPLES, { height: FIRST_HEIGHT, from: DIAL
 
 postMessage({ kind: 'waves', table } satisfies FilmMessage, { transfer: [table.xs.buffer, table.smooth.buffer, table.partial.buffer, table.dial.buffer] });
 sendMap(computeMap('minus-four'));
+postMessage({ kind: 'complete' } satisfies FilmMessage);

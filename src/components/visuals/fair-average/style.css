@@ -1,0 +1,9 @@
+uruk-fair-average .film-label--blue { color: var(--blue); }
+uruk-fair-average .film-label--small { font-size: .9375rem; }
+
+@container plate (max-width: 599px) {
+  uruk-fair-average .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-fair-average .film-label { font-size: .9375rem; }
+  uruk-fair-average .film-label--small { font-size: .8125rem; }
+}

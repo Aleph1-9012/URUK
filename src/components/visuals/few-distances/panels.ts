@@ -1,6 +1,7 @@
+import { line } from '../../plate/canvas/strokes';
 import type { DistanceModel } from './math';
 import { claimProgress, flattenProgress, ladderProgress, randomProgress, ratioProgress } from './story';
-import { ladderBox, ladderPoint, line, ratioChartBox, ratioPoint, subpolyPoint, text, type Box, type Colors, type Place, type Point } from './drawing';
+import { ladderBox, ladderPoint, ratioChartBox, ratioPoint, subpolyPoint, text, type Box, type Colors, type Place, type Point } from './drawing';
 
 export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: DistanceModel, tall: boolean): void {
   const x = box.x + box.w / 2;

@@ -1,6 +1,8 @@
 import { mix, progress, smooth } from '../../../lib/animation';
+import { line } from '../../plate/canvas/strokes';
+import { PAGE_TONES, PHONE_STAGE_WIDTH, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { type Box, type Colors, line, text } from './drawing';
+import { type Box, type Colors, text } from './drawing';
 import { bushUnionBounds, needlePose, rotateTriangles, squareCells, treeTriangles, type KakeyaModel, type Point, type Triangle, type Vector } from './math';
 import { drawPanels } from './panels';
 import { shadedFractionAt, shadedFractionLabel } from './story';
@@ -59,7 +61,7 @@ function polygon(pen: CanvasRenderingContext2D, triangles: readonly Triangle[], 
 }
 
 function layout(width: number, height: number, time: number): { stage: Box; panel: Box; tall: boolean } {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {
     return { stage: { x: width * .025, y: height * .025, w: width * .53, h: height * .95 }, panel: { x: width * .60, y: height * .035, w: width * .365, h: height * .93 }, tall };
@@ -77,23 +79,19 @@ export class NeedleRoomFilm {
   private height = 1;
   private density = 1;
   private readonly labels: FilmLabels;
-  private readonly colors: Colors = { ink: '#28241f', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private readonly cells;
 
-  constructor(private readonly root: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D, private readonly model: KakeyaModel) {
+  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: KakeyaModel) {
     this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
     this.cells = [1 / 8, 1 / 16, 1 / 32, 1 / 64].map(delta => ({ delta, cells: squareCells(model.slivers, delta) }));
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
-    const style = getComputedStyle(this.root);
-
-    for (const tone of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[tone] = style.getPropertyValue(`--${tone}`).trim() || this.colors[tone];
+    this.colors = tones;
 
     this.labels.resize(width, height);
   }

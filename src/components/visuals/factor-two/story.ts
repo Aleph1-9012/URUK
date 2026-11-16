@@ -1,4 +1,5 @@
 import { createTimeline } from '../../plate/timeline';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 
 // Claude's complete Crouzeix storyboard, with its original cues and timings.
 export const CUES = [
@@ -39,7 +40,7 @@ export interface Layout {
 }
 
 export function layout(width: number, height: number): Layout {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {
     return {

@@ -1,0 +1,9 @@
+uruk-smallest-triangles .film-label { font-size: .875rem; }
+uruk-smallest-triangles .film-label[data-label="claim"] { color: var(--blue); }
+uruk-smallest-triangles .film-label[data-label="eta-digits"] { font-size: .8125rem; }
+
+@container plate (max-width: 599px) {
+  uruk-smallest-triangles .film-stage { aspect-ratio: 4 / 6; }
+  uruk-smallest-triangles .film-label { font-size: .75rem; }
+  uruk-smallest-triangles .film-label[data-label="eta-digits"] { font-size: .6875rem; }
+}

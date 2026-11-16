@@ -1,3 +1,4 @@
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { crossfade as fade, smoothStep as span } from '../../../lib/animation';
 import type { Complex } from './zeta/lfunctions';
 import type { Lines } from './zeta/contours';
@@ -90,14 +91,14 @@ export class PrimeFilm {
   private readonly visible = new Set<string>();
   private readonly boxes = new Map<string, { offset: number; width: number }>();
   private waves: WaveTable | undefined;
-  private colors: Colors = { ink: '#1c1a17', blue: '#28486e', muted: '#5f584d', paper: '#e7e5e0' };
+  private colors: Colors = PAGE_TONES;
   private width = 1;
   private height = 1;
   private ratio = 1;
   private layout: Layout = 'wide';
   private time = 0;
 
-  constructor(private readonly canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
+  constructor(canvas: HTMLCanvasElement, private readonly labels: ReadonlyMap<string, HTMLElement>) {
     const context = canvas.getContext('2d');
 
     if (!context) throw new Error('The film needs a 2D canvas.');
@@ -117,22 +118,12 @@ export class PrimeFilm {
     this.waves = table;
   }
 
-  resize(): void {
-    const box = this.canvas.getBoundingClientRect();
-    const style = getComputedStyle(this.canvas);
-    this.colors = {
-      ink: style.getPropertyValue('--ink').trim() || this.colors.ink,
-      blue: style.getPropertyValue('--blue').trim() || this.colors.blue,
-      muted: style.getPropertyValue('--muted').trim() || this.colors.muted,
-      paper: style.getPropertyValue('--paper').trim() || this.colors.paper,
-    };
-
-    this.width = Math.max(1, box.width);
-    this.height = Math.max(1, box.height);
-    this.ratio = window.devicePixelRatio || 1;
-    this.layout = this.width >= this.height ? 'wide' : 'tall';
-    this.canvas.width = Math.round(this.width * this.ratio);
-    this.canvas.height = Math.round(this.height * this.ratio);
+  resize({ width, height, density, tones }: FilmFrame): void {
+    this.width = width;
+    this.height = height;
+    this.ratio = density;
+    this.layout = width >= height ? 'wide' : 'tall';
+    this.colors = tones;
     this.boxes.clear();
   }
 

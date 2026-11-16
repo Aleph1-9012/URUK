@@ -1,0 +1,53 @@
+---
+import Plate from './Plate.astro';
+import FilmControls from './FilmControls.astro';
+import FilmSubtitles from './FilmSubtitles.astro';
+import FilmTranscript from './FilmTranscript.astro';
+import './film.css';
+import { renderFormula } from '../../lib/formulas/render';
+import type { FilmCue, FilmScene } from './text';
+import type { FilmTimeline } from './timeline';
+
+interface Props {
+  /** The film's custom element, registered by its `element.ts`. */
+  tag: string;
+  cues: readonly FilmCue[];
+  timeline: FilmTimeline;
+  /** What the canvas shows, for readers who cannot see it. */
+  description: string;
+  caption: string;
+  leftOut: string;
+  /** Formulas the film places over the canvas by `id`. */
+  labels?: readonly { id: string; tex: string }[];
+  /** Transcript headings. Each cue's own title is used when omitted. */
+  scenes?: readonly FilmScene[];
+  /** Timeline step in milliseconds. */
+  step?: number;
+  layout?: 'classic' | 'grid';
+}
+
+const { tag: Tag, cues, timeline, description, caption, leftOut, labels = [], scenes = cues.map((cue, first) => ({ title: cue.title ?? '', first })), step = 100, layout } = Astro.props;
+const hasLabels = labels.length > 0 || Astro.slots.has('labels');
+---
+
+<Plate caption={caption} leftOut={leftOut}>
+  <Tag class:list={['film-host', layout && `film-host--${layout}`]}>
+    <div class="film-frame">
+      <div class="film-stage" data-film-viewport>
+        <canvas class="film-canvas" data-film-canvas role="img" aria-label={description}></canvas>
+        {hasLabels && (
+          <div class="film-formulas" aria-hidden="true" data-bleed>
+            {labels.map((label) => <span class="film-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+            <slot name="labels" />
+          </div>
+        )}
+      </div>
+      <FilmSubtitles cues={cues} />
+      <slot name="notice" />
+    </div>
+    <FilmControls id={`${Tag}-timeline`} timeline={timeline} step={step} />
+    <FilmTranscript cues={cues} scenes={scenes}>
+      <slot />
+    </FilmTranscript>
+  </Tag>
+</Plate>

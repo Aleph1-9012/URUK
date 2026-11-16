@@ -1,0 +1,17 @@
+/* 004's Plate I film (v2), from nets of fractions to the claimed answer. The plate takes the wider column; below 75rem it takes the full width above the introduction. */
+
+/* Formulas pinned to the drawing; the script places each one every frame and keeps it inside the frame while its point is. */
+uruk-fraction-nets .film-label { font-size: 1.125rem; line-height: 1.2; }
+uruk-fraction-nets .film-label > span { transform: none; background: none; padding: 0; }
+uruk-fraction-nets .film-label--above > span { transform: translate(-50%, -100%); }
+uruk-fraction-nets .film-label--right > span { transform: translate(0, -50%); }
+uruk-fraction-nets .film-label--blue { color: var(--blue); }
+uruk-fraction-nets .film-label--small { font-size: .9375rem; }
+uruk-fraction-nets .film-label--halo { text-shadow: 0 0 1px var(--paper), 0 0 2px var(--paper), 0 0 2px var(--paper), 0 0 3px var(--paper), 0 0 4px var(--paper), 0 0 6px var(--paper); }
+
+@container plate (max-width: 599px) {
+  uruk-fraction-nets .film-stage { aspect-ratio: 4 / 5; }
+
+  uruk-fraction-nets .film-label { font-size: 1rem; }
+  uruk-fraction-nets .film-label--small { font-size: .8125rem; }
+}

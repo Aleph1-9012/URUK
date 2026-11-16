@@ -3,5 +3,5 @@ import { CornerTourFilm } from './film';
 import { createCornerModel } from './math';
 import { TIMELINE } from './story';
 
-defineFilm('uruk-corner-tour', TIMELINE, ({ root, canvas, context }) =>
-  new CornerTourFilm(root, canvas, context, createCornerModel()));
+defineFilm('uruk-corner-tour', TIMELINE, ({ root, context }) =>
+  new CornerTourFilm(root, context, createCornerModel()));

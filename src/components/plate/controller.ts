@@ -1,8 +1,10 @@
+import { readFrame, type FilmFrame } from './frame';
 import { createPlayer, type Player } from './player';
 import type { FilmTimeline } from './timeline';
 
 export type FilmDrawing = {
-  resize: (width: number, height: number, density: number) => void;
+  /** Called after the controller has sized the canvas backing store, and before every first draw. */
+  resize: (frame: FilmFrame) => void;
   draw: (time: number) => void;
 };
 
@@ -91,8 +93,10 @@ export function defineFilm(name: string, timeline: FilmTimeline, setup: (film: F
       function resize(): void {
         if (signal.aborted) return;
 
-        const bounds = surface.getBoundingClientRect();
-        drawing.resize(Math.max(1, bounds.width), Math.max(1, bounds.height), devicePixelRatio || 1);
+        const frame = readFrame(surface);
+        surface.width = Math.round(frame.width * frame.density);
+        surface.height = Math.round(frame.height * frame.density);
+        drawing.resize(frame);
         render(time);
       }
 

@@ -1,4 +1,5 @@
 import { createTimeline } from '../../plate/timeline';
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 
 export const CUES = [
   {"at": 0, "title": "One length, many links", "text": "Place n points in the plane and draw a line between every two that are exactly one unit apart. How many lines can there be?", "sources": [1]},
@@ -36,7 +37,7 @@ export interface Layout {
 }
 
 export function layout(width: number, height: number): Layout {
-  const tall = width < 600;
+  const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {
     return {

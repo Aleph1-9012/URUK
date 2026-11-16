@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
-import { readdir, readFile } from 'node:fs/promises';
-import { preview } from 'astro';
-import { chromium, type Browser, type Page } from 'playwright-core';
+import type { Browser, Page } from 'playwright-core';
+import { filmRoutes, waitForNumerics, withSiteBrowser } from './site-browser';
 
 async function filmState(page: Page) {
   return page.evaluate(() => {
@@ -24,6 +23,7 @@ async function filmState(page: Page) {
 async function checkFilm(page: Page): Promise<void> {
   const range = page.locator('[data-film-range]');
   await page.waitForFunction(() => document.querySelector('[data-ready] [data-film-range]') !== null);
+  await waitForNumerics(page);
   await range.scrollIntoViewIfNeeded();
   assert.equal((await filmState(page)).cue, 0);
 
@@ -129,6 +129,413 @@ async function waitFrames(page: Page): Promise<void> {
   }));
 }
 
+async function checkInitialLayout(browser: Browser, origin: string): Promise<void> {
+  type Bounds = { selector: string; left: number; top: number; width: number; height: number };
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+
+  function dimensions(page: Page, selectors: string[]): Promise<Bounds[]> {
+    return page.evaluate((targets) => targets.map((selector) => {
+      const element = document.querySelector(selector);
+
+      if (!element) throw new Error(`Missing layout target: ${selector}`);
+
+      const { left, top, width, height } = element.getBoundingClientRect();
+
+      return { selector, left, top, width, height };
+    }), selectors);
+  }
+
+  function unchanged(before: Bounds[], after: Bounds[], phase: string): void {
+    for (const [index, bounds] of after.entries()) {
+      const initial = before[index];
+      assert.ok(initial, `Missing initial bounds for ${bounds.selector}`);
+
+      for (const key of ['left', 'top', 'width', 'height'] as const) {
+        assert.ok(Math.abs(bounds[key] - initial[key]) <= 0.5, `${phase}: ${bounds.selector} ${key} changed from ${initial[key]} to ${bounds[key]}`);
+      }
+    }
+  }
+
+  try {
+    const about = await context.newPage();
+    const fonts = Promise.withResolvers<void>();
+
+    try {
+      await about.route('**/fonts/*.woff2', async (route) => {
+        await fonts.promise;
+        await route.continue();
+      });
+      await about.goto(`${origin}/about/`, { waitUntil: 'commit' });
+      await about.locator('.about-page h1').waitFor({ state: 'visible' });
+      await about.waitForFunction(() => performance.getEntriesByType('paint').some((entry) => entry.name === 'first-contentful-paint'));
+      await waitFrames(about);
+      const loadedFonts = await about.evaluate(() => [
+        { family: 'Alegreya', style: 'normal' },
+        { family: 'Alegreya', style: 'italic' },
+        { family: 'Special Elite', style: 'normal' },
+      ].map(({ family, style }) => ({
+        family,
+        style,
+        loaded: Array.from(document.fonts).some((face) => face.family.replaceAll('"', '') === family && face.style === style && face.status === 'loaded'),
+      })));
+
+      for (const font of loadedFonts) assert.ok(font.loaded, `${font.style} ${font.family} must be loaded before external fonts arrive.`);
+
+      const selectors = ['body', '.site-header', '.about-page h1'];
+      const initial = await dimensions(about, selectors);
+      fonts.resolve();
+      await about.evaluate(async () => { await document.fonts.ready; });
+      await waitFrames(about);
+      unchanged(initial, await dimensions(about, selectors), 'Font loading');
+    } finally {
+      fonts.resolve();
+      await about.unrouteAll({ behavior: 'wait' });
+      await about.close();
+    }
+
+    const result = await context.newPage();
+    const scripts = Promise.withResolvers<void>();
+    let delayedScripts = 0;
+
+    try {
+      await result.route('**/_astro/*.js', async (route) => {
+        delayedScripts += 1;
+        await scripts.promise;
+        await route.continue();
+      });
+      await result.route('**/fonts/*.woff2', async (route) => {
+        await scripts.promise;
+        await route.continue();
+      });
+      await result.goto(`${origin}/results/003/`, { waitUntil: 'commit' });
+      await result.locator('.film-host').waitFor({ state: 'visible' });
+      await result.waitForFunction(() => document.fonts.check('17px "Garamond Math"', 'x∑𝑥'));
+      await result.evaluate(async () => { await document.fonts.ready; });
+      await waitFrames(result);
+      assert.ok(delayedScripts > 0, 'The initial article frame must precede its delayed browser scripts.');
+      assert.equal(await result.locator('.film-host[data-ready]').count(), 0);
+      const controlsHeight = await result.locator('.film-controls').evaluate((element) => element.getBoundingClientRect().height);
+      assert.ok(controlsHeight > 0, 'Film controls must reserve space before the film starts.');
+      const sources = result.locator('uruk-sources');
+      assert.equal(await sources.getAttribute('data-open'), null);
+      assert.equal(await sources.locator('.sources-table').isVisible(), false);
+      const selectors = ['.film-host', '.result-introduction'];
+      const initial = await dimensions(result, selectors);
+      scripts.resolve();
+      await result.locator('.film-host[data-ready]').waitFor({ state: 'visible' });
+      await result.evaluate(async () => { await document.fonts.ready; });
+      await waitFrames(result);
+      unchanged(initial, await dimensions(result, selectors), 'Film initialization');
+      assert.equal(await sources.getAttribute('data-open'), null);
+      assert.equal(await sources.locator('.sources-table').isVisible(), false);
+    } finally {
+      scripts.resolve();
+      await result.unrouteAll({ behavior: 'wait' });
+      await result.close();
+    }
+  } finally {
+    await context.close();
+  }
+}
+
+async function checkFilmFirstPaint(browser: Browser, origin: string): Promise<void> {
+  const modes = [
+    { javaScriptEnabled: true, reducedMotion: 'no-preference' },
+    { javaScriptEnabled: true, reducedMotion: 'reduce' },
+    { javaScriptEnabled: false, reducedMotion: 'no-preference' },
+  ] as const;
+
+  for (const mode of modes) {
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...mode });
+    const scripts = Promise.withResolvers<void>();
+    let page: Page | undefined;
+
+    try {
+      page = await context.newPage();
+      await page.goto(`${origin}/results/`);
+      await page.route('**/_astro/*.js', async (route) => {
+        await scripts.promise;
+        await route.continue();
+      });
+      await page.locator('.menu-index__row[data-index-family="158"]').click({ noWaitAfter: true });
+      await page.waitForURL('**/results/158/', { waitUntil: 'commit' });
+      const viewport = page.locator('[data-film-viewport]');
+      await viewport.waitFor({ state: 'attached' });
+      await page.waitForFunction(() => performance.getEntriesByType('paint').some((entry) => entry.name === 'first-contentful-paint'));
+      await page.evaluate(async () => { await document.fonts.ready; });
+
+      if (mode.javaScriptEnabled) await waitFrames(page);
+
+      const before = await viewport.evaluate((element) => {
+        const bounds = element.getBoundingClientRect();
+
+        return { width: bounds.width, height: bounds.height, opacity: getComputedStyle(element).opacity };
+      });
+      assert.ok(before.width > 0 && before.height > 0, 'The waiting film must reserve its final viewport dimensions.');
+
+      assert.equal(before.opacity, '0', 'Navigation must not paint an illustration before the live opening frame is ready.');
+
+      if (!mode.javaScriptEnabled) {
+        const transcript = page.locator('.film-transcript');
+        await transcript.locator('summary').click();
+        assert.notEqual(await transcript.getAttribute('open'), null, 'The transcript must remain available without browser scripts.');
+        assert.equal(await transcript.locator('li').first().isVisible(), true);
+        assert.ok((await transcript.locator('li').first().innerText()).trim().length > 0);
+      }
+
+      if (mode.javaScriptEnabled) {
+        const ready = page.locator('.film-host').evaluate((host) => new Promise<{ time: number; width: number; height: number; opacity: string }>((resolve, reject) => {
+          const observer = new MutationObserver(() => {
+            if (!host.hasAttribute('data-ready')) return;
+
+            observer.disconnect();
+            clearTimeout(timeout);
+            const stage = host.querySelector('[data-film-viewport]');
+
+            if (!stage) {
+              reject(new Error('A ready film must retain its viewport.'));
+
+              return;
+            }
+
+            const bounds = stage.getBoundingClientRect();
+            resolve({ time: Number(host.querySelector<HTMLInputElement>('[data-film-range]')?.value), width: bounds.width, height: bounds.height, opacity: getComputedStyle(stage).opacity });
+          });
+          const timeout = setTimeout(() => {
+            observer.disconnect();
+            reject(new Error('The film did not reveal a ready opening frame.'));
+          }, 10000);
+          observer.observe(host, { attributes: true, attributeFilter: ['data-ready'] });
+        }));
+        scripts.resolve();
+        const first = await ready;
+        assert.equal(first.time, 0, 'The live film must become visible at its beginning.');
+        assert.equal(first.opacity, '1');
+        assert.ok(Math.abs(first.width - before.width) <= 0.5 && Math.abs(first.height - before.height) <= 0.5, 'Revealing the opening frame must preserve the film viewport dimensions.');
+      }
+    } finally {
+      scripts.resolve();
+
+      try {
+        await page?.unrouteAll({ behavior: 'wait' });
+      } finally {
+        await context.close();
+      }
+    }
+  }
+}
+
+async function checkRollOpening(browser: Browser, origin: string): Promise<void> {
+  type OpeningFrame = { top: number; height: number; cardTop: number; visibleTop: number; lowerEdge: number; scrollTop: number; pageY: number; viewportHeight: number };
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'no-preference', isMobile: true, hasTouch: true });
+  const scripts = Promise.withResolvers<void>();
+  let page: Page | undefined;
+
+  function recordOpening(target: Page): Promise<OpeningFrame[]> {
+    return target.evaluate(() => new Promise<OpeningFrame[]>((resolve, reject) => {
+      const roll = document.querySelector<HTMLElement>('uruk-roll');
+      const paper = roll?.querySelector<HTMLElement>('.roll-paper');
+      const viewport = roll?.querySelector<HTMLElement>('.roll-window');
+      const card = roll?.querySelector<HTMLElement>('.roll-card');
+
+      if (!roll || !paper || !viewport || !card) {
+        reject(new Error('The phone results roll must contain paper, a window and cards.'));
+
+        return;
+      }
+
+      const frames: OpeningFrame[] = [];
+      const start = performance.now();
+      let began = false;
+
+      function frame(now: number): void {
+        if (!roll || !paper || !viewport || !card) return;
+
+        const state = roll.dataset.arrival;
+
+        if (state === 'opening') began = true;
+
+        if (began) {
+          const bounds = paper.getBoundingClientRect();
+          const values = getComputedStyle(paper).clipPath.match(/^inset\((.+)\)$/)?.[1]?.trim().split(/\s+/);
+          const top = values?.[0] ?? '0';
+          const bottom = values?.[2] ?? top;
+          const inset = (value: string) => Math.max(0, parseFloat(value) * (value.endsWith('%') ? bounds.height / 100 : 1));
+          frames.push({ top: bounds.top, height: bounds.height, cardTop: card.getBoundingClientRect().top, visibleTop: bounds.top + inset(top), lowerEdge: bounds.bottom - inset(bottom), scrollTop: viewport.scrollTop, pageY: scrollY, viewportHeight: innerHeight });
+
+          if (state === 'open') {
+            resolve(frames);
+
+            return;
+          }
+        }
+
+        if (now - start > 5000) {
+          reject(new Error('The phone roll never completed a visible opening.'));
+
+          return;
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    }));
+  }
+
+  function assertOpening(frames: OpeningFrame[]): void {
+    const first = frames[0];
+    const last = frames.at(-1);
+    assert.ok(first && last, 'The opening must produce measured animation frames.');
+    assert.ok(frames.some((frame) => frame.lowerEdge > frame.visibleTop + 1 && frame.lowerEdge < frame.visibleTop + frame.height - 1), 'The paper must visibly open through a partial state.');
+    let previous = first;
+
+    for (const frame of frames) {
+      assert.ok(Math.abs(frame.visibleTop - first.visibleTop) <= 0.5, 'The visible top edge must stay anchored under the roller.');
+      assert.equal(frame.pageY, 0);
+      assert.equal(frame.scrollTop, 0);
+
+      if (frame.viewportHeight === previous.viewportHeight) {
+        assert.ok(Math.abs(frame.height - previous.height) <= 0.5, 'The paper must retain its measured height at a constant viewport size.');
+        assert.ok(frame.top >= previous.top - 0.5, 'The paper must feed downward rather than slide upward.');
+        assert.ok(frame.cardTop >= previous.cardTop - 0.5, 'The cards must travel downward with the paper.');
+        assert.ok(frame.lowerEdge >= previous.lowerEdge - 0.5, 'The revealed lower edge must grow downward without retracting.');
+      }
+
+      previous = frame;
+    }
+
+    assert.ok(last.top > first.top + 1 && last.cardTop > first.cardTop + 1, 'Opening must move the paper and cards downward, rather than wipe over stationary content.');
+    assert.ok(Math.abs(last.visibleTop - last.top) <= 0.5 && Math.abs(last.lowerEdge - last.top - last.height) <= 0.5, 'The opening must finish with the entire paper revealed.');
+  }
+
+  try {
+    page = await context.newPage();
+    await page.route('**/_astro/*.js', async (route) => {
+      await scripts.promise;
+      await route.continue();
+    });
+    await page.goto(`${origin}/results/`, { waitUntil: 'commit' });
+    await page.locator('.roll-paper').waitFor({ state: 'attached' });
+    await page.waitForFunction(() => performance.getEntriesByType('paint').some((entry) => entry.name === 'first-contentful-paint'));
+    await waitFrames(page);
+    const pending = await page.locator('.roll-paper').evaluate((paper) => ({
+      height: paper.getBoundingClientRect().height,
+      viewportHeight: innerHeight,
+      clip: getComputedStyle(paper).clipPath,
+    }));
+    assert.ok(pending.height > 0 && pending.height < pending.viewportHeight * 2, 'The waiting paper must fit a phone-sized sheet before browser scripts arrive.');
+    const insets = pending.clip.match(/^inset\((.+)\)$/)?.[1]?.trim().split(/\s+/);
+    assert.equal(insets?.[0], '100%', 'The first painted paper must remain rolled up above its visible top edge.');
+    const opening = recordOpening(page);
+    scripts.resolve();
+    assertOpening(await opening);
+    await page.unrouteAll({ behavior: 'wait' });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto(`${origin}/results/`);
+    await page.waitForFunction(() => document.querySelector<HTMLElement>('uruk-roll')?.dataset.arrival === 'desktop');
+    await page.evaluate(async () => { await document.fonts.ready; });
+    const previewOpening = recordOpening(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(() => {
+      const paper = document.querySelector('.roll-paper');
+      const top = paper && getComputedStyle(paper).clipPath.match(/^inset\(([^\s)]+)/)?.[1];
+      const percent = top ? parseFloat(top) : 0;
+
+      return percent > 10 && percent < 90;
+    });
+    await page.setViewportSize({ width: 390, height: 864 });
+    await waitFrames(page);
+    const afterResize = await page.locator('.roll-paper').evaluate((paper) => {
+      const top = getComputedStyle(paper).clipPath.match(/^inset\(([^\s)]+)/)?.[1];
+
+      return top ? parseFloat(top) : 0;
+    });
+    assert.ok(afterResize > 0 && afterResize < 100, 'A small height change must preserve the ongoing opening rather than finish it.');
+    const previewFrames = await previewOpening;
+    assertOpening(previewFrames);
+    assert.ok(previewFrames.some((frame) => frame.viewportHeight === 844) && previewFrames.some((frame) => frame.viewportHeight === 864), 'The opening must continue across the preview height change.');
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await waitFrames(page);
+    await page.setViewportSize({ width: 390, height: 864 });
+    const replay = await page.locator('.roll-paper').evaluate(async (paper) => {
+      const frames: { clip: string; translateY: number }[] = [];
+
+      for (let count = 0; count < 8; count += 1) {
+        await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+        const style = getComputedStyle(paper);
+        frames.push({ clip: style.clipPath, translateY: new DOMMatrixReadOnly(style.transform).m42 });
+      }
+
+      return frames;
+    });
+    assert.ok(replay.every((frame) => frame.clip === 'none' && Math.abs(frame.translateY) <= 0.5), 'Returning to phone preview after completion must leave the paper open without replaying.');
+  } finally {
+    scripts.resolve();
+
+    try {
+      await page?.unrouteAll({ behavior: 'wait' });
+    } finally {
+      await context.close();
+    }
+  }
+}
+
+async function checkNumerics(browser: Browser, origin: string): Promise<void> {
+  for (const failure of [false, true]) {
+    const context = await browser.newContext({ reducedMotion: 'reduce' });
+    const release = Promise.withResolvers<void>();
+    let requests = 0;
+
+    try {
+      await context.route('**/_astro/worker*.js', async (route) => {
+        requests += 1;
+        await release.promise;
+
+        if (failure) {
+          await route.fulfill({ contentType: 'text/javascript', body: 'throw new Error("Calculation failure probe");' });
+        } else {
+          await route.continue();
+        }
+      });
+      const page = await context.newPage();
+      await page.goto(`${origin}/results/003/`, { waitUntil: 'domcontentloaded' });
+      const film = page.locator('.film-host[data-ready]');
+      await film.waitFor();
+      assert.equal(await film.getAttribute('data-numerics-pending'), '');
+      let settled = false;
+
+      const outcome = waitForNumerics(page).then(
+        () => 'ready' as const,
+        (cause) => cause instanceof Error ? cause : new Error(String(cause)),
+      ).then((result) => {
+        settled = true;
+
+        return result;
+      });
+
+      await waitFrames(page);
+      assert.equal(settled, false, 'Capture must keep waiting while the worker is delayed.');
+      release.resolve();
+      const result = await outcome;
+      assert.equal(requests, 1, 'The real numerical worker must pass through the delay.');
+      assert.equal(await film.getAttribute('data-numerics-pending'), null);
+
+      if (failure) {
+        assert.ok(result instanceof Error);
+        assert.match(result.message, /Calculation failure probe/);
+        assert.equal(await film.getAttribute('data-numerics-ready'), null);
+      } else {
+        assert.equal(result, 'ready');
+        assert.equal(await film.getAttribute('data-numerics-ready'), '');
+      }
+    } finally {
+      release.resolve();
+      await context.close();
+    }
+  }
+}
+
 async function checkPlayback(page: Page, origin: string): Promise<void> {
   await page.goto(`${origin}/results/165/`);
   await page.waitForFunction(() => document.querySelector('[data-ready] [data-film-range]') !== null);
@@ -203,23 +610,14 @@ async function checkStandardMap(page: Page, origin: string): Promise<void> {
   await page.waitForFunction((original) => document.querySelector<HTMLCanvasElement>('[data-map-canvas]')?.toDataURL() !== original, beforeReconnect);
 }
 
-const server = await preview({ server: { host: '127.0.0.1', port: 4322 }, logLevel: 'error' });
-let browser: Browser | undefined;
-
-try {
-  browser = await chromium.launch({ executablePath: '/usr/bin/chromium', headless: true });
-  const origin = `http://127.0.0.1:${server.port}`;
-  const routes: string[] = [];
-
-  for (const entry of await readdir('dist/results', { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-
-    const html = await readFile(`dist/results/${entry.name}/index.html`, 'utf8');
-
-    if (html.includes('data-film-range')) routes.push(`/results/${entry.name}/`);
-  }
+await withSiteBrowser(async (browser, origin) => {
+  const routes = await filmRoutes();
 
   assert.ok(routes.length > 0, 'Build the site before running interaction checks.');
+  await checkInitialLayout(browser, origin);
+  await checkFilmFirstPaint(browser, origin);
+  await checkRollOpening(browser, origin);
+  await checkNumerics(browser, origin);
   let filmCount = 0;
 
   for (const width of [390, 1280]) {
@@ -256,11 +654,5 @@ try {
     await playback.close();
   }
 
-  console.log(`Checked all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, and search/filter/back-to-top interactions.`);
-} finally {
-  try {
-    await browser?.close();
-  } finally {
-    await server.stop();
-  }
-}
+  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, and search/filter/back-to-top interactions.`);
+});

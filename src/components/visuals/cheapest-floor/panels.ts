@@ -1,5 +1,6 @@
 import { mix, progress, smooth } from '../../../lib/animation';
-import { type Box, type Colors, type Place, hatch, line, text } from './drawing';
+import { line } from '../../plate/canvas/strokes';
+import { type Box, type Colors, type Place, hatch, text } from './drawing';
 import { gaussian, mixtureValue, type FloorModel, type Point } from './math';
 import { CONTACT_ARRIVALS, relaxationStepAt } from './story';
 

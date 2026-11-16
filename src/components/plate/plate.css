@@ -102,8 +102,7 @@
 }
 
 /* Round 61's cut of the wedge line, its two ends kept whole and only the middle stretched. */
-.plate-track__line,
-.ruler-readout__line {
+.plate-track__line {
   border-color: transparent;
   border-image: url("../../assets/plate/track.png") 0 75 0 63 fill / 0 25px 0 21px stretch;
   border-style: solid;
@@ -116,8 +115,7 @@
   position: absolute;
 }
 
-.plate-track__handle,
-.plate-track__pressed {
+.plate-track__handle {
   display: block;
   left: calc(var(--value-at, 0) * 100%);
   pointer-events: none;
@@ -131,34 +129,12 @@
   width: 22px;
 }
 
-.plate-track__stop {
-  left: calc(var(--at) * 100%);
-  position: absolute;
-  top: 0;
-}
-
-.plate-track__pressed {
-  height: 12px;
-  left: 0;
-  width: 12px;
-}
-
-.plate-track__stop:not([data-passed]) .plate-track__pressed {
-  visibility: hidden;
-}
-
-.plate-track__number,
 .plate-track__end {
   color: var(--muted);
   font: 0.625rem/1 var(--font-special-elite);
   position: absolute;
   top: 22px;
   white-space: nowrap;
-}
-
-.plate-track__number {
-  left: 0;
-  translate: -50% 0;
 }
 
 .plate-track__end--start {
@@ -199,8 +175,7 @@
     row-gap: 22px;
   }
 
-  .plate-controls > .plate-track,
-  .plate-controls > .ruler-readout {
+  .plate-controls > .plate-track {
     grid-column: 1 / -1;
     grid-row: 2;
   }

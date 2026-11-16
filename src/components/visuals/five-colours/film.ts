@@ -1,3 +1,4 @@
+import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { smooth } from '../../../lib/animation';
 import { SPINDLE, SPINDLE_EDGES, SPINDLE_ANGLE, PALETTE, FORCED_COLOURS, hexTiles, hexVertices, classAt, rulerAt, type Point } from './math';
@@ -27,25 +28,23 @@ export class FiveColoursFilm {
   private density = 1;
   private tall = false;
   private time = 0;
-  private colors: Record<Ink, string> = { ink: '#28241f', blue: '#28486e', muted: '#777067', paper: '#e7e5e0' };
+  private colors: Record<Ink, string> = PAGE_TONES;
   private readonly pigments: string[] = [];
   private readonly patterns = new Map<number, CanvasPattern>();
   private readonly labels: FilmLabels;
 
-  constructor(host: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
-    this.labels = new FilmLabels(host, { horizontal: 7, vertical: 6 });
+  constructor(root: HTMLElement, private readonly canvas: HTMLCanvasElement, private readonly pen: CanvasRenderingContext2D) {
+    this.labels = new FilmLabels(root, { horizontal: 7, vertical: 6 });
   }
 
-  resize(width: number, height: number, density: number): void {
+  resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
     this.tall = height > width;
-    this.canvas.width = Math.round(width * density);
-    this.canvas.height = Math.round(height * density);
     const style = getComputedStyle(this.canvas);
 
-    for (const key of ['ink', 'blue', 'muted', 'paper'] as const) this.colors[key] = style.getPropertyValue(`--${key}`).trim() || this.colors[key];
+    this.colors = tones;
 
     this.patterns.clear();
 
