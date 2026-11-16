@@ -20,7 +20,7 @@ const units = [
 const key = units.flatMap(({ unit, count }) => count > 0 ? [`${unit} × ${count}`] : []).join(' + ');
 ---
 
-<uruk-sources data-total={total} data-open={!canCollapse}>
+<uruk-sources data-total={total} data-open={!canCollapse ? '' : undefined}>
   {canCollapse && <div class="sources-preview" data-script-only>
     {sources.slice(0, 6).map(({ number, html }) => <div class="source-preview"><span>{number}.</span><div set:html={html} /></div>)}
   </div>}

@@ -6,6 +6,7 @@ import TextureField from '../components/texture-field/TextureField.astro';
 
 interface Props {
   title: string;
+  math?: boolean;
   active: 'results' | 'how-we-check' | 'about' | 'none';
   showFooter?: boolean;
   showFooterOnPhone?: boolean;
@@ -15,6 +16,7 @@ interface Props {
 
 const {
   title,
+  math = false,
   active,
   showFooter = true,
   showFooterOnPhone = true,
@@ -24,7 +26,7 @@ const {
 const PageTag = showSearch ? 'uruk-menu' : 'div';
 ---
 
-<Base title={title}>
+<Base title={title} math={math}>
   <PageTag class="page-layout" id="top">
     <TextureField />
     <Header active={active} showSearch={showSearch}><slot name="search" slot="search" /></Header>

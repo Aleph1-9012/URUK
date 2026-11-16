@@ -1,9 +1,39 @@
+/* Core glyphs travel inside the shared stylesheet, before the first text paint.
+   Extended characters keep using the original fonts in public/fonts. */
+@font-face {
+  font-display: swap;
+  font-family: "Alegreya";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../assets/fonts/alegreya-regular-core.woff2?inline") format("woff2");
+  unicode-range: U+0020-03FF, U+1D00-1EFF, U+2000-25FF;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Alegreya";
+  font-style: italic;
+  font-weight: 400;
+  src: url("../assets/fonts/alegreya-italic-core.woff2?inline") format("woff2");
+  unicode-range: U+0020-03FF, U+1D00-1EFF, U+2000-25FF;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Special Elite";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../assets/fonts/special-elite-regular-core.woff2?inline") format("woff2");
+  unicode-range: U+0020-03FF, U+1D00-1EFF, U+2000-25FF;
+}
+
 @font-face {
   font-display: swap;
   font-family: "Alegreya";
   font-style: normal;
   font-weight: 400;
   src: url("/fonts/alegreya-regular.woff2") format("woff2");
+  unicode-range: U+0400-1CFF, U+1F00-1FFF, U+2600-10FFFF;
 }
 
 @font-face {
@@ -12,6 +42,7 @@
   font-style: italic;
   font-weight: 400;
   src: url("/fonts/alegreya-italic.woff2") format("woff2");
+  unicode-range: U+0400-1CFF, U+1F00-1FFF, U+2600-10FFFF;
 }
 
 @font-face {
@@ -20,12 +51,5 @@
   font-style: normal;
   font-weight: 400;
   src: url("/fonts/special-elite-regular.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Garamond Math";
-  font-style: normal;
-  font-weight: 400;
-  src: url("/fonts/garamond-math.woff2") format("woff2");
+  unicode-range: U+0400-1CFF, U+1F00-1FFF, U+2600-10FFFF;
 }

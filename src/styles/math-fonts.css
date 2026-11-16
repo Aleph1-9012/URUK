@@ -1,0 +1,17 @@
+@font-face {
+  font-display: swap;
+  font-family: "Garamond Math";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../assets/fonts/garamond-math-core.woff2?inline") format("woff2");
+  unicode-range: U+0020-03FF, U+2000-25FF, U+27C0-2AFF, U+1D400-1D7FF, U+FE00-FE0F;
+}
+
+@font-face {
+  font-display: swap;
+  font-family: "Garamond Math";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/garamond-math.woff2") format("woff2");
+  unicode-range: U+0400-1FFF, U+2600-27BF, U+2B00-FDFF, U+FE10-1D3FF, U+1D800-10FFFF;
+}
