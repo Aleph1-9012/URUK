@@ -6,6 +6,7 @@ paperTitle: "Purely cosmetic surgery on knots in the three-sphere"
 claim: "For every nontrivial smooth knot K in the three-sphere and every pair of distinct slopes r ≠ s, the Dehn surgeries S^3_r(K) and S^3_s(K) are not orientation-preservingly homeomorphic. The purely cosmetic surgery conjecture holds, including the meridional slope."
 status: unreviewed
 checked: 2026-10-18
+visual: last-slopes
 papers:
   - preprints/Purely-Cosmetic-Surgery-on-Knots-in-the-Three-Sphere-September-23-2026/paper.pdf
 draft: false

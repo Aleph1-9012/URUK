@@ -1,0 +1,11 @@
+uruk-last-slopes .film-frame { container: csfilm / inline-size; }
+uruk-last-slopes .film-label { font-size: .875rem; }
+
+@container csfilm (600px <= width < 760px) {
+  uruk-last-slopes .film-stage { aspect-ratio: 4 / 3; }
+}
+
+@container csfilm (width < 600px) {
+  uruk-last-slopes .film-stage { aspect-ratio: 4 / 9; }
+  uruk-last-slopes .film-label { font-size: .75rem; }
+}

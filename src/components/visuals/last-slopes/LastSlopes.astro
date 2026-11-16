@@ -1,0 +1,42 @@
+---
+import Film from '../../plate/Film.astro';
+import { renderFormula } from '../../../lib/formulas/render';
+import { CUES, TIMELINE } from './story';
+import './style.css';
+
+const labels = [
+  { id: 'slope-class', tex: String.raw`p\mu+q\lambda` },
+  { id: 'meridian', tex: String.raw`\mu` },
+  { id: 'infinity-surgery', tex: String.raw`S^3_{\infty}(K)=S^3` },
+  { id: 'comparison', tex: String.raw`S^3_r(K)\cong_{\mathrm{or}}S^3_s(K)\;?` },
+  { id: 'ni-wu-condition', tex: String.raw`q^2\equiv-1\pmod{|p|}` },
+  { id: 'last-slopes', tex: String.raw`\{-2,2\}` },
+  { id: 'unit-fractions', tex: String.raw`\pm1/q` },
+  { id: 'hanselman-forms', tex: String.raw`\pm2\quad\text{or}\quad\pm1/q` },
+  { id: 'genus-two', tex: String.raw`g(K)=2` },
+  { id: 'claim-implication', tex: String.raw`S^3_r(K)\cong_{\mathrm{or}}S^3_s(K)\Longrightarrow r=s` },
+] as const;
+---
+
+<Film
+  tag="uruk-last-slopes"
+  cues={CUES}
+  timeline={TIMELINE}
+  step={50}
+  labels={labels}
+  description="A trefoil and its tube illustrate the mechanics of Dehn filling. A separate abstract boundary-coordinate glyph redraws primitive meridian-longitude curves at rational endpoint slopes. The marker travels on a real projective coordinate guide with rational directions marked. The meridional point remains allowed; an ink cross rejects a hypothetical different-slope return to the three-sphere. A window of two hundred and thirty rational slopes then passes arithmetic filters, leaving sixty-two, twenty-eight and finally two marked slopes. A permanent toy label says that these are window counts, not tests of a knot. Only the last two marks gain blue rings and exclusion strokes for the paper's claim. The final ledger preserves the dated unreviewed status and the absence of a family comparator in the pinned release."
+  caption="The trefoil illustrates surgery mechanics only. A real projective coordinate guide marks rational slopes, and the arithmetic window is a toy, not a knot or an exclusion proof. The paper's full claim concerns every nontrivial smooth knot in the three-sphere and all rational slopes as well as the meridian: any orientation-preserving homeomorphism between the two surgeries, with no condition near the surgered tube, forces the slopes to agree. The new argument addresses only the last genus-two pair minus two and two, taking the human reduction as given. It does not address links, knots in other three-manifolds or orientation-reversing coincidences."
+  leftOut="The Heegaard Floer, instanton and gauge-theoretic proofs; the computer checks of special knot collections; the reduction to hyperbolic knots; an embedding of a genus-two candidate knot; a homeomorphism test of two surgery spaces; a formal proof replay."
+>
+  <p class="film-method">How the film is made. The trefoil is a genus-one illustration of drilling out a tube and attaching a solid torus. It is not a genus-two candidate and no toy filter is run on it. The later standard torus glyph is an abstract coordinate picture of a boundary torus. The film does not ambiently unknot the trefoil or its tubular neighbourhood. It does not compute a surgered three-manifold.</p>
+  <p class="film-method">A slope <span set:html={renderFormula(String.raw`p/q`, false)} /> represents the primitive unoriented curve <span set:html={renderFormula(String.raw`p\mu+q\lambda`, false)} />. The browser computes the integer winding counts at valid endpoint slopes, including the meridian <span set:html={renderFormula(String.raw`1/0=\infty`, false)} />. Marker travel and changes between glyphs are graphic choreography. They do not define a closed curve with noninteger windings at intervening times. Changing from slope two to minus two changes the winding on the same knot; it does not mirror the knot or depict chirally cosmetic surgery.</p>
+  <p class="film-method">The circular guide is the real projective coordinate circle. A rational slope is marked at angle <span set:html={renderFormula(String.raw`2\arctan(p/q)`, false)} /> from the bottom, with zero at the bottom and infinity at the top. The subset <span set:html={renderFormula(String.raw`\mathbb Q\cup\{\infty\}`, false)} /> is not itself a continuous topological circle. Ticks keep their actual rational directions, while labels are limited for legibility. The circle's diameter adapts to the canvas width rather than assuming a phone can hold a two-hundred-and-eighty-pixel guide.</p>
+  <p class="film-method">The meridional filling is allowed and gives back the three-sphere. Gordon and Luecke exclude a different slope on a nontrivial knot from giving it back. The cross therefore lands on a hypothetical comparison thread, not on the infinity point. For the general purely cosmetic question, an orientation-preserving homeomorphism is arbitrary. It need not arise from a symmetry of the knot or preserve the attached tube.</p>
+  <p class="film-method">The toy window contains both signs of reduced fractions with <span set:html={renderFormula(String.raw`1\le|p|,q\le13`, false)} />, excluding zero and infinity from its count. The browser constructs its two hundred and thirty slopes, applies <span set:html={renderFormula(String.raw`q^2\equiv-1\pmod{|p|}`, false)} /> to leave sixty-two, retains the forms <span set:html={renderFormula(String.raw`\pm2`, false)} /> or <span set:html={renderFormula(String.raw`\pm1/q`, false)} /> to leave twenty-eight, then removes the unit fractions to leave minus two and two. These are counts of this window only. They do not count all rational slopes, test a knot or reproduce the proofs of the cited reductions. The toy label stays from the first window tick through the close.</p>
+  <p class="film-method">Blue rings and strokes report the claimed exclusion of the final pair. The browser never computes a zero count or verifies that exclusion. The paper takes the human reduction to genus two and slopes minus two and two as given and supplies a new argument only for that case. Its stated consequence covers all nontrivial smooth knots in the three-sphere, all rational slopes together with infinity, and arbitrary orientation-preserving homeomorphisms. The claim does not extend to links, other ambient three-manifolds or chirally cosmetic, orientation-reversing pairs.</p>
+  <p class="film-method">The ledger preserves the article's unreviewed status and evidence date, 18 October 2026. Family 306 has no Lean scope note or comparator statement in the pinned release. This is a bounded statement about those release artifacts, not a claim that no automated work on the paper exists. The film performs no machine proof check. With JavaScript disabled, the article and transcript remain available without a fallback illustration. Reduced motion selects a completed supporting frame for each of the eleven exact canonical cues.</p>
+</Film>
+
+<script>
+  import './element';
+</script>
