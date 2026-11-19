@@ -6,24 +6,24 @@ import { motionAt } from './story';
 
 export function layout(w: number, h: number) {
   const phone = w < PHONE_STAGE_WIDTH;
-  const alternativeSide = phone ? .40 * w : Math.min(.20 * w, .35 * h);
+  const alternativeSide = phone ? Math.min(.40 * w, .20 * h) : Math.min(.20 * w, .35 * h);
   const alternativeTop = .065 * h;
   const alternatives = [
-    { x: (phone ? .06 : .04) * w, y: alternativeTop, side: alternativeSide },
-    { x: (phone ? .54 : .27) * w, y: alternativeTop, side: alternativeSide },
+    { x: phone ? .26 * w - alternativeSide / 2 : .04 * w, y: alternativeTop, side: alternativeSide },
+    { x: phone ? .74 * w - alternativeSide / 2 : .27 * w, y: alternativeTop, side: alternativeSide },
   ] as const;
 
   return {
     phone,
     cell: { x: (phone ? .08 : .06) * w, y: (phone ? .045 : .065) * h, side: Math.min(w * (phone ? .84 : .37), h * (phone ? .38 : .48)) },
     alternatives,
-    chart: { left: (phone ? .16 : .56) * w, right: (phone ? .92 : .94) * w, top: (phone ? .48 : .10) * h, bottom: (phone ? .70 : .62) * h, maxPerimeter: 3.2 },
+    chart: { left: (phone ? .16 : .56) * w, right: phone ? Math.min(.92 * w, w - 34) : .94 * w, top: (phone ? .53 : .10) * h, bottom: (phone ? .71 : .62) * h, maxPerimeter: 3.2 },
     text: {
       alternativeHeaderY: .015 * h,
       radiusLabelY: phone ? .28 * h : alternativeTop + alternativeSide + 20,
-      radiusFormulaY: phone ? .335 * h : alternativeTop + alternativeSide + 45,
-      commonAreaY: (phone ? .405 : .59) * h,
-      commonNumberY: (phone ? .445 : .655) * h,
+      radiusFormulaY: phone ? .355 * h : alternativeTop + alternativeSide + 45,
+      commonAreaY: (phone ? .445 : .59) * h,
+      commonNumberY: (phone ? .495 : .655) * h,
       notesY: .74 * h,
     },
   };
@@ -43,16 +43,16 @@ export function drawBallTubeSlabPanels(ctx: CanvasRenderingContext2D, w: number,
   }
 
   function candidateLegend(): void {
-    formula('ball-area', .85, .19);
-    formula('tube-area', .85, .53);
-    formula('slab-area', .85, .85);
+    formula('ball-area', phone ? .12 : .85, phone ? .77 : .19);
+    formula('tube-area', phone ? .26 : .85, phone ? .77 : .53);
+    formula('slab-area', phone ? .40 : .85, phone ? .77 : .85);
     formula('complement', .925);
-    note('THICK INK: LOWEST AMONG THESE THREE ONLY', .98, phone ? 8 : 10);
+    note('THICK INK: LOWEST AMONG THESE THREE ONLY', phone ? .97 : .98, phone ? 8 : 10);
   }
 
   function claim(): void {
-    note('CLAIMED · ALL FINITE-PERIMETER REGIONS', .755, phone ? 8.5 : 11);
-    note('UNIT CUBIC FLAT THREE-TORUS', .81, phone ? 8.5 : 10);
+    note('CLAIMED · ALL FINITE-PERIMETER REGIONS', phone ? .775 : .755, phone ? 8.5 : 11);
+    note('UNIT CUBIC FLAT THREE-TORUS', phone ? .82 : .81, phone ? 8.5 : 10);
     note('ONLY BALL, WRAPPED TUBE, SLAB OR COMPLEMENT', .865, phone ? 8 : 10);
     note('UP TO ISOMETRY AND NULL SETS', .92, phone ? 8.5 : 10);
     note('ADJACENT TYPES TIE AT THE TWO TRANSITIONS', .97, phone ? 8 : 10);
@@ -105,22 +105,22 @@ export function drawBallTubeSlabPanels(ctx: CanvasRenderingContext2D, w: number,
       candidateLegend();
       break;
     case 'alternatives':
-      note('EQUAL 3D VOLUME AND BOUNDARY AREA', .76, phone ? 8.5 : 11);
-      note('DIFFERENT RADII · DIFFERENT SECTION AREAS', .85, phone ? 8.5 : 10);
-      note('TWO ALTERNATIVES, NOT ONE COMBINED REGION', .95, phone ? 8 : 10);
+      note('EQUAL 3D VOLUME AND BOUNDARY AREA', phone ? .79 : .76, phone ? 8.5 : 11);
+      note('DIFFERENT RADII · DIFFERENT SECTION AREAS', phone ? .87 : .85, phone ? 8.5 : 10);
+      note('TWO ALTERNATIVES, NOT ONE COMBINED REGION', phone ? .96 : .95, phone ? 8 : 10);
       break;
     case 'review':
-      note('CLAIMED FULL PROFILE · CANDIDATE CURVES SHOWN', .75, phone ? 8 : 10);
-      if (motion.unreviewed > 0) note('UNREVIEWED · NO PUBLIC SPECIALIST VERIFICATION', .84, phone ? 8 : 10);
-      if (motion.reviewDate > 0) note('SEARCHED 7 NOVEMBER 2026', .95, phone ? 8.5 : 10);
+      note('CLAIMED FULL PROFILE · CANDIDATE CURVES SHOWN', phone ? .79 : .75, phone ? 8 : 10);
+      if (motion.unreviewed > 0) note('UNREVIEWED · NO PUBLIC SPECIALIST VERIFICATION', phone ? .86 : .84, phone ? 8 : 10);
+      if (motion.reviewDate > 0) note('SEARCHED 7 NOVEMBER 2026', phone ? .96 : .95, phone ? 8.5 : 10);
       break;
     case 'ledger':
-      note('CLAIMED FULL PROFILE AND CLASSIFICATION', .745, phone ? 8 : 10);
-      note('UNREVIEWED · 7 NOVEMBER 2026', .79, phone ? 8 : 10);
-      if (motion.ledger > 0) note('FULL PROFILE LINKED · NOT CATALOGUED', .835, phone ? 8 : 10);
+      note('CLAIMED FULL PROFILE AND CLASSIFICATION', phone ? .785 : .745, phone ? 8 : 10);
+      note('UNREVIEWED · 7 NOVEMBER 2026', phone ? .825 : .79, phone ? 8 : 10);
+      if (motion.ledger > 0) note('FULL PROFILE LINKED · NOT CATALOGUED', phone ? .865 : .835, phone ? 8 : 10);
       if (motion.replayReport > 0) {
-        note('LEAN AND NANODA ACCEPTANCE REPORTED', .88, phone ? 8 : 10);
-        note('10 OCTOBER 2026 · HISTORICAL LEDGER', .925, phone ? 8 : 10);
+        note('LEAN AND NANODA ACCEPTANCE REPORTED', phone ? .90 : .88, phone ? 8 : 10);
+        note('10 OCTOBER 2026 · HISTORICAL LEDGER', phone ? .935 : .925, phone ? 8 : 10);
         note('NOT OUR REPLAY OR A SPECIALIST ASSESSMENT', .97, phone ? 7.5 : 9);
       }
       break;

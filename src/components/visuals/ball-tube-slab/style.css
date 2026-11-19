@@ -6,6 +6,6 @@ uruk-ball-tube-slab .film-label { font-size: .875rem; }
 }
 
 @container ttfilm (width < 600px) {
-  uruk-ball-tube-slab .film-stage { aspect-ratio: 4 / 9; }
+  uruk-ball-tube-slab .film-stage { aspect-ratio: 4 / 5; }
   uruk-ball-tube-slab .film-label { font-size: .75rem; }
 }

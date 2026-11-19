@@ -218,7 +218,10 @@ class BallTubeSlabFilm implements FilmDrawing {
     const page = layout(this.width, this.height);
     const first = page.alternatives[0];
     const second = page.alternatives[1];
-    const cell = movingCell(page.cell, first, motion.comparisonCarry);
+    const openingSide = Math.min(this.width * .84, this.height * .63);
+    const opening = this.phone ? { x: (this.width - openingSide) / 2, y: page.cell.y, side: openingSide } : page.cell;
+    const prepared = movingCell(opening, page.cell, this.phone ? motion.tube : 1);
+    const cell = movingCell(prepared, first, motion.comparisonCarry);
     const wrap = motion.scene === 'periodic' ? motion.wrap : 0;
     this.region(cell, section, .5 + wrap);
     this.cell(cell, motion.cell);
@@ -233,7 +236,7 @@ class BallTubeSlabFilm implements FilmDrawing {
 
     if (motion.comparisonCarry === 0) {
       const note = section.morph ? 'DISPLAY MORPH · SECTION ONLY' : motion.curves > 0 && section.kind ? `SCHEMATIC ${section.kind.toUpperCase()} · V=${section.profile.volume.toFixed(3)}` : 'SCHEMATIC CENTRAL SECTION';
-      this.text(note, cell.x + cell.side / 2, cell.y + cell.side + (this.phone ? 13 : 19), this.phone ? 7.5 : 9);
+      this.text(note, this.phone ? this.width * .5 : cell.x + cell.side / 2, cell.y + cell.side + (this.phone ? 13 : 19), this.phone ? 7.5 : 9);
     }
   }
 
@@ -293,10 +296,16 @@ class BallTubeSlabFilm implements FilmDrawing {
       this.labels.place('area-axis', chart.left - 17, chart.top - 10);
       this.labels.place('volume-axis', chart.right + 10, chart.bottom - 11);
       const endpoint = profileAt(.5);
+      const tubeY = this.plotPoint(.5, endpoint.tubeArea).y;
 
       for (const [name, value] of [['BALL', endpoint.ballArea], ['TUBE', endpoint.tubeArea], ['SLAB', endpoint.slabArea]] as const) {
         const point = this.plotPoint(.5, value);
-        this.text(name, point.x - (this.phone ? 17 : 25), point.y - 9, this.phone ? 8 : 9);
+
+        if (this.phone && w < 576) {
+          const captionY = name === 'BALL' ? Math.min(point.y, tubeY - 12.5) : name === 'SLAB' ? Math.max(point.y, tubeY + 12.5) : point.y;
+          drawLine(pen, point.x, point.y, point.x + 4.5, captionY, tones.muted, .6);
+          this.text(name, point.x + 18, captionY, 8);
+        } else this.text(name, point.x - (this.phone ? 17 : 25), point.y - 9, this.phone ? 8 : 9);
       }
     }
 
