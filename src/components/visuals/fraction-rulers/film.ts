@@ -136,7 +136,7 @@ export class FractionRulersFilm {
     this.pen.globalAlpha = 1;
   }
 
-  private formula(id: string, x: number, y: number, alpha = 1): void {
+  private formula(id: string, x: number, y: number, alpha = 1, edge = 8): void {
     const label = this.labels.get(id);
 
     if (!label || alpha < 0.005) return;
@@ -149,7 +149,7 @@ export class FractionRulersFilm {
       this.labelSizes.set(id, size);
     }
 
-    const px = Math.max(size.width / 2 + 8, Math.min(this.width - size.width / 2 - 8, x * this.width));
+    const px = Math.max(size.width / 2 + edge, Math.min(this.width - size.width / 2 - edge, x * this.width));
     const py = Math.max(size.height / 2 + 5, Math.min(this.height - size.height / 2 - 5, y * this.height));
     label.style.transform = `translate(${px.toFixed(2)}px, ${py.toFixed(2)}px)`;
     label.style.opacity = alpha.toFixed(3);
@@ -319,7 +319,7 @@ export class FractionRulersFilm {
 
     this.words(heading, box.x + box.w / 2, box.y - 0.065, box.w, details * (1 - span(time, 109200, 109700)), 'muted', true);
     this.pen.save();
-    this.pen.translate(0.025 * this.width, (box.y + box.h / 2) * this.height);
+    this.pen.translate(this.layout === 'tall' ? Math.max(8.5, 0.025 * this.width) : 0.025 * this.width, (box.y + box.h / 2) * this.height);
     this.pen.rotate(-Math.PI / 2);
     this.pen.font = '10px "Special Elite", monospace';
     this.pen.fillStyle = this.colors.muted;
@@ -377,8 +377,9 @@ export class FractionRulersFilm {
       const dialLabels = index === 0 || index === 2 ? 1 - fade(time, 64700, 65500, 71600, 72400) : 1;
 
       if (labelled && details > 0) {
-        const labelY = index === 0 ? py - 0.065 : index === 2 ? py + 0.075 : index === 10 ? box.y + box.h * 0.55 : box.y + box.h * 0.35;
-        const labelX = index === 19 ? px - 0.055 : px;
+        const headingRoom = index === 0 && this.layout === 'tall' ? (1 - span(this.width, 248, 280)) * (1 - span(box.top, 3.6, 4.5)) : 0;
+        const labelY = index === 0 ? py - 0.065 - 5 * headingRoom / this.height : index === 2 ? py + 0.075 : index === 10 ? box.y + box.h * 0.55 : box.y + box.h * 0.35;
+        const labelX = index === 19 ? px - 0.055 : mix(px, Math.min(px, x(fraction.logQ)), headingRoom) - 14 * headingRoom / this.width;
         this.path([[px, py], [labelX, labelY]], 'muted', details * room * dialLabels * (1 - inHistory) * 0.5, 1 / this.dpr);
         this.formula(`fraction-${index}`, labelX, labelY, details * room * dialLabels * (1 - inHistory) * span(time, end - 500, end));
       }
@@ -535,7 +536,7 @@ export class FractionRulersFilm {
     this.path(late, 'ink', alpha * span(time, 90800, 91300), 1.6);
     this.dot(jumpX, y(data.beforeJump), 2.8, 'ink', alpha * span(time, 87800, 88700));
     this.dot(jumpX, y(data.afterJump), 3.3, 'blue', alpha * jump);
-    this.words('4.81', jumpX - 0.075, y(data.beforeJump) - 0.01, 0.15, wording * span(time, 87800, 88700));
+    this.words('4.81', jumpX - 0.075, y(data.beforeJump) - 0.01 - 9 / this.height, 0.15, wording * span(time, 87800, 88700));
     this.words('29.41', jumpX + 0.09, y(data.afterJump) - 0.04, 0.2, wording * jump, 'blue');
     const end = wording * span(time, 94300, 95500);
     this.dot(x(2_000_000), y(data.total), 3, 'blue', end);
@@ -547,7 +548,31 @@ export class FractionRulersFilm {
       const cy = scene.chart.y + (scene.chart.top - reference.exponent) / (scene.chart.top - scene.chart.bottom) * scene.chart.h;
       this.path([[jumpX, y(data.beforeJump)], [jumpX, plot.y + plot.h + 0.018], [cx, cy]], 'blue', alpha * jump * 0.55, 1 / this.dpr);
       this.dot(cx, cy, 3, 'blue', alpha);
-      this.formula('fraction-2', cx - 0.03, cy + 0.065, wording);
+
+      if (wording >= 0.005 && time <= 96000) {
+        const label = this.labels.get('fraction-2')?.firstElementChild;
+
+        if (!label) throw new Error('Missing reference fraction label');
+
+        const size = label.getBoundingClientRect();
+
+        if (this.width >= 880) {
+          this.formula('fraction-2', cx, cy + (7.25 + size.height / 2) / this.height, wording);
+        } else if (this.width >= 318) {
+          this.formula('fraction-2', cx + (7 + size.width / 2) / this.width, cy + ((this.layout === 'wide' ? 0.5 : 1) + size.height / 2) / this.height, wording);
+        } else {
+          this.pen.save();
+          this.pen.font = 'italic 14px Alegreya, Georgia, serif';
+          this.pen.textBaseline = 'middle';
+          const tickBottom = (plot.y + plot.h + 0.045) * this.height + this.pen.measureText('1').actualBoundingBoxDescent;
+          this.pen.restore();
+          const labelY = Math.max(cy * this.height + 4, tickBottom + 4 + size.height / 2);
+          const labelRight = 4.01 + size.width;
+          const elbowX = cx - 7 / this.width;
+          this.path([[cx - 4 / this.width, cy], [elbowX, cy], [elbowX, labelY / this.height], [(labelRight + 1) / this.width, labelY / this.height]], 'muted', wording * 0.5, 1 / this.dpr);
+          this.formula('fraction-2', (4.01 + size.width / 2) / this.width, labelY / this.height, wording, 4.01);
+        }
+      }
     }
   }
 
