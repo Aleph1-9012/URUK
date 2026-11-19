@@ -8,16 +8,16 @@ export function layout(w: number, h: number) {
   const phone = w < PHONE_STAGE_WIDTH;
   const stacked = w < 760;
   const image = stacked
-    ? { x: w * (phone ? .07 : .11), y: h * .04, width: w * (phone ? .86 : .78), height: h * (phone ? .30 : .36) }
+    ? { x: w * (phone ? .07 : .11), y: h * (phone ? .06 : .04), width: w * (phone ? .86 : .78), height: h * (phone ? .28 : .36) }
     : { x: .04 * w, y: .10 * h, width: .51 * w, height: .60 * h };
 
   return {
     phone,
     stacked,
     image,
-    plot: { left: (stacked ? .10 : .60) * w, right: (stacked ? .90 : .96) * w, top: (stacked ? .46 : .13) * h, bottom: (stacked ? .69 : .53) * h },
+    plot: { left: (stacked ? .10 : .60) * w, right: (stacked ? .90 : .96) * w, top: (phone ? .50 : stacked ? .46 : .13) * h, bottom: (phone ? .70 : stacked ? .69 : .53) * h },
     panel: { center: stacked ? .5 : .78, width: stacked ? .94 : .36 },
-    text: { top: (stacked ? .46 : .08) * h, imageCaption: image.y + image.height + 15 },
+    text: { top: (stacked ? .46 : .08) * h, imageCaption: image.y + image.height + (phone ? 6 : 15) },
   };
 }
 
@@ -69,7 +69,7 @@ export function drawCheapestEdgesPanels(ctx: CanvasRenderingContext2D, w: number
       if (phone || !stacked) note('AN EDGE IS ONE POINT · ITS COST IS 1', stacked ? .405 : .06, phone ? 8 : 10);
       note(`NO EDGE · ROUGHNESS ${none.roughness.toFixed(2)} + DISTANCE ${none.distance.toFixed(2)} = ${none.total.toFixed(2)}`, stacked ? .745 : .60, phone ? 9 : 12, true);
 
-      if (motion.cut > 0) note(`EDGE AT 0.50 · ROUGHNESS ${middle.roughness.toFixed(0)} + EDGE ${middle.length.toFixed(0)} + DISTANCE ${middle.distance.toFixed(0)} = ${middle.total.toFixed(2)}`, stacked ? .815 : .71, phone ? 9 : 12, true);
+      if (motion.cut > 0) note(`EDGE AT 0.50 · ROUGHNESS ${middle.roughness.toFixed(0)} + EDGE ${middle.length.toFixed(0)} +${stacked && !phone ? ' ' : '\n'}DISTANCE ${middle.distance.toFixed(0)} = ${middle.total.toFixed(2)}`, stacked ? .815 : .71, phone ? 9 : 12, true);
       if (motion.scan > 0) note(`EDGE AT 0.05 · TOTAL ${misplaced.total.toFixed(3)}`, stacked ? .885 : .81, phone ? 9 : 12, true);
 
       note(`${model.toy.cells}-CELL 1D TOY · NOT A PLANAR MINIMIZER`, stacked ? .945 : .91, phone ? 8 : 10);
@@ -118,9 +118,9 @@ export function drawCheapestEdgesPanels(ctx: CanvasRenderingContext2D, w: number
         labels.place('tip-gradient', .30 * w, .80 * h);
         labels.place('weak-integrability', .68 * w, .80 * h);
       } else {
-        formula('tip-gradient', (page.plot.top - (phone ? 22 : 26)) / h);
-        formula('tip-field', phone ? .735 : .62);
-        formula('weak-integrability', phone ? .82 : .74);
+        formula('tip-gradient', phone ? .445 : (page.plot.top - 26) / h);
+        labels.place('tip-field', w * (phone ? .26 : page.panel.center), h * (phone ? .80 : .62));
+        labels.place('weak-integrability', w * (phone ? .73 : page.panel.center), h * (phone ? .80 : .74));
       }
       note('WEAK L⁴ DOES NOT MEAN STRONG L⁴ AT THE TIP', stacked ? .895 : .84, phone ? 8 : 10, true);
       note('AMPLITUDE 1 MODEL · NOT A COMPUTED MINIMIZER', stacked ? .95 : .94, phone ? 8 : 10);

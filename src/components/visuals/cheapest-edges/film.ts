@@ -2,7 +2,7 @@ import { mix } from '../../../lib/animation';
 import type { FilmDrawing } from '../../plate/controller';
 import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { drawLine, drawText } from '../../plate/canvas/wrapped-text';
+import { drawLine, drawText, drawWrappedText } from '../../plate/canvas/wrapped-text';
 import { buildCheapestEdgesModel, tipField, type Point } from './math';
 import { drawCheapestEdgesPanels, layout } from './panels';
 import { motionAt } from './story';
@@ -207,7 +207,7 @@ class CheapestEdgesFilm implements FilmDrawing {
     pen.strokeRect(box.x, box.y, box.size, box.size);
 
     if (zoom > 0 && motion.scene !== 'tip' && motion.scene !== 'ledger') this.text('SCHEMATIC BLOW-UP · NOT A COMPUTED LIMIT', { x: box.x + box.size / 2, y: box.y - 12 }, this.page.phone ? 7 : 9);
-    else this.text('K', { x: box.x + 9, y: box.y + 11 }, this.page.phone ? 12 : 16, true);
+    else this.text('K', { x: box.x + (this.page.phone ? -11 : 9), y: box.y + 11 }, this.page.phone ? 12 : 16, true);
   }
 
   private hypothetical(motion: Motion, time: number): void {
@@ -228,7 +228,13 @@ class CheapestEdgesFilm implements FilmDrawing {
       this.line(c, between(c, d, amount), true, 2);
     }
 
-    if (motion.claim === 0) this.text('SUPPOSED BOUNDED ARC', { x: box.x + .72 * box.size, y: box.y + .39 * box.size }, this.page.phone ? 8 : 9);
+    if (motion.claim === 0) {
+      if (this.page.phone) {
+        drawWrappedText(this.pen, 'SUPPOSED BOUNDED ARC', box.x + box.size / 2, box.y + .58 * box.size, box.size * .94, { size: 8, color: this.tones.ink, paper: this.tones.paper });
+      } else {
+        this.text('SUPPOSED BOUNDED ARC', { x: box.x + .72 * box.size, y: box.y + .39 * box.size }, 9);
+      }
+    }
   }
 
   private energy(motion: Motion): void {
@@ -352,12 +358,12 @@ class CheapestEdgesFilm implements FilmDrawing {
 
       const marker = markers[component];
       const p = this.imagePoint(marker);
-      this.text(String(index + 1), { x: p.x + 12, y: p.y + 12 }, this.page.phone ? 9 : 12, true);
+      this.text(String(index + 1), { x: p.x + 12, y: p.y + (component === 3 && (!this.page.stacked || this.page.phone) ? -14 : component === 2 && this.page.phone ? -12 : 12) }, this.page.phone ? 9 : 12, true);
     }
 
     const box = this.imageBox();
     this.text('U', this.imagePoint({ x: .88, y: .88 }), this.page.phone ? 13 : 17, true);
-    this.text(`SCHEMATIC COUNT: ${count} GLOBAL COMPONENTS`, { x: box.x + box.size / 2, y: this.page.text.imageCaption + 17 }, this.page.phone ? 7.5 : 10);
+    this.text(`SCHEMATIC COUNT: ${components.length} GLOBAL COMPONENTS`, { x: box.x + box.size / 2, y: this.page.text.imageCaption + 17 }, this.page.phone ? 7.5 : 10);
   }
 
   private tip(motion: Motion): void {
