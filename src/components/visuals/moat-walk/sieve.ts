@@ -242,7 +242,6 @@ export function drawSieve(pen: CanvasRenderingContext2D, width: number, height: 
     pen.strokeStyle = colors.muted;
     pen.lineWidth = .6;
     pen.strokeRect(a.x, b.y, b.x - a.x, a.y - b.y);
-    fieldWords(pen, 'ONE PERIOD', (a.x + b.x) / 2, b.y + 8, Math.max(65, b.x - a.x), colors, tall ? 7 : 9, 'muted');
   }
 
   if (time >= 90500) {
@@ -286,6 +285,15 @@ export function drawSieve(pen: CanvasRenderingContext2D, width: number, height: 
   }
 
   pen.restore();
+
+  if (time >= 88000) {
+    const periodSize = tall ? 7 : 9;
+    const periodCorner = map({ x: 65, y: 65 });
+    const periodX = periodCorner.x - 3;
+    const periodY = box.y + 20;
+    fieldLine(pen, { x: periodX, y: periodY + periodSize / 2 + 3 }, { x: periodX, y: periodCorner.y }, colors.muted, .6);
+    fieldWords(pen, 'ONE PERIOD', periodX, periodY, Math.max(65, 65 * scale), colors, periodSize, 'muted');
+  }
 
   if (time < 90500) {
     label('period-q', box.x + box.w / 2, box.y + box.h - 30);

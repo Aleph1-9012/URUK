@@ -41,6 +41,7 @@ export function drawDial(pen: CanvasRenderingContext2D, width: number, height: n
   const center = { x: box.x + box.w / 2, y: box.y + box.h * .44 };
   const maximumRadius = Math.min(box.w * (tall ? .30 : .42), box.h * .35);
   const unit = maximumRadius / Math.sqrt(10);
+  const countY = tall ? box.y + box.h * .78 : center.y + maximumRadius + 14;
   const squared = squaredAt(time);
   const radius = Math.sqrt(squared) * unit;
   const symbolic = time >= 69000 && time < 83000 || time >= 106000;
@@ -164,7 +165,10 @@ export function drawDial(pen: CanvasRenderingContext2D, width: number, height: n
 
   const changing = squared !== stepSquared(time);
 
-  if (!symbolic) words(changing ? 'CHANGING' : stepName(stepSquared(time)), center.x, box.y + (tall ? 13 : 19), box.w, 'ink', tall ? 9 : 13);
+  if (!symbolic) {
+    const valueX = tall ? center.x : center.x - maximumRadius - 36;
+    words(changing ? 'CHANGING' : stepName(stepSquared(time)), valueX, box.y + (tall ? 13 : 19), box.w, 'ink', tall ? 9 : 13);
+  }
 
   pen.beginPath();
   pen.arc(center.x, center.y, symbolic ? maximumRadius : radius, 0, Math.PI * 2 * smooth(time, 16500, 17800));
@@ -189,10 +193,9 @@ export function drawDial(pen: CanvasRenderingContext2D, width: number, height: n
       pen.fill();
     }
 
-    const countY = box.y + box.h * .78;
     label('step-count', center.x - (tall ? 11 : 17), countY);
-    words(`= ${vectors.length}`, center.x + (tall ? 12 : 18), countY, box.w, 'ink', tall ? 9 : 12);
+    words(`= ${vectors.length}`, center.x + (tall ? 8 : 10), countY, box.w, 'ink', tall ? 9 : 12);
   }
 
-  words('ZERO INCLUDED', center.x, box.y + box.h * (tall ? .99 : .91), box.w, 'muted', tall ? 7 : 9);
+  words('ZERO INCLUDED', center.x, !tall && !symbolic ? countY + 22 : box.y + box.h * (tall ? .99 : .91), box.w, 'muted', tall ? 7 : 9);
 }

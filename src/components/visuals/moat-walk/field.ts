@@ -37,7 +37,7 @@ function camera(time: number): { x: number; y: number; radius: number } {
   if (time < 41500) {
     const move = smooth(time, 38500, 39700);
 
-    return { x: 45 * (1 - move), y: 45 * (1 - move), radius: mix(11.5, 14, move) };
+    return { x: 45 * (1 - move), y: 45 * (1 - move), radius: mix(11.5, 14, move) + (move < 1 ? 45 * Math.sin(Math.PI * move) : 0) };
   }
 
   if (time < 44500) return { x: 0, y: 0, radius: mix(14, 50, smooth(time, 41500, 43500)) };
@@ -316,14 +316,17 @@ export function drawField(pen: CanvasRenderingContext2D, width: number, height: 
   fieldLine(pen, { x: area.x, y: origin.y }, { x: area.x + area.w, y: origin.y }, colors.muted, .5);
   fieldLine(pen, { x: origin.x, y: area.y }, { x: origin.x, y: area.y + area.h }, colors.muted, .5);
 
-  if (initial && time < 38500) {
+  if (initial && time < 39700) {
     pen.beginPath();
     const front = 40 * smooth(time, 0, 5800);
+    const carriedHalfWidth = 11.5 * area.w / Math.min(area.w, area.h);
+    const carriedHalfHeight = 11.5 * area.h / Math.min(area.w, area.h);
 
     for (let index = 0; index < initial.smallPrimeCoords.length; index += 2) {
       const x = initial.smallPrimeCoords[index] ?? 0;
       const y = initial.smallPrimeCoords[index + 1] ?? 0;
 
+      if (time >= 38500 && (Math.abs(x - 45) > carriedHalfWidth || Math.abs(y - 45) > carriedHalfHeight)) continue;
       if (time < 8500 && x * x + y * y > front * front) continue;
       if (time >= 8500 && time < 16500 && x * x + y * y > 1600) continue;
       if (time >= 24500 && time < 31000 && y !== 0) continue;
@@ -432,7 +435,9 @@ export function drawField(pen: CanvasRenderingContext2D, width: number, height: 
       const next = Math.min(count - 1, at + 1);
       dot(pen, map({ x: mix(coords[at * 2] ?? 0, coords[next * 2] ?? 0, walk % 1), y: mix(coords[at * 2 + 1] ?? 0, coords[next * 2 + 1] ?? 0, walk % 1) }), colors.ink, 2.7);
     }
-  } else if (time < 52500) {
+  }
+
+  if (time >= 38500 && time < 52500) {
     const stage = time < 41500 ? 2 : time < 44500 ? 4 : time < 47500 ? 8 : 10;
     const start = stage === 2 ? 38500 : stage === 4 ? 41500 : stage === 8 ? 44500 : 47500;
     const end = stage === 10 ? 51600 : start + 2200;
@@ -456,7 +461,7 @@ export function drawField(pen: CanvasRenderingContext2D, width: number, height: 
 
     if (prior && stage < 10) drawFlood(pen, prior, 1, view, colors);
     if (flood) drawFlood(pen, flood, smooth(time, start, end), view, colors);
-  } else islands(pen, data, view, colors);
+  } else if (time >= 52500) islands(pen, data, view, colors);
 
   if (origin.y >= area.y && origin.y < area.y + area.h - 10) {
     fieldWords(pen, 'REAL', area.x + area.w - 15, origin.y + 9, 35, colors, tall ? 6 : 8, 'muted');

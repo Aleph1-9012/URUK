@@ -6,4 +6,5 @@ uruk-moat-walk .film-label[data-label="cluster-bound"] { color: var(--blue); }
 
   uruk-moat-walk .film-label { font-size: .9375rem; }
   uruk-moat-walk .film-label--data { font-size: .75rem; }
+  uruk-moat-walk .film-label[data-label="step-count"] > span { padding-inline: 0; }
 }
