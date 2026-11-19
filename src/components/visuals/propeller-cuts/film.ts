@@ -93,8 +93,8 @@ export class PropellerCutsFilm {
     }
 
     const tucked = smooth(time, 57750, 59500);
-    const radius = mix(tall ? w * .43 : h * .31, tall ? w * .20 : h * .20, tucked);
-    const plot: Plot = { x: w * mix(tall ? .5 : .30, tall ? .25 : .22, tucked), y: h * mix(tall ? .335 : .40, tall ? .20 : .28, tucked), scale: radius / this.extent, radius };
+    const radius = mix(tall ? w * .34 : h * .31, tall ? w * .20 : h * .20, tucked);
+    const plot: Plot = { x: w * mix(tall ? .5 : .30, tall ? .25 : .22, tucked), y: h * mix(tall ? .32 : .40, tall ? .20 : .28, tucked), scale: radius / this.extent, radius };
     const angles = cutAt(time);
     const partition = sectorPartition(angles);
     this.drawCloud(plot, angles, time, tall);
@@ -109,11 +109,11 @@ export class PropellerCutsFilm {
 
     const aside = tall ? smooth(time, 20750, 21000) * (1 - smooth(time, 23750, 24000)) : 0;
 
-    if (time >= 8500) this.text('ARROWS ×4 · EXACT DENSITY', w * (mix(tall ? .5 : .30, tall ? .25 : .22, tucked) - .26 * aside), h * mix(tall ? .615 : .755, tall ? .365 : .535, tucked), w * mix(mix(tall ? .91 : .56, .44, aside), .45, tucked), tall ? 9 : 12, '"Garamond Math"');
+    if (time >= 8500) this.text('ARROWS ×4 · EXACT DENSITY', w * (mix(tall ? .5 : .30, tall ? .72 : .22, tucked) - .26 * aside), h * mix(tall ? .59 : .755, tall ? .365 : .535, tucked), w * mix(mix(tall ? .91 : .56, .44, aside), .45, tucked), tall ? 9 : 12, '"Garamond Math"');
 
     if (time >= 19750) {
       const numberX = w * mix(tall ? .60 : .79, tall ? .25 : .58, tucked);
-      const numberY = h * mix(tall ? .705 : .085, tall ? .465 : .085, tucked);
+      const numberY = h * mix(tall ? .69 : .085, tall ? .435 : .085, tucked);
       this.labels.place('objective', numberX - (tall ? 42 : 60), numberY);
       this.text(partition.value.toFixed(4), numberX, numberY, w * .29, tall ? 24 : 30, '"Garamond Math"');
       this.gauge(partition.moments, partition.value, time, tucked);
@@ -203,7 +203,7 @@ export class PropellerCutsFilm {
     const { width: w, height: h } = this;
     const tall = w < PHONE_STAGE_WIDTH;
 
-    return tall ? { x: w * (.12 + .76 * value / .4), y: h * mix(.785, .56, tucked) } : { x: w * mix(.80, .53, tucked), y: h * (.68 - .49 * value / .4) };
+    return tall ? { x: w * (.12 + .76 * value / .4), y: h * mix(.82, .54, tucked) } : { x: w * mix(.80, .53, tucked), y: h * (.68 - .49 * value / .4) };
   }
 
   private gauge(moments: Point[], value: number, time: number, tucked: number): void {
@@ -221,7 +221,7 @@ export class PropellerCutsFilm {
     for (const tick of [0, .2, .4]) {
       const p = this.gaugePoint(tick, tucked);
       this.line(p.x - normal.x * 4, p.y - normal.y * 4, p.x + normal.x * 4, p.y + normal.y * 4);
-      this.text(String(tick), p.x + normal.x * (time >= 50750 ? 44 : 27), p.y + normal.y * (time >= 50750 ? 44 : 27), 30, tall ? 9 : 12, '"Garamond Math"');
+      this.text(String(tick), p.x + normal.x * (tall ? time >= 50750 ? 23 : 16 : time >= 50750 ? 44 : 27), p.y + normal.y * (tall ? time >= 50750 ? 23 : 16 : time >= 50750 ? 44 : 27), 30, tall ? 9 : 12, '"Garamond Math"');
     }
 
     if (time >= 23750) {
@@ -288,7 +288,7 @@ export class PropellerCutsFilm {
         if (!cut) throw new Error('Each comparison tick needs its own grid-evaluated partition.');
 
         const q = this.gaugePoint(cut.value, tucked);
-        const lane = 15 + index % 5 * 3;
+        const lane = tall ? 8 + index % 5 * 1.5 : 15 + index % 5 * 3;
         this.line(q.x + normal.x * lane, q.y + normal.y * lane, q.x + normal.x * (lane + 2), q.y + normal.y * (lane + 2));
       }
     }
@@ -344,7 +344,7 @@ export class PropellerCutsFilm {
     const tall = w < PHONE_STAGE_WIDTH;
     const size = tall ? 8.5 : w < 880 ? 11 : 12;
     const x = w * (tall ? .5 : .30);
-    const y = h * (tall ? .93 : .89);
+    const y = h * (tall ? .96 : .89);
     let tag: string;
 
     if (time < 8500) tag = 'ONE FIXED SAMPLE · THE DENSITY IS CONTINUOUS';
@@ -369,13 +369,13 @@ export class PropellerCutsFilm {
     if (time >= 8500 && time < 50750) {
       const angleText = angles.reduce((text, angle) => angle > 1e-6 ? text + (text ? ' · ' : '') + angle.toFixed(0) + '°' : text, '');
       const aside = tall ? smooth(time, 20750, 21000) * (1 - smooth(time, 23750, 24000)) : 0;
-      this.text('ANGLES ≈ ' + angleText, w * ((tall ? .5 : .30) - .26 * aside), h * (tall ? .66 : .80), w * mix(tall ? .94 : .58, .44, aside), tall ? 10 : 13, '"Garamond Math"');
+      this.text('ANGLES ≈ ' + angleText, w * ((tall ? .5 : .30) - .26 * aside), h * (tall ? .635 : .80), w * mix(tall ? .94 : .58, .44, aside), tall ? 10 : 13, '"Garamond Math"');
     }
 
-    if (time >= 26250 && time < 29750) this.labels.place('two-halves', w * (tall ? .20 : .79), h * (tall ? .705 : .135));
-    if (time >= 32500 && time < 34750) this.labels.place('propeller', w * (tall ? .20 : .79), h * (tall ? .705 : .135));
+    if (time >= 26250 && time < 29750) this.labels.place('two-halves', w * (tall ? .20 : .79), h * (tall ? .69 : .135));
+    if (time >= 32500 && time < 34750) this.labels.place('propeller', w * (tall ? .20 : .79), h * (tall ? .69 : .135));
 
-    if (time >= 42750 && time < 50750) this.text('1° SEARCH · k = 3 TO 6 · EMPTY CELLS ALLOWED', x, h * (tall ? .885 : .95), w * (tall ? .94 : .58), tall ? 8.5 : 11, '"Garamond Math"');
+    if (time >= 42750 && time < 50750) this.text('1° SEARCH · k = 3 TO 6 · EMPTY CELLS ALLOWED', x, h * (tall ? .91 : .95), w * (tall ? .94 : .58), tall ? 8.5 : 11, '"Garamond Math"');
 
     if (time >= 50750) {
       if (!this.data) throw new Error('The comparison notes need computed random-cut values.');
@@ -385,11 +385,11 @@ export class PropellerCutsFilm {
       const upward = smooth(tucked, tall ? .60 : .82, 1);
       const noteX = tall ? w * .5 : w * mix(.30, .77, across);
       const available = tall ? w * .94 : w * mix(.58, .36, across);
-      const noteY = tall ? h * mix(.92, .70, tucked) : h * mix(.86, .20, upward);
-      const sharpY = tall ? h * mix(.955, .735, tucked) : h * mix(.91, .29, upward);
-      const gridY = tall ? h * mix(.985, .77, tucked) : h * mix(.96, .49, upward);
+      const noteY = tall ? h * mix(.925, .70, tucked) : h * mix(.86, .20, upward);
+      const sharpY = tall ? h * mix(.9575, .735, tucked) : h * mix(.91, .29, upward);
+      const gridY = tall ? h * mix(.9875, .77, tucked) : h * mix(.96, .49, upward);
       const bandX = tall ? w * .72 : noteX;
-      const bandY = tall ? h * .08 : h * mix(.78, .40, upward);
+      const bandY = tall ? h * .105 : h * mix(.78, .40, upward);
       this.text(carrying && !tall ? 'CLAIMED: ALL n,k' : 'CLAIMED: EVERY n AND k', noteX, noteY, available, size, '"Garamond Math"', true);
       this.text(tall || time < 57750 ? 'SHARP n ≥ 2, k ≥ 3 · EMPTY CELLS' : 'SHARP: n ≥ 2, k ≥ 3', noteX, sharpY, available, size, '"Garamond Math"', true);
       this.text(carrying && !tall ? '150 GRID CUTS' : `150 GRID CUTS · BEST ${this.data.randomCuts.max.toFixed(4)} · EXAMPLES ONLY`, noteX, gridY, available, size, '"Special Elite"', true);
