@@ -7,5 +7,3 @@ uruk-curve-budget .film-label--small { font-size: .9375rem; }
   uruk-curve-budget .film-label { font-size: .9375rem; }
   uruk-curve-budget .film-label--small { font-size: .8125rem; }
 }
-
-uruk-curve-budget:not([data-ready]) .film-stage { aspect-ratio: auto; }

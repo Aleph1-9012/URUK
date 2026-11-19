@@ -29,19 +29,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  neutral: 0,
-  more: 5750,
-  laboratory: 8750,
-  binding: 18250,
-  plateau: 24250,
-  hard: 31500,
-  lieb: 37000,
-  conjecture: 44000,
-  claim: 53500,
-  review: 63750,
-} as const;
-
 const SCENE_NAMES = ["neutral", "more", "laboratory", "binding", "plateau", "hard", "lieb", "conjecture", "claim", "review"] as const;
 
 export function sceneAt(time: number) {

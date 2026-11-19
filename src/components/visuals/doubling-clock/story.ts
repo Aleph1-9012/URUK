@@ -29,19 +29,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  swarm: 0,
-  feedback: 5000,
-  velocity: 14500,
-  criterion: 22250,
-  finiteHorizon: 34250,
-  doubling: 40250,
-  global: 56250,
-  finiteCaps: 70000,
-  review: 81250,
-  ledger: 88000,
-} as const;
-
 const SCENE_NAMES = ["swarm", "feedback", "velocity", "criterion", "finiteHorizon", "doubling", "global", "finiteCaps", "review", "ledger"] as const;
 
 export function sceneAt(time: number) {

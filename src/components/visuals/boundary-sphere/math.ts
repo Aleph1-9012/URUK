@@ -218,27 +218,9 @@ export function tilingMap(distance: number): DiskMap {
   };
 }
 
-export function tilingTranslation(point: Point, distance: number): Point {
-  return tilingMap(distance)(point);
-}
-
-export const MAGNIFICATION = 400;
-
-export const SMALL_ARC_HALF_WIDTH = .1;
-
 export function magnifiedHalfWidth(halfWidth: number, distance: number): number {
   return 2 * Math.atan(Math.exp(distance) * Math.tan(halfWidth / 2));
 }
-
-export function smallBoundaryArc(samples = 48): Point[] {
-  return Array.from({ length: samples + 1 }, (_, index) => {
-    const angle = Math.PI - SMALL_ARC_HALF_WIDTH + 2 * SMALL_ARC_HALF_WIDTH * index / samples;
-
-    return { x: Math.cos(angle), y: Math.sin(angle) };
-  });
-}
-
-export const BOUNDARY_ARC = smallBoundaryArc();
 
 export type TreeNode = {
   parent: number;
@@ -310,10 +292,6 @@ export function gridCost(cellsPerSide: number): number {
   return cellsPerSide * cellsPerSide * (1 / cellsPerSide) ** 2;
 }
 
-export function crossingWeight(cellsPerSide: number, distinctCells: number): number {
-  return distinctCells / cellsPerSide;
-}
-
 export function exponentialCost(n: number): number {
   return 2 ** (.5 * n);
 }
@@ -321,8 +299,6 @@ export function exponentialCost(n: number): number {
 export function quadraticCost(n: number): number {
   return 50 * (5 + 4 * n) ** 2;
 }
-
-export const FIRST_IMPOSSIBLE_N = 41;
 
 // Standard level-three Koch outline, with outward bumps. The initial triangle
 // and all segments are counterclockwise; the -60 degree bump is on its outside.

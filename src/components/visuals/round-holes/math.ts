@@ -241,5 +241,3 @@ export function createHoleModel() {
     cantor: Array.from({ length: 8 }, (_, k) => cantorStage(k)),
   };
 }
-
-export type HoleModel = ReturnType<typeof createHoleModel>;

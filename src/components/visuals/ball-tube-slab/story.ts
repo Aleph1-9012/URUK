@@ -28,18 +28,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  ordinary: 0,
-  periodic: 6500,
-  wrapping: 14500,
-  candidates: 20500,
-  claim: 30500,
-  transitions: 40250,
-  alternatives: 48250,
-  review: 59500,
-  ledger: 68500,
-} as const;
-
 const SCENE_NAMES = ["ordinary", "periodic", "wrapping", "candidates", "claim", "transitions", "alternatives", "review", "ledger"] as const;
 
 export function sceneAt(time: number) {

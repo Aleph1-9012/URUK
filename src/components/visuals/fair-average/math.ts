@@ -1,7 +1,5 @@
 export type Point = { x: number; y: number };
 
-export type Interval = { start: number; end: number };
-
 export type PiecewiseMap = readonly Point[];
 
 const X0 = [{ x: 0, y: 0 }, { x: .5, y: .25 }, { x: .75, y: .5 }, { x: 1, y: 1 }] as const;
@@ -123,10 +121,6 @@ export function freeShare(radius: number): number {
   return 2 * 3 ** radius / freeBallSize(radius);
 }
 
-export const FREE_BALLS = [2, 4, 6, 8].map((radius) => ({ radius, size: freeBallSize(radius), changed: 2 * 3 ** radius, share: freeShare(radius) }));
-
-export const WHOLE_RUNS = [5, 10, 20, 40].map((length) => ({ length, changed: 2, share: integerShare(length) }));
-
 // This continuous affine map sends the unit disk into the radius-.5 disk about
 // (.4,0), and therefore into the unit disk. Its fixed point is exact in decimals.
 export function diskMap(point: Point): Point {
@@ -134,11 +128,3 @@ export function diskMap(point: Point): Point {
 }
 
 export const FIXED_POINT = { x: .32, y: .16 } as const;
-
-export const DISPLACEMENT = .5;
-
-// No numerical L is supplied by the article, so the film must not turn this
-// expression into a numerical floor. Its drawn height is explicitly schematic.
-export const FLOOR_FORMULA = String.raw`\frac{\delta^2/L^2-4/D}{4(1-1/D)}>0`;
-
-export const DIMENSION_CONDITION = String.raw`D>16L^2`;

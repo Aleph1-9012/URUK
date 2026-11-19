@@ -1,5 +1,4 @@
 uruk-corner-tour .film-label { font-size: .875rem; }
-uruk-corner-tour:not([data-ready]) .film-subtitles { display: none; }
 
 @container plate (max-width: 599px) {
   uruk-corner-tour .film-stage { aspect-ratio: 4 / 5; }

@@ -27,17 +27,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  two: 0,
-  unbiased: 7000,
-  applications: 19000,
-  primes: 27500,
-  six: 37250,
-  zauner: 46000,
-  claims: 51500,
-  ledger: 67750,
-} as const;
-
 const SCENE_NAMES = ["two", "unbiased", "applications", "primes", "six", "zauner", "claims", "ledger"] as const;
 
 export function sceneAt(time: number) {

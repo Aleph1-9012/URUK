@@ -156,5 +156,3 @@ export function buildMazeModel() {
     records: { nisan: log ** 2, saksZhou: log ** 1.5, log },
   };
 }
-
-export type MazeModel = ReturnType<typeof buildMazeModel>;

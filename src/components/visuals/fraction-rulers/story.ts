@@ -88,10 +88,6 @@ export function sceneAt(time: number, layout: Layout) {
   };
 }
 
-export function plottedCount(time: number): number {
-  return Math.min(22, Math.max(0, 2 + Math.floor((time - 32000) / 300)));
-}
-
 export function ceilingAt(time: number): number {
   const records = [
     { value: 42, start: 49700, end: 50000 },

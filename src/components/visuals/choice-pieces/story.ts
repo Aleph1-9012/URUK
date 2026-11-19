@@ -30,20 +30,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  pieces: 0,
-  inside: 6000,
-  outside: 13000,
-  board: 26000,
-  levi: 39250,
-  withdrawals: 43250,
-  paper: 51500,
-  diagram: 57250,
-  scope: 65250,
-  reader: 69500,
-  ledger: 81000,
-} as const;
-
 const SCENE_NAMES = ["pieces", "inside", "outside", "board", "levi", "withdrawals", "paper", "diagram", "scope", "reader", "ledger"] as const;
 
 export function sceneAt(time: number) {

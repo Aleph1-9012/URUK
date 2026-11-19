@@ -145,14 +145,6 @@ export function numericalRangeBoundary(matrix: Matrix2, count = 240): Point[] {
   return points;
 }
 
-export function numericalRadius(matrix: Matrix2): number {
-  let radius = 0;
-
-  for (const point of numericalRangeBoundary(matrix)) radius = Math.max(radius, Math.hypot(point.x, point.y));
-
-  return radius;
-}
-
 export function openingMatrix(amount: number): Matrix2 {
   return realMatrix(1.5 * (1 - amount), 2 * amount, 0, .6 * (1 - amount));
 }

@@ -28,18 +28,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  image: 0,
-  energy: 9000,
-  localTypes: 25000,
-  blowUp: 41500,
-  twoProofs: 49500,
-  claim: 55500,
-  components: 72750,
-  tip: 84750,
-  ledger: 94750,
-} as const;
-
 const SCENE_NAMES = ["image", "energy", "localTypes", "blowUp", "twoProofs", "claim", "components", "tip", "ledger"] as const;
 
 export function sceneAt(time: number) {

@@ -180,5 +180,3 @@ export function buildTileModel() {
     },
   };
 }
-
-export type TileModel = ReturnType<typeof buildTileModel>;

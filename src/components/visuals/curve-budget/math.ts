@@ -267,10 +267,6 @@ export function growthRuns(segments: readonly Segment[], pins: readonly Point[])
 
 export type PinchBranches = { oval: readonly Point[]; upper: readonly Point[]; lower: readonly Point[] };
 
-export function pinchValue(x: number, y: number, epsilon: number): number {
-  return y * y - x * x * x - x * x - epsilon;
-}
-
 function root(epsilon: number, left: number, right: number): number {
   let lo = left;
   let hi = right;

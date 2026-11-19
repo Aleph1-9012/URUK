@@ -1,15 +1,4 @@
 
-export function gcd(first: number, second: number): number {
-  let a = Math.abs(first);
-  let b = Math.abs(second);
-
-  while (b !== 0) {
-    [a, b] = [b, a % b];
-  }
-
-  return a;
-}
-
 // The net of c: every knot (a/c, b/c). The film tries nets c = 1, 2, 3… in turn over the view |x|, |y| ≤ NET_REACH.
 export const NET_REACH = 2.6;
 

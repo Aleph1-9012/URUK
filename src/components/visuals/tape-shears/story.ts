@@ -32,22 +32,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  fluid: 0,
-  detector: 4000,
-  question: 9000,
-  encoding: 14000,
-  digits: 19000,
-  tapeStep: 25000,
-  shears: 37000,
-  history: 46000,
-  claim: 56000,
-  fixed: 62000,
-  smooth: 70000,
-  review: 79500,
-  ledger: 90000,
-} as const;
-
 const SCENE_NAMES = ["fluid", "detector", "question", "encoding", "digits", "tapeStep", "shears", "history", "claim", "fixed", "smooth", "review", "ledger"] as const;
 
 export function sceneAt(time: number) {

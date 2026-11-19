@@ -28,18 +28,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  zero: 0,
-  waves: 4000,
-  ideal: 23000,
-  experiment: 31750,
-  model: 37000,
-  unproved: 48500,
-  claim: 63250,
-  review: 78000,
-  ledger: 85000,
-} as const;
-
 const SCENE_NAMES = ["zero", "waves", "ideal", "experiment", "model", "unproved", "claim", "review", "ledger"] as const;
 
 export function sceneAt(time: number) {

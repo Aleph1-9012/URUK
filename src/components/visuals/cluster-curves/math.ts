@@ -191,8 +191,6 @@ export function buildClusterSample(size: number, q: number, openEdges: readonly 
   };
 }
 
-export type ClusterSample = ReturnType<typeof buildClusterSample>;
-
 export function buildClusterCurvesModel() {
   const q1 = buildClusterSample(GRID_SIZE, 1, SAMPLE_EDGES[0].open);
   const q2 = buildClusterSample(GRID_SIZE, 2, SAMPLE_EDGES[1].open);
@@ -207,5 +205,3 @@ export function buildClusterCurvesModel() {
 
   return { size: GRID_SIZE, samples, q1, q2, q3, kappaCurve, kappaReadouts };
 }
-
-export type ClusterCurvesModel = ReturnType<typeof buildClusterCurvesModel>;

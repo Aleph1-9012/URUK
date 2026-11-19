@@ -1,7 +1,4 @@
-uruk-dot-holds:not([data-ready]) .film-subtitles { display: none; }
-
 @container plate (max-width: 599px) {
   uruk-dot-holds .film-stage { aspect-ratio: 4 / 5; }
-  uruk-dot-holds:not([data-ready]) .film-stage { aspect-ratio: 4 / 5; }
   uruk-dot-holds .film-label { font-size: .75rem; }
 }

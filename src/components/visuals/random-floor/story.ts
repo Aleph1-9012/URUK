@@ -30,20 +30,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  drop: 0,
-  density: 9250,
-  benchmark: 15750,
-  conjecture: 21250,
-  known: 37750,
-  pairs: 46750,
-  paper: 52750,
-  claim: 62250,
-  hostExistence: 72500,
-  formal: 79500,
-  ledger: 87250,
-} as const;
-
 const SCENE_NAMES = ['drop', 'density', 'benchmark', 'conjecture', 'known', 'pairs', 'paper', 'claim', 'hostExistence', 'formal', 'ledger'] as const;
 
 export function sceneAt(time: number) {

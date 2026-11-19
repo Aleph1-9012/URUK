@@ -1,7 +1,6 @@
 /* Garamond Math's radical end advance otherwise separates subtitle words. */
 uruk-few-distances .film-frame .film-cue .formula-inline:has(msqrt) { margin-inline-end: -.43em; }
 uruk-few-distances .film-label[data-label="ratio-definition"] { font-size: .75rem; }
-uruk-few-distances:not([data-ready]) .film-subtitles { display: none; }
 
 @container plate (max-width: 599px) {
   uruk-few-distances .film-stage { aspect-ratio: 4 / 5; }

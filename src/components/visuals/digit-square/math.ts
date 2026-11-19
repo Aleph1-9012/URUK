@@ -42,8 +42,6 @@ export type KaratsubaNode = {
 
 export type FftPair = readonly [number, number];
 
-export type GapReading = { log2n: number; relativeGap: number };
-
 export type HalfSaving = { power: number; log2Log2N: bigint; tex: string };
 
 function digitAt(digits: readonly number[], index: number): number {

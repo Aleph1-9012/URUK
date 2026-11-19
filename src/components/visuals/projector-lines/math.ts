@@ -61,10 +61,6 @@ export function frobeniusDistance(a: readonly (readonly number[])[], b: readonly
   return Math.sqrt(squared);
 }
 
-export function projectorDistance(u: readonly number[], v: readonly number[]): number {
-  return frobeniusDistance(projector(u), projector(v));
-}
-
 export function angleBetweenLines(u: readonly number[], v: readonly number[]): number {
   if (u.length !== v.length) throw new RangeError('Both lines must belong to the same vector space.');
 
@@ -193,5 +189,3 @@ export function buildProjectorModel() {
     diameter: Math.SQRT2,
   };
 }
-
-export type ProjectorModel = ReturnType<typeof buildProjectorModel>;

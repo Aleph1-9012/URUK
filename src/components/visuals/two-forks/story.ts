@@ -31,21 +31,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  grid: 0,
-  orientations: 5500,
-  snaky: 15750,
-  turns: 21750,
-  base: 28000,
-  fork: 34500,
-  outside: 45500,
-  height: 54500,
-  certificate: 62500,
-  finite: 75000,
-  checker: 82250,
-  ledger: 90000,
-} as const;
-
 const SCENE_NAMES = ['grid', 'orientations', 'snaky', 'turns', 'base', 'fork', 'outside', 'height', 'certificate', 'finite', 'checker', 'ledger'] as const;
 
 export function sceneAt(time: number) {

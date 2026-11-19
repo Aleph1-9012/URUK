@@ -6,8 +6,6 @@ export type Pair = { i: number; j: number; distance: number; squared: number };
 
 export type DistanceMetric = 'distance' | 'squared-distance';
 
-export type BinCoverage = { delta: number; totalBins: number; hitBins: number[] };
-
 function grid(coordinates: readonly number[]): Point[] {
   const points: Point[] = [];
 
@@ -133,5 +131,3 @@ export function buildDistanceModel() {
 
   return { opening, patch, dusts, lattice, random };
 }
-
-export type DistanceModel = ReturnType<typeof buildDistanceModel>;

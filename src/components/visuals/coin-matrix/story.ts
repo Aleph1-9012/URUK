@@ -32,21 +32,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  coins: 0,
-  symmetry: 8250,
-  dependent: 12250,
-  kernel: 21750,
-  invertible: 27250,
-  lowerBound: 34750,
-  equalRows: 40750,
-  beyondPairs: 50500,
-  fair: 55750,
-  biased: 60750,
-  review: 70250,
-  catalogue: 77000,
-} as const;
-
 const SCENE_NAMES = ["coins", "symmetry", "dependent", "kernel", "invertible", "lowerBound", "equalRows", "beyondPairs", "fair", "biased", "review", "catalogue"] as const;
 
 export function sceneAt(time: number) {

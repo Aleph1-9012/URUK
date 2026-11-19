@@ -21,8 +21,6 @@ export const TIMELINE = createTimeline(CUES, FILM_DURATION, 180);
 
 export function nodeProgress(time: number): number { return progress(time, 250, 4000); }
 
-export function pairProgress(time: number): number { return progress(time, 4000, 7000); }
-
 export function tallyProgress(time: number): number { return progress(time, 13000, 25000); }
 
 export function randomProgress(time: number): number { return smooth(time, 27500, 29500) * (1 - smooth(time, 34500, 36000)); }

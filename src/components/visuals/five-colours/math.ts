@@ -106,8 +106,6 @@ export function properColouringCount(vertexCount: number, edges: readonly Edge[]
 
 export const HEX_RADIUS = 2 / 5;
 
-export const SAME_CENTER_DISTANCE = Math.sqrt(21) * HEX_RADIUS;
-
 export const SAME_HEX_GAP = Math.sqrt(7) * HEX_RADIUS;
 
 export const QUOTED_HEX_GAP = (Math.sqrt(21) - 2) * HEX_RADIUS;

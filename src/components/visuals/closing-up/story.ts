@@ -30,20 +30,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  round: 0,
-  deform: 12000,
-  principal: 19750,
-  generic: 24000,
-  closed: 33000,
-  prime: 36750,
-  sameImage: 43250,
-  classical: 53500,
-  claim: 61000,
-  review: 74000,
-  ledger: 80750,
-} as const;
-
 const SCENE_NAMES = ["round", "deform", "principal", "generic", "closed", "prime", "sameImage", "classical", "claim", "review", "ledger"] as const;
 
 export function sceneAt(time: number) {

@@ -480,5 +480,3 @@ export function buildBranchSetsModel() {
     cloud: schematicCloud(),
   };
 }
-
-export type BranchSetsModel = ReturnType<typeof buildBranchSetsModel>;

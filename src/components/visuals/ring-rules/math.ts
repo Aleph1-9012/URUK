@@ -262,5 +262,3 @@ export function buildRingRulesModel() {
     window: cyclicWindow(),
   };
 }
-
-export type RingRulesModel = ReturnType<typeof buildRingRulesModel>;

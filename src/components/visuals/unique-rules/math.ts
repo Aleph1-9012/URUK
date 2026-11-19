@@ -71,20 +71,6 @@ export const BEST_LABELS = bestLabelling(BAD_EDGES).labels;
 
 export const CUT_LABELS = bestLabelling(CUT_EDGES, [0, 0, 1, 0, 1, 0, 1]).labels;
 
-// The gauge's illustrative promise widths are not parameters computed from the reduction.
-export const EPSILON = 0.05;
-
-export const DELTA = 0.15;
-
-// Rounded for the drawing; its label must retain the approximation sign.
-export const GW_RATIO = 0.87856;
-
-export const VERTEX_COVER_FACTOR = 2;
-
-export const NOISE_DETECTION = 1 / 8;
-
-export const HIGH_RANK_ACCEPTANCE = 7 / 8;
-
 // The curve's form is the paper's. These two constants are schematic choices.
 export const AGREE_GAMMA = 0.15;
 

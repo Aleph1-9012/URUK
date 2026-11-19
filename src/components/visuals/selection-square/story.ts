@@ -36,8 +36,6 @@ export function walkProgress(time: number): number { return progress(time, 31500
 
 export function aliasProgress(time: number): number { return progress(time, 52750, 56500); }
 
-export function strikeProgress(time: number): number { return progress(time, 62500, 68500); }
-
 export function chartProgress(time: number): number { return progress(time, 41250, 44250); }
 
 export function zoomProgress(time: number): number { return smooth(time, 71500, 73500); }

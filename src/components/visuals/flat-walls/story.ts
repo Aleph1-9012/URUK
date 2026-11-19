@@ -28,18 +28,6 @@ export const TIMELINE = {
   },
 };
 
-export const SCENE_TIMES = {
-  phases: 0,
-  flatTest: 15750,
-  dimensions: 25750,
-  history: 43250,
-  release: 61000,
-  monotone: 68000,
-  noExtra: 78000,
-  stable: 88000,
-  ledger: 98000,
-} as const;
-
 const SCENE_NAMES = ['phases', 'flatTest', 'dimensions', 'history', 'release', 'monotone', 'noExtra', 'stable', 'ledger'] as const;
 
 export function sceneAt(time: number) {

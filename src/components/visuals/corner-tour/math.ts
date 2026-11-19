@@ -592,14 +592,6 @@ function buildSolid(key: SolidKey, graph: ReturnType<typeof prismGraph>, firstTo
   return { key, ...embedding, spatial: graph.spatial, colors: bipartiteColors(adjacency), tours, firstTour, split: faceSplit(embedding, firstTour), avoided };
 }
 
-export function avoidTour(solid: Solid, edge: Edge): number[] {
-  const result = solid.avoided.find(candidate => edgeKey(...candidate.edge) === edgeKey(...edge));
-
-  if (!result) throw new Error('The prescribed edge belongs to the solid.');
-
-  return result.tour;
-}
-
 export function createCornerModel() {
   return {
     solids: {

@@ -40,7 +40,3 @@ export function sampleStepAt(time: number): number {
 export function gridStepAt(time: number): number {
   return time < 36500 ? 0 : Math.min(5, 1 + Math.floor((time - 36500) / 1000));
 }
-
-export function sampleDeckAt(time: number): readonly number[] {
-  return SAMPLE_DECKS[sampleStepAt(time)] ?? INITIAL_DECK;
-}

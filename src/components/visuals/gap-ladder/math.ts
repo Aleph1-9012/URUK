@@ -2845,8 +2845,6 @@ export function energyBeta(time: number): number {
   return 2 ** (1 + doubling);
 }
 
-export const THERMAL_STATES = [2, 4, 8, 16].map(beta => ({ beta, ...thermalState(beta) }));
-
 export function gapDotTime(spin: .5 | 1, index: number): number {
   const first = spin === .5 ? 15300 : 23800;
   const period = spin === .5 ? 800 : 1000;

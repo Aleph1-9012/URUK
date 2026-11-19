@@ -1,6 +1,5 @@
 uruk-cheapest-floor .film-label { font-size: .875rem; }
 uruk-cheapest-floor .film-label[data-label='bound'] { font-size: .75rem; }
-uruk-cheapest-floor:not([data-ready]) .film-subtitles { display: none; }
 
 @container plate (max-width: 599px) {
   uruk-cheapest-floor .film-stage { aspect-ratio: 4 / 5; }

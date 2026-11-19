@@ -53,8 +53,6 @@ export const SCHOOL_COUNTS = Array.from({ length: 10 }, (_, index) => 8 ** (inde
 
 export const STRASSEN_COUNTS = Array.from({ length: 10 }, (_, index) => 7 ** (index + 1));
 
-export const STRASSEN_EXPONENT = Math.log2(7);
-
 export const WALL = 2.3078;
 
 export const CLAIM = 9 / 4;

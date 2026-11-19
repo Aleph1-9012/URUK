@@ -173,5 +173,3 @@ export function buildArrowGridModel() {
     length, lengthReadouts: [.5, .1, .01, .0001].map(lengthAt), illustrativeCriticalB: 1,
   };
 }
-
-export type ArrowGridModel = ReturnType<typeof buildArrowGridModel>;
