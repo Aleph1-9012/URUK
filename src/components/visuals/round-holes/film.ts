@@ -256,8 +256,9 @@ export class RoundHolesFilm {
 
     if (!current || !next) throw new Error('The Cantor morph has adjacent declared finite stages.');
 
-    const tray = { x: box.x + box.w * .055, y: box.y, w: box.w * .89, h: box.h };
-    const y = box.y + box.h * .76;
+    const trayWidth = tall ? Math.min(box.w * .89, box.h * 1.1) : box.w * .89;
+    const tray = { x: tall ? box.x + (box.w - trayWidth) / 2 : box.x + box.w * .055, y: box.y, w: trayWidth, h: box.h };
+    const y = box.y + box.h * (tall ? .62 : .76);
     const amount = smooth(position % 1, 0, .8);
     this.pen.strokeStyle = this.colors.ink;
     this.pen.lineWidth = Math.min(.8, 1 / this.density);
@@ -290,9 +291,11 @@ export class RoundHolesFilm {
     const width = box.w * .38;
     const x = box.x + box.w * .77;
     const y = box.y + box.h * .24;
-    const scale = mix(box.w * .89, width / (parent.right - parent.left), entrance);
-    const left = mix(box.x + box.w * .055, x - width / 2 - parent.left * scale, entrance);
-    const centreY = mix(box.y + box.h * .76, y, entrance);
+    const trayWidth = tall ? Math.min(box.w * .89, box.h * 1.1) : box.w * .89;
+    const trayLeft = tall ? box.x + (box.w - trayWidth) / 2 : box.x + box.w * .055;
+    const scale = mix(trayWidth, width / (parent.right - parent.left), entrance);
+    const left = mix(trayLeft, x - width / 2 - parent.left * scale, entrance);
+    const centreY = mix(box.y + box.h * (tall ? .62 : .76), y, entrance);
     this.pen.strokeStyle = this.colors.ink;
     this.pen.lineWidth = .8;
 

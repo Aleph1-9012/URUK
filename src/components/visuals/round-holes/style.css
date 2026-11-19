@@ -1,6 +1,6 @@
 uruk-round-holes .film-label { font-size: .875rem; }
 
 @container plate (max-width: 599px) {
-  uruk-round-holes .film-stage { aspect-ratio: 4 / 7; }
+  uruk-round-holes .film-stage { aspect-ratio: 4 / 5; }
   uruk-round-holes .film-label { font-size: .75rem; }
 }
