@@ -226,7 +226,7 @@ export function drawBoundaryDisk(
       }
     }
 
-    const labels = fade(time, 800, 2200, 7500, 8000);
+    const labels = time >= 2200 && time <= 7500 ? 1 : 0;
     const names = ['a', 'a⁻¹', 'b', 'b⁻¹'];
 
     for (let index = 1; index <= 4; index++) {
@@ -238,7 +238,7 @@ export function drawBoundaryDisk(
       text(names[index - 1] ?? '', at.x, at.y, 40, labels);
     }
 
-    text('START', center.x, center.y + 13, 60, fade(time, 0, 500, 6500, 7500), colors.muted);
+    text('START', center.x, center.y + 13, 60, time >= 500 && time <= 6500 ? 1 : 0, colors.muted);
   }
 
   if (tilingOpacity > .005) {
