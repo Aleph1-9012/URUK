@@ -111,9 +111,9 @@ export function layout(width: number, height: number): Layout {
 
   if (tall) {
     return {
-      stage: { x: width * .05, y: height * .035, w: width * .90, h: height * .51 },
-      readout: { x: width * .05, y: height * .56, w: width * .90, h: height * .19 },
-      ruler: { x: width * .04, y: height * .79, w: width * .92, h: height * .18 },
+      stage: { x: width * .05, y: height * .035, w: width * .90, h: height * .47 },
+      readout: { x: width * .05, y: height * .52, w: width * .90, h: height * .23 },
+      ruler: { x: width * .04, y: height * .82, w: width * .92, h: height * .15 },
       tall,
     };
   }

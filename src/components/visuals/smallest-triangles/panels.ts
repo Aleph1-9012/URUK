@@ -79,14 +79,14 @@ function exactInset(pen: CanvasRenderingContext2D, box: Box, time: number, origi
   }
 }
 
-function drawMagnifier(pen: CanvasRenderingContext2D, box: Box, time: number, origin: Point, colors: Colors, place: Place): void {
+function drawMagnifier(pen: CanvasRenderingContext2D, box: Box, time: number, origin: Point, colors: Colors, place: Place, phone: boolean): void {
   const compact = box.h < 130;
   const enter = smooth(time, 63750, 64450);
   const leave = smooth(time, 71100, 71750);
   const amount = enter * (1 - leave);
   const radius = Math.min(compact ? 23 : box.w * .29, box.h * .29) * amount;
   const centre = {
-    x: mix(origin.x, compact ? box.x + 29 : box.x + box.w / 2, amount),
+    x: mix(origin.x, compact ? box.x + 29 : box.x + box.w / 2, amount) - (phone ? 18 * Math.sin(Math.PI * leave) : 0),
     y: mix(origin.y, compact ? box.y + box.h * .39 : box.y + box.h * .37, amount),
   };
   const zoom = time < 66000 ? 10 : time < 68500 ? 100 : 200;
@@ -113,8 +113,8 @@ function drawMagnifier(pen: CanvasRenderingContext2D, box: Box, time: number, or
   if (compact) {
     const x = box.x + (box.w + 61) / 2;
     place(`zoom-${zoom}`, x, box.y + 6);
-    place('eta-value', x, box.y + 28);
-    text(pen, 'SCALE SCHEMATIC', x, box.y + 47, 10, colors);
+    place('eta-value', x, box.y + 30);
+    text(pen, 'SCALE SCHEMATIC', x, box.y + 49, 10, colors);
     text(pen, '−2', centre.x + radius + 12, centre.y, 10, colors);
     place('eta-digits', box.x + box.w / 2, box.y + box.h - 7);
   } else {
@@ -127,7 +127,7 @@ function drawMagnifier(pen: CanvasRenderingContext2D, box: Box, time: number, or
 }
 
 /** The optional readout box is borrowed at 52–54.8 s and 63.75–71.75 s. */
-export function drawRuler(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, readoutBox?: Box): void {
+export function drawRuler(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, readoutBox?: Box, phone = false): void {
   if (time < 9500) return;
 
   const compact = box.w < 450;
@@ -140,8 +140,9 @@ export function drawRuler(pen: CanvasRenderingContext2D, box: Box, time: number,
   const left = box.x + (compact ? 19 : 30);
   const right = box.x + box.w - (compact ? 19 : 30);
   const y = compact ? box.y + box.h - 20 : box.y + box.h * .60;
-  const upperY = box.y + (compact ? 19 : 25);
+  const upperY = box.y + (compact ? 14 : 25);
   const flagY = y - 13;
+  const captionCarry = phone ? smooth(time, 70000, 71100) : 0;
   const at = (exponent: number): number => left + (exponent + 2) * (right - left);
   const bound = upperBound(time);
   pen.save();
@@ -156,8 +157,8 @@ export function drawRuler(pen: CanvasRenderingContext2D, box: Box, time: number,
   if (time >= 33400) line(pen, { x: right, y: y - 4 }, { x: right, y: y + 5 });
 
   text(pen, 'EXPONENT x FOR Δ(n) ≈ nˣ', box.x + box.w / 2, box.y + 3, compact ? 10 : 12, colors);
-  text(pen, '−2', left, y + 15, compact ? 11 : 13, colors);
-  text(pen, '−1', right, y + 15, compact ? 11 : 13, colors);
+  text(pen, '−2', left - 8 * captionCarry, y + 15, compact ? 11 : 13, colors);
+  text(pen, '−1', right + 12 * captionCarry, y + 15 * (1 - captionCarry) - 7 * captionCarry, compact ? 11 : 13, colors);
   line(pen, { x: left, y: y - 7 }, { x: left, y: y - 19 });
   line(pen, { x: left, y: y - 19 }, { x: left + 13, y: y - 15 });
   line(pen, { x: left + 13, y: y - 15 }, { x: left, y: y - 12 });
@@ -167,10 +168,13 @@ export function drawRuler(pen: CanvasRenderingContext2D, box: Box, time: number,
   } else {
     text(pen, '1982', left + 18, flagY, 10, colors, 'left');
     const pointerX = at(bound.exponent);
-    line(pen, { x: pointerX, y: y - 9 }, { x: pointerX, y: y + 6 });
+    line(pen, { x: pointerX, y: y - 9 }, { x: pointerX, y: y + 6 - 2 * captionCarry });
     line(pen, { x: pointerX, y: y - 9 }, { x: right - 7, y: upperY + 8 });
     text(pen, bound.label, right - 6, upperY, compact ? 10 : 13, colors, 'right');
-    text(pen, time >= 71100 ? 'TRUE EXPONENT: SOMEWHERE HERE' : 'OPEN', (left + at(bound.exponent)) / 2, y, compact ? 10 : 12, colors);
+    if (phone && time >= 71100) {
+      text(pen, 'TRUE EXPONENT:', left + 50, y + 12, 10, colors);
+      text(pen, 'SOMEWHERE HERE', left + 50, y + 23, 10, colors);
+    } else text(pen, time >= 71100 ? 'TRUE EXPONENT: SOMEWHERE HERE' : 'OPEN', (left + at(bound.exponent)) / 2, y, compact ? 10 : 12, colors);
   }
 
   if (time < 41500) {
@@ -188,11 +192,11 @@ export function drawRuler(pen: CanvasRenderingContext2D, box: Box, time: number,
     // η is too small to separate from the existing −2 tick on this true linear scale.
     line(pen, { x: left, y: y - 12 }, { x: left, y: y + 7 }, progress(time, 56000, 57000));
     pen.setLineDash([]);
-    place('claim', box.x + box.w * .42, y + 17);
+    place('claim', box.x + box.w * mix(.42, .77, captionCarry), y + 17);
   }
 
   if (readoutBox && time >= 52000 && time < 54800) exactInset(pen, readoutBox, time, { x: at(BOUND_EXPONENTS.cpz2023), y }, colors);
-  if (readoutBox && time >= 63750 && time < 71750) drawMagnifier(pen, readoutBox, time, { x: left, y }, colors, place);
+  if (readoutBox && time >= 63750 && time < 71750) drawMagnifier(pen, readoutBox, time, { x: left, y }, colors, place, phone);
 
   pen.restore();
 }

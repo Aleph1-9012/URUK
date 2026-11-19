@@ -144,7 +144,7 @@ function drawBadTriangles(pen: CanvasRenderingContext2D, plot: Plot, frame: Stag
   pen.stroke();
 }
 
-function drawTray(pen: CanvasRenderingContext2D, plot: Plot, time: number, colors: Colors): void {
+function drawTray(pen: CanvasRenderingContext2D, plot: Plot, time: number, colors: Colors, viewportWidth: number, clipRight: number): void {
   if (time < 19000) return;
 
   const left = 1.055 + trayShiftAt(time) * .9;
@@ -153,7 +153,15 @@ function drawTray(pen: CanvasRenderingContext2D, plot: Plot, time: number, color
   pen.strokeStyle = colors.muted;
   pen.lineWidth = .7;
   pen.strokeRect(a.x, a.y, b.x - a.x, b.y - a.y);
-  text(pen, 'TRAY', (a.x + b.x) / 2, a.y - 9, 9, b.x - a.x, colors);
+  const labelX = (a.x + b.x) / 2;
+  pen.font = '9px "Special Elite", monospace';
+  const labelHalfWidth = pen.measureText('TRAY').width / 2 + 2;
+
+  if (labelX + labelHalfWidth < 0 || labelX - labelHalfWidth > viewportWidth) return;
+
+  const phone = viewportWidth < 600;
+  const visibleX = phone ? Math.min(labelX, clipRight - labelHalfWidth - 2) : labelX;
+  text(pen, 'TRAY', visibleX, a.y - (phone ? 6 : 9), 9, b.x - a.x, colors);
 }
 
 function pointDot(pen: CanvasRenderingContext2D, point: Point, radius: number, selected: boolean, colors: Colors): void {
@@ -252,9 +260,9 @@ function drawMatrix(pen: CanvasRenderingContext2D, box: Box, time: number, frame
   const areaY = compact ? box.y + 30 : box.y + box.h * .64;
   const settled = frame.minimum?.exact === 'columns';
   text(pen, settled ? 'AREA = 33/680' : frame.minimum ? `LIVE Δ ≈ ${frame.minimum.area.toFixed(6)}` : 'POINTS IN TRANSIT', x, areaY, compact ? 12 : 17, compact ? box.w * .6 : box.w, colors);
-  text(pen, compact ? 'N = 13 · ROW 13,17,20' : 'THIRD ROW BETWEEN N AND 2N · N = 13', compact ? x : box.x + box.w / 2, box.y + box.h * (compact ? .7 : .79), compact ? 9 : 11, compact ? box.w * .6 : box.w, colors);
+  text(pen, compact ? 'N = 13 · ROW 13,17,20' : 'THIRD ROW BETWEEN N AND 2N · N = 13', compact ? box.x + 53 : box.x + box.w / 2, compact ? box.y + 65 : box.y + box.h * .79, compact ? 9 : 11, compact ? box.w * .6 : box.w, colors);
 
-  if (time >= 75440 && time < 80000) place('column-area', box.x + box.w / 2, box.y + box.h * .92);
+  if (time >= 75440 && time < 80000) place('column-area', compact ? x : box.x + box.w / 2, compact ? box.y + 57 : box.y + box.h * .92);
 }
 
 function fieldReadout(pen: CanvasRenderingContext2D, box: Box, colors: Colors): void {
@@ -306,7 +314,7 @@ function repeatedReadout(pen: CanvasRenderingContext2D, box: Box, colors: Colors
   line(pen, { x: box.x + box.w * .2, y: y + rowStep }, { x: box.x + box.w * .31, y: y + rowStep });
   text(pen, 'REPEATED ξ', box.x + box.w * .74, y + rowStep * .35, compact ? 12 : 17, box.w * .47, colors);
   text(pen, 'SCHEMATIC', box.x + box.w * .74, y + rowStep * 1.55, compact ? 9.5 : 12, box.w * .47, colors);
-  text(pen, 'BAD TRIANGLES NEED A REPEATED LABEL', centre, box.y + box.h * (compact ? .73 : .60), compact ? 9 : 11, box.w, colors);
+  text(pen, 'BAD TRIANGLES NEED A REPEATED LABEL', centre, box.y + box.h * (compact ? .78 : .60), compact ? 9 : 11, box.w, colors);
   text(pen, 'THE PAPER SAMPLES ARITHMETICALLY', centre, box.y + box.h * (compact ? .94 : .79), compact ? 9 : 11, box.w, colors);
 }
 
@@ -345,11 +353,11 @@ function readout(pen: CanvasRenderingContext2D, box: Box, time: number, frame: S
   return regularReadout(pen, box, frame, colors);
 }
 
-function labelPoint(pen: CanvasRenderingContext2D, plot: Plot, point: MovingPoint, time: number, colors: Colors): void {
+function labelPoint(pen: CanvasRenderingContext2D, plot: Plot, point: MovingPoint, time: number, colors: Colors, viewportWidth: number): void {
   const position = screen(plot, point);
   const label = point.label ?? point.id;
   const early = time < 9500;
-  const dx = early && point.id === 0 ? -13 : early && point.id === 12 ? 14 : label === 0 ? -10 : 10;
+  const dx = early && point.id === 0 ? -13 : early && point.id === 12 ? 14 : early && viewportWidth < 600 && label === 3 ? -10 : label === 0 ? -10 : 10;
   const dy = early && point.id === 10 ? 12 : early && point.id === 0 ? -10 : -9;
   text(pen, String(label), position.x + dx, position.y + dy, 9, 22, colors);
 }
@@ -382,7 +390,7 @@ function flyingColumns(pen: CanvasRenderingContext2D, plot: Plot, matrix: Matrix
 }
 
 /** Draw the square and readout together so column copies begin at their actual matrix positions. */
-export function drawStage(pen: CanvasRenderingContext2D, box: Box, readoutBox: Box, time: number, colors: Colors, place: Place): void {
+export function drawStage(pen: CanvasRenderingContext2D, box: Box, readoutBox: Box, time: number, colors: Colors, place: Place, viewportWidth: number): void {
   const plot = plotFor(box);
   const matrix = matrixFor(readoutBox);
   const starts = [0, 1, 2].map(column => ({ x: (matrix.x + column * matrix.stepX - plot.x) / plot.size, y: 1 - (matrix.y + matrix.stepY - plot.y) / plot.size }));
@@ -393,7 +401,14 @@ export function drawStage(pen: CanvasRenderingContext2D, box: Box, readoutBox: B
   pen.clip();
   square(pen, plot, time, colors);
   drawBadTriangles(pen, plot, frame, colors);
-  drawTray(pen, plot, time, colors);
+  if (viewportWidth < 600) {
+    pen.restore();
+    drawTray(pen, plot, time, colors, viewportWidth, viewportWidth);
+    pen.save();
+    pen.beginPath();
+    pen.rect(box.x - 2, box.y - 2, box.w + 4, box.h + 4);
+    pen.clip();
+  } else drawTray(pen, plot, time, colors, viewportWidth, box.x + box.w + 2);
 
   if (frame.minimum) hatchMinimum(pen, plot, frame.minimum, colors);
 
@@ -403,7 +418,7 @@ export function drawStage(pen: CanvasRenderingContext2D, box: Box, readoutBox: B
     const selected = frame.minimum?.ids.includes(point.id) ?? false;
     pointDot(pen, screen(plot, point), box.w < 400 ? 2.1 : 2.6, selected, colors);
 
-    if (selected && (time < 9500 || frame.exactParabola)) labelPoint(pen, plot, point, time, colors);
+    if (selected && (time < 9500 || frame.exactParabola)) labelPoint(pen, plot, point, time, colors, viewportWidth);
 
     if (point.id < 26 && point.x > 1.07 && point.x < 1.4) {
       const position = screen(plot, point);
@@ -413,7 +428,7 @@ export function drawStage(pen: CanvasRenderingContext2D, box: Box, readoutBox: B
 
   text(pen, stageTitle(frame, time), box.x + box.w / 2, box.y + 5, box.w < 400 ? 10 : 12, box.w, colors);
   const footer = frame.exactParabola ? '13 POINTS · Δ = 1/338' : frame.scene === 'columns' ? 'N = 13 · POSITIVE THIRD COORDINATES' : frame.scene === 'replay' && frame.minimum ? `n = ${frame.active.length} · Δ ≈ ${frame.minimum.area.toFixed(6)}` : 'UNIT SQUARE';
-  text(pen, footer, plot.x + plot.size / 2, plot.y + plot.size + 16, 9.5, plot.size, colors);
+  text(pen, footer, plot.x + plot.size / 2, plot.y + plot.size + (viewportWidth < 600 ? 21 : 16), 9.5, viewportWidth < 600 ? box.w : plot.size, colors);
   pen.restore();
   const detail = time >= 52000 && time < 54800 || time >= 63750 && time < 71750;
   const anchor = detail ? undefined : readout(pen, readoutBox, time, frame, colors, place);
@@ -424,12 +439,16 @@ export function drawStage(pen: CanvasRenderingContext2D, box: Box, readoutBox: B
       y: frame.minimum.points.reduce((sum, point) => sum + point.y, 0) / 3,
     };
     const start = screen(plot, centre);
-    const elbow = { x: plot.x + plot.size + 7, y: start.y };
+    const phone = viewportWidth < 600;
+    const elbow = { x: phone ? viewportWidth - 6 : plot.x + plot.size + 7, y: start.y };
     pen.strokeStyle = colors.muted;
     pen.lineWidth = .65;
     pen.beginPath();
     pen.moveTo(start.x, start.y);
     pen.lineTo(elbow.x, elbow.y);
+
+    if (phone) pen.lineTo(elbow.x, anchor.y);
+
     pen.lineTo(anchor.x, anchor.y);
     pen.stroke();
   }
@@ -439,6 +458,6 @@ export function drawStage(pen: CanvasRenderingContext2D, box: Box, readoutBox: B
   if (frame.scene === 'field' && frame.minimum) {
     const [a, b, c] = frame.minimum.points;
     const determinant = Math.round(triangleDeterminant(a, b, c) * 13 ** 2);
-    text(pen, `Δ = 1/338 · INTEGER DET = ${determinant}`, plot.x + plot.size * .5, plot.y + plot.size + 16, 9.5, plot.size, colors);
+    text(pen, `Δ = 1/338 · INTEGER DET = ${determinant}`, plot.x + plot.size * .5, viewportWidth < 600 ? readoutBox.y + readoutBox.h + 7 : plot.y + plot.size + 16, 9.5, viewportWidth < 600 ? box.w : plot.size, colors);
   }
 }
