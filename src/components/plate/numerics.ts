@@ -11,8 +11,6 @@ type NumericsOptions<Message> = {
   /** Constructs the worker. The `new Worker(new URL(...))` expression must stay in the film so the bundler finds it. */
   start: () => Worker;
   onMessage: (message: Message, numerics: Numerics) => void;
-  /** Lets the film show the failure in its drawing. */
-  onFailure?: (reason: string) => void;
   /** Failure texts for a worker that cannot start, cannot finish, or returns data that cannot be transferred. */
   cannotStart?: string;
   cannotFinish?: string;
@@ -33,7 +31,6 @@ export function runNumerics<Message>({ root, signal, redraw }: Pick<FilmSetup, '
   }
 
   function report(reason: string): void {
-    options.onFailure?.(reason);
     root.removeAttribute('data-numerics-pending');
     root.removeAttribute('data-numerics-ready');
     root.setAttribute('data-numerics-error', reason);

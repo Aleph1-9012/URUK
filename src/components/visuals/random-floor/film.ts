@@ -2,7 +2,7 @@ import { mix } from '../../../lib/animation';
 import type { FilmDrawing } from '../../plate/controller';
 import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { drawLine, drawText, drawWrappedText } from '../../plate/canvas/wrapped-text';
+import { drawLine, drawText } from '../../plate/canvas/wrapped-text';
 import type { Graph, PatternKey, RandomFloorModel } from './math';
 import { drawRandomFloorPanels, layout } from './panels';
 import { motionAt } from './story';
@@ -45,7 +45,6 @@ export class RandomFloorFilm implements FilmDrawing {
   private page = layout(1, 1);
   private readonly labels: FilmLabels;
   private data: RandomFloorModel | undefined;
-  private error: string | undefined;
 
   constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D) {
     this.labels = new FilmLabels(root, { horizontal: 4, vertical: 4 });
@@ -53,12 +52,6 @@ export class RandomFloorFilm implements FilmDrawing {
 
   setData(data: RandomFloorModel): void {
     this.data = data;
-    this.error = undefined;
-  }
-
-  setError(reason: string): void {
-    this.data = undefined;
-    this.error = reason;
   }
 
   resize({ width, height, density, tones }: FilmFrame): void {
@@ -364,6 +357,8 @@ export class RandomFloorFilm implements FilmDrawing {
   }
 
   draw(time: number): void {
+    if (!this.data) return;
+
     const { pen, width, height } = this;
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     pen.clearRect(0, 0, width, height);
@@ -371,16 +366,6 @@ export class RandomFloorFilm implements FilmDrawing {
     pen.lineCap = 'round';
     pen.lineJoin = 'round';
     this.labels.beginFrame();
-
-    if (!this.data) {
-      drawWrappedText(pen, this.error ? 'TOY COUNTS UNAVAILABLE' : 'COUNTING THE TOY MAPS', width / 2, height * .35, width * .84, { size: this.page.phone ? 12 : 18, color: this.tones.ink, paper: this.tones.paper });
-
-      if (this.error) drawWrappedText(pen, this.error, width / 2, height * .47, width * .84, { size: this.page.phone ? 9 : 12, color: this.tones.ink, paper: this.tones.paper });
-
-      this.labels.endFrame();
-
-      return;
-    }
 
     const model = this.data;
     const motion = motionAt(time);

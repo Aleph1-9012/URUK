@@ -8,7 +8,7 @@ export type CellIndex = { row: number; col: number };
 
 export type HeatAtlas = { times: Float64Array<ArrayBuffer>; values: Float64Array<ArrayBuffer>; cellCount: number };
 
-export type Computation = { kind: 'pending' } | { kind: 'ready'; atlas: HeatAtlas } | { kind: 'failed'; reason: string };
+export type Computation = { kind: 'pending' } | { kind: 'ready'; atlas: HeatAtlas };
 
 export type WarmModel = {
   grid: number;

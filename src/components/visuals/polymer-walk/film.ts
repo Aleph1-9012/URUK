@@ -87,7 +87,7 @@ export class PolymerWalkFilm {
   private readonly fan3 = enumerateWalks(3);
   private readonly fan4 = enumerateWalks(4);
 
-  constructor(private readonly root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: PolymerModel) {
+  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: PolymerModel) {
     this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
   }
 
@@ -225,8 +225,6 @@ export class PolymerWalkFilm {
       text(pen, 'ONE LENGTH n\nUNIFORM', boxes.walk.x + boxes.walk.w * .69, boxes.walk.y + boxes.walk.h - 24, boxes.tall ? 9 : 12, boxes.walk.w * .57, colors);
       text(pen, 'THE GAP', boxes.walk.x + boxes.walk.w * .37, boxes.walk.y + boxes.walk.h * .52 - 13, boxes.tall ? 9 : 12, boxes.walk.w * .32, colors);
     }
-
-    if (this.root.hasAttribute('data-numerics-error')) text(pen, 'COUNTED TO 12 · WORKER COULD NOT FINISH', boxes.walk.x + boxes.walk.w / 2, boxes.walk.y + 24, boxes.tall ? 9 : 12, boxes.walk.w - 6, colors);
 
     drawCharts(pen, boxes.chart, time, colors, this.labels.place, model, boxes.tall);
     this.labels.endFrame();

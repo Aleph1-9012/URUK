@@ -76,12 +76,6 @@ export class WarmSpotFilm {
     const sample = fieldSample(this.model, heatTime(time));
     const amount = modeProgress(time);
 
-    if (time >= 20250 && sample.kind === 'initial') {
-      const values = this.modeValues;
-
-      return { values, ...extrema(values), amplitude: 1 };
-    }
-
     const values = normalizeField(sample.values);
 
     if (amount > 0) {

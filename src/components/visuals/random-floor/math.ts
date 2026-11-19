@@ -38,13 +38,6 @@ export type CherryMap = {
   readonly repeated: boolean;
 };
 
-export type SweepMinimum = {
-  readonly mask: number;
-  readonly graph: Graph;
-  readonly density: Density;
-  readonly tiedMasks: readonly number[];
-};
-
 export function createGraph(vertexCount: number, sourceEdges: readonly Edge[]): Graph {
   if (!Number.isInteger(vertexCount) || vertexCount < 1 || vertexCount > 30) throw new RangeError('A toy graph needs one to thirty vertices for its adjacency bitsets.');
 

@@ -20,7 +20,6 @@ defineFilm('uruk-random-floor', TIMELINE, (film) => {
       worker?.terminate();
       film.redraw();
     },
-    onFailure: (reason) => drawing.setError(reason),
     cannotStart: 'The homomorphism calculation could not start.',
     cannotFinish: 'The homomorphism calculation could not finish.',
     cannotTransfer: 'The computed graph densities could not be transferred.',

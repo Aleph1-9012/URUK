@@ -16,13 +16,11 @@ defineFilm('uruk-caustic-collar', TIMELINE, (film) => {
         return;
       }
 
-      drawing.setData(message);
-
-      if (message.kind === 'complete') numerics.ready();
-
-      film.redraw();
+      if (message.kind === 'complete') {
+        numerics.ready();
+        film.redraw();
+      } else drawing.setData(message);
     },
-    onFailure: (message) => drawing.setData({ kind: 'error', message }),
     cannotFinish: 'The numerical calculation could not finish.',
   });
 

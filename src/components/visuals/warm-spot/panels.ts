@@ -18,15 +18,6 @@ function heatPanel(pen: CanvasRenderingContext2D, box: Box, time: number, colors
   const sample = fieldSample(model, heatTime(time));
   const x = box.x + box.w / 2;
 
-  if (time >= 8000 && sample.kind === 'initial') {
-    const title = model.computation.kind === 'failed' ? 'HEAT FLOW UNAVAILABLE' : 'CALCULATING HEAT FLOW';
-    rows(pen, box, [title, 'INITIAL FIELD HELD'], tall ? 8 : 36, tall ? 12 : 19, tall ? 29 : 43, colors);
-    rows(pen, box, ['CURRENT HEAT READOUTS WAIT', 'FOR THE COMPUTED FLOW'], tall ? 73 : 146, tall ? 10 : 14, tall ? 18 : 25, colors);
-    text(pen, 'ONE 64 × 64 GRID', x, box.y + (tall ? 132 : 265), tall ? 10 : 14, box.w - 6, colors);
-
-    return;
-  }
-
   const title = time < 8000 ? 'INITIAL TEMPERATURE' : `HEAT TIME t = ${sample.tau.toFixed(3)}`;
   text(pen, title, x, box.y + (tall ? 5 : 18), tall ? 12 : 19, box.w - 6, colors);
   text(pen, 'SPREAD (HOTTEST − COLDEST)', x, box.y + (tall ? 28 : 78), tall ? 10 : 15, box.w - 6, colors);
@@ -63,7 +54,7 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
   modeHeader(pen, box, colors, place, tall);
 
   if (time < 21000) {
-    const words = model.computation.kind === 'ready' ? ['THE FADING PATTERN', 'IS RESCALED TO FULL CONTRAST'] : ['COMPUTED FIRST MODE SHOWN', model.computation.kind === 'failed' ? 'HEAT FLOW UNAVAILABLE' : 'HEAT FLOW CALCULATING'];
+    const words = ['THE FADING PATTERN', 'IS RESCALED TO FULL CONTRAST'];
     rows(pen, box, words, tall ? 83 : 163, tall ? 11 : 16, tall ? 20 : 29, colors);
 
     return;

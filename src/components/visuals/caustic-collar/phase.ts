@@ -155,7 +155,7 @@ export function drawPhase(pen: CanvasRenderingContext2D, width: number, height: 
         const y = Math.round(plot.y * density) / density;
         pen.drawImage(image, x, y, image.width / density, image.height / density);
       }
-    } else words(pen, data.error ? 'COMPUTATION FAILED' : 'COMPUTING REFLECTIONS', box.x + box.w / 2, plot.y + plot.h / 2, plot.w, colors, size);
+    } else words(pen, 'COMPUTING REFLECTIONS', box.x + box.w / 2, plot.y + plot.h / 2, plot.w, colors, size);
   }
 
   if (time >= 58500 && time < 80000) {

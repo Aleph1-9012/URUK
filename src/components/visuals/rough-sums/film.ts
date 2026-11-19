@@ -23,7 +23,6 @@ export class RoughSumsFilm {
   private density = 1;
   private data: RoughSumsData | undefined;
   private cache: PlotCache | undefined;
-  private failure: string | undefined;
   private readonly labels: FilmLabels;
   private colors: Colors = PAGE_TONES;
 
@@ -34,11 +33,6 @@ export class RoughSumsFilm {
   setData(data: RoughSumsData): void {
     this.data = data;
     this.cache = preparePlot(data.coefficients);
-    this.failure = undefined;
-  }
-
-  setError(reason: string): void {
-    this.failure = reason;
   }
 
   resize({ width, height, density, tones }: FilmFrame): void {
@@ -51,25 +45,16 @@ export class RoughSumsFilm {
   }
 
   draw(time: number): void {
-    const { width: w, height: h, pen, colors } = this;
+    if (!this.data || !this.cache) return;
+
+    const { width: w, height: h, pen } = this;
     const tall = w < PHONE_STAGE_WIDTH;
-    const small = tall ? 9 : w < 880 ? 11 : 13;
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     pen.clearRect(0, 0, w, h);
     pen.lineCap = 'round';
     pen.lineJoin = 'round';
     pen.setLineDash([]);
     this.labels.beginFrame();
-
-    const failed = this.failure !== undefined;
-
-    if (failed || !this.data || !this.cache) {
-      words(pen, failed ? 'THE COSINE CALCULATION COULD NOT FINISH' : 'CALCULATING THE COSINES', w / 2, h * .42, w - 35, small + 2, colors.ink);
-      words(pen, failed ? 'RELOAD TO TRY THIS CALCULATION AGAIN' : 'NO COEFFICIENT OR INTEGRAL READOUT IS READY YET', w / 2, h * .56, w - 35, small, colors.ink, 'Alegreya');
-      this.labels.endFrame();
-
-      return;
-    }
 
     const tucked = smooth(time, 7000, 8750) * (1 - smooth(time, 31000, 32750));
     const fullWidth = tall ? w * .88 : w * .60;

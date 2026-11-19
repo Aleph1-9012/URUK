@@ -19,9 +19,7 @@ export class SilentLinesFilm {
     this.labels = new FilmLabels(root, { horizontal: 6, vertical: 5 });
   }
 
-  setData(message: SilentWorkerMessage): void {
-    if (message.kind !== 'mode') return;
-
+  setData(message: Extract<SilentWorkerMessage, { kind: 'mode' }>): void {
     cacheReference(message.reference);
     this.numerics[message.index] = { contour: message.contour, tracks: message.tracks, reference: message.reference };
   }

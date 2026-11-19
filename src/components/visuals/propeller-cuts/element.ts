@@ -20,7 +20,6 @@ defineFilm('uruk-propeller-cuts', TIMELINE, (film) => {
       worker?.terminate();
       film.redraw();
     },
-    onFailure: (reason) => drawing.setError(reason),
     cannotFinish: 'The partition calculation could not finish.',
     cannotTransfer: 'The computed partition data could not be transferred.',
   });

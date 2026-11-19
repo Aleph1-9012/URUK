@@ -19,7 +19,7 @@ export class CausticCollarFilm {
     this.labels = new FilmLabels(root, { horizontal: 6, vertical: 5 });
   }
 
-  setData(message: CausticWorkerMessage): void {
+  setData(message: Exclude<CausticWorkerMessage, { kind: 'complete' | 'error' }>): void {
     applyCausticMessage(this.data, message);
   }
 

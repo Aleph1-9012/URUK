@@ -17,17 +17,15 @@ export type MoatWorkerMessage =
   | { kind: 'complete' }
   | { kind: 'error'; message: string };
 
-export type MoatData = { initial: InitialMoatData | null; floods: Map<number, Flood>; complete: boolean; error: string | null };
+export type MoatData = { initial: InitialMoatData | null; floods: Map<number, Flood> };
 
 export function createMoatData(): MoatData {
-  return { initial: null, floods: new Map(), complete: false, error: null };
+  return { initial: null, floods: new Map() };
 }
 
-export function applyMoatMessage(data: MoatData, message: MoatWorkerMessage): void {
+export function applyMoatMessage(data: MoatData, message: Exclude<MoatWorkerMessage, { kind: 'complete' | 'error' }>): void {
   switch (message.kind) {
     case 'initial': data.initial = message.data; break;
     case 'flood': data.floods.set(message.flood.stepSquared, message.flood); break;
-    case 'complete': data.complete = true; break;
-    case 'error': data.error = message.message; break;
   }
 }

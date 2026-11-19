@@ -20,7 +20,6 @@ defineFilm('uruk-rough-sums', TIMELINE, (film) => {
       worker?.terminate();
       film.redraw();
     },
-    onFailure: (reason) => drawing.setError(reason),
     cannotFinish: 'The cosine calculation could not finish.',
     cannotTransfer: 'The computed cosine data could not be transferred.',
   });

@@ -20,7 +20,7 @@ export class MoatWalkFilm {
     this.labels = new FilmLabels(root, { horizontal: 6, vertical: 5 });
   }
 
-  setData(message: MoatWorkerMessage): void {
+  setData(message: Exclude<MoatWorkerMessage, { kind: 'complete' | 'error' }>): void {
     applyMoatMessage(this.data, message);
   }
 

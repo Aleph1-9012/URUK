@@ -30,9 +30,6 @@ defineFilm('uruk-warm-spot', TIMELINE, (film) => {
       worker?.terminate();
       film.redraw();
     },
-    onFailure(reason) {
-      model.computation = { kind: 'failed', reason };
-    },
     cannotStart: 'The insulated-grid heat calculation could not start.',
     cannotFinish: 'The insulated-grid heat calculation could not finish.',
     cannotTransfer: 'The computed heat frames could not be transferred.',

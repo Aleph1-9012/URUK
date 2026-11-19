@@ -473,7 +473,7 @@ export function drawField(pen: CanvasRenderingContext2D, width: number, height: 
 
   pen.restore();
 
-  if (!initial) words(data.error ? 'COMPUTATION FAILED · SEE TRANSCRIPT' : 'COMPUTING THE PRIME FIELD', box.y + box.h - 15, true);
+  if (!initial) words('COMPUTING THE PRIME FIELD', box.y + box.h - 15, true);
   else if (time < 8500) words(time < 5800 ? 'THE PRIMES APPEAR OUTWARDS' : '980 WITHIN RADIUS 40 · EIGHTFOLD SYMMETRY', box.y + box.h - 15);
   else if (time < 11000) label('gaussian-one', box.x + box.w / 2, box.y + box.h - 15);
   else if (time < 13500) words('24 AXIS PRIMES · 3, 7, 11, 19, 23, 31', box.y + box.h - 15);

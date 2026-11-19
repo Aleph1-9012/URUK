@@ -36,7 +36,6 @@ export class PropellerCutsFilm {
   private height = 1;
   private density = 1;
   private data: PropellerModel | undefined;
-  private failure: string | undefined;
   private extent = 1;
   private cloud: { wide: Point[]; phone: Point[] } | undefined;
   private readonly labels: FilmLabels;
@@ -48,7 +47,6 @@ export class PropellerCutsFilm {
 
   setData(data: PropellerModel): void {
     this.data = data;
-    this.failure = undefined;
     const radialOrder = (a: Point, b: Point) => a.x * a.x + a.y * a.y - b.x * b.x - b.y * b.y;
     this.cloud = { wide: data.cloud.slice().sort(radialOrder), phone: data.cloud.slice(0, 300).sort(radialOrder) };
     this.extent = 0;
@@ -56,10 +54,6 @@ export class PropellerCutsFilm {
     for (const point of data.cloud) this.extent = Math.max(this.extent, Math.hypot(point.x, point.y));
 
     if (!(this.extent > 0)) throw new Error('The sampled Gaussian cloud needs a nonzero extent.');
-  }
-
-  setError(reason: string): void {
-    this.failure = reason;
   }
 
   resize({ width, height, density, tones }: FilmFrame): void {
@@ -72,9 +66,10 @@ export class PropellerCutsFilm {
   }
 
   draw(time: number): void {
+    if (!this.data || !this.cloud) return;
+
     const { width: w, height: h, pen, palette } = this;
     const tall = w < PHONE_STAGE_WIDTH;
-    const size = tall ? 9 : w < 880 ? 11 : 13;
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     pen.clearRect(0, 0, w, h);
     pen.lineCap = 'round';
@@ -83,14 +78,6 @@ export class PropellerCutsFilm {
     pen.lineWidth = 1;
     pen.setLineDash([]);
     this.labels.beginFrame();
-
-    if (this.failure !== undefined || !this.data || !this.cloud) {
-      this.text(this.failure !== undefined ? 'THE PARTITION CALCULATION COULD NOT FINISH' : 'CALCULATING THE CUTS', w / 2, h * .4, w * .88, size + 2);
-      this.text(this.failure !== undefined ? 'RELOAD TO TRY AGAIN' : 'NO MOMENT OR GRID READOUT IS READY YET', w / 2, h * .53, w * .88, size, 'Alegreya');
-      this.labels.endFrame();
-
-      return;
-    }
 
     const tucked = smooth(time, 57750, 59500);
     const radius = mix(tall ? w * .34 : h * .31, tall ? w * .20 : h * .20, tucked);

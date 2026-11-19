@@ -16,8 +16,6 @@ export type GridPartition = { moments: Point[]; value: number };
 
 export const PARAMETERS = { cloudSeed: 96, partitionSeed: 97, cloudCount: 600, cutCount: 150, gridStep: .125, gridLimit: 5, referenceHalfWidth: .003 } as const;
 
-export const PROPELLER_BOUND = 9 / (8 * Math.PI);
-
 const TAU = 2 * Math.PI;
 
 const MOMENT_SCALE = 1 / Math.sqrt(TAU);
