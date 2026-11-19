@@ -67,9 +67,9 @@ class MazeFilm implements FilmDrawing {
 
     if (!position) throw new Error('The maze drawing needs one site per room.');
 
-    const unit = small ? Math.min(w * (tall ? .075 : .062), h * .105) : Math.min(w * (tall ? .215 : .11), h * .205);
-    const cx = w * (tall ? .5 : .265);
-    const cy = h * (small ? (tall ? .15 : .36) : (tall ? .31 : .40));
+    const unit = small ? Math.min(w * (tall ? .075 : .062), h * .105) : Math.min(w * (tall ? .20 : .11), h * .205);
+    const cx = w * (tall ? (small ? .25 : .5) : .265);
+    const cy = h * (small ? (tall ? .17 : .36) : .40);
 
     return { x: cx + (position[0] - 1.5) * unit, y: cy + (position[1] - 1) * unit };
   }
@@ -112,8 +112,13 @@ class MazeFilm implements FilmDrawing {
     }
 
     if (small) {
-      this.text('THE SAME UNDIRECTED MAZE', w * (tall ? .5 : .265), h * (tall ? .045 : .13), tall ? 9 : 12);
-      this.text('6–7 CLOSED · NO PATH TO THE EXIT', w * (tall ? .5 : .265), h * (tall ? .25 : .58), tall ? 8.5 : 11);
+      if (tall) {
+        this.note('THE SAME UNDIRECTED MAZE', w * .25, 4, w * .44, 9);
+        this.note('6–7 CLOSED · NO PATH TO THE EXIT', w * .25, this.site(EXIT_ROOM, true).y + 11, w * .44, 8.5);
+      } else {
+        this.text('THE SAME UNDIRECTED MAZE', w * .265, h * .13, 12);
+        this.text('6–7 CLOSED · NO PATH TO THE EXIT', w * .265, h * .58, 11);
+      }
       if (!tall) this.note('TOY WALK ≠ THE PAPER’S METHOD', w * .265, h * .64, w * .43, 11);
 
       return;
@@ -123,7 +128,7 @@ class MazeFilm implements FilmDrawing {
     const start = this.site(0);
     const exit = this.site(EXIT_ROOM);
     this.text('START', start.x, start.y - (tall ? 20 : 27), tall ? 8.5 : 11);
-    this.text('EXIT', exit.x, exit.y + (tall ? 21 : 28), tall ? 8.5 : 11);
+    this.text('EXIT', exit.x + (tall ? 9 : 0), exit.y + (tall ? 21 : 28), tall ? 8.5 : 11);
     const position = this.samplePosition(time);
     const token = interpolate(this.site(position.from), this.site(position.to), position.amount);
     this.disk(token, tall ? 4.3 : 5.8, true);
@@ -153,7 +158,7 @@ class MazeFilm implements FilmDrawing {
     const { width: w, height: h, pen, tones } = this;
     const tall = w < PHONE_STAGE_WIDTH;
     const centre = w * (tall ? .5 : .755);
-    const top = h * (tall ? .65 : .35);
+    const top = h * (tall ? .72 : .35);
     const cell = w * (tall ? .103 : .047);
     const left = centre - 4 * cell;
     const pointer = this.samplePosition(time).pointer;
@@ -177,7 +182,7 @@ class MazeFilm implements FilmDrawing {
 
     if (time >= 11750) {
       const bits = pointer.toString(2).padStart(this.model.bits, '0');
-      const bitY = top + cell + (tall ? 51 : 64);
+      const bitY = top + cell + (tall ? 31 : 64);
       const bitWidth = tall ? 26 : 39;
 
       for (const [index, bit] of Array.from(bits).entries()) {
@@ -186,7 +191,7 @@ class MazeFilm implements FilmDrawing {
         this.text(bit, bx, bitY, tall ? 18 : 26, true);
       }
 
-      this.text('3 BITS · 8 CONFIGURATIONS', centre, bitY + (tall ? 32 : 42), tall ? 9 : 12);
+      this.text('3 BITS · 8 CONFIGURATIONS', centre, bitY + (tall ? 23 : 42), tall ? 9 : 12);
     } else {
       this.text('SCHEMATIC · ONE POINTER', centre, top + cell + 35, tall ? 9 : 12);
     }
@@ -221,7 +226,7 @@ class MazeFilm implements FilmDrawing {
       this.text('⅓', middle.x, middle.y - 11, tall ? 12 : 17, true);
     }
 
-    this.text(time < 19450 ? 'FAIR BITS · 11: RETRY' : '01: TAKE PASSAGE TO ROOM 2', w * (tall ? .5 : .265), h * (tall ? .56 : .72), tall ? 8.5 : 11);
+    this.text(time < 19450 ? 'FAIR BITS · 11: RETRY' : '01: TAKE PASSAGE TO ROOM 2', w * (tall ? .26 : .265), h * (tall ? .575 : .72), tall ? 8.5 : 11);
   }
 
   private layerPoint(step: number, room: number): Point {
@@ -323,7 +328,7 @@ class MazeFilm implements FilmDrawing {
         this.text(String(step), point.x, point.y + 16, tall ? 10 : 12, true);
       }
 
-      this.text('STEPS', w * (tall ? .5 : .285), h * (tall ? .58 : .78), tall ? 8.5 : 11);
+      this.text('STEPS', w * (tall ? .5 : .285), h * (tall ? .59 : .78), tall ? 8.5 : 11);
       this.text('7', w * (tall ? .025 : .028), this.layerPoint(0, 7).y, tall ? 10 : 12, true);
       this.text('0', w * (tall ? .025 : .028), this.layerPoint(0, 0).y, tall ? 10 : 12, true);
     }
@@ -354,7 +359,7 @@ class MazeFilm implements FilmDrawing {
     if (blocked) this.text('WITH THE WALL: 0 · EVERY STEP', cx, top + (tall ? 62 : 83), small);
     else this.text('ABSORBING EXIT · FILLED AREA ∝ PROBABILITY', cx, top + (tall ? 62 : 83), tall ? 8.5 : 10, true);
 
-    this.note('TOY · WHOLE PROBABILITY ROW STORED\nNOT THE LOG-SPACE METHOD', cx, top + (tall ? 94 : 125), available, small);
+    this.note('TOY · WHOLE PROBABILITY ROW STORED\nNOT THE LOG-SPACE METHOD', cx, top + (tall ? 88 : 125), available, small);
   }
 
   private wall(point: Point, radius: number): void {

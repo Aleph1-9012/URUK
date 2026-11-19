@@ -1,6 +1,6 @@
 import { mix, smooth } from '../../../lib/animation';
 import { PHONE_STAGE_WIDTH } from '../../plate/frame';
-import { drawLine, drawText } from '../../plate/canvas/wrapped-text';
+import { drawLine, drawText, drawWrappedText } from '../../plate/canvas/wrapped-text';
 
 type Tones = { ink: string; muted: string; paper: string; blue: string };
 
@@ -12,8 +12,8 @@ export function memoryLayout(width: number, height: number) {
   return {
     left: width * (phone ? .12 : .53),
     right: width * (phone ? .90 : .94),
-    generalY: height * (phone ? .46 : .34),
-    mazeY: height * (phone ? .67 : .60),
+    generalY: height * (phone ? .55 : .34),
+    mazeY: height * (phone ? .21 : .60),
     barHeight: phone ? 12 : 16,
   };
 }
@@ -89,13 +89,13 @@ export function drawMemory(ctx: CanvasRenderingContext2D, width: number, height:
 
   if (time < 35500) return;
 
-  drawText(ctx, 'SELECTED SPACE BOUNDS · TIME NOT SHOWN', center, generalY - (phone ? 78 : 88), { size: small, color: tones.ink });
-  drawText(ctx, 'n = 2¹⁰ · CONSTANTS IGNORED · SCHEMATIC', center, generalY - (phone ? 63 : 70), { size: small, color: tones.ink, family: 'math' });
-  drawText(ctx, 'GENERAL RANDOMIZED COMPUTATION', center, generalY - (phone ? 47 : 53), { size, color: tones.ink });
-  drawText(ctx, '1990 · NISAN · log² n', left, generalY - (phone ? 30 : 34), { size, color: tones.ink, family: 'math', align: 'left' });
+  drawText(ctx, 'SELECTED SPACE BOUNDS · TIME NOT SHOWN', center, generalY - (phone ? 62 : 88), { size: small, color: tones.ink });
+  drawText(ctx, 'n = 2¹⁰ · CONSTANTS IGNORED · SCHEMATIC', center, generalY - (phone ? 50 : 70), { size: small, color: tones.ink, family: 'math' });
+  drawText(ctx, 'GENERAL RANDOMIZED COMPUTATION', center, generalY - (phone ? 37 : 53), { size, color: tones.ink });
+  drawText(ctx, '1990 · NISAN · log² n', left, generalY - (phone ? 24 : 34), { size, color: tones.ink, family: 'math', align: 'left' });
 
   if (time >= 39000) {
-    drawText(ctx, '1999 · SAKS–ZHOU · log³ᐟ² n', left, generalY - (phone ? 16 : 18), { size, color: tones.ink, family: 'math', align: 'left' });
+    drawText(ctx, '1999 · SAKS–ZHOU · log³ᐟ² n', left, generalY - (phone ? 12 : 18), { size, color: tones.ink, family: 'math', align: 'left' });
   }
 
   const marks = [
@@ -115,11 +115,17 @@ export function drawMemory(ctx: CanvasRenderingContext2D, width: number, height:
 
   if (time >= 43000) {
     const mazeWidth = length * records.log / records.nisan * smooth(time, 43000, 44500);
-    drawText(ctx, '2005 · REINGOLD · THE MAZE ALONE', left, mazeY - (phone ? 20 : 26), { size, color: tones.ink, align: 'left' });
-    outlineBar(ctx, left, mazeY - barHeight / 2, mazeWidth, barHeight, tones.ink, 1.4);
-    stippleBar(ctx, left, mazeY - barHeight / 2, mazeWidth, barHeight, tones.ink);
-    drawText(ctx, 'log n = 10', left + mazeWidth + 9, mazeY, { size: phone ? 12 : 14, color: tones.ink, family: 'math', align: 'left', paper: tones.paper });
-    drawText(ctx, 'UNDIRECTED CONNECTIVITY', left, mazeY + (phone ? 23 : 28), { size: small, color: tones.ink, align: 'left' });
+    const mazeLeft = phone ? width * .55 : left;
+
+    if (phone) drawWrappedText(ctx, '2005 · REINGOLD · THE MAZE ALONE', width * .75, mazeY - 27, width * .44, { size, color: tones.ink });
+    else drawText(ctx, '2005 · REINGOLD · THE MAZE ALONE', left, mazeY - 26, { size, color: tones.ink, align: 'left' });
+
+    outlineBar(ctx, mazeLeft, mazeY - barHeight / 2, mazeWidth, barHeight, tones.ink, 1.4);
+    stippleBar(ctx, mazeLeft, mazeY - barHeight / 2, mazeWidth, barHeight, tones.ink);
+    drawText(ctx, 'log n = 10', mazeLeft + mazeWidth + 9, mazeY, { size: phone ? 12 : 14, color: tones.ink, family: 'math', align: 'left', paper: tones.paper });
+
+    if (phone) drawWrappedText(ctx, 'UNDIRECTED CONNECTIVITY', width * .75, mazeY + 12, width * .44, { size: small, color: tones.ink });
+    else drawText(ctx, 'UNDIRECTED CONNECTIVITY', left, mazeY + 28, { size: small, color: tones.ink, align: 'left' });
   }
 
   if (time < 49750) return;
@@ -127,7 +133,7 @@ export function drawMemory(ctx: CanvasRenderingContext2D, width: number, height:
   const from = position(records.log);
   const to = position(records.saksZhou);
   hatch(ctx, from, to, top + 1, top + barHeight - 1, tones.ink);
-  const bracketY = generalY + (phone ? 38 : 43);
+  const bracketY = generalY + (phone ? 32 : 43);
   const claimed = time >= 55750;
   const progress = claimed ? smooth(time, 55750, 57000) : smooth(time, 49750, 51000);
   const bracketLeft = mix(to, from, progress);
@@ -138,9 +144,9 @@ export function drawMemory(ctx: CanvasRenderingContext2D, width: number, height:
   drawLine(ctx, to, bracketY - 5, to, bracketY + 5, color, stroke);
 
   if (claimed) {
-    drawText(ctx, 'CLAIMED: L = RL = BPL', center, bracketY + (phone ? 19 : 23), { size: phone ? 11 : 13, color: tones.ink, family: 'math', paper: tones.paper });
+    drawText(ctx, 'CLAIMED: L = RL = BPL', center, bracketY + (phone ? 15 : 23), { size: phone ? 11 : 13, color: tones.ink, family: 'math', paper: tones.paper });
   } else {
-    drawText(ctx, 'GENERAL GAP: 31.6 TO 10', center, bracketY + (phone ? 19 : 23), { size, color: tones.ink, paper: tones.paper });
+    drawText(ctx, 'GENERAL GAP: 31.6 TO 10', center, bracketY + (phone ? 15 : 23), { size, color: tones.ink, paper: tones.paper });
   }
 }
 
@@ -149,10 +155,10 @@ export function drawLedger(ctx: CanvasRenderingContext2D, width: number, height:
 
   const phone = width < PHONE_STAGE_WIDTH;
   const size = phone ? 9.2 : 11.2;
-  const line = size * 1.55;
+  const line = size * (phone ? 1.3 : 1.55);
   const left = width * .06;
   const right = width * .94;
-  const top = mix(height + 12, height * (phone ? .79 : .76), smooth(time, 60500, 61750));
+  const top = mix(height + 12, height * (phone ? .735 : .76), smooth(time, 60500, 61750));
   const center = (left + right) / 2;
   const rows = [
     'UNREVIEWED · 20 OCT 2026',
