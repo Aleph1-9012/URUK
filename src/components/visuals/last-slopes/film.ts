@@ -177,7 +177,12 @@ class LastSlopesFilm implements FilmDrawing {
 
     if (motion.guide < 1) return;
 
-    this.text('∞', guide.cx, guide.cy - guide.radius - (this.phone ? 13 : 18), this.phone ? 16 : 20, true);
+    if (this.phone) {
+      const y = guide.cy - guide.radius;
+      const lift = this.width < 292 ? motion.lastMarker : 0;
+      drawLine(pen, mix(guide.cx - guide.radius - 3, guide.cx, lift), y - 3 * lift, mix(guide.cx - 3, guide.cx, lift), y - 1.5 * lift, tones.ink, .5);
+      this.text('∞', mix(guide.cx - guide.radius - 13, guide.cx, lift), y - 9 * lift, 16, true);
+    } else this.text('∞', guide.cx, guide.cy - guide.radius - 18, 20, true);
     this.text('0', guide.cx, guide.cy + guide.radius + (this.phone ? 13 : 18), this.phone ? 13 : 16, true);
     const angle = movingAngle(selection.from.angle, selection.to.angle, selection.amount);
     const point = this.atAngle(angle);
@@ -256,7 +261,34 @@ class LastSlopesFilm implements FilmDrawing {
     if (motion.instanton > 0) {
       for (const slope of [this.model.examples.negativeTwo, this.model.examples.two]) {
         const point = this.atAngle(slope.angle, guide.radius + 16);
-        this.text(slope.label.replace('-', '−'), point.x, point.y, this.phone ? 13 : 16, true);
+        const tick = this.atAngle(slope.angle);
+        const sign = Math.sign(slope.p);
+        const value = slope.label.replace('-', '−');
+        const size = this.phone ? 13 : 16;
+        const y = point.y - (sign > 0 ? 4 : 0);
+        pen.save();
+        pen.font = `${size}px "Garamond Math", serif`;
+        pen.textAlign = 'center';
+        pen.textBaseline = 'middle';
+        const metrics = pen.measureText(value);
+        pen.restore();
+        const halfPaper = (sign > 0 ? metrics.actualBoundingBoxLeft : metrics.actualBoundingBoxRight) + 2;
+        const paperTop = y - metrics.actualBoundingBoxAscent - 2;
+        const paperBottom = y + metrics.actualBoundingBoxDescent + 2;
+        const nearY = Math.max(0, tick.y - paperBottom - 1);
+        const ringHeight = this.phone ? 18 : 26;
+        const ringReach = guide.radius * .93 * Math.sqrt(Math.max(0, 1 - (nearY / ringHeight) ** 2)) + 1;
+        const stroke = this.phone ? 7 : 10;
+        const slashTop = Math.max(paperTop - 1.1, tick.y - stroke);
+        const slashBottom = Math.min(paperBottom + 1.1, tick.y + stroke);
+        const slashReach = slashTop <= slashBottom ? Math.abs(tick.x - guide.cx) + sign * (tick.y - (sign > 0 ? slashTop : slashBottom)) + 1.1 : 0;
+        const reach = Math.max(ringReach, slashReach) + halfPaper + 2;
+        const offset = Math.max(0, reach - Math.abs(point.x - guide.cx)) * motion.lastMarker;
+        const x = point.x + sign * offset;
+
+        if (offset > 4) drawLine(pen, tick.x, tick.y, x - sign * (halfPaper + 1), y, tones.muted, .5);
+
+        this.text(value, x, y, size, true);
       }
     }
   }

@@ -9,9 +9,9 @@ export function layout(w: number, h: number) {
 
   return {
     phone,
-    guide: { cx: (phone ? .5 : .26) * w, cy: (phone ? .23 : .37) * h, radius: Math.min((phone ? .42 : .22) * w, (phone ? .19 : .30) * h) },
-    glyph: { cx: (phone ? .5 : .74) * w, cy: (phone ? .54 : .28) * h, width: (phone ? .5 : .32) * w, height: (phone ? .14 : .27) * h },
-    text: { glyphHeadingY: (phone ? .46 : .09) * h, fractionY: (phone ? .64 : .46) * h, tagsTop: (phone ? .69 : .54) * h, toyY: .975 * h },
+    guide: { cx: (phone ? .5 : .26) * w, cy: (phone ? .25 : .37) * h, radius: Math.min((phone ? .42 : .22) * w, (phone ? .15 : .30) * h) },
+    glyph: { cx: (phone ? .5 : .74) * w, cy: (phone ? .55 : .28) * h, width: (phone ? .5 : .32) * w, height: (phone ? .08 : .27) * h },
+    text: { glyphHeadingY: (phone ? .475 : .09) * h, fractionY: (phone ? .62 : .46) * h, tagsTop: (phone ? .69 : .54) * h, toyY: (phone ? .02 : .975) * h },
     panel: { center: phone ? .5 : .74, width: phone ? .94 : .46 },
   };
 }
@@ -30,7 +30,8 @@ export function drawLastSlopesPanels(ctx: CanvasRenderingContext2D, w: number, h
   }
 
   if (motion.slopeOne > 0) {
-    drawWrappedText(ctx, 'ABSTRACT BOUNDARY COORDINATES', page.glyph.cx, page.text.glyphHeadingY, page.glyph.width * 1.7, {
+    const headingY = page.text.glyphHeadingY - (phone && w < 318 ? 2.5 : 0);
+    drawWrappedText(ctx, 'ABSTRACT BOUNDARY COORDINATES', page.glyph.cx, headingY, page.glyph.width * 1.7, {
       size: phone ? 8 : 10,
       color: tones.ink,
       paper: tones.paper,
