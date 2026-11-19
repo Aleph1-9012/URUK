@@ -73,7 +73,7 @@ function layout(width: number, height: number, time: number): { walk: Box; chart
   }
 
   const ending = smooth(time, 110750, 111600);
-  const split = mix(.51, .37, ending);
+  const split = mix(.38, .29, ending);
 
   return { walk: { x: width * .035, y: height * .02, w: width * .93, h: height * (split - .04) }, chart: { x: width * .055, y: height * split, w: width * .89, h: height * (.98 - split) }, tall };
 }
@@ -209,7 +209,7 @@ export class PolymerWalkFilm {
 
     pen.restore();
     const origin = screen(first, camera);
-    text(pen, 'o', origin.x + 7, origin.y + 9, 12, 18, colors);
+    text(pen, 'o', origin.x + 7, origin.y + (boxes.tall ? -9 : 9), 12, 18, colors);
     text(pen, time < 16250 ? 'HONEYCOMB · THREE NEIGHBOURS AT EVERY POINT' : 'PIVOT-SAMPLED · ONE WALK OF 1,024 STEPS', boxes.walk.x + boxes.walk.w / 2, boxes.walk.y + 8, boxes.tall ? 10 : 13, boxes.walk.w - 6, colors);
 
     if (time < 6500) text(pen, `n = ${Math.floor(steps)} · NEVER VISIT A POINT TWICE`, boxes.walk.x + boxes.walk.w / 2, boxes.walk.y + boxes.walk.h - 8, boxes.tall ? 10 : 14, boxes.walk.w - 6, colors);

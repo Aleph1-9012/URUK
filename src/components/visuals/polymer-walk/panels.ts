@@ -413,9 +413,9 @@ function critical(pen: CanvasRenderingContext2D, box: Box, colors: Colors, place
 }
 
 function closing(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: PolymerModel, tall: boolean): void {
-  const chart = { x: box.x, y: box.y, w: box.w, h: box.h * (tall ? .57 : .61) };
+  const chart = { x: box.x, y: box.y, w: box.w, h: box.h * (tall ? .62 : .61) };
   diameterChart(pen, chart, time, colors, place, model, tall, true);
-  const y = box.y + box.h * (tall ? .63 : .67);
+  const y = box.y + box.h * .67;
   const x = box.x + box.w / 2;
   text(pen, 'UNREVIEWED', x, y, tall ? 17 : 25, box.w - 6, colors);
   text(pen, 'OSVERIFY: ONE MAJOR ISSUE · REPAIR PROPOSED', x, y + (tall ? 20 : 28), tall ? 9 : 12, box.w - 6, colors);

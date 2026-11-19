@@ -16,7 +16,7 @@ export const CUES = [
   { at: 91000, title: "Every subwalk", text: "Every subwalk $\\sigma$ has length at most $H^{\\tau}(1+\\operatorname{diam}\\sigma)^{4/3}$.", sources: [1] },
   { at: 97500, title: "From weights to one length", text: "Submultiplicativity and the polynomial strip lower bound give $c_n\\rho^{n}\\ge1$ for the number $c_n$ of $n$-step walks.", sources: [1] },
   { at: 104500, title: "Diameter and endpoints", text: "A lower bound for the diameter does not imply that the two endpoints are far apart.", sources: [1] },
-  { at: 110750, title: "Where the claim stands", text: "An automated referee run by a Stanford group has reported one major issue, with a proposed repair, in one of the thirteen papers that the headline depends on.", sources: [5, 7] },
+  { at: 110700, title: "Where the claim stands", text: "An automated referee run by a Stanford group has reported one major issue, with a proposed repair, in one of the thirteen papers that the headline depends on.", sources: [5, 7] },
 ] as const;
 
 export const FILM_DURATION = 120000;

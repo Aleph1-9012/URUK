@@ -2,7 +2,7 @@ uruk-polymer-walk .film-label { font-size: .875rem; }
 uruk-polymer-walk .film-label[data-label$='claim'] { color: var(--blue); }
 
 @container plate (max-width: 599px) {
-  uruk-polymer-walk .film-stage { aspect-ratio: 4 / 6; }
+  uruk-polymer-walk .film-stage { aspect-ratio: 4 / 5; }
   uruk-polymer-walk .film-label { font-size: .75rem; }
   uruk-polymer-walk .film-label[data-label='diameter-claim'], uruk-polymer-walk .film-label[data-label='ball-claim'], uruk-polymer-walk .film-label[data-label='division'] { font-size: .6875rem; }
 }
