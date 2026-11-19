@@ -1,7 +1,7 @@
 uruk-remainder-clock .film-label { font-size: .875rem; }
 
 @container plate (max-width: 599px) {
-  uruk-remainder-clock .film-stage { aspect-ratio: 4 / 6; }
+  uruk-remainder-clock .film-stage { aspect-ratio: 4 / 5; }
   uruk-remainder-clock .film-label { font-size: .75rem; }
   uruk-remainder-clock .film-label[data-label='product'] { font-size: .6875rem; }
 }

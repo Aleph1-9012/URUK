@@ -6,8 +6,8 @@ export type Colors = Record<'ink' | 'blue' | 'muted' | 'paper', string>;
 
 export type Place = (id: string, x: number, y: number, opacity?: number) => void;
 
-export function text(pen: CanvasRenderingContext2D, words: string, x: number, y: number, size: number, maxWidth: number, colors: Colors, align: CanvasTextAlign = 'center', tone = colors.ink): void {
-  const family = /[α-ωΑ-Ω⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉∞∈⊇]/u.test(words) ? '"Garamond Math", serif' : '"Special Elite", monospace';
+export function text(pen: CanvasRenderingContext2D, words: string, x: number, y: number, size: number, maxWidth: number, colors: Colors, align: CanvasTextAlign = 'center', tone = colors.ink, math = false): void {
+  const family = math || /[α-ωΑ-Ω⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉∞∈⊇]/u.test(words) ? '"Garamond Math", serif' : '"Special Elite", monospace';
   const rows = words.split('\n');
 
   for (const [index, row] of rows.entries()) {

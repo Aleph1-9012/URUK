@@ -34,7 +34,7 @@ function tick(pen: CanvasRenderingContext2D, x: number, y: number, size: number)
 
 function arithmetic(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, phone: boolean): void {
   const x = box.x + box.w / 2;
-  const y = box.y + box.h * .20;
+  const y = box.y + (phone ? 13 : box.h * .20);
   const size = phone ? 17 : 24;
   text(pen, 'DOUBLE THE NUMBER', x, y, phone ? 12 : 15, box.w - 10, colors);
   text(pen, '8 × 2 = 16', x, y + 30, size, box.w - 12, colors);
@@ -43,7 +43,7 @@ function arithmetic(pen: CanvasRenderingContext2D, box: Box, time: number, color
   text(pen, 'KEEP THE REMAINDER: 5', x, y + 106, phone ? 12 : 16, box.w - 10, colors);
 
   if (time >= 6500) {
-    text(pen, 'ALL TEN NONZERO TICKS', x, box.y + box.h - 29, phone ? 12 : 15, box.w - 10, colors);
+    text(pen, 'ALL TEN NONZERO TICKS', x, box.y + box.h - (phone ? 7 : 29), phone ? 12 : 15, box.w - 10, colors);
   }
 }
 
@@ -65,7 +65,7 @@ function bases(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
 
   const step = Math.min(phone ? 34 : 51, box.w / 8);
   const start = x - step * 3;
-  const row = box.y + (phone ? claimed ? 92 : 74 : 110);
+  const row = box.y + (phone ? 70 : 110);
   const title = claimed ? 'OPENAI · 4 OCTOBER 2026 · 92 PAGES' : time >= 54000 ? 'HEATH-BROWN 1986' : 'ARTIN TO HASSE · 27 SEPTEMBER 1927';
   text(pen, title, x, box.y + 13, phone ? 10 : 13, box.w - 5, colors);
   text(pen, claimed ? 'CLAIMED: EVERY ADMISSIBLE BASE' : time >= 54000 ? 'AT LEAST ONE · UNNAMED' : 'EVERY ADMISSIBLE BASE?', x, box.y + 35, phone ? 11 : 15, box.w - 6, colors, 'center', claimed ? colors.blue : colors.ink);
@@ -74,7 +74,7 @@ function bases(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
 
   if (time >= 54000) {
     const opening = smooth(time, 67000, 68500);
-    brace(pen, start - 12, row - 28 - opening * 9, 2 * step + 24, 7 * (1 - opening));
+    brace(pen, start - 12, row - (phone ? 17 : 28) - opening * 9, 2 * step + 24, 7 * (1 - opening));
   }
 
   for (const [index, base] of BASES.entries()) {
@@ -90,9 +90,9 @@ function bases(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
     }
   }
 
-  text(pen, 'NOT: −1, AND SQUARES 1, 4, 9, 16 …', x, row + (phone ? 68 : 106), phone ? 10 : 13, box.w - 8, colors);
+  text(pen, 'NOT: −1, AND SQUARES 1, 4, 9, 16 …', x, row + (phone ? 50 : 106), phone ? 10 : 13, box.w - 8, colors);
 
-  if (!claimed && time < 54000) text(pen, '4 = 2²: ORDER 5 OF 10', x, box.y + box.h - 24, phone ? 12 : 15, box.w - 8, colors);
+  if (!claimed && time < 54000) text(pen, '4 = 2²: ORDER 5 OF 10', x, box.y + box.h - (phone ? 7 : 24), phone ? 12 : 15, box.w - 8, colors);
 }
 
 function strip(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, model: ArtinModel, phone: boolean, closing = false): void {
@@ -101,7 +101,7 @@ function strip(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
   const columns = phone ? 20 : 30;
   const rows = 300 / columns;
   const cellW = width / columns;
-  const cellH = Math.min(phone ? 5 : 10, (box.h * .34) / rows);
+  const cellH = Math.min(phone ? 2.5 : 10, (box.h * .34) / rows);
   const gridY = box.y + 30;
   const amount = closing ? 300 : Math.ceil(300 * progress(time, 30000, 32300));
   text(pen, '300 ODD PRIMES · 116 FILLED', x + width / 2, box.y + 11, phone ? 11 : 14, width, colors);
@@ -119,7 +119,7 @@ function strip(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
     }
   }
 
-  const chartTop = gridY + rows * cellH + (phone ? 19 : 32);
+  const chartTop = gridY + rows * cellH + (phone ? 8 : 32);
   const chartBottom = box.y + box.h - 42;
   const chartHeight = Math.max(35, chartBottom - chartTop);
   const logStage = closing || time >= 34500;
@@ -135,7 +135,7 @@ function strip(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
   pen.setLineDash([4, 4]);
   line(pen, chartX, predictionY, chartX + chartW, predictionY);
   pen.setLineDash([]);
-  text(pen, '37.4%', x + 17, predictionY - 2, phone ? 9 : 11, 34, colors);
+  text(pen, '37.4%', x + 17, predictionY - (phone ? 10 : 2), phone ? 9 : 11, 34, colors);
   const reveal = closing ? 1 : progress(time, logStage ? 34500 : 31600, logStage ? 37400 : 34100);
   const pointX = (index: number, total: number) => chartX + chartW * (logStage ? index / (points.length - 1) : total / 300);
   pen.strokeStyle = colors.ink;
@@ -224,16 +224,16 @@ function sieve(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
   pen.fillStyle = colors.ink;
   pen.fillRect(x, y, width * product, height);
   pen.setLineDash([4, 3]);
-  line(pen, x + width * model.product, y - 5, x + width * model.product, y + height + 11);
+  line(pen, x + width * model.product, y - 5, x + width * model.product, y + height + (phone ? 6 : 11));
   pen.setLineDash([]);
-  text(pen, product.toFixed(5), x + width * product, y + height + 23, phone ? 17 : 23, width * .5, colors);
+  text(pen, product.toFixed(5), x + width * (phone ? .25 : product), y + height + (phone ? 19 : 23), phone ? 17 : 23, width * .5, colors);
   const activePrime = elapsed >= 9 ? `PRIMES TO ${model.productLimit.toLocaleString('en-US')}` : elapsed >= 8 ? 'FINISHING PRODUCT' : `THROUGH q = ${partial?.q ?? 2}`;
-  text(pen, activePrime, x + width * .77, y + height + 23, phone ? 10 : 13, width * .43, colors);
-  place('product', x + width / 2, y + height + (phone ? 53 : 74));
-  const rowY = box.y + box.h - (phone ? 36 : 64);
+  text(pen, activePrime, x + width * (phone ? .75 : .77), y + height + (phone ? 19 : 23), phone ? 10 : 13, width * .43, colors);
+  if (!phone || carry === 1) place('product', x + width / 2, y + height + (phone ? 44 : 74));
+  const rowY = box.y + box.h - (phone ? 30 : 64);
   const fractions = ['1/2', '1/6', '1/20', '1/42'];
 
-  for (let item = 0; item < 4; item++) {
+  for (let item = 0; item < (phone && carry < 1 ? 0 : 4); item++) {
     const measured = MEASURED_GATE_SHARES[item];
 
     if (!measured) continue;
@@ -243,11 +243,11 @@ function sieve(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
     text(pen, measured.share.toFixed(5), px, rowY + 17, phone ? 11 : 14, width / 4 - 4, colors);
   }
 
-  text(pen, 'MEASURED THROUGH TEN MILLION', x + width / 2, box.y + box.h - 3, phone ? 9 : 11, width, colors);
+  if (!phone || carry === 1) text(pen, 'MEASURED THROUGH TEN MILLION', x + width / 2, box.y + box.h + (phone ? 1 : -3), phone ? 9 : 11, width, colors);
 }
 
 function countChart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: ArtinModel, phone: boolean): void {
-  const chart = { x: box.x + (phone ? 30 : 47), y: box.y + 43, w: box.w - (phone ? 44 : 72), h: box.h - (phone ? 128 : 158) };
+  const chart = { x: box.x + (phone ? 30 : 47), y: box.y + 43, w: box.w - (phone ? 44 : 72), h: box.h - (phone ? 140 : 158) };
   const xMap = (x: number) => chart.x + (Math.log10(x) - 2) / (Math.log10(5_000_000) - 2) * chart.w;
   const yMap = (value: number) => chart.y + chart.h * (1 - Math.log10(value) / 5.2);
   const amount = progress(time, 76100, 79800);
@@ -312,8 +312,8 @@ function countChart(pen: CanvasRenderingContext2D, box: Box, time: number, color
   pen.setLineDash([]);
   text(pen, 'ARTIN’S PREDICTION', chart.x + chart.w * .36, chart.y + chart.h * .15, phone ? 10 : 12, chart.w * .7, colors);
   text(pen, 'CLAIMED FLOOR · CONSTANT NOT EXPLICIT\nHEIGHT SCHEMATIC', box.x + box.w / 2, chart.y + chart.h + 32, phone ? 9 : 12, box.w - 8, colors, 'center', colors.blue);
-  place('lower', box.x + box.w / 2, chart.y + chart.h + 64);
-  text(pen, '1/log x: 0.217 → 0.065 · A LOGARITHM SHORT', box.x + box.w / 2, box.y + box.h - 4, phone ? 9 : 12, box.w - 8, colors);
+  place('lower', box.x + box.w / 2, chart.y + chart.h + (phone ? 69 : 64));
+  text(pen, '1/log x: 0.217 → 0.065 · A LOGARITHM SHORT', box.x + box.w / 2, box.y + box.h - (phone ? -3 : 4), phone ? 9 : 12, box.w - 8, colors);
 }
 
 function grouped(value: string, split: boolean): string {
@@ -328,17 +328,18 @@ function grouped(value: string, split: boolean): string {
 
 function family(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, phone: boolean): void {
   const center = box.x + box.w / 2;
-  const x = box.x + 13;
-  const width = box.w - 26;
-  const barY = box.y + (phone ? 40 : 44);
-  const barH = phone ? 14 : 26;
+  const x = box.x + (phone ? 4 : 13);
+  const width = box.w - (phone ? 8 : 26);
+  const spacing = phone ? Math.max(1, (box.h - 4) / 174) : 1;
+  const barY = box.y + (phone ? 26 * spacing : 44);
+  const barH = phone ? 20 : 26;
   const amount = smooth(time, 84250, 85750);
   const oldLogs = [Math.log(2), Math.log(3), Math.log(5), 0];
   const newLogs = [Math.log(2), Math.log(11), Math.log(13), Math.log(Number(FAMILY_EXAMPLES.open.largeFactor))];
   const oldSum = Math.log(30);
   const newSum = newLogs.reduce((sum, value) => sum + value, 0);
   let left = x;
-  place('family', center, box.y + 9);
+  if (!phone) place('family', center, box.y + 9);
   pen.strokeStyle = colors.ink;
   pen.lineWidth = .9;
 
@@ -349,8 +350,8 @@ function family(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
 
     if (item < 3) {
       const tagX = x + 12 + item * (phone ? 35 : 47);
-      line(pen, mid, barY, tagX, barY - 12);
-      text(pen, String([2, 11, 13][item]), tagX, barY - 16, phone ? 12 : 15, 31, colors);
+      line(pen, mid, barY, tagX, barY - 12 * spacing);
+      text(pen, String([2, 11, 13][item]), tagX, barY - (phone ? 14 : 16) * spacing, phone ? 12 : 15, 31, colors);
     } else if (part > 8) {
       text(pen, 'Q', mid, barY + barH / 2 + 1, phone ? 13 : 19, part - 5, colors);
     }
@@ -358,20 +359,20 @@ function family(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
     left += part;
   }
 
-  const startY = barY + barH + (phone ? 14 : 28);
+  const startY = barY + barH + (phone ? 14 * spacing - 6 : 28);
   const textSize = phone ? 11 : 16;
-  const rowGap = phone ? 37 : 65;
-  text(pen, `Q = ${grouped(FAMILY_EXAMPLES.open.largeFactor, phone)}`, center, startY, textSize, width, colors);
-  text(pen, `p = ${grouped(FAMILY_EXAMPLES.open.prime, phone)}`, center, startY + rowGap, textSize, width, colors);
-  text(pen, 'ALL GATES OPEN · 2 IS A PRIMITIVE ROOT', center, startY + rowGap + (phone ? 32 : 27), phone ? 9 : 12, width, colors);
-  const secondPrimeY = startY + rowGap * 2 + (phone ? 16 : 0);
-  text(pen, `p = ${grouped(FAMILY_EXAMPLES.closed.prime, phone)}`, center, secondPrimeY, textSize, width, colors);
-  const secondTagY = secondPrimeY + (phone ? 28 : 27);
-  const noteY = secondTagY + (phone ? 12 : 30);
+  const rowGap = phone ? 18 * spacing : 65;
+  text(pen, `Q = ${grouped(FAMILY_EXAMPLES.open.largeFactor, false)}`, center, startY, textSize, width, colors, 'center', colors.ink, phone);
+  text(pen, `p = ${grouped(FAMILY_EXAMPLES.open.prime, false)}`, center, startY + rowGap, textSize, width, colors, 'center', colors.ink, phone);
+  text(pen, 'ALL GATES OPEN · 2 IS A PRIMITIVE ROOT', center, startY + rowGap + (phone ? 16 * spacing : 27), phone ? 9 : 12, width, colors);
+  const secondPrimeY = startY + rowGap * 2 + (phone ? 22 * spacing : 0);
+  text(pen, `p = ${grouped(FAMILY_EXAMPLES.closed.prime, false)}`, center, secondPrimeY, textSize, width, colors, 'center', colors.ink, phone);
+  const secondTagY = secondPrimeY + (phone ? 17 * spacing : 27);
+  const noteY = secondTagY + (phone ? 16 * spacing : 30);
   text(pen, 'SECOND PRIME · GATE 11 SHUT', center, secondTagY, phone ? 10 : 13, width, colors);
   text(pen, '(2/p) = −1 · p ≡ 3 MOD 8: GATE 2 HELD OPEN', center, noteY, phone ? 9 : 12, width, colors);
-  text(pen, 'REAL PRIMES OF THE FAMILY’S SHAPE', center, noteY + (phone ? 14 : 19), phone ? 9 : 12, width, colors);
-  text(pen, 'WINDOW (4.48, 29.17) AT x = 10²⁵ · THRESHOLD NOT EXPLICIT', center, noteY + (phone ? 28 : 39), phone ? 8 : 11, width, colors);
+  text(pen, 'REAL PRIMES OF THE FAMILY’S SHAPE', center, noteY + (phone ? 14 * spacing : 19), phone ? 9 : 12, width, colors);
+  text(pen, 'WINDOW (4.48, 29.17) AT x = 10²⁵ · THRESHOLD NOT EXPLICIT', center, noteY + (phone ? 28 * spacing : 39), phone ? 8 : 11, width, colors);
 }
 
 function fences(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, phone: boolean): void {
@@ -410,9 +411,9 @@ function fences(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
 function shares(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: ArtinModel, phone: boolean): void {
   const x = box.x + 9;
   const width = box.w - 18;
-  const chartY = box.y + 51;
-  const chartH = box.h - 131;
   const stage = Math.min(3, Math.floor(progress(time, 106000, 109800) * 3.99));
+  const chartY = box.y + (phone && stage === 0 ? 75 : 51);
+  const chartH = box.h - 131;
   const entering = progress(time, 102000, 104200);
   const columnW = width / 8;
   const sum = model.windowShares.reduce((total, row) => total + row.share, 0);
@@ -428,7 +429,8 @@ function shares(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
       const px = x + index * columnW;
       hatch(pen, { x: px + 3, y: chartY + chartH - height, w: columnW - 6, h: height }, colors);
       pen.strokeRect(px + 3, chartY + chartH - height, columnW - 6, height);
-      text(pen, row.share.toFixed(4), px + columnW / 2, chartY + chartH - height - 9, phone ? 8 : 11, columnW - 2, colors);
+      const valueY = phone ? chartY - (index % 2 === 0 ? 24 : 11) : chartY + chartH - height - 9;
+      text(pen, row.share.toFixed(4), px + columnW / 2, valueY, phone ? 8 : 11, phone ? Math.max(40, columnW - 2) : columnW - 2, colors);
       text(pen, String(row.q), px + columnW / 2, chartY + chartH + 12, phone ? 11 : 14, columnW - 2, colors);
     }
 
@@ -437,12 +439,12 @@ function shares(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
     const tail = model.tails[stage - 1];
 
     if (tail) {
-      text(pen, `q ≥ ${tail.from}`, x + width * .23, chartY + chartH * .25, phone ? 16 : 24, width * .45, colors);
-      text(pen, `SUM ≈ ${tail.share.toFixed(4)}`, x + width * .66, chartY + chartH * .25, phone ? 16 : 24, width * .6, colors);
-      const bar = { x, y: chartY + chartH * .66, w: width, h: phone ? 17 : 27 };
+      text(pen, `q ≥ ${tail.from}`, phone ? x + width / 2 : x + width * .23, phone ? box.y + 69 : chartY + chartH * .25, phone ? 16 : 24, phone ? width : width * .45, colors);
+      text(pen, `SUM ≈ ${tail.share.toFixed(4)}`, phone ? x + width / 2 : x + width * .66, phone ? box.y + 95 : chartY + chartH * .25, phone ? 16 : 24, phone ? width : width * .6, colors);
+      const bar = { x, y: phone ? box.y + 116 : chartY + chartH * .66, w: width, h: phone ? 17 : 27 };
       pen.strokeRect(bar.x, bar.y, bar.w, bar.h);
       hatch(pen, { x: bar.x + bar.w * (1 - tail.share), y: bar.y, w: bar.w * tail.share, h: bar.h }, colors);
-      text(pen, 'A POSITIVE PROPORTION REMAINS', x + width / 2, chartY + chartH + 35, phone ? 11 : 15, width, colors);
+      text(pen, 'A POSITIVE PROPORTION REMAINS', x + width / 2, phone ? box.y + 150 : chartY + chartH + 35, phone ? 11 : 15, width, colors);
     }
   }
 
@@ -454,8 +456,8 @@ function close(pen: CanvasRenderingContext2D, box: Box, colors: Colors, model: A
   text(pen, 'UNREVIEWED', x, box.y + 13, phone ? 22 : 31, box.w - 10, colors);
   text(pen, 'IMPORTS THEOREM 3.1 OF AN\nUNREVIEWED RELEASE PAPER', x, box.y + 46, phone ? 11 : 16, box.w - 8, colors);
   text(pen, 'ADAPTS FAMILY 003 · NO LEAN', x, box.y + (phone ? 88 : 104), phone ? 11 : 15, box.w - 8, colors);
-  const chartTop = box.y + box.h * .52;
-  const chartHeight = box.h * .16;
+  const chartTop = box.y + (phone ? 99 : box.h * .52);
+  const chartHeight = phone ? 20 : box.h * .16;
   const chartX = box.x + 15;
   const chartWidth = box.w - 30;
   const yMap = (share: number) => chartTop + chartHeight * (1 - (share - .37) / .04);
@@ -485,12 +487,12 @@ function close(pen: CanvasRenderingContext2D, box: Box, colors: Colors, model: A
     text(pen, last.share.toFixed(4), chartX + chartWidth - 4, yMap(last.share) - 12, phone ? 10 : 13, 70, colors, 'right');
   }
 
-  text(pen, `ARTIN: ${(100 * model.product).toFixed(1)}% · STILL A PREDICTION`, x, box.y + box.h * .68 + 11, phone ? 10 : 14, box.w - 8, colors);
+  text(pen, `ARTIN: ${(100 * model.product).toFixed(1)}% · STILL A PREDICTION`, x, phone ? chartTop + chartHeight + 17 : box.y + box.h * .68 + 11, phone ? 10 : 14, box.w - 8, colors);
   const step = Math.min(phone ? 33 : 49, box.w / 8);
 
   for (const [index, base] of BASES.entries()) {
     const px = x + (index - 3) * step;
-    const py = box.y + box.h - 14;
+    const py = box.y + box.h - (phone ? 8 : 14);
     text(pen, String(base), px, py, phone ? 17 : 23, step - 3, colors);
     pen.strokeStyle = colors.blue;
     pen.lineWidth = 2.3;

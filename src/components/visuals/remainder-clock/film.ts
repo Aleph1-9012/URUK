@@ -51,24 +51,20 @@ function layout(width: number, height: number, time: number): { clock: Box; gate
     };
   }
 
-  let compact = 0;
-
-  if (time >= 29750 && time < 38250) compact = smooth(time, 29750, 30600);
-  if (time >= 45750 && time < 61000) compact = smooth(time, 45750, 46600);
-  if (time >= 67000) compact = smooth(time, 67000, 67850);
-
-  const family = smooth(time, 84250, 85100) * (1 - smooth(time, 93250, 94100));
-  const panelTop = mix(.58, .49, compact) - family * .19;
-  const clock = { x: width * .05, y: height * .012, w: width * .90, h: height * (panelTop - .185) };
-  const baseGateY = height * (panelTop - .135);
-  const familyGateY = clock.y + clock.h / 2 + 35;
-  const gateY = mix(baseGateY, familyGateY, family);
-  const panelY = mix(height * panelTop, gateY + 80, family);
+  const compact = smooth(time, 38250, 39100);
+  const panelTop = time < 29750 ? .50 : .52;
+  const clock = {
+    x: mix(width * .05, width * .025, compact),
+    y: mix(22, 18, compact),
+    w: mix(width * .90, width * .46, compact),
+    h: mix(114, 90, compact),
+  };
+  const top = mix(height * panelTop, Math.max(130, height * .39), compact);
 
   return {
     clock,
-    gates: { x: width * .05, y: gateY, w: width * .90, h: height * .12 },
-    panel: { x: width * .055, y: time < 38250 ? height * Math.min(panelTop, .48) : panelY, w: width * .89, h: time < 38250 ? height * .50 : height * .98 - panelY },
+    gates: { x: width * .51, y: height * .012, w: width * .47, h: 108 },
+    panel: { x: mix(width * .055, width * .02, compact), y: top, w: mix(width * .89, width * .96, compact), h: height * .98 - top },
     tall,
   };
 }
@@ -118,6 +114,8 @@ function drawClock(pen: CanvasRenderingContext2D, box: Box, time: number, colors
           [0, { x: cx - 5, y: cy - radius - 14 }],
           [1, { x: cx + 20, y: cy - radius - 14 }],
           [2, { x: cx + 39, y: cy - radius - 10 }],
+          [4, { x: cx + 50, y: cy - 30 }],
+          [5, { x: cx + 47, y: cy - 18 }],
           [15, { x: cx + 47, y: cy + radius + 11 }],
           [16, { x: cx - 47, y: cy + radius + 11 }],
         ]);
@@ -128,6 +126,16 @@ function drawClock(pen: CanvasRenderingContext2D, box: Box, time: number, colors
           label.x = target.x;
           label.y = target.y;
         }
+      }
+
+      if (tall && ((prime === 13 && value === 10) || (prime === 31 && value === 25))) {
+        label.x -= 4;
+        line(pen, b.x, b.y, label.x, label.y);
+      }
+
+      if (tall && time >= 110250 && prime === 11 && (value === 2 || value === 9)) {
+        label.x += value === 2 ? 4 : -4;
+        line(pen, b.x, b.y, label.x, label.y);
       }
 
       text(pen, String(value), label.x, label.y, numberSize, 26, colors);
@@ -195,16 +203,17 @@ function drawClock(pen: CanvasRenderingContext2D, box: Box, time: number, colors
   pen.arc(beadX, beadY, 5, 0, Math.PI * 2);
   pen.fill();
   pen.stroke();
-  text(pen, `MOD ${prime} · × ${base}`, cx, cy - (time >= 14000 ? 8 : 0), tall ? 11 : 17, radius * 1.6, colors);
+  const captionY = tall && time >= 38250 ? 8 : cy - (time >= 14000 ? 8 : 0);
+  text(pen, `MOD ${prime} · × ${base}`, cx, captionY, tall ? 11 : 17, tall ? Math.max(100, radius * 1.6) : radius * 1.6, colors);
 
   if (time < 14000) {
     const shown = residues.slice(0, Math.min(order, Math.ceil(walked) + 1)).join(' → ');
-    text(pen, shown, cx, box.y + 8, tall ? 11 : 17, box.w - 8, colors);
+    text(pen, shown, cx, tall ? 8 : box.y + 8, tall ? 11 : 17, box.w - 8, colors);
 
-    if (time >= 2200 && time < 6500) text(pen, '8 × 2 = 16 → 5', cx, box.y + box.h - 7, tall ? 11 : 16, box.w, colors);
+    if (time >= 2200 && time < 6500) text(pen, '8 × 2 = 16 → 5', cx, box.y + box.h + (tall ? 12 : -7), tall ? 11 : 16, box.w, colors);
   } else {
     const tag = base === 4 ? '4 = 2² · ORDER 5 OF 10' : prime === 31 ? 'ORDER 5 · INDEX 6' : prime === 7 ? 'ORDER 3 OF 6 · CLOSES EARLY' : `ORDER ${order} = ${prime} − 1`;
-    text(pen, tag, cx, cy + (tall ? 12 : 20), tall ? 9 : 13, radius * 1.8, colors);
+    text(pen, tag, cx, tall ? box.y + box.h + 9 : cy + 20, tall ? 9 : 13, tall ? Math.max(150, radius * 1.8) : radius * 1.8, colors);
   }
 }
 
@@ -214,7 +223,7 @@ function superscript(value: number): string {
   return String(value).split('').map(digit => digits[Number(digit)]).join('');
 }
 
-function drawUnrolledClock(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, tall: boolean): void {
+function drawUnrolledClock(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, tall: boolean, frameWidth: number): void {
   const amount = smooth(time, 84250, 85250);
   const cx = box.x + box.w / 2;
   const cy = box.y + box.h / 2;
@@ -257,11 +266,11 @@ function drawUnrolledClock(pen: CanvasRenderingContext2D, box: Box, time: number
   line(pen, left + width, cy - 7 * amount, left + width, cy + 7 * amount);
   if (!tall) text(pen, 'p − 1: TOO MANY TICKS TO DRAW', cx, cy + 39, 13, box.w, colors);
 
-  text(pen, tall ? 'p − 1: TOO MANY TICKS · SCHEMATIC' : 'SCHEMATIC UNROLLING · LOG FACTOR WIDTHS', cx, box.y + 5, tall ? 8.5 : 12, box.w, colors);
+  text(pen, tall ? 'p − 1: TOO MANY TICKS · SCHEMATIC' : 'SCHEMATIC UNROLLING · LOG FACTOR WIDTHS', tall ? frameWidth / 2 : cx, tall ? 8 : box.y + 5, tall ? 8.5 : 12, tall ? frameWidth * .94 : box.w, colors);
 }
 
-function drawGates(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, model: ArtinModel, tall: boolean, place: Place): void {
-  if (time < 38250 || time >= 110250) return;
+function drawGates(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, model: ArtinModel, tall: boolean, place: Place, width: number): void {
+  if (time < 38250 || time >= 110250 || (tall && time < 39100)) return;
 
   const family = time >= 84250;
   const familyScene = family && time < 93250;
@@ -272,41 +281,43 @@ function drawGates(pen: CanvasRenderingContext2D, box: Box, time: number, colors
   const rows = family ? familyGates.map(gate => ({ label: gate.q > 13n ? 'Q' : String(gate.q), closed: gate.closed, test: gate.closed ? 'SHUT' : 'OPEN' })) : small.map(gate => ({ label: String(gate.q), closed: gate.closed, test: `2${superscript(gate.exponent)} ≡ ${gate.remainder}` }));
   const font = tall ? 9.5 : 13;
   const centreY = familyScene && tall ? box.y + 29 : box.y + box.h * .56;
-  const step = box.w / rows.length;
+  const step = box.w / (tall ? 2 : rows.length);
   pen.strokeStyle = colors.ink;
   pen.lineWidth = .9;
 
   if (family) {
-    if (familyScene || !tall) text(pen, secondExample ? 'SECOND EXAMPLE · GATE 11 SHUT' : 'FIRST EXAMPLE · ALL GATES OPEN', box.x + box.w / 2, box.y - (tall ? 7 : 13), tall ? 9 : 12, box.w, colors);
+    if (familyScene || !tall) text(pen, secondExample ? tall ? 'SECOND EXAMPLE ·\nGATE 11 SHUT' : 'SECOND EXAMPLE · GATE 11 SHUT' : tall ? 'FIRST EXAMPLE ·\nALL GATES OPEN' : 'FIRST EXAMPLE · ALL GATES OPEN', tall ? width * .25 : box.x + box.w / 2, tall ? 80 : box.y - 13, tall ? 9 : 12, tall ? width * .47 : box.w, colors);
 
-    if (!familyScene || !tall) text(pen, 'GATE 2: (2/p) = −1 · OPEN', box.x + box.w / 2, box.y + (tall ? -17 : 29), tall ? 9.5 : 13, box.w, colors);
+    if (!familyScene || !tall) text(pen, 'GATE 2: (2/p) = −1 · OPEN', tall ? width * .25 + 3 : box.x + box.w / 2, tall ? 115 : box.y + 29, tall ? 9.5 : 13, tall ? width * .49 : box.w, colors);
   }
 
   for (const [index, gate] of rows.entries()) {
-    const x = box.x + step * (index + .5);
+    const x = box.x + step * (tall ? index % 2 + .5 : index + .5);
+    const rowOffset = tall ? Math.floor(index / 2) * 50 : 0;
+    const gateY = tall ? box.y + 37 + rowOffset : centreY;
     const half = Math.min(16, step * .22);
     const h = tall ? 12 : 19;
-    line(pen, x - half, centreY + h / 2, x - half, centreY - h / 2);
-    line(pen, x + half, centreY + h / 2, x + half, centreY - h / 2);
-    line(pen, x - half, centreY - h / 2, x + half, centreY - h / 2);
+    line(pen, x - half, gateY + h / 2, x - half, gateY - h / 2);
+    line(pen, x + half, gateY + h / 2, x + half, gateY - h / 2);
+    line(pen, x - half, gateY - h / 2, x + half, gateY - h / 2);
 
     if (gate.closed) {
-      line(pen, x - half + 3, centreY + h / 2 - 2, x + half - 3, centreY - h / 2 + 2);
+      line(pen, x - half + 3, gateY + h / 2 - 2, x + half - 3, gateY - h / 2 + 2);
     } else {
-      line(pen, x - half + 3, centreY + h / 2, x - half - 5, centreY - h / 2 + 3);
+      line(pen, x - half + 3, gateY + h / 2, x - half - 5, gateY - h / 2 + 3);
     }
 
-    text(pen, `q = ${gate.label}`, x, box.y + (familyScene && tall ? 11 : family && tall ? 1 : 2), font, step - 4, colors);
+    text(pen, `q = ${gate.label}`, x, tall ? box.y + 19 + rowOffset : box.y + 2, font, step - 4, colors);
     const readout = family ? gate.test : `${gate.test} · ${gate.closed ? 'SHUT' : 'OPEN'}`;
-    const readoutY = familyScene ? tall ? box.y + 44 : box.y + box.h - 35 : box.y + box.h - 3;
+    const readoutY = tall ? box.y + 54 + rowOffset : familyScene ? box.y + box.h - 35 : box.y + box.h - 3;
     text(pen, readout, x, readoutY, font - .5, step - 3, colors);
   }
 
   if (familyScene) {
-    const conditionY = tall ? box.y + 63 : box.y + box.h - 8;
+    const conditionY = tall ? 115 : box.y + box.h - 8;
 
-    if (secondExample) place('family-gate-eleven', box.x + box.w / 2, conditionY);
-    else if (tall) text(pen, 'GATE 2: (2/p) = −1 · OPEN', box.x + box.w / 2, conditionY, 9.5, box.w, colors);
+    if (secondExample) place('family-gate-eleven', tall ? width * .25 + 3 : box.x + box.w / 2, conditionY);
+    else if (tall) text(pen, 'GATE 2: (2/p) = −1 · OPEN', width * .25 + 3, conditionY, 9.5, width * .49, colors);
   }
 }
 
@@ -330,10 +341,11 @@ export function createRemainderClock(root: HTMLElement, pen: CanvasRenderingCont
       pen.clearRect(0, 0, width, height);
       pen.lineCap = 'round';
       pen.lineJoin = 'round';
-      if (time >= 84250 && time < 110250) drawUnrolledClock(pen, boxes.clock, time, colors, boxes.tall);
+      if (time >= 84250 && time < 110250) drawUnrolledClock(pen, boxes.clock, time, colors, boxes.tall, width);
       else drawClock(pen, boxes.clock, time, colors, boxes.tall);
-      drawGates(pen, boxes.gates, time, colors, model, boxes.tall, labels.place);
-      drawPanel(pen, boxes.panel, time, colors, labels.place, model, boxes.tall);
+      drawGates(pen, boxes.gates, time, colors, model, boxes.tall, labels.place, width);
+      if (boxes.tall && time >= 84250 && time < 93250) labels.place('family', width * .25, 25);
+      if (!boxes.tall || time < 38250 || time >= 39100) drawPanel(pen, boxes.panel, time, colors, labels.place, model, boxes.tall);
 
       labels.endFrame();
     },
