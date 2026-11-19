@@ -147,8 +147,9 @@ export function drawGauge(pen: CanvasRenderingContext2D, width: number, height: 
   const completeY = gauge.y + (tall ? 23 : gauge.h * .40);
   const brickY = tall ? completeY + 28 : gauge.y + gauge.h * .75;
   const namesX = gauge.x + gauge.w * .09;
+  const headingY = tall && time < 23000 && gauge.y < tally.y + 62 ? tally.y + 68 : gauge.y;
 
-  if (!(tall && time >= 37500 && time < 44000)) words(claimed ? time >= 97000 ? 'UNREVIEWED · CLAIMED FOR ALL DRAWINGS' : 'CLAIMED FOR ALL DRAWINGS' : tall ? 'PROVED · SMALL CASES | LARGE n RATIOS' : 'PROVED: NO DRAWING DOES BETTER', gauge.x + gauge.w / 2, gauge.y, gauge.w, claimed ? 'blue' : 'ink', tall ? 8 : 11);
+  if (!(tall && time >= 37500 && time < 44000)) words(claimed ? time >= 97000 ? 'UNREVIEWED · CLAIMED FOR ALL DRAWINGS' : 'CLAIMED FOR ALL DRAWINGS' : tall ? 'PROVED · SMALL CASES | LARGE n RATIOS' : 'PROVED: NO DRAWING DOES BETTER', gauge.x + gauge.w / 2, headingY, gauge.w, claimed ? 'blue' : 'ink', tall ? 8 : 11);
 
   if (!tall) {
     words('SMALL CASES', (caseLeft + caseRight) / 2, gauge.y + gauge.h * .18, gauge.w * .45, 'muted', 9);

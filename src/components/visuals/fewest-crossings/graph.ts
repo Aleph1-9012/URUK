@@ -264,7 +264,7 @@ export function drawGraph(pen: CanvasRenderingContext2D, width: number, height: 
     }
 
     words(pen, 'BASIS', left + cell * 1.5, top - 12, cell * 3.5, colors, tall ? 7 : 10);
-    label('dimension-count', box.x + box.w / 2, box.y + box.h - 30);
+    label('dimension-count', box.x + box.w / 2, box.y + box.h - (tall ? 30 : 39));
   }
 
   const target = tallyTarget(width, height);
