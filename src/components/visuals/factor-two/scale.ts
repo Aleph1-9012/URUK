@@ -14,8 +14,9 @@ function mix(first: number, second: number, amount: number): number {
 export function drawScale(pen: CanvasRenderingContext2D, width: number, height: number, time: number, colors: Colors, label: Label): void {
   if (time < 37000) return;
 
-  const { scale: box, tall } = layout(width, height);
-  const titleY = box.y - (tall ? 12 : 0);
+  const { scale: box, balance, tall } = layout(width, height);
+  const narrowOffset = tall && width < 318 && time >= 44500 ? 3 : 0;
+  const titleY = box.y - (tall ? 12 : 0) + (tall ? narrowOffset : Math.max(0, balance.y + balance.h + 21 - box.y));
   const axisLeft = box.x + Math.max(tall ? 62 : 72, box.w * .23);
   const axisRight = box.x + box.w * .98;
   const axisWidth = axisRight - axisLeft;
@@ -27,7 +28,7 @@ export function drawScale(pen: CanvasRenderingContext2D, width: number, height: 
   const completeY = scalarY + Math.max(28, box.h * (tall ? .32 : .28));
   const split = smooth(time, 50500, 52500);
   const secondY = mix(scalarY, completeY, split);
-  const stageY = box.y + (tall ? 7 : box.h * .22);
+  const stageY = box.y + (tall ? 7 + narrowOffset : box.h * .22);
   const size = tall ? 9 : 10;
   const words = (text: string, x: number, y: number, maxWidth: number, tone: keyof Colors = 'ink', fontSize = size) => {
     pen.font = `${fontSize}px "Special Elite", monospace`;

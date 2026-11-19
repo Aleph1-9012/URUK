@@ -12,9 +12,16 @@ export class FactorTwoFilm {
   private density = 1;
   private colors: Record<Tone, string> = PAGE_TONES;
   private readonly labels: FilmLabels;
+  private readonly matrixE: Element;
+  private matrixPaper = { width: 0, height: 0 };
 
   constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D) {
     this.labels = new FilmLabels(root, { horizontal: 6, vertical: 5 });
+    const matrixE = root.querySelector('[data-label="matrix-e"] > span');
+
+    if (!matrixE) throw new Error('Missing matrix E caption.');
+
+    this.matrixE = matrixE;
   }
 
   resize({ width, height, density, tones }: FilmFrame): void {
@@ -24,6 +31,8 @@ export class FactorTwoFilm {
     this.colors = tones;
 
     this.labels.resize(width, height);
+    const { width: paperWidth, height: paperHeight } = this.matrixE.getBoundingClientRect();
+    this.matrixPaper = { width: paperWidth, height: paperHeight };
   }
 
   draw(time: number): void {
@@ -33,7 +42,7 @@ export class FactorTwoFilm {
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
     drawPlane(this.pen, this.width, this.height, time, this.colors, this.labels.place);
-    drawStretch(this.pen, this.width, this.height, time, this.colors, this.labels.place);
+    drawStretch(this.pen, this.width, this.height, time, this.colors, this.labels.place, this.matrixPaper);
     drawScale(this.pen, this.width, this.height, time, this.colors, this.labels.place);
 
     this.labels.endFrame();

@@ -109,8 +109,13 @@ function drawDomain(pen: CanvasRenderingContext2D, box: Box, center: Point, scal
 
   if (time < 97000) {
     const right = map(confocalPoint(u, .55));
-    const note = tall ? { x: box.x + box.w * .70, y: box.y + box.h - 36 } : { x: right.x - 20, y: right.y - 12 };
+    const note = tall ? { x: box.x + box.w * .70 + 30, y: box.y + box.h - 36 } : { x: box.x + box.w * .80, y: box.y + box.h * .15 };
+
+    if (!tall) line(pen, { x: note.x, y: note.y + 10 }, right, colors.muted, .6);
+
     words(pen, 'Ω: SMOOTH, CONVEX', note.x, note.y, box.w * .58, colors, tall ? 8 : 10);
+
+    if (tall) line(pen, { x: note.x - pen.measureText('Ω: SMOOTH, CONVEX').width / 2 - 5, y: note.y - 8 }, map(confocalPoint(u, 0)), colors.muted, .6);
   }
 
   const dial = { x: box.x + box.w * (tall ? .105 : .15), y: box.y + box.h - (tall ? 26 : 55) };
@@ -183,7 +188,22 @@ export function drawPlane(pen: CanvasRenderingContext2D, width: number, height: 
   for (const value of [-1, 1]) {
     const point = map({ x: value, y: 0 });
     line(pen, { x: point.x, y: point.y - 2 }, { x: point.x, y: point.y + 2 }, colors.muted, .6);
-    words(pen, String(value), point.x, point.y + (tall ? 10 : 14), 25, colors, tall ? 7 : 9, true);
+    const labelY = point.y + (tall ? time >= 89500 ? 8 : 10 : 14);
+    let labelOffset = 0;
+
+    if (time >= 22500 && time < 89500) {
+      labelOffset = tall ? 8 : 11;
+    } else if (time >= 89500) {
+      pen.font = `${tall ? 7 : 9}px "Special Elite", monospace`;
+      const halfPaper = pen.measureText(String(value)).width / 2 + 3;
+      const bottom = labelY - center.y + (tall ? 5.5 : 6.5);
+      const curveX = Math.sqrt((1 + ellipseParameter(time) ** 2) * Math.max(0, scale ** 2 - bottom ** 2));
+      labelOffset = -Math.max(tall ? 8 : 0, scale + halfPaper + 1.5 - curveX);
+    }
+
+    if (labelOffset !== 0) line(pen, { x: point.x, y: point.y + 2 }, { x: point.x + value * labelOffset, y: labelY - (tall ? 7.5 : 8.5) }, colors.muted, .45);
+
+    words(pen, String(value), point.x + value * labelOffset, labelY, 25, colors, tall ? 7 : 9, true);
   }
 
   words(pen, 'REAL', plot.x + plot.w - 8, center.y + (tall ? 10 : 15), 46, colors, tall ? 7 : 9, true);
@@ -228,7 +248,11 @@ export function drawPlane(pen: CanvasRenderingContext2D, width: number, height: 
     if (time < 30000) {
       const point = map(sweepMark(sweep.amount));
       dot(pen, point, colors.ink, 2);
-      label('quadratic', point.x + (tall ? 25 : 36), point.y - 12);
+      const note = { x: box.x + box.w * .83, y: box.y + box.h * .28 };
+
+      line(pen, point, { x: note.x - 24, y: note.y + 8 }, colors.muted, .55);
+
+      label('quadratic', note.x, note.y);
       label('sweep-vector', box.x + box.w / 2, box.y + box.h - 12);
     } else {
       const parameter = ellipseParameter(time);

@@ -5,6 +5,9 @@ import { layout } from './story';
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 
 type Point = { x: number; y: number };
+type Size = { width: number; height: number };
+
+const VECTOR_HEADING = 'VECTORS OF LENGTH ONE';
 
 type Label = (id: string, x: number, y: number, opacity?: number) => void;
 
@@ -16,7 +19,7 @@ function numberText(value: number): string {
   return value.toFixed(3).replace(/\.?0+$/, '');
 }
 
-export function drawStretch(pen: CanvasRenderingContext2D, width: number, height: number, time: number, colors: Colors, label: Label): void {
+export function drawStretch(pen: CanvasRenderingContext2D, width: number, height: number, time: number, colors: Colors, label: Label, matrixPaper: Size): void {
   const { stretch: box, balance, tall } = layout(width, height);
   const matrix = matrixAt(time);
   const pair = topSingularPairReal(matrix);
@@ -76,13 +79,38 @@ export function drawStretch(pen: CanvasRenderingContext2D, width: number, height
     line(second, { x: second.x - head * Math.cos(angle + .4), y: second.y - head * Math.sin(angle + .4) }, weight, muted);
   };
   const project = (point: Point): Point => ({ x: center.x + point.x * unit, y: center.y - point.y * unit });
-  const matrixX = tall ? balance.x + balance.w / 2 : box.x + box.w / 2;
-  const matrixY = tall ? balance.y + balance.h * .09 - 5 : box.y + box.h * .09;
+  let matrixX = tall ? balance.x + balance.w / 2 : box.x + box.w / 2;
+  let matrixY = tall ? balance.y + balance.h * .09 - 5 : box.y + box.h * .09;
   const metric = smooth(time, 58500, 60200) * (1 - smooth(time, 63800, 65500));
   const vertical = 1 / Math.sqrt(1 + 3 * metric);
   const blockAmount = smooth(time, 50500, 52000) * (1 - smooth(time, 57500, 58500));
   const orderTiles = time >= 54800 && time < 58500 || time >= 97000 && time < 104000;
   const showingSweep = time >= 22500 && time < 30000;
+  const headingY = box.y + box.h * .22;
+  const compactE = !tall && width < 880 && time >= 92000;
+  let headingBottom = 0;
+
+  if (compactE) {
+    pen.font = `${size}px "Special Elite", monospace`;
+    pen.textBaseline = 'middle';
+    const heading = pen.measureText(VECTOR_HEADING);
+    const headingTop = headingY - heading.actualBoundingBoxAscent;
+    headingBottom = headingY + heading.actualBoundingBoxDescent;
+    const halfHeight = matrixPaper.height / 2;
+    const minMatrixY = halfHeight + 5;
+    const aboveHeadingY = headingTop - halfHeight - 1;
+
+    if (matrixY > aboveHeadingY) {
+      if (aboveHeadingY >= minMatrixY - 1.5) {
+        matrixY = Math.max(minMatrixY, aboveHeadingY);
+      } else {
+        // The proof tile travels in from the right. Leave its final slot clear.
+        const firstTileLeft = box.x + box.w * .17 - 25 * .65;
+        matrixX = firstTileLeft - matrixPaper.width / 2 - 5;
+        matrixY = minMatrixY;
+      }
+    }
+  }
 
   if ((time < 50500 || time >= 58500) && !(tall && time >= 37000 && time < 44500)) {
     const movingMatrix = time >= 7000 && time < 15000 || time >= 89500 && time < 92000;
@@ -111,7 +139,10 @@ export function drawStretch(pen: CanvasRenderingContext2D, width: number, height
     } else if (!(tall && metric > .99)) label(time < 7000 ? 'matrix-d' : time < 92000 ? 'matrix-a' : 'matrix-e', matrixX, matrixY);
   }
 
-  if (!orderTiles && !(tall && time >= 37000 && time < 44500)) words(blockAmount > .5 ? '2 × 2 COEFFICIENTS' : time >= 58500 && time < 65500 ? 'NEW LENGTH ONE' : 'VECTORS OF LENGTH ONE', center.x, box.y + (tall ? blockAmount > .5 ? 5 : 0 : box.h * .22), box.w, true, size);
+  const metricScene = time >= 58500 && time < 65500;
+  const headingOffset = !tall && width < 880 && time < 92000 && !metricScene ? 8 : 0;
+
+  if (!orderTiles && !(tall && time >= 37000 && time < 44500)) words(blockAmount > .5 ? '2 × 2 COEFFICIENTS' : time >= 58500 && time < 65500 ? 'NEW LENGTH ONE' : VECTOR_HEADING, center.x, box.y + (tall ? blockAmount > .5 ? 5 : 0 : box.h * .22 + headingOffset), box.w, true, size);
 
   if (blockAmount < .99) {
     const move = blockAmount * box.w * (tall ? 1.2 : .65);
@@ -150,11 +181,29 @@ export function drawStretch(pen: CanvasRenderingContext2D, width: number, height
         if (time >= 15500 && time < 22500) {
           const inputTip = project(input);
           const outputTip = project(output);
-          words('(0, 1)', inputTip.x - (tall ? 5 : 18), inputTip.y - (tall ? 9 : 15), 55, false, size);
+          const cramped = tall ? width < 318 : width < 880;
+          const captionX = cramped ? inputTip.x - unit - (tall ? 16 : 19) : inputTip.x - (tall ? 5 : 18);
+          const captionY = cramped ? inputTip.y + (tall ? 0 : 5) : inputTip.y - (tall ? 9 : 15);
+          words('(0, 1)', captionX, captionY, 55, false, size);
+
+          if (cramped) line(inputTip, { x: captionX + pen.measureText('(0, 1)').width / 2 + 5, y: captionY - size * .66 - 2 }, .45, true);
           words('(2, 0)', outputTip.x + (tall ? 0 : 18), outputTip.y + (tall ? 12 : 17), 55, false, size);
         } else if (time >= 92000 && !tall) {
           const inputTip = project(input);
-          words('x = (0.383, 0.924)', inputTip.x - 12, inputTip.y - 17, box.w * .7, false, 10);
+          const caption = 'x = (0.383, 0.924)';
+          const captionSize = 10;
+          let captionX = inputTip.x - 12;
+          let captionY = inputTip.y - 17;
+
+          if (compactE && captionY - captionSize * .66 <= headingBottom + .5) {
+            pen.font = `${captionSize}px "Special Elite", monospace`;
+            const captionWidth = pen.measureText(caption).width;
+            captionX = box.x + box.w - captionWidth / 2 - 7;
+            captionY = inputTip.y - 5;
+            line(inputTip, { x: captionX - captionWidth / 2 - 5, y: captionY }, .45, true);
+          }
+
+          words(caption, captionX, captionY, box.w * .7, false, captionSize);
         }
       }
     } else {
@@ -279,8 +328,9 @@ export function drawStretch(pen: CanvasRenderingContext2D, width: number, height
   const rightValue = 2 * Math.sqrt(1 + ellipseParameter(time) ** 2);
   const barWidth = balance.w * (tall ? .85 : .63);
   const barStart = balance.x + balance.w * (tall ? .07 : .32);
-  const firstY = balance.y + balance.h * (tall ? .54 : .25);
-  const secondY = balance.y + balance.h * (tall ? .84 : .85);
+  const narrowOffset = tall && width < 318 && time >= 44500 ? 3 : 0;
+  const firstY = balance.y + balance.h * (tall ? .54 : .25) + narrowOffset;
+  const secondY = balance.y + balance.h * (tall ? .84 : .85) + narrowOffset;
   const bar = (value: number, y: number, text: string) => {
     const extent = barWidth * value / 3;
     pen.strokeStyle = colors.muted;
@@ -290,9 +340,9 @@ export function drawStretch(pen: CanvasRenderingContext2D, width: number, height
     pen.fillRect(barStart, y, extent * fill, tall ? 4 : 6);
     const side = `${metric > 0 ? 'OLD ' : ''}${text.startsWith('LEFT') ? 'LEFT' : 'RIGHT'}`;
     const caption = tall && fill > .99 ? `${side}: ${numberText(value)}` : text;
-    words(caption, tall ? balance.x + balance.w / 2 : balance.x + balance.w * .14, tall ? y - 8 : y + 3, tall ? balance.w + 3 : balance.w * .28, false, tall ? 9 : 10);
+    words(caption, tall ? balance.x + balance.w / 2 : balance.x + balance.w * .14, tall ? y - (narrowOffset > 0 ? 7 : 8) : y + 3, tall ? balance.w + 3 : balance.w * .28, false, tall ? 9 : 10);
 
-    if (fill > .99 && !tall) words(numberText(value), barStart + extent + 18, y + 3, 40, false, 11);
+    if (fill > .99 && !tall) words(numberText(value), barStart + (width > 760 ? barWidth + 24 : barWidth + 18), y + 3, 40, false, 11);
   };
   bar(leftValue, firstY, time >= 50500 && time < 58500 ? 'LEFT: ‖P[A]‖' : 'LEFT: ‖p(A)‖');
   bar(rightValue, secondY, 'RIGHT: 2 × MAX');
