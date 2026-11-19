@@ -9,12 +9,17 @@ type Point = { x: number; y: number };
 
 export function drawRecordChart(p: CanvasRenderingContext2D, width: number, height: number, time: number, colors: Colors, label: Label): void {
   const tall = height > width;
+  const narrowPhone = tall && width < 300;
+  const compact = !tall && width < 760;
   const appearing = smooth(time, tall ? 33500 : 32000, 35000);
 
   if (appearing < .001) return;
 
   const folding = fade(time, 65500, 67000, 103500, 105000);
   const chartOpacity = appearing * (1 - folding);
+  const foldingIn = time > 65500 && time < 67000;
+  const foldingOut = time > 103500 && time < 105000;
+  const axisCaptionAlpha = foldingIn || foldingOut ? 0 : chartOpacity;
   const left = width * ((tall ? .16 : .56) + ((tall ? .88 : .9) - (tall ? .16 : .56)) * folding);
   const top = height * (tall ? .56 : .2);
   const bottom = height * (tall ? .86 - .06 * smooth(time, 111500, 113000) : .79);
@@ -99,17 +104,18 @@ export function drawRecordChart(p: CanvasRenderingContext2D, width: number, heig
     p.restore();
   }
 
-  words('ω: THE POWER OF n IN THE WORK', (left + right) / 2, top - (tall ? 19 : 32), (right - left) + 40, chartOpacity * (tall ? 1 - smooth(time, 103500, 105000) : 1));
+  words('ω: THE POWER OF n IN THE WORK', (left + right) / 2, top - (tall ? 19 : 32), (right - left) + 40, axisCaptionAlpha * (tall ? 1 - smooth(time, 103500, 105000) : 1));
   line({ x: left, y: top }, { x: left, y: bottom }, 'muted', appearing);
   line({ x: left, y: bottom }, { x: right, y: bottom }, 'ink', appearing, 1.4);
 
   for (const value of [2, 2.5, 3]) {
     line({ x: left - 4, y: y(value) }, { x: left + 4, y: y(value) }, 'ink', appearing);
-    words(String(value), left - 15, y(value), 32, appearing, 'muted', false);
+    const tickAlpha = !tall && value === 2.5 && time < 35000 ? 0 : appearing;
+    words(String(value), left - 15, y(value), 32, tickAlpha, 'muted', false);
   }
 
   for (const year of [1969, 1990, 2026]) {
-    words(String(year), x(year), bottom + (tall ? 16 : 24), 40, chartOpacity, 'muted');
+    words(String(year), x(year), bottom + (tall ? 16 : 24), 40, axisCaptionAlpha, 'muted');
   }
 
   const reveal = time < 42500 ? smooth(time, 33700, 36800) : 1 + (RECORDS.length - 2) * smooth(time, 42500, 48800);
@@ -129,15 +135,19 @@ export function drawRecordChart(p: CanvasRenderingContext2D, width: number, heig
   }
 
   const opening = fade(time, 34000, 35500, 42500, 44000) * chartOpacity;
-  words('SCHOOL: 3', (left + right) / 2, top + 16, right - left, opening);
-  words('STRASSEN 1969 · 2.807', (left + right) / 2, y(2.8074) + 17, right - left, opening);
-  words('?', left + (right - left) * .55, y(2.4), 40, opening * .6, 'muted', false);
-  words('FLOOR: THE ANSWER HAS n² ENTRIES', (left + right) / 2, bottom + (tall ? 35 : 47), (right - left) + 22, opening, 'muted');
+  const openingExit = time > 42500;
+  const openingCaptionAlpha = tall && openingExit ? 0 : opening;
+  words('SCHOOL: 3', (left + right) / 2, top + 16, right - left, openingCaptionAlpha);
+  words('STRASSEN 1969 · 2.807', (left + right) / 2, y(2.8074) + 17, right - left, openingCaptionAlpha);
+  words('?', left + (right - left) * .55, y(2.4), 40, !tall && openingExit ? 0 : opening * .6, 'muted', false);
+  words('FLOOR: THE ANSWER HAS n² ENTRIES', (left + right) / 2, bottom + (tall ? 35 : 47), (right - left) + 22, openingExit ? 0 : opening, 'muted');
   const records = fade(time, 42500, 44500, 50000, 51000) * chartOpacity;
-  words('1978 · 2.796', x(1983), y(2.85), (right - left) * .65, records, 'ink', false);
-  words('1981 · 2.522', x(1994), y(2.60), (right - left) * .65, records, 'ink', false);
-  words('1990 · 2.3755', x(2007), y(2.40) + 15, (right - left) * .7, records, 'ink', false);
-  words('ONE TENSOR, STUDIED MORE CAREFULLY', (left + right) / 2, bottom + (tall ? 35 : 47), (right - left) + 25, records, 'muted');
+  const recordEntrance = time < 44500;
+  const recordExit = time > 50000;
+  words('1978 · 2.796', x(1983), y(2.85), (right - left) * .65, (tall || compact) && (recordEntrance || recordExit) ? 0 : records, 'ink', false);
+  words('1981 · 2.522', x(1994), y(2.60), (right - left) * .65, tall && recordEntrance ? 0 : records, 'ink', false);
+  words('1990 · 2.3755', x(2007), y(2.40) + 15, (right - left) * .7, !tall && recordExit ? 0 : records, 'ink', false);
+  words('ONE TENSOR, STUDIED MORE CAREFULLY', (left + right) / 2, bottom + (tall ? 35 : 47), (right - left) + 25, recordEntrance || recordExit ? 0 : records, 'muted');
 
   const lens = fade(time, 50000, 51000, 54800, 56000) * chartOpacity;
 
@@ -159,15 +169,15 @@ export function drawRecordChart(p: CanvasRenderingContext2D, width: number, heig
       previous = record;
     }
 
-    words('2.3755', box.x + box.w * .18, box.y - 8, box.w, lens, 'ink', false);
+    words('2.3755', box.x + box.w * .18, box.y - 8, box.w, tall && lens < 1 ? 0 : lens, 'ink', false);
     words('2.371177', box.x + box.w * .7, box.y + box.h + 9, box.w, lens, 'ink', false);
-    words('36 YEARS · THIRD DECIMAL', (left + right) / 2, bottom + (tall ? 35 : 47), right - left + 22, lens);
+    words('36 YEARS · THIRD DECIMAL', (left + right) / 2, bottom + (tall ? 35 : 47), right - left + 22, time < 51000 ? 0 : lens);
   }
 
   const wall = smooth(time, 55000, 57500);
   hatch(left, y(WALL), right - left, Math.min(9, bottom - y(WALL)), wall * appearing * .5);
   line({ x: left, y: y(WALL) }, { x: right, y: y(WALL) }, 'muted', wall * appearing);
-  words('METHOD BARRIER: 2.3078', (left + right) / 2, y(WALL) - (tall ? 14 : 18), right - left + 15, fade(time, 55600, 57000, 58500, 59600) * chartOpacity, 'muted');
+  words('METHOD BARRIER: 2.3078', (left + right) / 2, y(WALL) + 20, right - left + 15, fade(time, 55600, 57000, 58500, 59600) * chartOpacity, 'muted');
 
   const claim = smooth(time, 58500, 61800);
   const claimY = y(2.371177 + (CLAIM - 2.371177) * claim);
@@ -176,18 +186,21 @@ export function drawRecordChart(p: CanvasRenderingContext2D, width: number, heig
   p.setLineDash([]);
   dot(x(2026), claimY, 4, claim * appearing);
   const claimNote = fade(time, 60000, 62000, 65500, 66500) * chartOpacity;
-  words('CLAIMED · 2 OCT 2026', (left + right) / 2, top + (tall ? 14 : 24), right - left + 20, claimNote, 'blue');
-  label('claim', (left + right) / 2, top + (tall ? 38 : 57), claimNote);
-  words('COMPLEX NUMBERS', (left + right) / 2, tall ? bottom + 35 : top + 88, right - left, claimNote, 'muted');
-  words('−0.121', x(2026) - 35, claimY + 19, 65, claimNote, 'blue', false);
+  const claimEntrance = time < 62000;
+  const claimExit = time > 65500;
+  words('CLAIMED · 2 OCT 2026', (left + right) / 2, top + (tall ? 14 : 24), right - left + 20, claimExit || narrowPhone && claimEntrance ? 0 : claimNote, 'blue');
+  label('claim', (left + right) / 2, top + (tall ? 38 : 57), narrowPhone && claimExit ? 0 : claimNote);
+  words('COMPLEX NUMBERS', (left + right) / 2, tall ? bottom + 35 : top + 88, right - left, !tall && (claimExit || compact && claimEntrance) ? 0 : claimNote, 'muted');
+  const claimDifferenceCovered = (narrowPhone || !tall) && claimEntrance || narrowPhone && claimExit;
+  words('−0.121', x(2026) - 35, claimY + 19, 65, claimDifferenceCovered ? 0 : claimNote, 'blue', false);
 
   if (!tall) {
-    words('−0.258', x(1981) + 25, y(2.67), 65, claimNote, 'muted', false);
+    words('−0.258', x(1981) + 25, y(2.67), 65, compact && (claimEntrance || claimExit) ? 0 : claimNote, 'muted', false);
     words('−0.104', x(1990) + 35, y(2.44), 65, claimNote, 'muted', false);
   }
 
   if (folding > .005) {
-    words('ω', left, top - 21, 30, folding, 'ink', false);
+    words('ω', left, top - 21, 30, folding === 1 ? 1 : 0, 'ink', false);
 
     for (const value of [2.8074, 2.371177, WALL, CLAIM]) {
       line({ x: left - 5, y: y(value) }, { x: left + 5, y: y(value) }, value === CLAIM ? 'blue' : 'muted', folding, value === CLAIM ? 2 : 1);
@@ -195,14 +208,15 @@ export function drawRecordChart(p: CanvasRenderingContext2D, width: number, heig
 
     const pointer = 3 * dialAt(time);
     const pointerOpacity = smooth(time, 72500, 74000) * folding;
+    const pointerLabelOpacity = foldingOut || tall && time < 74000 ? 0 : pointerOpacity;
     dot(left, y(pointer), 4.5, pointerOpacity, true);
     const leader = tall ? width * .08 : width * .07;
     if (tall) {
-      words(`3t\n${pointer.toFixed(2)}`, left, top - 37, 40, pointerOpacity, 'blue', false);
+      words(`3t\n${pointer.toFixed(2)}`, left, top - 37, 40, pointerLabelOpacity, 'blue', false);
       line({ x: left - 8, y: y(pointer) }, { x: left - 5, y: y(pointer) }, 'blue', pointerOpacity);
     } else {
       line({ x: left - leader, y: y(pointer) }, { x: left - 5, y: y(pointer) }, 'blue', pointerOpacity);
-      words(`3t = ${pointer.toFixed(2)}`, left - leader - 35, y(pointer), 90, pointerOpacity, 'blue', false);
+      words(`3t = ${pointer.toFixed(2)}`, left - leader - 35, y(pointer), 90, pointerLabelOpacity, 'blue', false);
     }
     const bracketX = left + (tall ? 9 : 16);
     line({ x: bracketX, y: y(CLAIM) }, { x: bracketX, y: bottom }, 'blue', folding, 1.5);
@@ -257,20 +271,26 @@ export function drawRecordChart(p: CanvasRenderingContext2D, width: number, heig
 
     if (crossing !== null && crossing < maxX) dot(px(crossing), py(lowerLog(crossing)), 3, squeeze);
 
-    words('P(a,a) · LOG SCALES', box.x + box.w / 2, box.y - (tall ? 15 : 25), box.w, squeeze);
-    words(`t = ${t.toFixed(3)}`, box.x + box.w * .22, box.y + box.h * .13, box.w * .45, squeeze, 'blue', false);
-    words('AT LEAST', box.x + box.w * .2, box.y + box.h * .36, box.w * .45, squeeze);
-    label('lower', box.x + box.w * .22, box.y + box.h * .51, squeeze);
-    words('AT MOST', box.x + box.w * .79, box.y + box.h * .66, box.w * .45, squeeze, 'blue');
-    label('upper', box.x + box.w * .76, box.y + box.h * .83, squeeze);
-    words('1', box.x, box.y + box.h + 15, 30, squeeze, 'muted');
-    words('10¹²', box.x + box.w, box.y + box.h + 15, 45, squeeze, 'muted');
-    words('a: COEFFICIENTS PER POLYNOMIAL', box.x + box.w / 2, box.y + box.h + (tall ? 32 : 42), box.w + 30, squeeze, 'muted');
-    words(time < 101900 ? 'CROSSING: UPPER BELOW LOWER' : 't = 3/4: NO CROSSING FOR a > 1', box.x + box.w / 2, box.y - (tall ? 34 : 53), box.w + 25, squeeze, time < 101900 ? 'ink' : 'blue');
+    const squeezeEntrance = time < 96700;
+    const squeezeExit = time > 103500;
+    const phoneCaptionAlpha = squeezeExit || tall && squeezeEntrance ? 0 : squeeze;
+    const leastOverInk = compact && (squeezeEntrance || squeezeExit) || tall && !narrowPhone && squeezeEntrance;
+    const lowerOverInk = squeezeEntrance || (narrowPhone || compact) && squeezeExit;
+    words('P(a,a) · LOG SCALES', box.x + box.w / 2, box.y - (tall ? 15 : 25), box.w, tall ? phoneCaptionAlpha : squeeze);
+    words(`t = ${t.toFixed(3)}`, box.x + box.w * .22, box.y + box.h * .13, box.w * .45, (tall || compact) && squeezeEntrance ? 0 : squeeze, 'blue', false);
+    words('AT LEAST', box.x + box.w * .2, box.y + box.h * .36, box.w * .45, leastOverInk ? 0 : squeeze);
+    label('lower', box.x + box.w * .22, box.y + box.h * .51, lowerOverInk ? 0 : squeeze);
+    words('AT MOST', box.x + box.w * .79, box.y + box.h * .66, box.w * .45, phoneCaptionAlpha, 'blue');
+    label('upper', box.x + box.w * .76, box.y + box.h * .83, phoneCaptionAlpha);
+    words('1', box.x, box.y + box.h + 15, 30, !tall && squeezeEntrance ? 0 : squeeze, 'muted');
+    words('10¹²', box.x + box.w, box.y + box.h + 15, 45, squeezeExit ? 0 : squeeze, 'muted');
+    words('a: COEFFICIENTS PER POLYNOMIAL', box.x + box.w / 2, box.y + box.h + (tall ? 32 : 42), box.w + 30, compact && (squeezeEntrance || squeezeExit) ? 0 : squeeze, 'muted');
+    words(time < 101900 ? 'CROSSING: UPPER BELOW LOWER' : 't = 3/4: NO CROSSING FOR a > 1', box.x + box.w / 2, box.y - (tall ? 34 : 53), box.w + 25, phoneCaptionAlpha, time < 101900 ? 'ink' : 'blue');
   }
 
   const ending = smooth(time, 111500, 113000) * chartOpacity;
-  label('status', (left + right) / 2, tall ? bottom + 40 : top + 30, ending);
-  if (!tall) words('FORMAL PROOF REBUILT\nPAPER: NO VERDICT YET', (left + right) / 2, top + 83, right - left + 20, ending, 'muted');
-  words('2.25', x(2026) - 25, y(CLAIM) + (tall ? -13 : 18), 60, ending, 'blue', false);
+  const settledEnding = ending === 1 ? 1 : 0;
+  label('status', (left + right) / 2, tall ? bottom + 40 : top + 30, narrowPhone ? settledEnding : ending);
+  if (!tall) words('FORMAL PROOF REBUILT\nPAPER: NO VERDICT YET', (left + right) / 2, top + 83, right - left + 20, compact ? settledEnding : ending, 'muted');
+  words('2.25', x(2026) - 25, y(CLAIM) + (tall ? -13 : 18), 60, tall ? settledEnding : ending, 'blue', false);
 }

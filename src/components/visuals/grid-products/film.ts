@@ -114,7 +114,7 @@ export class GridProductsFilm {
     }
 
     for (let index = 0; index < 4; index++) {
-      if (index < shown) this.words(String(values[index] ?? ''), x + (index % 2 + .5) * half, y + (Math.floor(index / 2) + .5) * half, half, opacity * (1 - blocks), 'ink', false);
+      if (blocks === 0 && index < shown) this.words(String(values[index] ?? ''), x + (index % 2 + .5) * half, y + (Math.floor(index / 2) + .5) * half, half, opacity, 'ink', false);
     }
 
     for (const quarter of [.25, .75]) {
@@ -127,6 +127,9 @@ export class GridProductsFilm {
     if (opacity < .005) return;
 
     const t = this.time;
+    const compact = !this.tall && this.width < 760;
+    const clearProductSign = this.tall && this.width >= 300;
+    const productSignCovered = compact && t > 65500 && t < 67500 || !clearProductSign && t > 103500 && t < 105000;
     const boardW = this.width * (this.tall ? .9 : .43);
     const left = this.width * .05;
     const size = boardW * .25;
@@ -145,7 +148,7 @@ export class GridProductsFilm {
     this.grid(left, y, size, A, 4, blocks, aActive, opacity);
     this.grid(left + boardW * .375, y, size, B, 4, blocks, bActive, opacity);
     this.grid(left + boardW * .75, y, size, SCHOOL_PRODUCT, early ? Math.max(0, Math.floor((t - 2300) / 1500) + 1) : 4, blocks, early ? [schoolCell] : [], opacity);
-    this.words('×', left + boardW * .313, y + size / 2, boardW * .1, opacity, 'ink', false);
+    this.words('×', left + boardW * .313, y + size / 2, boardW * .1, productSignCovered ? 0 : opacity, 'ink', false);
     this.words('=', left + boardW * .688, y + size / 2, boardW * .1, opacity, 'ink', false);
     const under = y + size + (this.tall ? 22 : 30);
 
@@ -171,6 +174,7 @@ export class GridProductsFilm {
       for (let index = 0; index < 7; index++) {
         const value = STRASSEN_PRODUCTS[index];
         const alpha = opacity * (ending ? 1 : smooth(t, 11000 + index * 550, 11500 + index * 550));
+        const captionAlpha = ending || !this.tall && t < 15000 ? (alpha === 1 ? 1 : 0) : alpha;
         const row = Math.floor(index / 4);
         const x = left + (index % 4 + .5 + (row ? .5 : 0)) * cell;
         const py = chipTop + row * gap;
@@ -178,13 +182,13 @@ export class GridProductsFilm {
         this.line(x - cell * .4, py - 12, x + cell * .4, py - 12, 'muted', alpha);
         this.line(x - cell * .4, py + 12, x + cell * .4, py + 12, 'muted', alpha);
         this.pen.setLineDash([]);
-        this.words(ending ? '?' : t >= 17000 ? 'BLOCK' : String(value?.value ?? ''), x, py, cell * .8, alpha, index === chip ? 'blue' : 'ink', !ending && t >= 17000);
+        this.words(ending ? '?' : t >= 17000 ? 'BLOCK' : String(value?.value ?? ''), x, py, cell * .8, captionAlpha, index === chip ? 'blue' : 'ink', !ending && t >= 17000);
       }
 
       const noteY = chipTop + gap + (this.tall ? (ending ? 30 : 34) : 45);
 
       if (ending) {
-        this.words('A RECIPE EXISTS FOR SOME SIZE\nNOT WRITTEN DOWN', center, noteY, boardW, opacity, 'muted');
+        this.words('A RECIPE EXISTS FOR SOME SIZE\nNOT WRITTEN DOWN', center, noteY, boardW, t >= 105000 ? opacity : 0, 'muted');
       } else if (t < 15000) {
         const short = product ? `${product.left} × ${product.right} = ${product.value}` : '';
         this.words(this.tall ? short : product?.expression ?? '', center, noteY, boardW, opacity, 'blue', false);
@@ -208,8 +212,9 @@ export class GridProductsFilm {
       this.words(level === 10 ? '3.8 TIMES FEWER · THE GAP KEEPS GROWING' : '×8 EACH LEVEL       ×7 EACH LEVEL', center, under + 85, boardW, opacity);
       this.labels.place('recursion', center, under + (this.tall ? 120 : 130), opacity * smooth(t, 30000, 31000));
     } else {
-      this.words('STRASSEN: SEVEN BLOCK PRODUCTS', center, under + 9, boardW, opacity);
-      this.words('16 ENTRIES TO WRITE', center, under + 39, boardW, opacity, 'blue');
+      const summaryAlpha = t <= 65500 ? opacity : 0;
+      this.words('STRASSEN: SEVEN BLOCK PRODUCTS', center, under + 9, boardW, summaryAlpha);
+      this.words('16 ENTRIES TO WRITE', center, under + 39, boardW, summaryAlpha, 'blue');
       const cLeft = left + boardW * .75;
       const amount = smooth(t, 33500, 39000);
 
@@ -224,22 +229,25 @@ export class GridProductsFilm {
   private characters(opacity: number): void {
     if (opacity < .005) return;
 
+    const t = this.time;
     const w = this.width;
     const h = this.height;
     const x1 = w * (this.tall ? .23 : .23);
     const x2 = w * (this.tall ? .6 : .6);
     const y = h * (this.tall ? .20 : .34);
     const size = Math.min(w * .17, h * .16);
-    const count = smooth(this.time, 72500, 74500);
-    this.words('SIDE BY SIDE', x1, y - 40, w * .34, opacity);
-    this.words('MADE OF BLOCKS', x2, y - 40, w * .34, opacity);
+    const count = smooth(t, 72500, 74500);
+    const entranceAlpha = t < 67700 ? 0 : opacity;
+    const meterOverInk = this.tall && (t < 67700 || t > 72500);
+    this.words('SIDE BY SIDE', x1, y - 40, w * .34, entranceAlpha);
+    this.words('MADE OF BLOCKS', x2, y - 40, w * .34, entranceAlpha);
     this.grid(x1 - size - 3, y, size, [], 0, 0, [], opacity);
     this.grid(x1 + 3, y, size, [], 0, 0, [], opacity);
     this.grid(x2 - size / 2, y, size, [], 0, 1, [], opacity);
-    this.words('VALUES ADD', x1, y + size + 25, w * .34, opacity);
-    this.words('VALUES MULTIPLY', x2, y + size + 25, w * .34, opacity);
-    this.words('METERS · SCHEMATIC', w * .42, y + size + 64, w * .65, opacity * (1 - count), 'muted');
-    this.labels.place('blocks', w * .42, y + size + (this.tall ? 77 : 85), opacity * count);
+    this.words('VALUES ADD', x1, y + size + 25, w * .34, this.tall && w < 300 ? entranceAlpha : opacity);
+    this.words('VALUES MULTIPLY', x2, y + size + 25, w * .34, entranceAlpha);
+    this.words('METERS · SCHEMATIC', w * .42, y + size + 64, w * .65, meterOverInk ? 0 : opacity * (1 - count), 'muted');
+    this.labels.place('blocks', w * .42, y + size + (this.tall ? 77 : 85), this.tall && t < 74500 ? 0 : opacity * count);
     this.labels.place('character', w * .42, y + size + (this.tall ? 127 : 145), opacity * count);
     this.words('ANY m × m JOB', w * .42, y + size + (this.tall ? 102 : 115), w * .5, opacity * count);
   }
@@ -252,7 +260,9 @@ export class GridProductsFilm {
     const cell = Math.min(this.width * (this.tall ? .105 : .075), this.tall ? 30 : 46);
     const left = this.width * (this.tall ? .08 : .15);
     const top = this.height * (this.tall ? .14 : .23);
-    this.words('MULTIPLY TWO POLYNOMIALS', this.width * .42, top - 30, this.width * .75, opacity);
+    const leaving = t > 88000;
+    const exitAlpha = leaving ? 0 : opacity;
+    this.words('MULTIPLY TWO POLYNOMIALS', this.width * .42, top - 30, this.width * .75, this.tall ? exitAlpha : opacity);
 
     for (const entry of POLYNOMIAL_GRID) {
       const x = left + (entry.x + entry.row * shearing) * cell;
@@ -263,7 +273,7 @@ export class GridProductsFilm {
       this.pen.globalAlpha = 1;
       this.line(x, y, x + cell, y, 'muted', opacity * .5, .6);
       this.line(x, y, x, y + cell, 'muted', opacity * .5, .6);
-      this.words(`x${'₀₁₂₃'[entry.x]}y${'₀₁₂₃'[entry.row]}`, x + cell / 2, y + cell / 2, cell, opacity, 'ink', false, this.tall ? 12 : 20);
+      this.words(`x${'₀₁₂₃'[entry.x]}y${'₀₁₂₃'[entry.row]}`, x + cell / 2, y + cell / 2, cell, opacity === 1 ? 1 : 0, 'ink', false, this.tall ? 12 : 20);
     }
 
     const base = top + cell * 4 + 22;
@@ -274,21 +284,24 @@ export class GridProductsFilm {
       this.line(x, base - 4, x, base + 4, 'blue', opacity * points, 3);
     }
 
-    this.words('16 PRODUCTS · 7 ANSWER COEFFICIENTS', this.width * .42, base + 30, this.width * .76, opacity);
-    this.words('EVALUATE AT 7 POINTS', this.width * .42, base + 57, this.width * .72, opacity * points, 'blue');
-    this.labels.place('points', this.width * .42, base + 90, opacity * points);
+    this.words('16 PRODUCTS · 7 ANSWER COEFFICIENTS', this.width * .42, base + 30, this.width * .76, exitAlpha);
+    const evaluationAlpha = this.tall && this.width < 300 ? opacity : exitAlpha;
+    this.words('EVALUATE AT 7 POINTS', this.width * .42, base + 57, this.width * .72, evaluationAlpha * points, 'blue');
+    this.labels.place('points', this.width * .42, base + 90, (this.tall ? opacity : exitAlpha) * points);
   }
 
   private tripling(opacity: number): void {
     if (opacity < .005) return;
 
-    const shrinking = smooth(this.time, 95500, 97200);
+    const t = this.time;
+    const shrinking = smooth(t, 95500, 97200);
     const size = Math.min(this.width * (this.tall ? .071 : .054), this.tall ? 24 : 38) * (1 - shrinking * (this.tall ? .33 : .55));
     const left = this.width * (this.tall ? .06 : .08);
     const top = this.height * (this.tall ? .12 : .17);
     const center = left + 5 * size;
-    this.words('THREE COPIES SHARE x₀, x₁, x₂', center, top - 24, size * 10 + 10, opacity * (1 - shrinking));
-    const crossing = smooth(this.time, 90000, 93500);
+    const captionAlpha = this.tall && t < 89500 ? 0 : opacity;
+    this.words('THREE COPIES SHARE x₀, x₁, x₂', center, top - 24, size * 10 + 10, captionAlpha * (1 - shrinking));
+    const crossing = smooth(t, 90000, 93500);
     let removed = 0;
 
     for (const entry of TRIPLING_GRID) {
@@ -298,7 +311,7 @@ export class GridProductsFilm {
       this.pen.fillStyle = this.colors[entry.rowSector === 'middle' ? 'blue' : 'ink'];
       this.pen.fillRect(x, y, size - 1, size - 1);
       this.pen.globalAlpha = 1;
-      this.words(shrinking > .5 ? '·' : `x${'₀₁₂'[entry.x]}`, x + size / 2, y + size / 2, size, opacity, entry.kept ? 'ink' : 'muted', true);
+      this.words(shrinking > .5 ? '·' : `x${'₀₁₂'[entry.x]}`, x + size / 2, y + size / 2, size, opacity === 1 ? 1 : 0, entry.kept ? 'ink' : 'muted', true);
 
       if (!entry.kept) {
         const alpha = Math.max(0, Math.min(1, crossing * 6 - removed));
@@ -314,8 +327,11 @@ export class GridProductsFilm {
     }
 
     const below = top + size * 8 + 25;
-    this.words('6 PRODUCTS IN EACH · 6 CROSSED OUT', center, below, size * 10 + 10, opacity * (1 - shrinking));
-    this.labels.place('tripling', center, below + 35, opacity * smooth(this.time, 93500, 95000) * (1 - shrinking));
-    this.words('P: MEASURE OF THE PRODUCT', center, below + 65, size * 10 + 20, opacity * smooth(this.time, 93500, 95000) * (1 - shrinking));
+    const detailsAlpha = t <= 95500 ? opacity : 0;
+    const formulaAlpha = detailsAlpha * smooth(t, 93500, 95000);
+    const formulaOverGrid = !this.tall && this.width < 665 && t < 95000;
+    this.words('6 PRODUCTS IN EACH · 6 CROSSED OUT', center, below, size * 10 + 10, t < 89500 ? captionAlpha : detailsAlpha);
+    this.labels.place('tripling', center, below + 35, formulaOverGrid ? 0 : formulaAlpha);
+    this.words('P: MEASURE OF THE PRODUCT', center, below + 65, size * 10 + 20, formulaAlpha);
   }
 }
