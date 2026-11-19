@@ -116,8 +116,8 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
   if (time < 57250) {
     const stats = ballStats(result.centre, 40);
     text(pen, 'DISTANCE DIVIDED BY TIME', x, box.y + (tall ? 5 : 18), tall ? 11.5 : 19, box.w - 6, colors);
-    place('time-symbol', x - (tall ? 42 : 83), box.y + (tall ? 31 : 68));
-    text(pen, '= 20, 30, 40', x + (tall ? 9 : 13), box.y + (tall ? 31 : 68), tall ? 16 : 23, box.w * .72, colors);
+    place('time-symbol', x - (tall ? 39 : 83), box.y + (tall ? 31 : 68));
+    text(pen, '= 20, 30, 40', x + (tall ? 10 : 13), box.y + (tall ? 31 : 68), tall ? 16 : 23, box.w * .72, colors);
     rows(pen, box, [`AT 40: AXIS REACH ${stats.axis}`, `DIAGONAL REACH ${stats.diagonalEuclid.toFixed(1)}`], tall ? 72 : 160, tall ? 12 : 20, tall ? 24 : 36, colors);
     rows(pen, box, ['ONE FINITE GRID', 'THE LIMIT IS NOT DETERMINED HERE'], tall ? 124 : 276, tall ? 9 : 13, tall ? 19 : 28, colors);
 

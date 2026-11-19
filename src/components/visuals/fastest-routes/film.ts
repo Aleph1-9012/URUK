@@ -275,7 +275,7 @@ export class FastestRoutesFilm {
         if (!edge.label) continue;
 
         const point = flat({ x: (edge.a.x + edge.b.x) / 2, y: (edge.a.y + edge.b.y) / 2 }, camera);
-        text(pen, edge.weight.toFixed(2), point.x, point.y, tall ? 8.5 : 12, camera.scale * .88, colors);
+        text(pen, edge.weight.toFixed(2), point.x, point.y + (tall ? edge.a.y === edge.b.y ? 3 : -2 : 0), tall ? 8.5 : 12, tall ? Math.max(22, camera.scale * .88) : camera.scale * .88, colors);
       }
     }
   }
@@ -370,7 +370,7 @@ export class FastestRoutesFilm {
       }
 
       pen.strokeStyle = colors.ink;
-      pen.lineWidth = tall ? index === 2 ? 1.2 : 1 : index === 2 ? .9 : .5;
+      pen.lineWidth = tall ? index === 2 ? 1.8 : 1.5 : index === 2 ? .9 : .5;
       pen.setLineDash(index === 0 ? [2, 3] : index === 1 ? [5, 3] : []);
       pen.stroke();
     }
