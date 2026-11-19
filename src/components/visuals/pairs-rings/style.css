@@ -2,6 +2,6 @@
 uruk-pairs-rings .film-frame .film-cue .formula-inline:has(msqrt) { margin-inline-end: -.43em; }
 
 @container plate (max-width: 599px) {
-  uruk-pairs-rings .film-stage { aspect-ratio: 4 / 8; }
+  uruk-pairs-rings .film-stage { aspect-ratio: 4 / 5; }
   uruk-pairs-rings .film-label { font-size: .75rem; }
 }

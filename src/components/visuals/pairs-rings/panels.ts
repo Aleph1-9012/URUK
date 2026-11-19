@@ -71,37 +71,40 @@ function axes(pen: CanvasRenderingContext2D, plot: Box, colors: Colors, tall: bo
     text(pen, powerLabel(exponent), point.x, point.y + (tall ? 13 : 17), tall ? 9.5 : 12, tall ? 28 : 38, colors);
   }
 
-  text(pen, 'STEPS', plot.x - 5, plot.y - 13, tall ? 8.5 : 11, 48, colors, 'right');
+  text(pen, 'STEPS', plot.x - 5, plot.y - (tall ? 9 : 13), tall ? 8.5 : 11, 48, colors, 'right');
   text(pen, 'n', plot.x + plot.w + 10, plot.y + plot.h - 2, tall ? 11 : 15, 15, colors);
 }
 
-function boundDescriptions(pen: CanvasRenderingContext2D, plot: Box, time: number, colors: Colors, tall: boolean): void {
+function boundDescriptions(pen: CanvasRenderingContext2D, plot: Box, panel: Box, time: number, colors: Colors, tall: boolean): void {
   pen.strokeStyle = colors.ink;
   pen.lineWidth = .55;
 
   if (classicalProgress(time) === 1) {
     const reading = runtimeAt(8e5);
     const point = runtimeChartPoint(reading.n, reading.classical, plot);
-    const y = plot.y + (tall ? 14 : 22);
-    line(pen, plot.x + plot.w * .55, y + 10, point.x, point.y);
-    text(pen, 'MICALI–VAZIRANI 1980', plot.x + plot.w * .34, y, tall ? 9.5 : 11, plot.w * .63, colors);
+    const y = plot.y + (tall ? -1 : 22);
+    const labelX = plot.x + plot.w * (tall ? .57 : .34);
+    line(pen, tall ? labelX : plot.x + plot.w * .55, y + (tall ? 17 : 10), point.x, point.y);
+    text(pen, tall ? 'MICALI–VAZIRANI\n1980' : 'MICALI–VAZIRANI 1980', labelX, y, tall ? 9.5 : 11, plot.w * (tall ? 1.3 : .63), colors);
   }
 
   if (inputProgress(time) === 1) {
-    const reading = runtimeAt(1e6);
+    const reading = runtimeAt(tall ? 1e3 : 1e6);
     const point = runtimeChartPoint(reading.n, reading.input, plot);
     const y = plot.y + plot.h - (tall ? 13 : 18);
-    line(pen, plot.x + plot.w * .70, y - (tall ? 10 : 12), point.x, point.y);
-    text(pen, 'READING THE INPUT', plot.x + plot.w * .68, y, tall ? 9.5 : 11, plot.w * .60, colors);
+    const labelX = tall ? panel.x / 2 : plot.x + plot.w * .68;
+    const labelWidth = tall ? panel.x - 12 : plot.w * .60;
+    line(pen, tall ? panel.x - 6 : plot.x + plot.w * .70, y - (tall ? 7 : 12), point.x, point.y);
+    text(pen, 'READING THE INPUT', labelX, y, tall ? 9.5 : 11, labelWidth, colors);
   }
 }
 
 function runtimeChart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, tall: boolean): void {
   const x = box.x + box.w / 2;
   const plot = runtimeChartBox(box, tall);
-  text(pen, 'TIME TO FIND THE MOST PAIRS', x, box.y + (tall ? 56 : 93), tall ? 10.5 : 16, box.w - 6, colors);
-  place('graph-variables', x - (tall ? 36 : 45), box.y + (tall ? 75 : 120));
-  text(pen, 'CONSTANTS 1', x + (tall ? 48 : 62), box.y + (tall ? 75 : 120), tall ? 8.5 : 12, box.w * .45, colors);
+  text(pen, 'TIME TO FIND THE MOST PAIRS', x, box.y + (tall ? 68 : 93), tall ? 10.5 : 16, box.w - 6, colors);
+  place('graph-variables', tall ? box.x + box.w * .20 : x - 45, box.y + (tall ? 100 : 120));
+  text(pen, 'CONSTANTS 1', tall ? box.x + box.w * .75 : x + 62, box.y + (tall ? 100 : 120), tall ? 8.5 : 12, box.w * .45, colors);
   axes(pen, plot, colors, tall);
   const first = runtimeAt(1e3);
   const last = runtimeAt(1e7);
@@ -113,9 +116,9 @@ function runtimeChart(pen: CanvasRenderingContext2D, box: Box, time: number, col
   pen.lineWidth = tall ? 1.3 : 1.7;
   line(pen, classicalFirst.x, classicalFirst.y, classicalLast.x, classicalLast.y, classicalProgress(time));
 
-  const legendY = plot.y + plot.h + (tall ? 35 : 40);
-  line(pen, box.x + 7, legendY, box.x + 25, legendY);
-  place('mv-bound', box.x + box.w * .27, legendY);
+  const legendY = plot.y + plot.h + (tall ? 31 : 40);
+  line(pen, box.x + 7, legendY, box.x + (tall ? 17 : 25), legendY);
+  place('mv-bound', box.x + box.w * (tall ? .30 : .27), legendY);
 
   if (time >= 30500) {
     pen.lineWidth = tall ? .75 : 1;
@@ -132,11 +135,11 @@ function runtimeChart(pen: CanvasRenderingContext2D, box: Box, time: number, col
     line(pen, inputFirst.x, inputFirst.y - offset, inputLast.x, inputLast.y - offset, claimProgress(time));
     pen.setLineDash([]);
     const claimY = plot.y + plot.h + (tall ? 59 : 76);
-    text(pen, 'CLAIMED', box.x + box.w * .17, claimY, tall ? 8.5 : 12, box.w * .30, colors);
-    place('claimed-bound', box.x + box.w * .64, claimY);
+    text(pen, 'CLAIMED', box.x + box.w * (tall ? .5 : .17), claimY, tall ? 8.5 : 12, box.w * .30, colors);
+    place('claimed-bound', box.x + box.w * (tall ? .5 : .64), claimY + (tall ? 19 : 0));
   }
 
-  boundDescriptions(pen, plot, time, colors, tall);
+  boundDescriptions(pen, plot, box, time, colors, tall);
 }
 
 export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: PairModel, tall: boolean): void {
@@ -146,17 +149,19 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
 
   if (time < 16000) {
     text(pen, words.title, x, box.y + (tall ? 30 : 74), tall ? 28 : 40, box.w - 6, colors);
-    text(pen, words.caption, x, box.y + (tall ? 72 : 135), tall ? 11 : 16, box.w - 6, colors);
-    text(pen, time >= 9000 ? `CAN WE DO BETTER THAN ${model.greedy.length}?` : 'ONE PERSON IN AT MOST ONE PAIR', x, box.y + (tall ? 113 : 206), tall ? 12 : 18, box.w - 6, colors);
-    text(pen, `${model.n} PEOPLE · ${model.edges.length} WILLING LINKS`, x, box.y + (tall ? 168 : 291), tall ? 10 : 14, box.w - 6, colors);
+    text(pen, words.caption, x, box.y + (tall ? 105 : 135), tall ? 11 : 16, box.w - 6, colors);
+    text(pen, time >= 9000 ? `CAN WE DO BETTER THAN ${model.greedy.length}?` : 'ONE PERSON IN AT MOST ONE PAIR', x, box.y + (tall ? 175 : 206), tall ? 12 : 18, box.w - 6, colors);
+    text(pen, `${model.n} PEOPLE · ${model.edges.length} WILLING LINKS`, x, box.y + (tall ? 240 : 291), tall ? 10 : 14, box.w - 6, colors);
 
     return;
   }
 
-  text(pen, words.title, x, box.y + (tall ? 6 : 15), tall ? 12 : 20, box.w - 6, colors);
-  text(pen, words.caption, x, box.y + (tall ? 26 : 45), tall ? 9 : 13, box.w - 6, colors);
+  const titleX = tall ? pen.canvas.clientWidth / 2 : x;
+  const titleWidth = tall ? pen.canvas.clientWidth - 14 : box.w - 6;
+  text(pen, words.title, titleX, box.y + (tall ? 8 : 15), tall ? 12 : 20, titleWidth, colors);
+  text(pen, words.caption, titleX, box.y + (tall ? 27 : 45), tall ? 9 : 13, titleWidth, colors);
 
-  if (time >= 53750 && time < 64250) text(pen, 'THE o(1) IS NOT A SETTABLE NUMBER', x, box.y + (tall ? 40 : 66), tall ? 8.5 : 12, box.w - 6, colors);
+  if (time >= 53750 && time < 64250) text(pen, 'THE o(1) IS NOT A SETTABLE NUMBER', titleX, box.y + (tall ? 43 : 66), tall ? 8.5 : 12, titleWidth, colors);
 
   runtimeChart(pen, box, time, colors, place, tall);
 }

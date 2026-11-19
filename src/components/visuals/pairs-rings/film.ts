@@ -61,9 +61,10 @@ export class PairsRingsFilm {
     const maxX = Math.max(...positions.map(point => point.x));
     const minY = Math.min(...positions.map(point => point.y));
     const maxY = Math.max(...positions.map(point => point.y));
-    const scale = Math.min((box.w - 30) / (maxX - minX), (box.h - 42) / (maxY - minY));
+    const phone = this.width < 600;
+    const scale = Math.min((box.w - (phone ? 18 : 30)) / (maxX - minX), (box.h - 42) / (maxY - minY));
 
-    return { x: box.x + box.w / 2 - (minX + maxX) / 2 * scale, y: box.y + box.h / 2 + (minY + maxY) / 2 * scale, scale };
+    return { x: box.x + box.w / 2 - (minX + maxX) / 2 * scale, y: box.y + box.h * (phone ? .42 : .5) + (minY + maxY) / 2 * scale, scale };
   }
 
   private bond(edge: Edge, positions: readonly Point[], camera: Camera, amount: number, width: number): void {
@@ -169,7 +170,7 @@ export class PairsRingsFilm {
     if (time >= 30500 && time < 45750) this.inset(box, time, tall);
 
     const title = time >= 48250 && time < 53500 ? 'EDMONDS: SHRINK THE ODD RING' : `${model.n} PEOPLE · ${model.edges.length} WILLING LINKS`;
-    text(pen, title, box.x + box.w / 2, box.y + 5, tall ? 9.5 : 15, box.w - 4, colors);
+    text(pen, title, box.x + box.w / 2, box.y + (tall ? 14 : 5), tall ? 9.5 : 15, box.w - 4, colors);
 
     if (time >= 45750 && time < 53750) text(pen, 'CLASSICAL BLOSSOM · ILLUSTRATION', box.x + box.w / 2, box.y + box.h - 4, tall ? 8 : 12, box.w - 4, colors);
   }
@@ -212,8 +213,10 @@ export class PairsRingsFilm {
       const direction = { x: world.x - model.ringCentre.x, y: world.y - model.ringCentre.y };
       const length = Math.hypot(direction.x, direction.y);
       const target = flat(world, camera);
-      const offset = 24;
-      text(pen, index % 2 === 0 ? 'NEAR' : 'FAR', target.x + direction.x / length * offset, target.y - direction.y / length * offset, tall ? 8.5 : 12, tall ? 34 : 50, colors);
+      const offset = tall ? 32 : 24;
+      const labelX = target.x + direction.x / length * offset;
+      const labelY = tall ? direction.y > .2 ? camera.y - camera.scale * 2.65 : target.y - direction.y / length * offset + 12 : target.y - direction.y / length * offset;
+      text(pen, index % 2 === 0 ? 'NEAR' : 'FAR', tall ? Math.max(17, Math.min(this.width * .43 - 18, labelX)) : labelX, labelY, tall ? 8.5 : 12, tall ? 34 : 50, colors);
     }
 
     if (revealed === model.blossom.cycle.length) {
@@ -236,7 +239,7 @@ export class PairsRingsFilm {
   private inset(box: Box, time: number, tall: boolean): void {
     const { pen, model, colors } = this;
     const amount = bipartiteProgress(time);
-    const area = { x: box.x + box.w * (tall ? .35 : .015), y: box.y + box.h * (tall ? .76 : .74), w: box.w * .27, h: box.h * (tall ? .17 : .21) };
+    const area = tall ? { x: box.x + 7, y: box.y + box.h - 64, w: box.w - 14, h: 35 } : { x: box.x + box.w * .015, y: box.y + box.h * .74, w: box.w * .27, h: box.h * .21 };
     const minX = Math.min(...model.inset.positions.map(point => point.x));
     const maxX = Math.max(...model.inset.positions.map(point => point.x));
     const minY = Math.min(...model.inset.positions.map(point => point.y));
