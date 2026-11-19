@@ -51,8 +51,8 @@ function experimentReadout(model: BounceModel, key: TableKey, time: number): Rea
 
 function circleGeometry(box: Box, tall: boolean): { x: number; y: number; radius: number } {
   return {
-    x: box.x + box.w / 2,
-    y: box.y + box.h * (tall ? .23 : .25),
+    x: box.x + box.w * (tall ? .22 : .5),
+    y: box.y + box.h * (tall ? .27 : .25),
     radius: tall ? Math.min(34, box.h * .12, box.w * .16) : Math.min(box.w * .31, box.h * .18),
   };
 }
@@ -119,16 +119,20 @@ function directionCircle(pen: CanvasRenderingContext2D, box: Box, time: number, 
   pen.fill();
   const occupied = readout.stats.bins.length - readout.stats.empty;
   const number = readout.stats.distinct.toLocaleString('en-US');
-  const title = tall ? `${number} HEADINGS · ${occupied}/24 SECTORS` : `${number} DISTINCT HEADINGS · ${occupied}/24 SECTORS`;
-  text(pen, title, circle.x, box.y + box.h * (tall ? .43 : .48), tall ? 10 : 16, box.w - 5, colors);
-  const status = readout.kind === 'computed' ? `COMPUTED ${readout.bounces.toLocaleString('en-US')} BOUNCES` : `${readout.bounces} BOUNCES · CALCULATING 100,000`;
-  text(pen, status, circle.x, box.y + box.h * (tall ? .49 : .52), tall ? 9 : 13, box.w - 5, colors);
+  const title = tall ? `${number} HEADINGS ·\n${occupied}/24 SECTORS` : `${number} DISTINCT HEADINGS · ${occupied}/24 SECTORS`;
+  const captionX = tall ? box.x + box.w * .75 : circle.x;
+  const captionWidth = tall ? box.w * .48 : box.w - 5;
+  text(pen, title, captionX, box.y + box.h * (tall ? .20 : .48), tall ? 10 : 16, captionWidth, colors);
+  const status = readout.kind === 'computed'
+    ? `COMPUTED${tall ? '\n' : ' '}${readout.bounces.toLocaleString('en-US')} BOUNCES`
+    : `${readout.bounces} BOUNCES ·${tall ? '\n' : ' '}CALCULATING 100,000`;
+  text(pen, status, captionX, box.y + box.h * (tall ? .36 : .52), tall ? 9 : 13, captionWidth, colors);
 }
 
 function shareGauge(pen: CanvasRenderingContext2D, box: Box, colors: Colors, tall: boolean, readout: Exclude<Readout, { kind: 'stopped' }>): void {
   const left = box.x + 8;
-  const width = box.w - (tall ? 52 : 62);
-  const top = box.y + box.h * (tall ? .55 : .59);
+  const width = tall ? box.w / 2 - 42 : box.w - 62;
+  const top = box.y + box.h * (tall ? .56 : .59);
   const gap = tall ? box.h * .10 : 40;
   const barHeight = tall ? 5 : 8;
 
@@ -136,15 +140,17 @@ function shareGauge(pen: CanvasRenderingContext2D, box: Box, colors: Colors, tal
     [0, `TIME LEFT · ${readout.gaugeBounces.toLocaleString('en-US')} BOUNCES`, readout.share],
     [1, 'AREA LEFT · EXACT', readout.area],
   ] as const) {
-    const y = top + index * gap;
-    text(pen, words, left, y, tall ? 8.5 : 12, width + 8, colors, 'left');
+    const x = left + (tall ? index * box.w / 2 : 0);
+    const y = tall ? top + index * 12.5 : top + index * gap;
+    const caption = tall && index === 0 ? words.replace(' · ', ' ·\n') : words;
+    text(pen, caption, x, y, tall ? 8.5 : 12, tall ? box.w / 2 - 8 : width + 8, colors, 'left');
     pen.strokeStyle = colors.ink;
     pen.fillStyle = colors.ink;
     pen.lineWidth = .8;
-    const barY = y + (tall ? 10 : 14);
-    pen.strokeRect(left, barY, width, barHeight);
-    pen.fillRect(left, barY, width * value, barHeight);
-    text(pen, value.toFixed(3), left + width + (tall ? 23 : 28), barY + barHeight / 2, tall ? 11 : 15, tall ? 40 : 50, colors);
+    const barY = tall ? box.y + box.h * .70 - 3 : y + 14;
+    pen.strokeRect(x, barY, width, barHeight);
+    pen.fillRect(x, barY, width * value, barHeight);
+    text(pen, value.toFixed(3), x + width + (tall ? 21 : 28), barY + barHeight / 2, tall ? 11 : 15, tall ? 40 : 50, colors);
   }
 }
 
@@ -160,8 +166,9 @@ function ledger(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
 
     if (time >= 91500) text(pen, 'UNREVIEWED', x, box.y + box.h * .95, tall ? 16 : 25, box.w - 5, colors);
     else if (time >= 84500) {
-      text(pen, 'STRONG MIXING: NOT CLAIMED', x, box.y + box.h * .91, size, box.w - 5, colors);
-      text(pen, '4 OR MORE SIDES: NOT CLAIMED', x, box.y + box.h * (tall ? .97 : .96), size, box.w - 5, colors);
+      const limitY = tall ? box.y + box.h * .925 + 1 : box.y + box.h * .91;
+      text(pen, 'STRONG MIXING: NOT CLAIMED', x, limitY, size, box.w - 5, colors);
+      text(pen, '4 OR MORE SIDES: NOT CLAIMED', x, tall ? limitY + 12.5 : box.y + box.h * .96, size, box.w - 5, colors);
     } else if (time >= 77500) {
       text(pen, 'NOT ERGODIC ON THE FULL SPACE', x, box.y + box.h * .95, size, box.w - 5, colors);
     }
@@ -217,7 +224,7 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
   }
 
   const x = box.x + box.w / 2;
-  text(pen, 'DIRECTION CIRCLE', x, box.y + 9, tall ? 10 : 16, box.w - 5, colors);
+  text(pen, 'DIRECTION CIRCLE', tall ? box.x + box.w * .22 : x, box.y + 9, tall ? 10 : 16, tall ? box.w * .48 : box.w - 5, colors);
   const episode = tableAt(time);
 
   if (episode.transition) {
