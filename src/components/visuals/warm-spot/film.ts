@@ -269,7 +269,7 @@ export class WarmSpotFilm {
     const { pen, colors } = this;
     const entrance = insetProgress(time);
     const width = box.w * .43;
-    const height = box.h * .40;
+    const height = box.h * (tall ? .50 : .40);
     const left = box.x + box.w - width + (1 - entrance) * (width + 40);
     const top = box.y + box.h - height;
     pen.save();

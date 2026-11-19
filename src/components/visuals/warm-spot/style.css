@@ -1,4 +1,4 @@
 @container plate (max-width: 599px) {
-  uruk-warm-spot .film-stage { aspect-ratio: 4 / 6; }
+  uruk-warm-spot .film-stage { aspect-ratio: 4 / 5; }
   uruk-warm-spot .film-label { font-size: .75rem; }
 }

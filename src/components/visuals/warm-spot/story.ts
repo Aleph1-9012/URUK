@@ -57,8 +57,8 @@ export function layout(width: number, height: number, _time: number): { stage: B
 
   if (tall) {
     return {
-      stage: { x: width * .035, y: height * .025, w: width * .93, h: height * .505 },
-      panel: { x: width * .05, y: height * .58, w: width * .90, h: height * .39 },
+      stage: { x: width * .035, y: height * .025, w: width * .93, h: height * .46 },
+      panel: { x: width * .05, y: height * .50, w: width * .90, h: height * .48 },
       tall,
     };
   }
