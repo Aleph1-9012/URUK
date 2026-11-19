@@ -28,6 +28,8 @@ const PLOT = { u: 0.15, v: 0.13, w: 0.8, h: 0.68 } as const;
 
 const TOP_MULTIPLIER = 2.25;
 
+const FLOOR = { multiplier: 1.12, captionU: 0.42, phoneCaption: 'NO METHOD GETS IN HERE' } as const;
+
 const BAR_TOP = 84;
 
 // The tree of choices, in shares of the panel: its span across, and the height of each row
@@ -50,6 +52,10 @@ const COUNTING = [[91600, 92500], [93100, 94000], [94600, 95300]] as const;
 const ASSIGNED = [0, 1, 2] as const;
 
 // The claimed curve's fall from ×2 toward ×1, with t running 0 to 1 past the bend (schematic).
+function fullInk(alpha: number): number {
+  return alpha === 1 ? 1 : 0;
+}
+
 function descentAt(t: number): number {
   return 2 - 0.94 * (3 * t * t - 2 * t * t * t);
 }
@@ -338,6 +344,14 @@ export class SwitchFilm {
     return this.layout === 'tall';
   }
 
+  private get narrowPhone(): boolean {
+    return this.tall && this.pen.width < 300;
+  }
+
+  private get compactWide(): boolean {
+    return !this.tall && this.pen.width < 760;
+  }
+
   private onBoard(u: number, v: number): Point {
     return [this.board.x + u * this.board.w, this.board.y + v * this.board.h];
   }
@@ -441,7 +455,9 @@ export class SwitchFilm {
       this.pen.disc(at, this.radius * between(0.3, 1, arrived), on ? 'blue' : 'ink', arrived, !on);
 
       if (this.radius >= 7) {
-        this.pen.write(String(index + 1), at, { kind: 'number', tone: on ? 'paper' : 'ink', alpha: arrived, patch: false, size: Math.round(this.radius * 1.05) });
+        const cutArrival = index >= 3 && (index < 6 || !this.tall);
+        const ink = cutArrival ? fullInk(arrived) : arrived;
+        this.pen.write(String(index + 1), at, { kind: 'number', tone: on ? 'paper' : 'ink', alpha: ink, patch: false, size: Math.round(this.radius * 1.05) });
       }
     }
   }
@@ -646,7 +662,7 @@ export class SwitchFilm {
     const fade = 1 - ease(time, 17800, 18400);
     const begun = ease(time, 7000, 7600) * fade;
     const root = this.nodeAt(0, 0);
-    this.pen.write('START', this.nudge(root, 9, 0), { kind: 'tag', tone: 'muted', alpha: begun, align: 'left' });
+    this.pen.write('START', this.nudge(root, 9, 0), { kind: 'tag', tone: 'muted', alpha: fullInk(begun), align: 'left' });
     this.pen.write('WAYS', this.onPanel(0.98, rowsV[0] ?? 0), { kind: 'tag', tone: 'muted', alpha: begun, align: 'right' });
 
     for (const [index, start] of TREE_ROWS.entries()) {
@@ -793,11 +809,13 @@ export class SwitchFilm {
     // Exhaustive search: a flat line at ×2.
     const reveal = ease(time, 28000, 30000);
     this.pen.stroke([this.onChart(0, 2), this.onChart(reveal, 2)], 'ink', alpha, 1.6);
-    this.pen.write('TRY EVERY SETTING', this.nudge(this.onChart(0.02, 2), 0, -12), { kind: 'tag', alpha: ease(time, 29500, 30500) * alpha, align: 'left' });
+    const tryLabelInk = fullInk(ease(time, 29500, 30500)) * (this.narrowPhone ? fullInk(alpha) : alpha);
+    this.pen.write('TRY EVERY SETTING', this.nudge(this.onChart(0.02, 2), 0, -12), { kind: 'tag', alpha: tryLabelInk, align: 'left' });
 
     this.drawBetter(alpha);
-    this.drawFloor(alpha);
-    this.drawClaim(alpha, digits);
+    const floorCaption = this.onChart(FLOOR.captionU, (1 + FLOOR.multiplier) / 2);
+    this.drawFloor(alpha, floorCaption);
+    this.drawClaim(alpha, digits, floorCaption);
     this.drawStrands(alpha);
   }
 
@@ -831,7 +849,8 @@ export class SwitchFilm {
         this.pen.hatch(left, topY, right, base, 'muted', bars * 0.8);
       }
 
-      this.pen.write(String(value), this.nudge([(left + right) / 2, topY], 0, -10), { kind: 'number', alpha: bars * grow });
+      const valueArrival = n === 3 || (n === 4 && tall) ? fullInk(grow) : grow;
+      this.pen.write(String(value), this.nudge([(left + right) / 2, topY], 0, -10), { kind: 'number', alpha: bars * valueArrival });
       this.pen.write(String(n), this.nudge([(left + right) / 2, base], 0, tall ? 11 : 13), { kind: 'number', tone: 'muted', alpha: bars * grow });
       const topPoint: Point = [(left + right) / 2, topY];
 
@@ -854,9 +873,10 @@ export class SwitchFilm {
         const from: Point = [control[0], control[1] + 4 / this.pen.height];
         const to = this.nudge(this.onChart(apexU, 2), 0, -12);
         const at: Point = [between(from[0], to[0], toLine), between(from[1], to[1], toLine)];
-        const carried = grow * alpha * (1 - ease(time, 29500, 30500));
-        this.pen.write('×2', at, { kind: 'number', tone: 'blue', alpha: carried });
-        this.pen.disc(this.onChart(apexU, 2), 3.2, 'blue', carried * ease(time, 27900, 28400));
+        const leave = 1 - ease(time, 29500, 30500);
+        const carriedInk = fullInk(grow) * alpha * fullInk(leave);
+        this.pen.write('×2', at, { kind: 'number', tone: 'blue', alpha: carriedInk });
+        this.pen.disc(this.onChart(apexU, 2), 3.2, 'blue', grow * alpha * leave * ease(time, 27900, 28400));
       }
 
       previousTop = topPoint;
@@ -866,7 +886,8 @@ export class SwitchFilm {
     const moved = ease(time, 26000, 27000);
     const near: Point = [titleAt[0] + titleWidth + half + 10 / this.pen.width, titleAt[1]];
     const far = this.nudge(this.onChart(1, 2), 0, -14);
-    const kept = presence(time, 18800, 19600, 63600, 64600);
+    const powerExit = 1 - ease(time, 63600, 64600);
+    const kept = ease(time, 18800, 19600) * (this.narrowPhone ? fullInk(powerExit) : powerExit);
     this.place('power', [between(near[0], far[0] - half, moved), between(near[1], far[1], moved)], kept * alpha);
   }
 
@@ -886,7 +907,7 @@ export class SwitchFilm {
   }
 
   // The hypothesis: a floor of unknown height above ×1 that no method gets under.
-  private drawFloor(alpha: number): void {
+  private drawFloor(alpha: number, caption: Point): void {
     const time = this.time;
     const shown = ease(time, 43000, 43600) * alpha;
 
@@ -894,13 +915,12 @@ export class SwitchFilm {
 
     const tall = this.tall;
     const reveal = ease(time, 43000, 45500);
-    const height = 1.12;
-    const [left, top] = this.onChart(0, height);
+    const [left, top] = this.onChart(0, FLOOR.multiplier);
     const [right, bottom] = this.onChart(reveal, 1);
     this.pen.hatch(left, top, right, bottom, 'ink', shown * 0.75);
     this.pen.stroke([[left, top], [right, top]], 'ink', shown, 1, [5, 4]);
-    this.pen.write(tall ? 'NO METHOD GETS IN HERE' : 'THE HYPOTHESIS: NO METHOD GETS IN HERE', this.onChart(0.42, (1 + height) / 2), { kind: 'tag', alpha: alpha * ease(time, 45000, 46000) });
-    this.pen.write('HEIGHT NOT KNOWN', this.nudge(this.onChart(1, height), 0, -9), { kind: 'tag', tone: 'muted', alpha: alpha * presence(time, 45600, 46400, 50800, 51600), align: 'right' });
+    this.pen.write(tall ? FLOOR.phoneCaption : 'THE HYPOTHESIS: NO METHOD GETS IN HERE', caption, { kind: 'tag', alpha: fullInk(alpha * ease(time, 45000, 46000)) });
+    this.pen.write('HEIGHT NOT KNOWN', this.nudge(this.onChart(1, FLOOR.multiplier), 0, -9), { kind: 'tag', tone: 'muted', alpha: alpha * presence(time, 45600, 46400, 50800, 51600), align: 'right' });
   }
 
   // The claimed curve: on ×2 until the threshold, then bending down toward ×1 (schematic).
@@ -908,7 +928,7 @@ export class SwitchFilm {
     return u <= bend ? 2 : descentAt((u - bend) / (1 - bend));
   }
 
-  private drawClaim(alpha: number, digits: number): void {
+  private drawClaim(alpha: number, digits: number, floorCaption: Point): void {
     const time = this.time;
     const tall = this.tall;
     const reveal = ease(time, 52000, 56000);
@@ -928,9 +948,13 @@ export class SwitchFilm {
     const [descentX, levelY] = this.onChart(bend + reach(level) * (1 - bend), level);
     const [bendX] = this.onChart(bend, level);
     const anchor = this.nudge([between(descentX, bendX, ease(time, 60300, 62600)), levelY], -12, 0);
-    const claim = alpha * presence(time, 55000, 56000, 69000, 69800);
-    this.pen.write(tall ? 'CLAIMED · OPENAI' : 'CLAIMED · OPENAI, 25 OCT 2026', anchor, { kind: 'tag', tone: 'blue', alpha: claim, align: 'right' });
-    this.pen.write(tall ? 'SCHEMATIC' : 'SCHEMATIC: CONSTANTS NOT STATED', this.nudge(anchor, 0, tall ? -15 : -16), { kind: 'tag', tone: 'muted', alpha: claim * ease(time, 63600, 64400), align: 'right' });
+    const claimArrival = ease(time, 55000, 56000);
+    const claimExit = 1 - ease(time, 69000, 69800);
+    const claimInk = alpha * ((this.compactWide ? fullInk(claimArrival) : claimArrival) * claimExit);
+    this.pen.write(tall ? 'CLAIMED · OPENAI' : 'CLAIMED · OPENAI, 25 OCT 2026', anchor, { kind: 'tag', tone: 'blue', alpha: claimInk, align: 'right' });
+    const schematic = alpha * (claimArrival * claimExit) * ease(time, 63600, 64400);
+    const schematicInk = this.compactWide ? fullInk(schematic) : schematic;
+    this.pen.write(tall ? 'SCHEMATIC' : 'SCHEMATIC: CONSTANTS NOT STATED', this.nudge(anchor, 0, tall ? -15 : -16), { kind: 'tag', tone: 'muted', alpha: schematicInk, align: 'right' });
 
     if (digits <= 0) return;
 
@@ -939,26 +963,50 @@ export class SwitchFilm {
     const [, axisY] = this.onChart(0, 1);
     const ticks = tall ? ['1', '10', '100'] : ['1', '10', '100', '1,000'];
 
+    const tickStep = tall ? 0.19 : 0.16;
+
     for (const [index, name] of ticks.entries()) {
-      const u = 0.06 + index * (tall ? 0.19 : 0.16);
+      const u = 0.06 + index * tickStep;
       const [x] = this.onChart(u, 1);
       this.pen.hairline([[x, axisY], this.nudge([x, axisY], 0, 5)], 'muted', shown);
-      this.pen.write(name, this.nudge([x, axisY], 0, tall ? 12 : 14), { kind: 'number', tone: 'muted', alpha: shown });
-    }
-
-    const [breakX] = this.onChart(BREAK_U, 1);
-    this.pen.frame(breakX * this.pen.width - 4, axisY * this.pen.height - 2, 8, 4, 'paper', shown);
-
-    for (const offset of [-4, 4]) {
-      this.pen.stroke([this.nudge([breakX, axisY], offset - 3, 6), this.nudge([breakX, axisY], offset + 3, -6)], 'muted', shown, 1);
+      this.pen.write(name, this.nudge([x, axisY], 0, tall ? 12 : 14), { kind: 'number', tone: 'muted', alpha: fullInk(shown) });
     }
 
     const [thresholdX] = this.onChart(THRESHOLD_U, 1);
+    const thresholdDigits = '3.3 BILLION';
+    const [originalBreakX] = this.onChart(BREAK_U, 1);
+    const paperPad = 3 / this.pen.width;
+    const captionRight = floorCaption[0] + this.pen.measure(FLOOR.phoneCaption, 'tag') / 2 + paperPad;
+    const thresholdLeft = thresholdX - this.pen.measure(thresholdDigits, 'number') / 2 - paperPad;
+    // The upper strokes reach left into the floor caption, and the lower ends can reach the digit label.
+    const compactBreak = tall && (
+      captionRight > originalBreakX - 8 / this.pen.width ||
+      thresholdLeft < originalBreakX + 2.5 / this.pen.width
+    );
+    let breakX = originalBreakX;
+
+    if (compactBreak) {
+      // Use the space between the two digit labels below the floor caption.
+      const [lastTickX] = this.onChart(0.06 + (ticks.length - 1) * tickStep, 1);
+      const lastTickRight = lastTickX + this.pen.measure('100', 'number') / 2 + paperPad;
+      breakX = (lastTickRight + thresholdLeft) / 2;
+    }
+
+    this.pen.frame(breakX * this.pen.width - 4, axisY * this.pen.height - 2, 8, 4, 'paper', shown);
+    const slashHalfWidth = compactBreak ? 2 : 3;
+    const slashTop = compactBreak ? 2.5 : -6;
+    const slashBottom = compactBreak ? 7.5 : 6;
+
+    for (const offset of [-4, 4]) {
+      this.pen.stroke([this.nudge([breakX, axisY], offset - slashHalfWidth, slashBottom), this.nudge([breakX, axisY], offset + slashHalfWidth, slashTop)], 'muted', shown, 1);
+    }
+
     this.pen.stroke([[thresholdX, axisY], this.nudge([thresholdX, axisY], 0, 6)], 'ink', shown, 1.4);
-    this.pen.write('3.3 BILLION', this.nudge([thresholdX, axisY], 0, tall ? 12 : 14), { kind: 'number', alpha: shown });
-    const guide = ease(time, 63600, 64600) * alpha;
-    this.pen.stroke([[thresholdX, axisY], this.onChart(THRESHOLD_U, 2)], 'muted', guide, 1, [3, 4]);
-    this.place('threshold', this.nudge(this.onChart(THRESHOLD_U, 2), 0, -this.sizeOf('threshold').height / 2 - 5), guide);
+    this.pen.write(thresholdDigits, this.nudge([thresholdX, axisY], 0, tall ? 12 : 14), { kind: 'number', alpha: fullInk(shown) });
+    const guideArrival = ease(time, 63600, 64600);
+    this.pen.stroke([[thresholdX, axisY], this.onChart(THRESHOLD_U, 2)], 'muted', guideArrival * alpha, 1, [3, 4]);
+    const guideLabel = this.narrowPhone ? fullInk(guideArrival) : guideArrival;
+    this.place('threshold', this.nudge(this.onChart(THRESHOLD_U, 2), 0, -this.sizeOf('threshold').height / 2 - 5), guideLabel * alpha);
   }
 
   // The proof's three costs braid into the claimed curve (schematic).
@@ -985,14 +1033,19 @@ export class SwitchFilm {
       }
 
       this.pen.stroke(points, 'muted', shown * 0.9, 1);
-      const named = presence(time, 106600 + index * 400, 107400 + index * 400, 112000, 112600);
-      this.pen.write(name, this.nudge(start, -6, 0), { kind: 'tag', tone: 'muted', alpha: shown * named, align: 'right' });
+      const nameArrival = ease(time, 106600 + index * 400, 107400 + index * 400);
+      const nameExit = 1 - ease(time, 112000, 112600);
+      const cutArrival = index === 0 && this.narrowPhone;
+      const cutExit = index === 1 || (index === 2 && tall) || cutArrival;
+      const nameInk = cutArrival ? fullInk(nameArrival) : nameArrival;
+      const opacity = cutExit ? fullInk(shown * nameExit) * nameInk : shown * (nameInk * nameExit);
+      this.pen.write(name, this.nudge(start, -6, 0), { kind: 'tag', tone: 'muted', alpha: opacity, align: 'right' });
     }
 
     const level = 1.85;
     const named = this.onChart(THRESHOLD_U + reach(level) * (1 - THRESHOLD_U), level);
-    this.place('subexp', this.nudge(named, this.halfOf('subexp') + (tall ? 6 : 8), 0), alpha * ease(time, 109200, 110200));
-    const stamp = ease(time, 112400, 113400) * alpha;
+    this.place('subexp', this.nudge(named, this.halfOf('subexp') + (tall ? 6 : 8), 0), alpha * fullInk(ease(time, 109200, 110200)));
+    const stamp = fullInk(ease(time, 112400, 113400) * alpha);
     const at = this.onChart(tall ? 0.39 : 0.42, 1.74);
     const status = tall ? 'CLAIM UNDER REVIEW' : 'CLAIMED · UNDER REVIEW';
     const half = this.pen.measure(status, 'tag') / 2;
@@ -1007,18 +1060,24 @@ export class SwitchFilm {
 
     const tall = this.tall;
     const words = 1 - ease(time, 95500, 96500);
-    const product = presence(time, 76300, 77300) * words;
+    const productArrival = ease(time, 76300, 77300);
+    const product = productArrival * words;
     const productAt = this.onPanel(0.5, 0.1);
     const total = GROUP_COUNTS.reduce((result, count) => result * count, 1);
-    const width = this.pen.write(`${GROUP_COUNTS.join(' × ')} = ${total.toLocaleString('en-US')}`, productAt, { kind: 'count', alpha: product }) * this.pen.width;
+    const count = `${GROUP_COUNTS.join(' × ')} = ${total.toLocaleString('en-US')}`;
+    const width = this.pen.measure(count, 'count') * this.pen.width;
+    const countArrival = this.narrowPhone ? fullInk(productArrival) : productArrival;
+    this.pen.write(count, productAt, { kind: 'count', alpha: countArrival * fullInk(words) });
     this.pen.write(tall ? 'SETTINGS OBEYING THE NINE RULES' : 'SETTINGS THAT OBEY THE NINE INSIDE RULES', this.onPanel(0.5, 0.19), { kind: 'tag', alpha: product });
     // Once rules cross, the product is struck: it no longer counts the settings.
     const strike = ease(time, 80500, 81300);
     const from = this.nudge(productAt, -width / 2 - 4, 0);
-    this.pen.stroke([from, this.nudge(from, (width + 8) * strike, 0)], 'blue', product * (strike > 0 ? 1 : 0), 2);
+    const strikeInk = productArrival * fullInk(words);
+    this.pen.stroke([from, this.nudge(from, (width + 8) * strike, 0)], 'blue', strikeInk * (strike > 0 ? 1 : 0), 2);
     this.place('tries', this.onPanel(0.5, 0.3), presence(time, 77000, 77800, 80400, 81200) * words);
     this.pen.write(tall ? 'TRUE COUNT, ALL 12 RULES' : 'THE TRUE COUNT, WITH ALL TWELVE RULES', this.onPanel(0.5, 0.4), { kind: 'tag', tone: 'blue', alpha: presence(time, 81300, 82100) * words });
-    this.pen.write(TRUE_COUNT.toLocaleString('en-US'), this.onPanel(0.5, 0.5), { kind: 'count', tone: 'blue', alpha: presence(time, 81500, 82300) * words });
+    const trueCount = ease(time, 81500, 82300) * words;
+    this.pen.write(TRUE_COUNT.toLocaleString('en-US'), this.onPanel(0.5, 0.5), { kind: 'count', tone: 'blue', alpha: this.narrowPhone ? fullInk(trueCount) : trueCount });
 
     this.drawDial();
   }
@@ -1043,19 +1102,27 @@ export class SwitchFilm {
     const finish = this.trackAt(TRACK.last);
     this.pen.stroke([start, [between(start[0], finish[0], grow), start[1]]], 'ink', shown, 1.4);
     this.pen.head(this.nudge(finish, 8, 0), 0, 'ink', shown * ease(time, 83600, 84000), 7);
-    this.place('dial', this.nudge(start, -18, 0), shown);
+    const dialInk = !tall && time < 83500 ? fullInk(shown) : shown;
+    this.place('dial', this.nudge(start, -18, 0), dialInk);
 
     for (let t = 0; t <= 3; t += 1) {
       const at = this.trackAt(t);
       this.pen.stroke([this.nudge(at, 0, -4), this.nudge(at, 0, 4)], 'ink', shown * grow, 1);
-      this.pen.write(String(t), this.nudge(at, 0, tall ? 13 : 15), { kind: 'number', alpha: shown * grow });
+      const tick = shown * grow;
+      const cutZero = t === 0 && grow < 1 && (this.narrowPhone || this.compactWide);
+      this.pen.write(String(t), this.nudge(at, 0, tall ? 13 : 15), { kind: 'number', alpha: cutZero ? fullInk(tick) : tick });
     }
 
     const knob = presence(time, 82800, 83600, 95500, 96200);
     this.pen.disc(this.trackAt(dialAt(time)), tall ? 6 : 7, 'blue', knob);
-    this.place('dial-zero', this.nudge(this.trackAt(0), this.sizeOf('dial-zero').width / 2 - 6, tall ? -20 : -24), presence(time, 83600, 84600, 86500, 87300));
-    const stops = presence(time, 87000, 88000, 95500, 96300);
-    this.place('dial-stops', this.nudge(this.trackAt(2), 0, tall ? -22 : -26), stops);
+    const zero = ease(time, 83600, 84600) * fullInk(1 - ease(time, 86500, 87300));
+    this.place('dial-zero', this.nudge(this.trackAt(0), this.sizeOf('dial-zero').width / 2 - 6, tall ? -20 : -24), zero);
+    const stopsArrival = ease(time, 87000, 88000);
+    const stopsExit = 1 - ease(time, 95500, 96300);
+    const stops = stopsArrival * stopsExit;
+    const stopLabelArrival = tall || this.compactWide ? fullInk(stopsArrival) : stopsArrival;
+    const stopLabelExit = tall ? fullInk(stopsExit) : stopsExit;
+    this.place('dial-stops', this.nudge(this.trackAt(2), 0, tall ? -22 : -26), stopLabelArrival * stopLabelExit);
     this.pen.stroke([this.nudge(this.trackAt(1), 0, -10), this.nudge(this.trackAt(1), 0, -13), this.nudge(this.trackAt(3), 0, -13), this.nudge(this.trackAt(3), 0, -10)], 'muted', stops, 1);
 
     const plot = ease(time, 96000, 97200);
@@ -1095,6 +1162,6 @@ export class SwitchFilm {
     const landing = this.trackAt(0, this.curveV(TRUE_COUNT));
     const landed = ease(time, 102000, 102600) * shown;
     this.pen.disc(landing, 6, 'blue', landed, true);
-    this.place('landing', this.nudge(landing, this.sizeOf('landing').width / 2 + 12, tall ? 15 : 18), landed);
+    this.place('landing', this.nudge(landing, this.sizeOf('landing').width / 2 + 12, tall ? 15 : 18), this.narrowPhone ? fullInk(landed) : landed);
   }
 }
