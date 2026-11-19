@@ -160,12 +160,16 @@ export class FairAverageFilm {
     if (alpha < .005) return;
 
     const paradox = fade(t, 15000, 16500, 22500, 23700);
-    const center = { x: this.width * ((this.tall ? .5 : .75) - paradox * (this.tall ? .12 : .07)), y: this.height * (this.tall ? .57 : .32) };
+    const translated = smooth(t, 29000, 30500);
+    const treeOffset = this.tall ? 8 * translated : 0;
+    const center = { x: this.width * ((this.tall ? .5 : .75) - paradox * (this.tall ? .12 : .07)), y: this.height * (this.tall ? .57 : .32) + treeOffset };
     const radius = Math.min(this.width * (this.tall ? .28 : .17), this.height * (this.tall ? .09 : .23));
     const integers = fade(t, 23500, 24500, 28000, 29200);
     const treeAlpha = alpha * (1 - integers);
-    const translated = smooth(t, 29000, 30500);
-    this.words(integers > .5 ? 'A RUN OF WHOLE NUMBERS' : 'THE FREE GROUP ON a, b', center.x, center.y - radius - (this.tall ? 6 : 18), this.width * (this.tall ? .9 : .43), alpha * (t >= 94500 ? 0 : 1));
+    const compactStage = this.width < 700;
+    const titleOpacity = this.tall && this.width < 300 && t > 32500 ? Number(alpha === 1) : alpha;
+    const captionOpacity = compactStage && t > 32500 ? Number(alpha === 1) : alpha;
+    this.words(integers > .5 ? 'A RUN OF WHOLE NUMBERS' : 'THE FREE GROUP ON a, b', center.x, center.y - radius - (this.tall ? 6 + treeOffset : 18), this.width * (this.tall ? .9 : .43), titleOpacity);
 
     for (const word of UNION) {
       const p = TREE_POINTS.get(word);
@@ -197,8 +201,10 @@ export class FairAverageFilm {
       if (index > 0) this.dot({ x, y: center.y + 12 }, n > 20 ? 1.4 : 2.4, 'blue', alpha * integers);
     }
 
-    this.words(integers > .5 ? `ONLY TWO ENDS DIFFER · 2/${n}` : translated > .5 ? '18 OF 17 CHANGE · BLUE = MOVED SET' : '17 ELEMENTS · RADIUS 2', center.x, this.tall ? this.height * .685 : center.y + radius + 19, this.width * (this.tall ? .9 : .43), alpha, translated > .5 || integers > .5 ? 'blue' : 'muted');
-    this.labels.place('share', this.width * (this.tall ? .85 : .75), this.height * (this.tall ? .57 : .63), fade(t, 30500, 31000, 32000, 33000));
+    this.words(integers > .5 ? `ONLY TWO ENDS DIFFER · 2/${n}` : translated > .5 ? '18 OF 17 CHANGE · BLUE = MOVED SET' : '17 ELEMENTS · RADIUS 2', center.x, this.tall ? this.height * .685 : center.y + radius + 19, this.width * (this.tall ? .9 : .43), captionOpacity, translated > .5 || integers > .5 ? 'blue' : 'muted');
+    const share = fade(t, 30500, 31000, 32000, 33000);
+    const shareCrossesInk = compactStage && (!this.tall || t > 32000);
+    this.labels.place('share', this.width * (this.tall ? .85 : .75), this.height * (this.tall ? .57 : .63), shareCrossesInk ? Number(share === 1) : share);
     const iconX = this.width * (this.tall ? .79 : .91);
     const iconR = this.tall ? 7 : 12;
     this.dot({ x: iconX, y: center.y - 25 }, iconR, 'ink', paradox, true);
@@ -217,14 +223,18 @@ export class FairAverageFilm {
     const x = this.width * (this.tall ? .5 : .75);
     const y = this.height * (this.tall ? .58 : .32);
     const span = this.width * (this.tall ? .88 : .41);
-    const routes = 1 - smooth(t, 41000, 42000);
-    this.words('1979 · GEOGHEGAN: NO FAIR AVERAGE?', x, y - (this.tall ? 31 : 72), span, alpha * routes);
-    this.words('CONTAINS A NONABELIAN FREE GROUP?  ×', x, y, span, alpha * routes);
-    this.words('BUILT FROM FINITE + ABELIAN PIECES?  ×', x, y + 33, span, alpha * routes, 'muted');
+    const routes = alpha * (1 - smooth(t, 41000, 42000));
+    const routeInk = Number(routes === 1);
+    this.words('1979 · GEOGHEGAN: NO FAIR AVERAGE?', x, y - (this.tall ? 31 : 72), span, t < 34000 ? routeInk : routes);
+    this.words('CONTAINS A NONABELIAN FREE GROUP?  ×', x, y, span, routeInk);
+    this.words('BUILT FROM FINITE + ABELIAN PIECES?  ×', x, y + 33, span, this.tall || t < 34000 ? routeInk : routes, 'muted');
     const tower = fade(t, 41500, 43000, 47500, 48700);
-    this.labels.place('tower', x, y, tower);
-    this.words('MOORE 2013 · IF F PASSED\nSETS AT LEAST THIS LARGE · SCHEMATIC', x, y + (this.tall ? 40 : 75), span, tower, 'muted');
+    const towerInk = Number(tower === 1);
+    this.labels.place('tower', x, y, towerInk);
+    this.words('MOORE 2013 · IF F PASSED\nSETS AT LEAST THIS LARGE · SCHEMATIC', x, y + (this.tall ? 40 : 75), span, this.tall ? towerInk : tower, 'muted');
     const timeline = smooth(t, 48000, 49300);
+    const timelineCaption = alpha * timeline * (1 - smooth(t, 57000, 58000));
+    const caseInk = this.width < 700 || t >= 57000 ? Number(timelineCaption === 1) : timelineCaption;
     const left = x - span * .43;
     const right = x + span * .43;
     const pos = (year: number) => left + (year - 1979) / 47 * (right - left);
@@ -234,21 +244,21 @@ export class FairAverageFilm {
 
     for (const [index, entry] of cases.entries()) {
       const px = pos(entry.year);
-      this.words('×', px, y, 18, alpha * timeline, 'ink', false);
+      this.words('×', px, y, 18, Number(alpha * timeline === 1), 'ink', false);
 
       if (!this.tall || selected === index) {
         const labelX = this.tall ? x : left + (index + .5) / 3 * (right - left);
         this.line([{ x: px, y: y - 6 }, { x: labelX, y: y - (this.tall ? this.height * .055 : 30) }], 'muted', alpha * timeline * .4);
-        this.words(`${entry.year} · ${entry.text}\n${entry.direction}`, labelX, y - (this.tall ? this.height * .08 : 50), this.tall ? span : span / 3, alpha * timeline * (1 - smooth(t, 57000, 58000)));
+        this.words(`${entry.year} · ${entry.text}\n${entry.direction}`, labelX, y - (this.tall ? this.height * .08 : 50), this.tall ? span : span / 3, caseInk);
       }
     }
 
     this.words('1979', left, y + 20, 45, alpha * timeline);
     this.words('2026', right, y + 20, 45, alpha * timeline);
-    this.words('ABOUT ONE FALSE PROOF A YEAR', x, y + 47, span, alpha * timeline * (1 - smooth(t, 57000, 58000)), 'muted');
+    this.words('ABOUT ONE FALSE PROOF A YEAR', x, y + 47, span, this.tall && t < 49300 ? Number(timelineCaption === 1) : timelineCaption, 'muted');
     const claim = smooth(t, 57000, 58500);
     this.dot({ x: right, y }, 4, 'blue', alpha * claim);
-    this.words('OPENAI · 23 SEP 2026\nCLAIM: F IS NOT AMENABLE', x, y - (this.tall ? this.height * .08 : 43), span, alpha * claim, 'blue');
+    this.words('OPENAI · 23 SEP 2026\nCLAIM: F IS NOT AMENABLE', x, y - (this.tall ? this.height * .08 : 43), span, Number(alpha * claim === 1), 'blue');
   }
 
   private colorDisk(): void {
@@ -260,7 +270,8 @@ export class FairAverageFilm {
     const center = { x: this.width * (this.tall ? .5 : .75), y: this.height * (this.tall ? (t >= 94500 ? .52 : .58) : .30) };
     const radius = Math.min(this.width * (this.tall ? .26 : .15), this.height * (this.tall ? (t >= 94500 ? .075 : .10) : .20));
     this.dot(center, radius, 'muted', alpha, true);
-    this.words('COLORS AS VECTORS · SCHEMATIC', center.x, center.y - radius - (this.tall ? 6 : 18), this.width * (this.tall ? .9 : .43), alpha * (t >= 94500 ? 0 : 1));
+    const diskInk = Number(alpha === 1);
+    this.words('COLORS AS VECTORS · SCHEMATIC', center.x, center.y - radius - (this.tall ? 6 : 18), this.width * (this.tall ? .9 : .43), t >= 94500 ? 0 : this.tall ? diskInk : alpha);
     const converging = smooth(t, 77500, 82500);
     const average = { x: center.x + radius * .16, y: center.y - radius * .08 };
 
@@ -274,14 +285,22 @@ export class FairAverageFilm {
     }
 
     this.dot(average, 4, 'blue', alpha);
-    this.words('m', average.x + 12, average.y - 8, 20, alpha, 'blue', false);
+    this.words('m', average.x + 12, average.y - 8, 20, diskInk, 'blue', false);
     const reached = t >= 94500 ? radius * .58 : radius * .10;
     const image = { x: average.x + reached, y: average.y + reached * .25 };
     this.arrow(average, image, 'blue', alpha * smooth(t, 70500, 73000));
-    this.words(t >= 94500 ? 'DISTANCE AT LEAST 1/2' : 'm ≈ f(m)', center.x, this.tall && t >= 94500 ? this.height * .61 : center.y + radius + 18, this.width * (this.tall ? .88 : .4), alpha * smooth(t, 70500, 73000) * (this.tall ? 1 - fade(t, 71000, 72500, 77000, 78200) : 1), 'blue');
-    this.labels.place('colors', center.x - (this.tall ? 55 : 75), this.tall ? this.height * .70 : center.y + radius + 45, fade(t, 71000, 72500, 77000, 78200));
-    this.labels.place('mean', center.x + (this.tall ? 56 : 95), this.tall ? this.height * .70 : center.y + radius + 45, fade(t, 71000, 72500, 77000, 78200));
-    this.labels.place('floor', center.x, this.tall ? this.height * .70 : center.y + radius + 53, fade(t, 95500, 97000, 102500, 103500));
+    const formula = fade(t, 71000, 72500, 77000, 78200);
+    const distance = t >= 94500;
+    const readoutHandoff = distance ? t < 95700 || this.tall : t > 86000;
+    const readoutOpacity = readoutHandoff ? diskInk : alpha * smooth(t, 70500, 73000) * (this.tall ? 1 - formula : 1);
+    this.words(distance ? 'DISTANCE AT LEAST 1/2' : 'm ≈ f(m)', center.x, this.tall && distance ? this.height * .61 : center.y + radius + 18, this.width * (this.tall ? .88 : .4), readoutOpacity, 'blue');
+    this.labels.place('colors', center.x - (this.tall ? 55 : 75), this.tall ? this.height * .70 : center.y + radius + 45, formula);
+    const meanInk = this.tall || this.width < 663 ? Number(formula === 1) : formula;
+    this.labels.place('mean', center.x + (this.tall ? 56 : 95), this.tall ? this.height * .70 : center.y + radius + 45, meanInk);
+    const floor = fade(t, 95500, 97000, 102500, 103500);
+    const compactPlot = !this.tall && this.width < 700;
+    const floorOverInk = compactPlot || (this.width < 300 && t > 102500);
+    this.labels.place('floor', center.x, this.tall ? this.height * .70 : center.y + radius + 53, floorOverInk ? Number(floor === 1) : floor);
   }
 
   private fixedPoints(): void {
@@ -306,8 +325,9 @@ export class FairAverageFilm {
     }
 
     this.dot(point(FIXED_POINT), 4, 'blue', diskAlpha, true);
-    this.words('A FLAT DISK', center.x, center.y - radius - (this.tall ? 8 : 19), this.width * (this.tall ? .9 : .24), diskAlpha);
-    this.words('CONTINUOUS MAP: A FIXED POINT', center.x, this.tall ? this.height * .73 : center.y + radius + 25, this.width * (this.tall ? .9 : .26), diskAlpha, 'blue');
+    const diskInk = Number(diskAlpha === 1);
+    this.words('A FLAT DISK', center.x, center.y - radius - (this.tall ? 8 : 19), this.width * (this.tall ? .9 : .24), diskInk);
+    this.words('CONTINUOUS MAP: A FIXED POINT', center.x, this.tall ? this.height * .73 : center.y + radius + 25, this.width * (this.tall ? .9 : .26), diskInk, 'blue');
     const x = this.width * (this.tall ? .5 : .86);
     const waveW = this.width * (this.tall ? .65 : .18);
     const top = this.height * (this.tall ? .5 : .19);
@@ -321,8 +341,10 @@ export class FairAverageFilm {
       this.line(points, level === 3 ? 'blue' : 'ink', alpha * wavePart, 1);
     }
 
-    this.words('ENDLESS NEW DIRECTIONS', x, top - 22, this.width * (this.tall ? .9 : .24), alpha * wavePart);
-    this.words(this.tall ? 'INFINITE DIMENSIONS · SCHEMATIC\nEVERY POINT MOVES ≥ 1/2' : 'INFINITE DIMENSIONS · SCHEMATIC\nEVERY POINT MOVES BY AT LEAST 1/2', x, this.tall ? this.height * .715 : top + 4 * gap + 15, this.width * (this.tall ? .9 : .26), alpha * wavePart, 'blue');
+    const waveOpacity = alpha * wavePart;
+    const waveInk = Number(waveOpacity === 1);
+    this.words('ENDLESS NEW DIRECTIONS', x, top - 22, this.width * (this.tall ? .9 : .24), waveInk);
+    this.words(this.tall ? 'INFINITE DIMENSIONS · SCHEMATIC\nEVERY POINT MOVES ≥ 1/2' : 'INFINITE DIMENSIONS · SCHEMATIC\nEVERY POINT MOVES BY AT LEAST 1/2', x, this.tall ? this.height * .715 : top + 4 * gap + 15, this.width * (this.tall ? .9 : .26), this.width < 700 ? waveInk : waveOpacity, 'blue');
   }
 
   private gauge(): void {
@@ -354,7 +376,8 @@ export class FairAverageFilm {
       this.line([{ x: left, y: py - 3 }, { x: left, y: py + 3 }], 'muted', row.alpha);
       this.line([{ x: left + (right - left) / 1.2, y: py - 3 }, { x: left + (right - left) / 1.2, y: py + 3 }], 'muted', row.alpha);
       this.dot({ x: px, y: py }, 3, index === 2 && claim > .5 ? 'blue' : 'ink', row.alpha);
-      this.words(row.text, this.tall ? w * .93 : right + 23, py, 45, row.alpha, index === 2 ? 'blue' : 'muted');
+      const readoutInk = index === 1 && !this.tall && w < 700 ? Number(row.alpha === 1) : row.alpha;
+      this.words(row.text, this.tall ? w * .93 : right + 23, py, 45, readoutInk, index === 2 ? 'blue' : 'muted');
 
       if (index === 2) {
         this.line([{ x: px, y: py - 5 }, { x: px, y: py + 5 }], 'blue', claim * row.alpha, 2);
@@ -367,8 +390,9 @@ export class FairAverageFilm {
     const alpha = smooth(this.time, 102500, 104500);
     const x = this.width * (this.tall ? .5 : .75);
     const y = this.height * (this.tall ? .51 : .22);
-    this.labels.place('status', x, y, alpha);
-    this.words('KIM & LODHA · 13 OCT 2026\nTHEIR OWN TWO-PAGE PROOF · NO AI', x, y + (this.tall ? 44 : 64), this.width * (this.tall ? .92 : .43), alpha);
+    const closingInk = Number(alpha === 1);
+    this.labels.place('status', x, y, this.width < 700 ? closingInk : alpha);
+    this.words('KIM & LODHA · 13 OCT 2026\nTHEIR OWN TWO-PAGE PROOF · NO AI', x, y + (this.tall ? 44 : 64), this.width * (this.tall ? .92 : .43), closingInk);
     this.words('MOORE’S COGNAC: STILL CLOSED', x, this.tall ? this.height * .72 : y + 108, this.width * (this.tall ? .92 : .43), smooth(this.time, 110000, 112000), 'muted');
   }
 }

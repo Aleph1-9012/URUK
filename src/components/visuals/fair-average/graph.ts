@@ -122,7 +122,7 @@ export function drawThompsonGraph(
 
   text('0', left - (tall ? 9 : 14), bottom, 20, 1, colors.muted);
   text('1', left - (tall ? 9 : 14), top, 20, 1, colors.muted);
-  text('1', left + size + (tall ? 8 : 0), bottom + (tall ? 8 : 14), 20, 1, colors.muted);
+  text('1', left + size + (tall ? 8 : 0), bottom + (tall ? -8 : 14), 20, 1, colors.muted);
 
   if (graphOpacity > .005) {
     const reveal = smooth(time, 400, 4500);
@@ -159,7 +159,10 @@ export function drawThompsonGraph(
           if (!from || !to) continue;
 
           const at = screen({ x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 });
-          text(slopeText(slopes[index - 1] ?? 1), at.x + 15, at.y - 13, 40, labels, colors.muted);
+          const run = to.x - from.x;
+          const rise = to.y - from.y;
+          const span = Math.hypot(run, rise);
+          text(slopeText(slopes[index - 1] ?? 1), at.x - 20 * rise / span, at.y - 20 * run / span, 40, Number(labels === 1), colors.muted);
         }
       }
     }
@@ -181,7 +184,7 @@ export function drawThompsonGraph(
       const x = tall ? index === 1 ? left - 38 : left + size + 37 : at.x + 48;
       const y = at.y + (index === 1 ? 12 : -12);
       line(at, { x, y }, colors.blue, bendLabels * .35, .6);
-      text(label, x, y, 90, bendLabels, colors.blue);
+      text(label, x, y, 90, Number(bendLabels === 1), colors.blue);
     }
   }
 
@@ -202,8 +205,14 @@ export function drawThompsonGraph(
 
   if (proofCuttings > .5) text('DYADIC CUTTINGS', centerX, headingY, width * (tall ? .9 : .45));
   else if (!pose.settled) text('CHANGING MAP', centerX, headingY, width * (tall ? .9 : .45), graphOpacity, colors.muted);
-  else if (pose.to === 'x0' || pose.to === 'x1' || pose.to === 'inverse') labelCallback(pose.to, centerX, headingY, graphOpacity);
-  else text(pose.to === 'composite' ? 'x₀ AFTER x₁' : 'TRANSPORT MAP h', centerX, headingY, width * (tall ? .9 : .45), graphOpacity);
+  else if (pose.to === 'x0' || pose.to === 'x1' || pose.to === 'inverse') {
+    const externalCaption = tall && (pose.to === 'inverse' || pose.to === 'x0');
+    labelCallback(pose.to, externalCaption ? left - 30 : centerX, tall && pose.to === 'inverse' ? top + 16 : headingY, graphOpacity);
+  }
+  else {
+    const transportEntering = tall && width < 300 && pose.to === 'transport' && time > 77500 && time < 79000;
+    text(pose.to === 'composite' ? 'x₀ AFTER x₁' : 'TRANSPORT MAP h', centerX, headingY, width * (tall ? .9 : .45), transportEntering ? 0 : graphOpacity);
+  }
 
   const rulerLeft = width * (tall ? .10 : .07);
   const rulerWidth = width * (tall ? .80 : .38);
@@ -237,7 +246,7 @@ export function drawThompsonGraph(
       const x2 = rulerLeft + rulerWidth * parent.end;
       const alpha = parents * (1 - transport);
       line({ x: x1, y: rulerTop }, { x: x2, y: rulerTop }, colors.blue, alpha, 3);
-      text(`I${index + 1}`, (x1 + x2) / 2, rulerTop - (tall ? 9 : 12), 30, alpha, colors.blue);
+      text(`I${index + 1}`, (x1 + x2) / 2, rulerTop - (tall ? 9 : 12), 30, tall ? Number(alpha === 1) : alpha, colors.blue);
 
       for (const child of DESCENDANTS[index] ?? []) {
         const from = rulerLeft + rulerWidth * child.start;
@@ -278,7 +287,8 @@ export function drawThompsonGraph(
   else if (parents > .5) caption = tall ? 'D = 3 SHOWN · THE PROOF USES LARGE D' : 'THREE PARENTS, EACH HOLDING THREE COPIES · THE PROOF TAKES D LARGE';
 
   const captionAlpha = tall ? 1 - smooth(time, 14500, 15000) : 1;
-  text(caption, rulerLeft + rulerWidth / 2, height * (tall ? .43 : .86), width * (tall ? .96 : .45), captionAlpha, colors.muted);
+  const captionInk = tall && width < 300 ? Number(captionAlpha === 1) : captionAlpha;
+  text(caption, rulerLeft + rulerWidth / 2, height * (tall ? .43 : .86), width * (tall ? .96 : .45), captionInk, colors.muted);
 
   if (tall && parents > .005) text('D = 3 SHOWN', left - width * .16, top + size * .52, width * .25, parents, colors.muted);
   pen.restore();
