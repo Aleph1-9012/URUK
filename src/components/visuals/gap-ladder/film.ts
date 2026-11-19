@@ -1,4 +1,4 @@
-import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
+import { PAGE_TONES, PHONE_STAGE_WIDTH, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { smooth } from '../../../lib/animation';
 import { ringState, energyBeta, doublingStep } from './math';
@@ -304,8 +304,20 @@ export class GapLadderFilm {
       this.labels.place('partition', this.tall ? w * .5 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 37);
       this.labels.place('transfer', x, box.y + 10);
     } else if (t < 94000) {
-      this.words(t < 92000 ? `INVERSE TEMPERATURE b = ${beta.toFixed(beta % 1 === 0 ? 0 : 1)}` : 'DOUBLE THE RING · n → 2n', box.x + box.w / 2, captionY, box.w + 20);
-      if (!this.tall || t < 89000 || t >= 92000) this.labels.place(t < 92000 ? 'physical-purity' : 'spatial-purity', this.tall ? w * .50 : box.x + box.w / 2, this.tall ? h * .94 : captionY + 48);
+      const doubling = t >= 92000;
+      const caption = doubling ? 'DOUBLE THE RING · n → 2n' : `INVERSE TEMPERATURE b = ${beta.toFixed(beta % 1 === 0 ? 0 : 1)}`;
+      const formulaY = this.tall ? h * .94 : captionY + (doubling ? 32 : 48);
+      let captionX = box.x + box.w / 2;
+
+      // Leave the weight row's tallest rounded pill clear of the caption.
+      if (doubling && this.tall && captionY + 6 > h * .44 - 16.2) {
+        this.pen.font = '10px "Special Elite", monospace';
+        captionX = Math.max(captionX, w * .345 + 7 + this.pen.measureText(caption).width / 2);
+      }
+
+      this.words(caption, captionX, captionY, box.w + 20);
+
+      if (!this.tall || t < 89000 || doubling) this.labels.place(doubling ? 'spatial-purity' : 'physical-purity', this.tall ? w * .50 : box.x + box.w / 2, formulaY);
     } else if (t < 101500) {
       const state = doublingStep(Math.min(3, completedJoint));
       this.words(`n = ${state.sites} · b = ${state.beta}`, box.x + box.w / 2, captionY, box.w + 20);
@@ -344,7 +356,8 @@ export class GapLadderFilm {
   private smallRings(sheet: Box, progress: number): void {
     const w = this.width;
     const h = this.height;
-    const y = h * (this.tall ? .405 : .86);
+    const phone = w < PHONE_STAGE_WIDTH;
+    const y = h * (phone ? .39 : this.tall ? .405 : .86);
     const radius = this.tall ? 5 : 13;
 
     for (const [index, count] of [6, 8, 10].entries()) {
@@ -368,7 +381,7 @@ export class GapLadderFilm {
     const caption = starting
       ? this.tall ? 'b = 21/2, 49/4 · COMPUTER-ASSISTED' : 'STARTING VALUES · COMPUTER-ASSISTED'
       : this.tall ? 'INPUTS NOT INDEPENDENTLY CHECKED · NO LEAN' : 'ESTIMATES NOT INDEPENDENTLY CHECKED';
-    this.words(caption, sheet.x + sheet.w / 2, y + (this.tall ? 11 : 29), this.tall ? w * .92 : sheet.w + 30, 'muted', this.tall ? 8 : 11);
+    this.words(caption, sheet.x + sheet.w / 2, y + (phone ? 15 : this.tall ? 11 : 29), this.tall ? w * .92 : sheet.w + 30, 'muted', this.tall ? 8 : 11);
 
     if (!this.tall) this.words(starting ? 'b = 21/2, 49/4' : 'NO LEAN', sheet.x + sheet.w / 2, y + 51, sheet.w, 'muted');
   }

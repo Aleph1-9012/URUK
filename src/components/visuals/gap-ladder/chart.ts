@@ -1,3 +1,4 @@
+import { PHONE_STAGE_WIDTH } from '../../plate/frame';
 import {
   AKLT_BOND, CLAIMED_BOUNDS, GROUND_ENERGY, HALF_GAPS, LEVELS, NUMERICAL_GAP,
   ONE_GAPS, PURE_BOND, energyBeta, gapDotTime, gapFromPurity, ringState, thermalState,
@@ -31,6 +32,7 @@ let lastThermal = thermalState(2);
 
 export function drawGapChart(pen: CanvasRenderingContext2D, width: number, height: number, time: number, colors: Colors, label: Label): void {
   const tall = height > width;
+  const phone = width < PHONE_STAGE_WIDTH;
   const full: Box = { x: width * (tall ? .14 : .55), y: height * (tall ? .56 : .17), w: width * (tall ? .77 : .39), h: height * (tall ? .29 : .65) };
   const token: Box = { x: width * (tall ? .76 : .83), y: height * (tall ? .065 : .07), w: width * (tall ? .19 : .13), h: height * (tall ? .10 : .12) };
   const folding = Math.max(ease(time, 31000, 33000) * (1 - ease(time, 47000, 49000)), ease(time, 77000, 79000) * (1 - ease(time, 110000, 112000)));
@@ -150,7 +152,7 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
       line([{ x: mark + 2, y: box.y + box.h + 3 }, { x: mark + 6, y: box.y + box.h - 3 }], 'muted');
     }
 
-    words(broken > .9 ? 'L: RING LENGTH · LOG AFTER BREAK' : 'L: RING LENGTH', box.x + box.w / 2, box.y + box.h + (tall ? 32 : 39), box.w + 35, 'muted', tall ? 9 : 11);
+    words(broken > .9 ? 'L: RING LENGTH · LOG AFTER BREAK' : 'L: RING LENGTH', box.x + box.w / 2, box.y + box.h + (phone ? 26 : tall ? 32 : 39), box.w + 35, 'muted', tall ? 9 : 11);
   } else if (folding > .8) words('GAPS', box.x + box.w / 2, box.y - 10, box.w + 5, 'muted', 9);
 
   pen.save();
@@ -214,8 +216,8 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
 
   if (folding < .1 && floorZoom < .05 && state.settled && state.gap !== null && time >= 7800 && time < 31000) {
     const p = at(state.length, state.gap);
-    const side = state.length > 16 ? -1 : 1;
-    words(`GAP ${state.gap.toFixed(3)}`, p.x + side * (tall ? 44 : 67), p.y - (tall ? 11 : 16), tall ? 88 : 124);
+    const gapX = Math.min(width - 32, p.x + (tall ? 44 : 67));
+    words(`GAP ${state.gap.toFixed(3)}`, gapX, p.y - (tall ? 11 : 16), tall ? 88 : 124);
 
     if (time < 14500) {
       const shown = tall ? [0, 1] : [0, 1, 2, 3, 4, 9];
@@ -234,8 +236,10 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
     }
   }
 
-  if (time >= 29500 && folding < .1 && floorZoom < .05) words('0.41050 · NUMERICAL', box.x + box.w * .68, at(14, NUMERICAL_GAP).y - 14, box.w * .69, 'muted', tall ? 9 : 11);
-  if (time >= 22220 && time < 23000) words('→ 0 AS L GROWS · SCHEMATIC CONTINUATION', box.x + box.w / 2, box.y - 21, box.w + 30, 'muted', tall ? 9 : 11);
+  const numericalLift = mix(phone ? 40 : 52, 20, broken);
+
+  if (time >= 29500 && folding < .1 && floorZoom < .05) words('0.41050 · NUMERICAL', box.x + box.w * .68, at(14, NUMERICAL_GAP).y - numericalLift, box.w * .69, 'muted', tall ? 9 : 11);
+  if (time >= 22220 && time < 23000) words('→ 0 AS L GROWS · SCHEMATIC CONTINUATION', box.x + box.w / 2, box.y - (tall ? 21 : 13), box.w + 30, 'muted', tall ? 9 : 11);
 
   if (floorZoom > .8 && folding < .1) {
     words('EVEN RINGS · ONE LOWEST STATE FROM 60', box.x + box.w / 2, box.y - (tall ? 43 : 50), box.w + 30, 'blue');
@@ -248,7 +252,7 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
 
   if (time >= 71000 && time < 77000) {
     label('floor-open', box.x + box.w * .75, box.y + box.h * (tall ? .18 : .45));
-    words('ODD OPEN CHAINS · FROM 1921', box.x + box.w * .72, box.y + box.h * .66, box.w * .55, 'blue', tall ? 9 : 11);
+    words('ODD OPEN CHAINS · FROM 1921', phone ? width * .5 : box.x + box.w * .72, phone ? height * .98 : box.y + box.h * .66, phone ? width * .94 : box.w * .55, 'blue', tall ? 9 : 11);
   }
 
   if (time >= 31000 && time < 49000) {
@@ -316,6 +320,12 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
     const off = (1 - arriving) * height * .4;
     const groups = lastThermal.weights.slice(0, 5);
     const lowY = baseline + off;
+    const showsGap = time >= 101500 && time < 110000;
+    const noteY = height * (tall ? .89 : .81);
+    const noteBottom = noteY + 9 * .65;
+    const gapFormulaHeight = 28;
+    const gapFormulaTop = Math.min(height * .94 - gapFormulaHeight / 2, height - 6 - gapFormulaHeight);
+    const noteLift = phone && noteBottom > gapFormulaTop ? noteBottom - gapFormulaTop + 2 : 0;
 
     if (arriving > .99) words(time >= 101500 ? 'PURITY > 1/2 · ONE LOWEST STATE' : 'ENERGY WEIGHTS · LEVELS LISTED', (left + right) / 2, height * (tall ? .48 : .25), right - left + 30);
 
@@ -339,12 +349,12 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
     if (arriving > .99) {
       words('OTHER', left + (tall ? 17 : 23), otherY, 48, 'muted', tall ? 8 : 10);
       words(`b = ${beta.toFixed(beta % 1 === 0 ? 0 : 1)}`, right - 10, height * (tall ? .52 : .30), 50, 'muted');
-      words(`PURITY ${lastThermal.purity.toFixed(4)} · DEFECT ${lastThermal.defect < .001 ? lastThermal.defect.toFixed(5) : lastThermal.defect.toFixed(3)}`, (left + right) / 2, height * (tall ? .85 : .76), right - left + 30, 'ink', tall ? 9 : 11);
+      words(`PURITY ${lastThermal.purity.toFixed(4)} · DEFECT ${lastThermal.defect < .001 ? lastThermal.defect.toFixed(5) : lastThermal.defect.toFixed(3)}`, (left + right) / 2, height * (tall ? .85 : .76) - noteLift, right - left + 30, 'ink', tall ? 9 : 11);
     }
 
     if (time >= (tall ? 89000 : 86000) && time < (tall ? 92000 : 94000)) label('purity-lemma', (left + right) / 2, height * (tall ? .94 : .87));
 
-    if (time >= 101500 && time < 110000) {
+    if (showsGap) {
       const bound = gapFromPurity(beta, lastThermal.purity);
       const gap = ONE_GAPS[2];
       const carry = ease(time, 107000, 109500);
@@ -353,7 +363,7 @@ export function drawGapChart(pen: CanvasRenderingContext2D, width: number, heigh
       const y1 = mix(lowY - rowHeight * (bound ?? 0) / gap, at(60, CLAIMED_BOUNDS.periodic60).y, carry);
       bracket(bx, y0, y1, carry > .5 ? 'blue' : 'ink');
       label('purity-gap', (left + right) / 2, height * (tall ? .94 : .87));
-      if (bound !== null) words(time < 107000 ? `RING 8: ≥ ${bound.toFixed(3)} · TRUE ${gap.toFixed(3)}` : 'IDEA CARRIES OVER · NOT THE NUMBER', (left + right) / 2, height * (tall ? .89 : .81), right - left + 30, 'muted', tall ? 9 : 11);
+      if (bound !== null) words(time < 107000 ? `RING 8: ≥ ${bound.toFixed(3)} · TRUE ${gap.toFixed(3)}` : 'IDEA CARRIES OVER · NOT THE NUMBER', (left + right) / 2, noteY - noteLift, right - left + 30, 'muted', tall ? 9 : 11);
     }
   }
 
