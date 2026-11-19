@@ -29,7 +29,6 @@
   position: relative;
 }
 
-.plate__figure > svg,
 .plate__figure > canvas {
   color: var(--ink);
   display: block;
@@ -39,7 +38,8 @@
   width: 100%;
 }
 
-.plate .plate__no-script {
+.plate .plate__no-script,
+.plate .plate__load-error {
   display: grid;
   font: italic 1rem/1.5 var(--font-alegreya);
   inset: 0;
@@ -48,6 +48,9 @@
   position: absolute;
   text-align: center;
 }
+
+.plate .plate__load-error { display: none; }
+.plate [data-numerics-error] .plate__load-error { display: grid; }
 
 .plate .plate__caption {
   font: italic 1rem/1.5 var(--font-alegreya);

@@ -31,6 +31,7 @@ export function defineFilm(name: string, timeline: FilmTimeline, setup: (film: F
 
       if (!canvas || !context) return;
 
+      const root = this;
       const surface = canvas;
       const events = new AbortController();
       const { signal } = events;
@@ -52,7 +53,24 @@ export function defineFilm(name: string, timeline: FilmTimeline, setup: (film: F
         if (label.dataset.label) labels.set(label.dataset.label, label);
       }
 
-      const drawing = setup({ root: this, canvas, context, labels, signal, redraw: () => render(time) });
+      const drawing = setup({ root, canvas, context, labels, signal, redraw: present });
+
+      function present(): void {
+        if (signal.aborted || root.hasAttribute('data-numerics-pending')) return;
+
+        if (root.hasAttribute('data-numerics-error')) {
+          player?.pause();
+
+          return;
+        }
+
+        render(time);
+
+        if (!player) {
+          player = createPlayer(root, { period: timeline.duration, start: 0, loop: false, onFrame: render });
+          root.setAttribute('data-ready', '');
+        }
+      }
 
       function render(nextTime: number): void {
         time = nextTime;
@@ -97,7 +115,7 @@ export function defineFilm(name: string, timeline: FilmTimeline, setup: (film: F
         surface.width = Math.round(frame.width * frame.density);
         surface.height = Math.round(frame.height * frame.density);
         drawing.resize(frame);
-        render(time);
+        present();
       }
 
       function watchDensity(): void {
@@ -159,13 +177,11 @@ export function defineFilm(name: string, timeline: FilmTimeline, setup: (film: F
 
         event.preventDefault();
       }, { signal });
-      motion.addEventListener('change', () => render(time), { signal });
+      motion.addEventListener('change', present, { signal });
       const observer = new ResizeObserver(resize);
       observer.observe(canvas);
       watchDensity();
       resize();
-      this.setAttribute('data-ready', '');
-      player = createPlayer(this, { period: timeline.duration, start: 0, loop: false, onFrame: render });
       this.disconnect = () => {
         player?.destroy();
         observer.disconnect();

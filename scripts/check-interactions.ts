@@ -22,8 +22,10 @@ async function filmState(page: Page) {
 
 async function checkFilm(page: Page): Promise<void> {
   const range = page.locator('[data-film-range]');
-  await page.waitForFunction(() => document.querySelector('[data-ready] [data-film-range]') !== null);
   await waitForNumerics(page);
+  const loader = page.locator('.film-host [data-plate-loader]');
+  assert.equal(await loader.count(), 1);
+  assert.equal(await loader.isVisible(), false);
   await range.scrollIntoViewIfNeeded();
   assert.equal((await filmState(page)).cue, 0);
 
@@ -77,6 +79,7 @@ async function checkFilm(page: Page): Promise<void> {
 
     parent.insertBefore(film, next);
   });
+  await waitForNumerics(page);
   assert.equal((await filmState(page)).time, 0);
   await page.locator('[data-film-next]').click();
   assert.equal((await filmState(page)).cue, 1);
@@ -266,10 +269,26 @@ async function checkFilmFirstPaint(browser: Browser, origin: string): Promise<vo
 
       if (mode.javaScriptEnabled) await waitFrames(page);
 
+      const loader = viewport.locator('[data-plate-loader]');
+      assert.equal(await loader.isVisible(), mode.javaScriptEnabled);
+
+      if (mode.reducedMotion === 'reduce') {
+        const sign = loader.locator('.plate-loader__one--1');
+        const style = await sign.evaluate((element) => {
+          const { animationName, opacity } = getComputedStyle(element);
+
+          return { animationName, opacity };
+        });
+        assert.deepEqual(style, { animationName: 'none', opacity: '1' });
+      }
+
       const before = await viewport.evaluate((element) => {
         const bounds = element.getBoundingClientRect();
+        const picture = element.querySelector('.film-picture');
 
-        return { width: bounds.width, height: bounds.height, opacity: getComputedStyle(element).opacity };
+        if (!picture) throw new Error('The film stage must contain its picture.');
+
+        return { width: bounds.width, height: bounds.height, opacity: getComputedStyle(picture).opacity };
       });
       assert.ok(before.width > 0 && before.height > 0, 'The waiting film must reserve its final viewport dimensions.');
 
@@ -291,15 +310,16 @@ async function checkFilmFirstPaint(browser: Browser, origin: string): Promise<vo
             observer.disconnect();
             clearTimeout(timeout);
             const stage = host.querySelector('[data-film-viewport]');
+            const picture = stage?.querySelector('.film-picture');
 
-            if (!stage) {
-              reject(new Error('A ready film must retain its viewport.'));
+            if (!stage || !picture) {
+              reject(new Error('A ready film must retain its viewport and picture.'));
 
               return;
             }
 
             const bounds = stage.getBoundingClientRect();
-            resolve({ time: Number(host.querySelector<HTMLInputElement>('[data-film-range]')?.value), width: bounds.width, height: bounds.height, opacity: getComputedStyle(stage).opacity });
+            resolve({ time: Number(host.querySelector<HTMLInputElement>('[data-film-range]')?.value), width: bounds.width, height: bounds.height, opacity: getComputedStyle(picture).opacity });
           });
           const timeout = setTimeout(() => {
             observer.disconnect();
@@ -311,6 +331,7 @@ async function checkFilmFirstPaint(browser: Browser, origin: string): Promise<vo
         const first = await ready;
         assert.equal(first.time, 0, 'The live film must become visible at its beginning.');
         assert.equal(first.opacity, '1');
+        assert.equal(await loader.isVisible(), false);
         assert.ok(Math.abs(first.width - before.width) <= 0.5 && Math.abs(first.height - before.height) <= 0.5, 'Revealing the opening frame must preserve the film viewport dimensions.');
       }
     } finally {
@@ -500,9 +521,13 @@ async function checkNumerics(browser: Browser, origin: string): Promise<void> {
       });
       const page = await context.newPage();
       await page.goto(`${origin}/results/003/`, { waitUntil: 'domcontentloaded' });
-      const film = page.locator('.film-host[data-ready]');
-      await film.waitFor();
-      assert.equal(await film.getAttribute('data-numerics-pending'), '');
+      const film = page.locator('.film-host');
+      await page.locator('.film-host[data-numerics-pending]').waitFor();
+      const loader = film.locator('[data-plate-loader]');
+      const canvas = film.locator('[data-film-canvas]');
+      assert.equal(await loader.isVisible(), true);
+      assert.equal(await canvas.isVisible(), false);
+      assert.equal(await film.locator('.film-controls').isVisible(), false);
       let settled = false;
 
       const outcome = waitForNumerics(page).then(
@@ -520,14 +545,19 @@ async function checkNumerics(browser: Browser, origin: string): Promise<void> {
       const result = await outcome;
       assert.equal(requests, 1, 'The real numerical worker must pass through the delay.');
       assert.equal(await film.getAttribute('data-numerics-pending'), null);
+      assert.equal(await loader.isVisible(), false);
 
       if (failure) {
         assert.ok(result instanceof Error);
         assert.match(result.message, /Calculation failure probe/);
         assert.equal(await film.getAttribute('data-numerics-ready'), null);
+        assert.equal(await canvas.isVisible(), false);
+        assert.equal(await film.getByRole('status').filter({ hasText: 'The film could not load.' }).isVisible(), true);
       } else {
         assert.equal(result, 'ready');
         assert.equal(await film.getAttribute('data-numerics-ready'), '');
+        assert.equal(await canvas.isVisible(), true);
+        assert.equal((await filmState(page)).time, 0);
       }
     } finally {
       release.resolve();

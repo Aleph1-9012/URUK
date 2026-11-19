@@ -70,7 +70,6 @@ await withSiteBrowser(async (browser, origin) => {
       const page = await context.newPage();
       await page.goto(`${origin}${route}`, { waitUntil: 'networkidle' });
       await page.evaluate(() => document.fonts.ready);
-      await page.waitForSelector('.film-host[data-ready]', { timeout: 60000 });
       await waitForNumerics(page);
       await settle(page, times[0] ?? 0);
 

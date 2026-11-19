@@ -9,9 +9,7 @@ const CHROMIUM_PATH = '/usr/bin/chromium';
 /** Ordinary films are ready immediately; worker films must finish or report their failure. */
 export async function waitForNumerics(page: Page): Promise<void> {
   await page.waitForFunction(() => {
-    const film = document.querySelector('.film-host[data-ready]');
-
-    return film !== null && !film.hasAttribute('data-numerics-pending');
+    return document.querySelector('.film-host:is([data-ready], [data-numerics-error])') !== null;
   }, undefined, { timeout: 60000 });
   const error = await page.locator('.film-host').getAttribute('data-numerics-error');
 

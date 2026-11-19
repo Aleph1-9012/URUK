@@ -1,5 +1,6 @@
 ---
 import Plate from './Plate.astro';
+import PlateLoader from './PlateLoader.astro';
 import FilmControls from './FilmControls.astro';
 import FilmSubtitles from './FilmSubtitles.astro';
 import FilmTranscript from './FilmTranscript.astro';
@@ -34,16 +35,19 @@ const hasLabels = labels.length > 0 || Astro.slots.has('labels');
   <Tag class:list={['film-host', layout && `film-host--${layout}`]}>
     <div class="film-frame">
       <div class="film-stage" data-film-viewport>
-        <canvas class="film-canvas" data-film-canvas role="img" aria-label={description}></canvas>
-        {hasLabels && (
-          <div class="film-formulas" aria-hidden="true" data-bleed>
-            {labels.map((label) => <span class="film-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
-            <slot name="labels" />
-          </div>
-        )}
+        <div class="film-picture">
+          <canvas class="film-canvas" data-film-canvas role="img" aria-label={description}></canvas>
+          {hasLabels && (
+            <div class="film-formulas" aria-hidden="true" data-bleed>
+              {labels.map((label) => <span class="film-label" data-label={label.id}><span set:html={renderFormula(label.tex, false)} /></span>)}
+              <slot name="labels" />
+            </div>
+          )}
+        </div>
+        <PlateLoader />
+        <p class="plate__load-error" role="status">The film could not load. The transcript is below.</p>
       </div>
       <FilmSubtitles cues={cues} />
-      <slot name="notice" />
     </div>
     <FilmControls id={`${Tag}-timeline`} timeline={timeline} step={step} />
     <FilmTranscript cues={cues} scenes={scenes}>

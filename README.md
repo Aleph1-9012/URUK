@@ -113,7 +113,7 @@ A narrated film's folder holds:
 
 `plate/Film.astro` owns the markup every film shares: the plate, the stage and
 canvas, the formula labels, subtitles, controls and transcript. `plate/film.css`
-styles them. A film adds markup only through the `labels` and `notice` slots.
+styles them. A film can add formula markup through the `labels` slot.
 
 The controller measures the canvas, sizes its backing store and reads the
 page's colour tokens. It hands the film a frame (`plate/frame.ts`): width,
@@ -138,10 +138,12 @@ films still carry time literals in their drawing code. Shared animation
 calculations live in `src/lib/animation.ts`. `plate/labels.ts` measures, places
 and shows the centred DOM labels.
 
-Film viewports retain their layout while loading and become visible only after
-the controller draws the opening frame. Do not add static fallback illustrations
-before playback. With JavaScript disabled, the article and film transcript remain
-available; reduced motion uses the film's settled cue frames.
+The film stage keeps its dimensions while Pressed Signs shows during startup.
+Playback starts once any worker calculation finishes and the controller draws
+the opening frame. If a calculation fails, the stage points readers to the
+transcript. With JavaScript disabled, the article and transcript remain
+available. Reduced motion holds the loader still and uses the film's settled
+cue frames.
 
 The standard map is the one interactive plate. It uses the lower-level player
 and track directly because its controls differ from narrated films.
