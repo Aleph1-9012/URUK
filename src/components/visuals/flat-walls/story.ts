@@ -67,7 +67,7 @@ export function circleProgress(time: number): number {
 }
 
 export function resetProgress(time: number): number {
-  return smooth(time, 25750, 27250);
+  return smooth(time, 24750, 25500);
 }
 
 export function shrinkProgress(time: number): number {

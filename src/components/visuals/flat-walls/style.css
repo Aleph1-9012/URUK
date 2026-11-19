@@ -6,6 +6,6 @@ uruk-flat-walls .film-label { font-size: .875rem; }
 }
 
 @container dgfilm (width < 600px) {
-  uruk-flat-walls .film-stage { aspect-ratio: 4 / 9; }
+  uruk-flat-walls .film-stage { aspect-ratio: 4 / 5; }
   uruk-flat-walls .film-label { font-size: .75rem; }
 }
