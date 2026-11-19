@@ -6,6 +6,11 @@ uruk-projector-lines .film-label { font-size: .875rem; }
 }
 
 @container bnfilm (width < 600px) {
-  uruk-projector-lines .film-stage { aspect-ratio: 4 / 9; }
+  uruk-projector-lines .film-stage { aspect-ratio: 4 / 5; }
   uruk-projector-lines .film-label { font-size: .75rem; }
+}
+
+/* Correct this film’s radical advance without changing shared captions. */
+@container bnfilm (width < 600px) {
+  uruk-projector-lines .film-cue .formula-inline:has(msqrt) { margin-inline-end: -.43em; }
 }

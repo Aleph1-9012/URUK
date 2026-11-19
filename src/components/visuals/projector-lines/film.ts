@@ -63,8 +63,8 @@ class ProjectorLinesFilm implements FilmDrawing {
 
     return {
       x: mix(w * (phone ? .5 : .28), w * (phone ? .22 : .23), close),
-      y: mix(h * (phone ? .25 : .43), h * (phone ? .16 : .32), close),
-      radius: mix(radius, h * (phone ? .075 : .12), close),
+      y: mix(h * (phone ? .25 + .04 * (1 - smooth(time, 40500, 42500)) : .43), h * (phone ? .10 : .32), close),
+      radius: mix(radius, h * (phone ? .05 : .12), close),
       tilt: mix(1, .48, close),
     };
   }
@@ -167,7 +167,7 @@ class ProjectorLinesFilm implements FilmDrawing {
     }
 
     if (time >= 28250 && time < 42500) {
-      this.note('THE SAME RIM POINTS\nOPPOSITE PAIRS MARK LINES', frame.x, h * (phone ? .45 : .79), w * (phone ? .88 : .48), phone ? 9 : 12);
+      this.note('THE SAME RIM POINTS\nOPPOSITE PAIRS MARK LINES', frame.x, h * (phone ? .50 : .79), w * (phone ? .88 : .48), phone ? 9 : 12);
     }
   }
 
@@ -208,12 +208,12 @@ class ProjectorLinesFilm implements FilmDrawing {
         drawLine(pen, p.x, p.y, q.x, q.y, tones.ink, 2);
         this.dot(p, 3.5);
         this.dot(q, 3.5);
-        this.text('DIAMETER 2', frame.x, h * (phone ? .45 : .79), phone ? 12 : 17, true);
+        this.text('DIAMETER 2', frame.x, h * (phone ? .50 : .79), phone ? 12 : 17, true);
         this.note('A WITNESS FOR THIS CUT\nGENERAL DIAMETER USES A SUPREMUM', w * (phone ? .5 : .75), h * (phone ? .57 : .36), w * (phone ? .88 : .38), phone ? 9 : 12);
       }
     } else if (time < 3000) {
       this.text('ONE DISC', w * .5, h * .045, phone ? 11 : 16);
-      this.text('DIAMETER 2', frame.x, h * (phone ? .45 : .79), phone ? 12 : 17, true);
+      this.text('DIAMETER 2', frame.x, h * (phone ? .50 : .79), phone ? 12 : 17, true);
     }
 
     if (time >= 13000 && time < 18500) {
@@ -252,7 +252,7 @@ class ProjectorLinesFilm implements FilmDrawing {
 
         if (!sector) throw new Error('The sector readout needs its live diameter.');
 
-        if (time >= 14500) this.text(`WIDEST √3 = ${sector.diameter.toFixed(3)} < 2`, frame.x, h * (phone ? .45 : .79), phone ? 13 : 19, true);
+        if (time >= 14500) this.text(`WIDEST √3 = ${sector.diameter.toFixed(3)} < 2`, frame.x, h * (phone ? .50 : .79), phone ? 13 : 19, true);
       }
     }
 
@@ -277,7 +277,7 @@ class ProjectorLinesFilm implements FilmDrawing {
       if (time >= 28250) return;
 
       this.text('HOW MANY SMALLER PIECES?', w * .5, h * .045, phone ? 10 : 15);
-      this.text(transition < .5 ? '2D: 3 PIECES' : '3D: 4 PIECES', w * (phone ? .5 : .28), h * (phone ? .43 : .69), phone ? 12 : 17);
+      this.text(transition < .5 ? '2D: 3 PIECES' : '3D: 4 PIECES', w * (phone ? .5 : .28), h * (phone ? .48 : .69), phone ? 12 : 17);
       this.labels.place('d-plus-one', w * (phone ? .5 : .75), h * (phone ? .54 : .40));
       this.note('SCHEMATIC · COUNT ONLY\nTHE BALL IS NOT DRAWN', w * (phone ? .5 : .75), h * (phone ? .64 : .59), w * (phone ? .88 : .38), phone ? 9 : 12);
     }
@@ -321,7 +321,7 @@ class ProjectorLinesFilm implements FilmDrawing {
     if (time < 53250) {
       this.text('A LINE BECOMES A POINT', w * .5, h * .045, phone ? 10 : 16);
       this.labels.place('projector', frame.x, h * (phone ? .46 : .79));
-      this.note(time < 49500 ? 'PAIR OPPOSITES, THEN DOUBLE THE ANGLE\nCOORDINATE CARRY · READ AFTER SETTLING' : 'PLANE: PROJECTOR CIRCLE\nPAPER: LINES IN FOUR DIMENSIONS', w * (phone ? .5 : .75), h * (phone ? .57 : .34), w * (phone ? .88 : .38), phone ? 9 : 13);
+      this.note(time < 49500 ? 'PAIR OPPOSITES, THEN DOUBLE THE ANGLE\nCOORDINATE CARRY · READ AFTER SETTLING' : 'PLANE: PROJECTOR CIRCLE\nPAPER: LINES IN FOUR DIMENSIONS', w * (phone ? .5 : .75), h * (phone ? .55 : .34), w * (phone ? .88 : .38), phone ? 9 : 13);
 
       return;
     }
@@ -343,10 +343,10 @@ class ProjectorLinesFilm implements FilmDrawing {
 
       this.text(`LINES: ${(theta * 180 / Math.PI).toFixed(0)}°`, origin.x, origin.y + lineSize + 14, phone ? 10 : 12, true);
       this.text('FROBENIUS DISTANCE', w * .5, h * .045, phone ? 10 : 16);
-      this.text('ANGLE DOUBLED ON THE CIRCLE', frame.x, h * (phone ? .415 : .75), phone ? 8.5 : 11);
+      this.text('ANGLE DOUBLED ON THE CIRCLE', frame.x, h * (phone ? .39 : .75), phone ? 8.5 : 11);
     } else if (time < 72250) {
       this.text('A SLICE OF THE PROJECTOR SET', frame.x, h * (phone ? .045 : .09), phone ? 9 : 13);
-      this.note(phone ? 'PLANAR LINES GIVE THIS CIRCLE\nFOUR-DIMENSIONAL AXES BELOW' : 'PLANAR LINES GIVE THIS CIRCLE\nFOUR-DIMENSIONAL AXES AT RIGHT', frame.x, h * (phone ? .44 : .79), w * (phone ? .90 : .48), phone ? 9 : 11);
+      this.note(phone ? 'PLANAR LINES GIVE THIS CIRCLE\nFOUR-DIMENSIONAL AXES BELOW' : 'PLANAR LINES GIVE THIS CIRCLE\nFOUR-DIMENSIONAL AXES AT RIGHT', frame.x, h * (phone ? .395 : .79), w * (phone ? .90 : .48), phone ? 9 : 11);
     } else {
       const amount = smooth(time, 72250, 74250);
       const dx = radius * 1.2;

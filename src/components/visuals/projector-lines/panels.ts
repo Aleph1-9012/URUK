@@ -22,7 +22,7 @@ function ruler(ctx: CanvasRenderingContext2D, width: number, height: number, tim
   const enter = smooth(time, 28250, 30250);
   const left = width * (phone ? .12 : .60);
   const right = width * (phone ? .88 : .94);
-  const y = height * (phone ? .80 : .66);
+  const y = height * (phone ? .86 : .66);
 
   if (time >= 52250) {
     drawLine(ctx, left, y, mix(right, left, smooth(time, 52250, 53250)), y, tones.ink, 1);
@@ -72,8 +72,8 @@ function ruler(ctx: CanvasRenderingContext2D, width: number, height: number, tim
     drawLine(ctx, right + 14, y, right + 9, y + 4, tones.ink, 1.1);
   } else {
     labels.place('ambient-dimension', width * (phone ? .5 : .77), height * (phone ? .66 : .50));
-    drawText(ctx, 'AFFINE AMBIENT DIMENSION', width * (phone ? .5 : .77), height * (phone ? .705 : .55), { size: phone ? 8.5 : 11, color: tones.ink });
-    drawText(ctx, 'FULL SET: INTRINSIC DIMENSION 3', width * (phone ? .5 : .77), height * (phone ? .745 : .59), { size: phone ? 8.5 : 10.5, color: tones.ink });
+    drawText(ctx, 'AFFINE AMBIENT DIMENSION', width * (phone ? .5 : .77), height * (phone ? .72 : .55), { size: phone ? 8.5 : 11, color: tones.ink });
+    drawText(ctx, 'FULL SET: INTRINSIC DIMENSION 3', width * (phone ? .5 : .77), height * (phone ? .76 : .59), { size: phone ? 8.5 : 10.5, color: tones.ink });
   }
 }
 
@@ -119,9 +119,9 @@ function simplex(ctx: CanvasRenderingContext2D, width: number, height: number, t
   const closing = smooth(time, 72250, 74250);
   const source = { x: width * (phone ? .5 : .28), y: height * (phone ? .25 : .43) };
   const initial = { x: width * (phone ? .5 : .73), y: height * (phone ? .57 : .40) };
-  const final = { x: width * (phone ? .74 : .30), y: height * (phone ? .17 : .70) };
+  const final = { x: width * (phone ? .74 : .30), y: height * (phone ? .10 : .70) };
   const center = { x: mix(source.x, mix(initial.x, final.x, closing), arrive), y: mix(source.y, mix(initial.y, final.y, closing), arrive) };
-  const unit = height * mix(phone ? .12 : .21, phone ? .055 : .10, closing) * arrive;
+  const unit = height * mix(phone ? .12 : .21, phone ? .035 : .10, closing) * arrive;
   const points = SIMPLEX.vertices.map(vertex => ({ x: center.x + (vertex.x + .45 * vertex.z) * unit, y: center.y - (vertex.y + .25 * vertex.z) * unit }));
 
   for (const edge of SIMPLEX.edges) {
@@ -156,7 +156,7 @@ function simplex(ctx: CanvasRenderingContext2D, width: number, height: number, t
     drawText(ctx, '4 PIECES FORCED · NOT THE TEN-SET CLAIM', width * (phone ? .5 : .74), height * (phone ? .80 : .66), { size: phone ? 8.5 : 11, color: tones.ink });
     drawText(ctx, 'SCREEN EDGE LENGTHS ARE NOT THE METRIC', width * (phone ? .5 : .74), height * (phone ? .85 : .72), { size: phone ? 8.5 : 10.5, color: tones.ink });
   } else if (closing === 1) {
-    drawWrappedText(ctx, 'FOUR R⁴ AXES\nFOUR PIECES', final.x, height * (phone ? .265 : .81), width * (phone ? .42 : .36), { size: phone ? 8.5 : 10.5, color: tones.ink, family: 'math' });
+    drawWrappedText(ctx, 'FOUR R⁴ AXES\nFOUR PIECES', final.x, height * (phone ? .19 : .81), width * (phone ? .42 : .36), { size: phone ? 8.5 : 10.5, color: tones.ink, family: 'math' });
   }
 }
 
@@ -164,7 +164,7 @@ function claimTiles(ctx: CanvasRenderingContext2D, width: number, height: number
   if (time < 72250) return;
 
   const phone = width < PHONE_STAGE_WIDTH;
-  const center = { x: width * (phone ? .5 : .73), y: height * (phone ? .43 : .44) };
+  const center = { x: width * (phone ? .5 : .73), y: height * (phone ? .35 : .44) };
   const side = phone ? 18 : 26;
   const horizontal = phone ? 8 : 13;
   const vertical = phone ? 8 : 12;
@@ -197,15 +197,15 @@ function claimTiles(ctx: CanvasRenderingContext2D, width: number, height: number
     }
   }
 
-  drawText(ctx, 'SCHEMATIC EMPTY LABELS · NOT A COVER', center.x, height * (phone ? .50 : .56), { size: phone ? 8.5 : 11, color: tones.ink });
-  labels.place('threshold', center.x, height * (phone ? .535 : .615));
+  drawText(ctx, 'SCHEMATIC EMPTY LABELS · NOT A COVER', center.x, height * (phone ? .46 : .56), { size: phone ? 8.5 : 11, color: tones.ink });
+  labels.place('threshold', center.x, height * (phone ? .52 : .615));
   drawWrappedText(ctx, 'CLAIMED: NO COVER BY TEN SETS\nOF STRICTLY SMALLER DIAMETER', center.x, height * (phone ? .57 : .66), width * (phone ? .90 : .42), { size: phone ? 9.5 : 12, color: tones.ink });
-  labels.place('ambient-dimension', center.x, height * (phone ? .635 : .745));
-  drawText(ctx, 'AFFINE AMBIENT DIMENSION', center.x, height * (phone ? .674 : .79), { size: phone ? 8.5 : 10.5, color: tones.ink });
-  drawText(ctx, 'FULL SET: INTRINSIC DIMENSION 3', center.x, height * (phone ? .708 : .83), { size: phone ? 8.5 : 10.5, color: tones.ink });
+  labels.place('ambient-dimension', center.x, height * (phone ? .68 : .745));
+  drawText(ctx, 'AFFINE AMBIENT DIMENSION', center.x, height * (phone ? .73 : .79), { size: phone ? 8.5 : 10.5, color: tones.ink });
+  drawText(ctx, 'FULL SET: INTRINSIC DIMENSION 3', center.x, height * (phone ? .77 : .83), { size: phone ? 8.5 : 10.5, color: tones.ink });
 
   if (time >= 74250) {
-    drawWrappedText(ctx, 'CIRCLE ALONE:\n3 PIECES SUFFICE', width * (phone ? .22 : .23), height * (phone ? .265 : .50), width * (phone ? .40 : .38), { size: phone ? 8.5 : 10.5, color: tones.ink });
+    drawWrappedText(ctx, 'CIRCLE ALONE:\n3 PIECES SUFFICE', width * (phone ? .22 : .23), height * (phone ? .19 : .50), width * (phone ? .40 : .38), { size: phone ? 8.5 : 10.5, color: tones.ink });
   }
 }
 
@@ -217,7 +217,7 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
   const center = width * (phone ? .5 : .73);
   const left = width * (phone ? .05 : .53);
   const right = width * .95;
-  const top = height * (phone ? .745 : .87);
+  const top = height * (phone ? .81 : .87);
   const step = height * (phone ? .04 : .028);
   const rows = [
     'UNREVIEWED · 18 OCT 2026',
