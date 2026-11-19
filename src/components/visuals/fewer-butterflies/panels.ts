@@ -11,9 +11,9 @@ export function plotLayout(width: number, height: number) {
   return {
     left: width * (phone ? .13 : .56),
     right: width * (phone ? .90 : .94),
-    top: height * (phone ? .49 : .20),
-    bottom: height * (phone ? .73 : .56),
-    referenceY: height * (phone ? .51 : .25),
+    top: height * (phone ? .61 : .20),
+    bottom: height * (phone ? .695 : .56),
+    referenceY: height * (phone ? .625 : .25),
   };
 }
 
@@ -101,8 +101,14 @@ function topRows(ctx: CanvasRenderingContext2D, width: number, height: number, t
     { text: 'log₂ n = 2⁶⁰: DROP ' + exponentText(sixty.drop, 2), family: 'math' as const, size: phone ? 10 : 12 },
   ];
 
+  const phoneRows = [0, 10, 20, 30, 42, 56, 69, 82];
+
   for (const [index, value] of values.entries()) {
-    const y = height * (phone ? .285 + index * .023 : .025 + index * .023);
+    const row = phoneRows[index];
+
+    if (row === undefined) throw new Error('Every comparison readout has a phone row.');
+
+    const y = phone ? height * .24 + 12 + row : height * (.025 + index * .023);
     drawText(ctx, value.text, center, y, { size: value.size, color: tones.ink, family: value.family });
   }
 }
@@ -115,7 +121,7 @@ function companion(ctx: CanvasRenderingContext2D, width: number, height: number,
   const length = right - left;
   const span = bottom - referenceY;
   const carry = smooth(time, 52250, 54000);
-  const footerY = bottom + (phone ? 31 : 43);
+  const footerY = bottom + (phone ? 24 : 43);
   const positions = [
     { x: left + length * .28, y: referenceY + span * .30 },
     { x: left + length * .52, y: referenceY + span * .59 },
@@ -193,7 +199,7 @@ export function drawPlot(ctx: CanvasRenderingContext2D, width: number, height: n
   if (time >= 37500 && time < 52250) {
     const mainX = left + length * .79;
     drawLine(ctx, mainX, referenceY - 5, mainX, referenceY + 5, tones.blue, 2.5);
-    drawText(ctx, 'MAIN', mainX, referenceY + 17, { size: phone ? 9 : 11, color: tones.ink, paper: tones.paper });
+    drawText(ctx, 'MAIN', mainX + (phone ? 20 : 0), referenceY + (phone ? 8 : 17), { size: phone ? 9 : 11, color: tones.ink, paper: tones.paper });
   }
 
   if (time >= 54000) {
@@ -231,7 +237,7 @@ export function drawLedger(ctx: CanvasRenderingContext2D, width: number, height:
   const line = size * 1.5;
   const left = width * .05;
   const right = width * .95;
-  const top = mix(height + 12, height * (phone ? .84 : .78), smooth(time, 69000, 70250));
+  const top = mix(height + 12, height * (phone ? .79 : .78), smooth(time, 69000, 70250));
   const rows = [
     'UNREVIEWED · 18 OCT 2026',
     'TWO LEAN STATEMENTS IN CATALOGUE',

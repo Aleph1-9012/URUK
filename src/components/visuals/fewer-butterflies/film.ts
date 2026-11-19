@@ -70,8 +70,8 @@ class ButterflyFilm implements FilmDrawing {
     if (small) {
       const left = w * (tall ? .19 : .10);
       const right = w * (tall ? .81 : .42);
-      const pitch = Math.min(tall ? 8.5 : 17, h * (tall ? .018 : .030));
-      const top = h * (tall ? .105 : .20);
+      const pitch = Math.min(tall ? 8.5 : 17, h * (tall ? .014 : .030));
+      const top = h * (tall ? .09 : .20);
 
       return { x: mix(left, right, column / trace.layers), y: top + row * pitch };
     }
@@ -334,7 +334,7 @@ class ButterflyFilm implements FilmDrawing {
     this.network(trace, (column, row) => this.rail(trace, column, row, true), 1, 30000);
     const cx = w * (tall ? .5 : .26);
     this.text('CLASSICAL FFT · n = 8', cx, h * (tall ? .045 : .095), tall ? 9 : 14, true);
-    this.text('3 LAYERS × 4 = 12 BUTTERFLIES', cx, h * (tall ? .26 : .49), tall ? 9 : 12, true);
+    this.text('3 LAYERS × 4 = 12 BUTTERFLIES', cx, h * (tall ? .24 : .49), tall ? 9 : 12, true);
 
     if (!tall) {
       this.note('A PAIR UPDATE USES MULTIPLE SCALAR OPERATIONS', cx, h * .54, w * .37, 11);
