@@ -48,7 +48,7 @@ export function isolatePhase(time: number): 'none' | 'arriving' | 'extended' | '
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
-  if (tall) return { stage: { x: width * .03, y: height * .012, w: width * .94, h: height * .54 }, panel: { x: width * .055, y: height * .56, w: width * .89, h: height * .42 }, tall };
+  if (tall) return { stage: { x: 4, y: 4, w: width * .5 - 8, h: height - 65 }, panel: { x: width * .5 + 4, y: 4, w: width * .5 - 8, h: height - 65 }, tall };
 
   return { stage: { x: width * .025, y: height * .025, w: width * .53, h: height * .92 }, panel: { x: width * .595, y: height * .035, w: width * .38, h: height * .93 }, tall };
 }

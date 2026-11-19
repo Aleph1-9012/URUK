@@ -1,6 +1,6 @@
 import { mix } from '../../../lib/animation';
 import { line } from '../../plate/canvas/strokes';
-import { type Box, type Colors, type Place, growthChartBox, growthPoint, text } from './drawing';
+import { type Box, type Colors, type Place, growthChartBox, growthPoint, phoneText, text } from './drawing';
 import { growthAt, type ColourModel } from './math';
 import { chartProgress, firstFitProgress, humanProgress, isolatePhase, revealProgress } from './story';
 
@@ -34,6 +34,14 @@ function introduction(pen: CanvasRenderingContext2D, box: Box, time: number, col
     note = 'THIS SMALL INSTANCE IS COMPUTED EXACTLY';
   }
 
+  if (tall) {
+    const titleBottom = phoneText(pen, title, x - 6, box.y + 10, 21, box.w + 12, colors);
+    const captionBottom = phoneText(pen, caption, x, titleBottom + 14, 11, box.w, colors);
+    phoneText(pen, note, x, captionBottom + 12, 10, box.w, colors);
+
+    return;
+  }
+
   text(pen, title, x, box.y + box.h * .15, tall ? 21 : 29, box.w - 6, colors);
   text(pen, caption, x, box.y + box.h * .33, tall ? 11 : 15, box.w - 6, colors);
   text(pen, note, x, box.y + box.h * .49, tall ? 10 : 13, box.w - 6, colors);
@@ -42,6 +50,22 @@ function introduction(pen: CanvasRenderingContext2D, box: Box, time: number, col
 function chartHeader(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, tall: boolean): void {
   const x = box.x + box.w / 2;
   const title = time >= 87250 ? 'UNREVIEWED' : time >= 55000 ? 'CLAIMED: FIXED POSITIVE FRACTION' : time >= 39750 ? 'FEI–MINZER–WANG · HUMAN PROOF' : 'COLOURS AS THE GRAPH GROWS';
+  if (tall) {
+    const bottom = phoneText(pen, title, x, box.y, 11, box.w, colors);
+
+    if (time >= 87250) {
+      const leanBottom = phoneText(pen, 'LEAN: IN THE CATALOGUE', x, bottom + 5, 9, box.w, colors);
+      phoneText(pen, 'A KERNEL CHECK IS NOT A READING', x, leanBottom + 4, 8.5, box.w, colors);
+    } else if (time >= 73750) {
+      const phase = isolatePhase(time);
+      phoneText(pen, phase === 'extended' ? 'ADDED ISOLATES · SAME COLOURS NEEDED' : phase === 'none' ? 'INDEPENDENT-SET HARDNESS IS STRONGER' : 'LONE DOTS IN TRANSIT', x, bottom + 6, 9, box.w, colors);
+    } else if (time >= 55000) phoneText(pen, 'A HARDNESS CLAIM FOR GROWING INPUTS', x, bottom + 6, 9, box.w, colors);
+    else if (time >= 39750) phoneText(pen, 'EVERY FIXED PALETTE · ASYMPTOTIC', x, bottom + 6, 9, box.w, colors);
+    else phoneText(pen, 'GROWING PALETTE · FIXED-PALETTE HARDNESS', x, bottom + 6, 9, box.w, colors);
+
+    return;
+  }
+
   text(pen, title, x, box.y + 6, tall ? 11 : 14, box.w - 6, colors);
 
   if (time >= 87250) {
@@ -101,7 +125,7 @@ function growingCurve(pen: CanvasRenderingContext2D, plot: Box, time: number, co
     pen.beginPath();
     pen.arc(point.x, point.y, tall ? 1.6 : 2.2, 0, Math.PI * 2);
     pen.fill();
-    text(pen, reading.value.toFixed(1), point.x + (index === 2 ? -12 : 12), point.y + (index === 2 ? 12 : -12), tall ? 8.5 : 11, 31, colors);
+    text(pen, reading.value.toFixed(1), point.x + (index === 2 ? -12 : 12), point.y + (index === 2 && !tall ? 12 : -12), tall ? 8.5 : 11, 31, colors);
   }
 }
 
@@ -123,34 +147,41 @@ function hardnessGuide(pen: CanvasRenderingContext2D, plot: Box, time: number, c
   }
 }
 
-function chart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: ColourModel, tall: boolean): void {
+function chart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: ColourModel, tall: boolean, frameWidth: number, frameHeight: number): void {
   chartHeader(pen, box, time, colors, tall);
   const plot = growthChartBox(box, tall);
   axes(pen, plot, colors, place, tall);
   growingCurve(pen, plot, time, colors, model, tall);
   hardnessGuide(pen, plot, time, colors, tall);
-  text(pen, 'POWER ONLY\nCONSTANT 1', plot.x + plot.w * .30, plot.y + 11, tall ? 8.5 : 11, plot.w * .54, colors);
+  if (tall) phoneText(pen, 'POWER ONLY\nCONSTANT 1', plot.x + plot.w * .5, plot.y + 2, 8.5, plot.w, colors);
+  else text(pen, 'POWER ONLY\nCONSTANT 1', plot.x + plot.w * .30, plot.y + 11, 11, plot.w * .54, colors);
   const legendY = plot.y + plot.h + (tall ? 40 : 43);
   place('growth-bound', box.x + box.w * .30, legendY);
 
   if (time >= 39750) place('fixed-c', box.x + box.w * .80, legendY);
   else text(pen, 'HARD: 4, 5', box.x + box.w * .80, legendY, tall ? 8.5 : 11, box.w * .4, colors);
 
-  const captionY = box.y + box.h * .90;
+  const captionY = tall ? plot.y + plot.h + 62 : box.y + box.h * .90;
 
   if (time >= 73750 && time < 87250) {
-    text(pen, 'INDEPENDENCE RATIO', box.x + box.w * .33, captionY, tall ? 8.5 : 11, box.w * .60, colors);
-    place('independence-ratio', box.x + box.w * .82, captionY);
+    if (tall) phoneText(pen, 'INDEPENDENCE RATIO', box.x + box.w / 2, captionY - 5, 8.5, box.w, colors);
+    else text(pen, 'INDEPENDENCE RATIO', box.x + box.w * .33, captionY, 11, box.w * .60, colors);
+    place('independence-ratio', box.x + box.w * (tall ? .5 : .82), captionY + (tall ? 16 : 0));
   } else {
     const caption = time >= 87250 ? 'EXAMPLE COMPUTED · PROOF UNREVIEWED' : time >= 55000 ? 'INDEPENDENT-SET HARDNESS IS STRONGER' : time >= 39750 ? 'HUMAN PROOF · FIXED PALETTES' : 'PROVED HARD: FOUR AND FIVE';
-    text(pen, caption, box.x + box.w / 2, captionY, tall ? 8.5 : 11, box.w - 6, colors);
+    if (tall) phoneText(pen, caption, box.x + box.w / 2, captionY - 5, 8.5, box.w, colors);
+    else text(pen, caption, box.x + box.w / 2, captionY, 11, box.w - 6, colors);
   }
-  text(pen, time >= 39750 ? 'GUIDE HEIGHT SCHEMATIC · ASYMPTOTIC' : 'FIXED-PALETTE HARDNESS · ASYMPTOTIC', box.x + box.w / 2, box.y + box.h * .97, tall ? 8 : 10.5, box.w - 6, colors);
+  const guide = time >= 39750 ? 'GUIDE HEIGHT SCHEMATIC · ASYMPTOTIC' : 'FIXED-PALETTE HARDNESS · ASYMPTOTIC';
+
+  if (tall && time >= 73750 && time < 87250) phoneText(pen, guide, frameWidth / 2, frameHeight - 62, 8, frameWidth - 16, colors);
+  else if (tall) phoneText(pen, guide, box.x + box.w / 2, plot.y + plot.h + 85, 8, box.w, colors);
+  else text(pen, guide, box.x + box.w / 2, box.y + box.h * .97, 10.5, box.w - 6, colors);
 }
 
-export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: ColourModel, tall: boolean): void {
+export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: ColourModel, tall: boolean, frameWidth: number, frameHeight: number): void {
   pen.setLineDash([]);
 
   if (time < 27250) introduction(pen, box, time, colors, model, tall);
-  else chart(pen, box, time, colors, place, model, tall);
+  else chart(pen, box, time, colors, place, model, tall, frameWidth, frameHeight);
 }

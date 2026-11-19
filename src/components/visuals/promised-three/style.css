@@ -1,4 +1,4 @@
 @container plate (max-width: 599px) {
-  uruk-promised-three .film-stage { aspect-ratio: 4 / 12; }
+  uruk-promised-three .film-stage { aspect-ratio: 4 / 5; }
   uruk-promised-three .film-label { font-size: .75rem; }
 }

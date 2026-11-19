@@ -1,4 +1,5 @@
 import { fittedText } from '../../plate/canvas/fitted-text';
+import { drawWrappedText } from '../../plate/canvas/wrapped-text';
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -13,6 +14,14 @@ export type GraphLayout = { center: Point; radius: number; idOffset: number; pal
 export type GlyphStyle = { filled: boolean; strokeWidth: number };
 
 export function graphLayout(box: Box, tall: boolean): GraphLayout {
+  if (tall) {
+    const paletteY = box.y + box.h - 43;
+    const top = box.y + 66;
+    const bottom = paletteY - 35;
+
+    return { center: { x: box.x + box.w / 2, y: (top + bottom) / 2 }, radius: Math.min(box.w * .32, (bottom - top) / 2 - 12), idOffset: 12, paletteY, isolateY: [box.y + box.h - 19, box.y + box.h - 8], fractionY: box.y + box.h + 36 };
+  }
+
   const paletteY = box.y + box.h * (tall ? .66 : .69);
   const top = box.y + (tall ? 56 : 60);
   const bottom = paletteY - (tall ? 32 : 35);
@@ -26,6 +35,8 @@ export function vertexPoint(position: Point, geometry: GraphLayout): Point {
 }
 
 export function growthChartBox(box: Box, tall: boolean): Box {
+  if (tall) return { x: box.x + 20, y: box.y + 90, w: box.w - 47, h: box.h * .26 };
+
   return { x: box.x + (tall ? 25 : 30), y: box.y + box.h * (tall ? .29 : .22), w: box.w - (tall ? 55 : 67), h: box.h * (tall ? .40 : .48) };
 }
 
@@ -107,3 +118,10 @@ export function drawGlyph(pen: CanvasRenderingContext2D, kind: number, x: number
 }
 
 export const text = fittedText(words => /[α-ωΑ-Ωℓ⊥≤≥≡∞√∇−→⇒⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/u.test(words) ? '"Garamond Math", serif' : /[À-ž]/u.test(words) ? '"Alegreya", "Garamond Math", serif' : '"Special Elite", monospace');
+
+export function phoneText(pen: CanvasRenderingContext2D, words: string, x: number, top: number, size: number, width: number, colors: Colors): number {
+  const family = /[α-ωΑ-Ωℓ⊥≤≥≡∞√∇−→⇒⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/u.test(words) ? 'math' : /[À-ž]/u.test(words) ? 'serif' : 'type';
+  const bounds = drawWrappedText(pen, words, x, top, width, { size, family, color: colors.ink, paper: colors.paper });
+
+  return bounds.y + bounds.height;
+}

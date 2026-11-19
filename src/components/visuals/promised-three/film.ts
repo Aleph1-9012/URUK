@@ -3,7 +3,7 @@ import { line } from '../../plate/canvas/strokes';
 import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { type ColourModel, type FirstFitStep } from './math';
-import { type Box, type Colors, type Point, drawGlyph, graphLayout, text, vertexPoint } from './drawing';
+import { type Box, type Colors, type Point, drawGlyph, graphLayout, phoneText, text, vertexPoint } from './drawing';
 import { claimProgress, edgeProgress, firstFitProgress, isolatedProgress, layout, liftProgress, nodeProgress, revealProgress } from './story';
 import { drawPanels } from './panels';
 
@@ -39,7 +39,7 @@ export class PromisedThreeFilm {
     pen.lineCap = 'round';
     pen.setLineDash([]);
     this.graph(boxes.stage, time, boxes.tall);
-    drawPanels(pen, boxes.panel, time, colors, this.labels.place, this.model, boxes.tall);
+    drawPanels(pen, boxes.panel, time, colors, this.labels.place, this.model, boxes.tall, this.width, this.height);
     this.labels.endFrame();
   }
 
@@ -178,7 +178,7 @@ export class PromisedThreeFilm {
     this.headings(box, time, coloring, tall);
     this.palette(box, geometry.paletteY, time, coloring, size, tall);
     this.isolates(box, geometry.isolateY, time, size);
-    this.fraction(box, geometry.fractionY, time, tall);
+    this.fraction(tall ? { ...box, x: 8, w: this.width - 16 } : box, geometry.fractionY, time, tall);
   }
 
   private link(from: Point, to: Point, clearance: number, amount: number): void {
@@ -221,13 +221,14 @@ export class PromisedThreeFilm {
     } else if (time >= 87250) { first = 'HIDDEN THREE · LARGEST CLASS SIX'; second = 'THIS SMALL EXAMPLE IS SOLVED EXACTLY'; }
 
     const x = box.x + box.w / 2;
+    const titleBottom = tall ? phoneText(this.pen, first, x, box.y, 10, box.w - 6, this.colors) : box.y + 7;
 
     if (time >= 12000 && time < 22250) {
       const opening = revealProgress(time);
-      const half = box.w * .46;
+      const half = tall ? box.w / 2 + 1 : box.w * .46;
       const arm = half * (1 - opening);
       const top = box.y - (tall ? 3 : 6) + opening * 8;
-      const bottom = box.y + (tall ? 17 : 20) - opening * 8;
+      const bottom = tall ? titleBottom + 4 - opening * 8 : box.y + 20 - opening * 8;
       this.pen.strokeStyle = this.colors.ink;
       this.pen.lineWidth = tall ? .7 : 1;
 
@@ -242,8 +243,12 @@ export class PromisedThreeFilm {
       }
     }
 
-    text(this.pen, first, x, box.y + 7, tall ? 10 : 15, box.w - 6, this.colors);
-    text(this.pen, second, x, box.y + (tall ? 23 : 29), tall ? 8.5 : 12, box.w - 6, this.colors);
+    if (tall) {
+      phoneText(this.pen, second, x, titleBottom + 5, 8.5, box.w, this.colors);
+    } else {
+      text(this.pen, first, x, box.y + 7, 15, box.w - 6, this.colors);
+      text(this.pen, second, x, box.y + 29, 12, box.w - 6, this.colors);
+    }
   }
 
   private palette(box: Box, y: number, time: number, coloring: ColourFrame, size: number, tall: boolean): void {
@@ -251,7 +256,8 @@ export class PromisedThreeFilm {
     const pitch = box.w / 7;
     const first = box.x + box.w / 2 - 2.5 * pitch;
     const shift = smooth(revealed, .5, 1) * pitch * 1.5;
-    text(this.pen, 'PALETTE · GLYPHS, NOT VERTEX NUMBERS', box.x + box.w / 2, y - 17, tall ? 8 : 11, box.w - 6, this.colors);
+    if (tall) phoneText(this.pen, 'PALETTE · GLYPHS, NOT VERTEX NUMBERS', box.x + box.w / 2, y - 29, 8, box.w, this.colors);
+    else text(this.pen, 'PALETTE · GLYPHS, NOT VERTEX NUMBERS', box.x + box.w / 2, y - 17, 11, box.w - 6, this.colors);
 
     for (let color = 0; color < 6; color++) {
       const amount = color < 3 ? 1 : 1 - Math.min(1, 2 * revealed);
@@ -279,7 +285,10 @@ export class PromisedThreeFilm {
       }
     }
 
-    if (time >= 12000 && time < 22250) text(this.pen, '× = USED BY A COLOURED NEIGHBOUR', box.x + box.w / 2, y + (tall ? 39 : 52), tall ? 8 : 10, box.w - 6, this.colors);
+    if (time >= 12000 && time < 22250) {
+      if (tall) phoneText(this.pen, '× = USED BY A COLOURED NEIGHBOUR', this.width / 2, y + 32, 8, this.width - 16, this.colors);
+      else text(this.pen, '× = USED BY A COLOURED NEIGHBOUR', box.x + box.w / 2, y + 52, 10, box.w - 6, this.colors);
+    }
   }
 
   private isolates(box: Box, rows: readonly [number, number], time: number, size: number): void {
