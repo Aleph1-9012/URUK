@@ -1,4 +1,4 @@
 @container plate (max-width: 599px) {
-  uruk-selection-square .film-stage { aspect-ratio: 4 / 11; }
+  uruk-selection-square .film-stage { aspect-ratio: 4 / 5; }
   uruk-selection-square .film-label { font-size: .75rem; }
 }

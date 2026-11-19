@@ -52,13 +52,11 @@ export function chartView(time: number): ChartView {
   return { minN: mix(0, 150, amount), maxN: 200, minLog: mix(0, 70, amount), maxLog: mix(200, 100, amount) };
 }
 
-export function layout(width: number, height: number, time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {
-    const expanded = smooth(time, 71500, 71900);
-
-    return { stage: { x: width * .03, y: height * .018, w: width * .94, h: height * mix(.60, .51, expanded) }, panel: { x: width * .05, y: height * mix(.64, .55, expanded), w: width * .90, h: height * mix(.34, .43, expanded) }, tall };
+    return { stage: { x: 0, y: 0, w: width, h: height }, panel: { x: 0, y: 0, w: width, h: height }, tall };
   }
 
   return { stage: { x: width * .025, y: height * .03, w: width * .49, h: height * .94 }, panel: { x: width * .55, y: height * .05, w: width * .42, h: height * .90 }, tall };

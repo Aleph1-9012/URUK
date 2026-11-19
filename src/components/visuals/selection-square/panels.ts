@@ -1,5 +1,5 @@
 import { line } from '../../plate/canvas/strokes';
-import { type Box, type Colors, type Place, chartPoint, text } from './drawing';
+import { type Box, type Colors, type Place, chartPoint, phoneText, text } from './drawing';
 import { chartAt, type SelectionModel } from './math';
 import { chartProgress, chartView, claimProgress, fillProgress, humanProgress, sortProgress, trialIndex, walkProgress, zoomProgress } from './story';
 
@@ -58,10 +58,10 @@ function axes(pen: CanvasRenderingContext2D, plot: Box, time: number, colors: Co
   line(pen, plot.x, plot.y, plot.x, plot.y + plot.h);
   line(pen, plot.x, plot.y + plot.h, plot.x + plot.w, plot.y + plot.h);
 
-  for (const n of xTicks) {
+  for (const [index, n] of xTicks.entries()) {
     const point = chartPoint(n, view.minLog, plot, view);
     line(pen, point.x, point.y, point.x, point.y + 3);
-    text(pen, format(n), point.x, point.y + (tall ? 12 : 17), tall ? 8.5 : 11, 38, colors);
+    text(pen, format(n), point.x, point.y + (tall ? (xTicks.length > 3 || zoom > 0 && zoom < 1) && index % 2 ? 23 : 12 : 17), tall ? 8.5 : 11, 38, colors);
   }
 
   for (const logarithm of yTicks) {
@@ -75,7 +75,7 @@ function axes(pen: CanvasRenderingContext2D, plot: Box, time: number, colors: Co
 }
 
 function chart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, tall: boolean): void {
-  const plot = { x: box.x + (tall ? 31 : 45), y: box.y + (tall ? 82 : 132), w: box.w - (tall ? 44 : 62), h: box.h - (tall ? 146 : 250) };
+  const plot = tall ? { x: box.w * .73 + 14, y: 112, w: box.w * .27 - 30, h: box.h - 162 } : { x: box.x + 45, y: box.y + 132, w: box.w - 62, h: box.h - 250 };
   const view = chartView(time);
   const draw = (value: (n: number) => number, reveal: number): void => {
     const endN = view.minN + (view.maxN - view.minN) * reveal;
@@ -83,7 +83,8 @@ function chart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
     const last = chartPoint(endN, value(endN), plot, view);
     line(pen, first.x, first.y, last.x, last.y);
   };
-  text(pen, 'STEPS AGAINST n · CONSTANTS 1', box.x + box.w / 2, box.y + (tall ? 56 : 93), tall ? 10 : 16, box.w - 6, colors);
+  if (tall) phoneText(pen, 'STEPS AGAINST n · CONSTANTS\u00a01', box.w * .855, 60, 10, box.w * .27 - 6, colors);
+  else text(pen, 'STEPS AGAINST n · CONSTANTS 1', box.x + box.w / 2, box.y + 93, 16, box.w - 6, colors);
   axes(pen, plot, time, colors, tall);
   pen.save();
   pen.beginPath();
@@ -115,6 +116,28 @@ function chart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
   }
 
   pen.restore();
+
+  if (tall) {
+    const legendY = box.h - (time < 71500 ? 21 : 16);
+
+    if (time < 71500) {
+      place('all-bound', box.w * .24, legendY);
+      place('meet-bound', box.w * .60, legendY);
+      text(pen, 'EVERY SELECTION', box.w * .24, legendY + 17, 8, box.w * .46, colors);
+      text(pen, 'MEET IN MIDDLE · 1974', box.w * .60, legendY + 17, 8, box.w * .46, colors);
+    } else {
+      place('meet-bound', box.w * .17, legendY);
+      place('claim-bound', box.w * .46, legendY);
+
+      if (time >= 78500) {
+        text(pen, 'LI–YE', box.w * .68, legendY, 8.5, box.w * .16, colors);
+        place('human-bound', box.w * .87, legendY);
+      }
+    }
+
+    return;
+  }
+
   const legendY = plot.y + plot.h + (tall ? 31 : 41);
 
   if (time < 71500) {
@@ -138,6 +161,28 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
   pen.setLineDash([]);
   const words = status(model, time);
   const x = box.x + box.w / 2;
+
+  if (tall) {
+    const opening = time < 41250;
+
+    if (opening) {
+      text(pen, words.title, x, 14, 21, box.w * .9 - 6, colors);
+      text(pen, words.caption, x, 49, 11, box.w * .9 - 6, colors);
+
+      if (words.note) text(pen, words.note, x, box.h - 12, 10, box.w * .9 - 6, colors);
+
+      return;
+    }
+
+    let nextY = phoneText(pen, words.title, x, 11, 11.5, box.w - 12, colors);
+    nextY = phoneText(pen, words.caption, x, nextY + 4, time >= 86000 && time < 93000 ? 12 : 9, box.w - 12, colors);
+
+    if (words.note) phoneText(pen, words.note, x, nextY + 4, 8.5, box.w - 12, colors);
+
+    chart(pen, box, time, colors, place, true);
+
+    return;
+  }
 
   if (time < 41250) {
     text(pen, words.title, x, box.y + (tall ? 29 : 83), tall ? 21 : 30, box.w - 6, colors);

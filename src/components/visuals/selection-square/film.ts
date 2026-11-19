@@ -48,29 +48,37 @@ export class SelectionSquareFilm {
 
   private square(box: Box, tall: boolean): Square {
     const snap = (value: number) => Math.round(value * this.density) / this.density;
+
+    if (tall) {
+      const side = snap(Math.min(box.w * .46, box.h - 190));
+
+      return { x: snap(44 + (box.w - 248) * .04), y: snap(130 + (box.h - 310) * .1), side, cell: side / this.model.size };
+    }
+
     const side = snap(Math.min(box.w - (tall ? 34 : 116), box.h - (tall ? 133 : 145)));
 
     return { x: snap(box.x + (tall ? 31 : 108)), y: snap(box.y + (tall ? 92 : 94)), side, cell: side / this.model.size };
   }
 
-  private tile(value: number, ordinal: number, x: number, y: number, width: number, height: number, chosen: boolean, tall: boolean, ordinalVisible: boolean, largeValues: boolean): void {
+  private tile(value: number, ordinal: number, x: number, y: number, width: number, height: number, chosen: boolean, tall: boolean, ordinalVisible: boolean, largeValues: boolean, sideOrdinal: boolean): void {
     const { pen, colors } = this;
     pen.fillStyle = chosen ? colors.ink : colors.paper;
     pen.strokeStyle = colors.ink;
     pen.lineWidth = chosen ? 1.4 : .6;
     pen.fillRect(x - width / 2, y - height / 2, width, height);
     pen.strokeRect(x - width / 2, y - height / 2, width, height);
-    const valueSize = tall ? (largeValues ? (chosen ? 11 : 9) : 8) : 13;
+    const valueSize = tall ? (largeValues ? (chosen ? 12 : 10) : 8) : 13;
     pen.font = `${valueSize}px "Garamond Math", serif`;
     pen.textAlign = 'center';
     pen.textBaseline = 'middle';
     pen.fillStyle = chosen ? colors.paper : colors.ink;
-    pen.fillText(`${value}`, x, y + .2, width - 3);
+    if (tall) pen.fillText(`${value}`, x, y + .2);
+    else pen.fillText(`${value}`, x, y + .2, width - 3);
 
     if (ordinalVisible) {
       pen.fillStyle = colors.ink;
       pen.font = `${tall ? 7.5 : 11}px "Garamond Math", serif`;
-      pen.fillText(`${ordinal}`, x, y - height / 2 - 6);
+      pen.fillText(`${ordinal}`, sideOrdinal ? x + width / 2 + 7 : x, sideOrdinal ? y : y - height / 2 - 6);
     }
   }
 
@@ -98,34 +106,46 @@ export class SelectionSquareFilm {
       // The second half starts above the first, so their routes to top and left never cross.
       const row = index < model.half ? 1 : 0;
       const startX = box.x + (column + .5) * box.w / model.half;
-      const startY = box.y + (tall ? 35 : 40) + row * (tall ? 29 : 43);
-      const endX = index < model.half ? square.x - (tall ? 17 : 70) : square.x + (column + .5) * square.side / model.half;
+      const startY = box.y + (tall ? 110 : 40) + row * (tall ? 29 : 43);
+      const columnX = tall ? square.x + square.side / 2 - 21 + (column - 2.5) * 26 : square.x + (column + .5) * square.side / model.half;
+      const endX = index < model.half ? square.x - (tall ? 28 : 70) : columnX;
       const endY = index < model.half ? square.y + (column + .5) * square.side / model.half : square.y - (tall ? 24 : 39);
       const chosen = trialActive ? trial.selection.includes(index) : time >= 39500 && model.solution.includes(index);
       const lift = chosen ? (tall ? 5 : 9) : 0;
-      const endWidth = index < model.half ? tall ? 28 : 56 : Math.min(tileWidth, square.side / model.half - 2);
-      this.tile(value, index + 1, mix(startX, endX, division), mix(startY - lift, endY, division), mix(tileWidth, endWidth, division), tileHeight, chosen, tall, division === 0 || division === 1, time >= 71500);
+      const endWidth = index < model.half ? tall ? 28 : 56 : tall ? 26 : Math.min(tileWidth, square.side / model.half - 2);
+      this.tile(value, index + 1, mix(startX, endX, division), mix(startY - lift, endY, division), mix(tileWidth, endWidth, division), tileHeight, chosen, tall, division === 0 || division === 1, time >= 71500, tall && division === 1 && index < model.half);
     }
 
-    const targetY = time < 18250 ? box.y + (tall ? 122 : 174) : box.y + 8;
-    text(pen, `TARGET ${model.target.toLocaleString('en-US')}`, box.x + box.w / 2, targetY, tall ? 14 : 22, box.w - 4, colors);
+    const targetY = tall ? mix(200, 66, division) : time < 18250 ? box.y + 174 : box.y + 8;
+    const targetX = tall ? mix(box.w / 2, square.x + square.side / 2, division) : box.x + box.w / 2;
+    text(pen, `TARGET ${model.target.toLocaleString('en-US')}`, targetX, targetY, tall ? 14 : 22, tall && division > 0 ? 170 : box.w - 4, colors);
 
     if (time < 18250) {
       if (trialActive) {
-        const sumY = box.y + (tall ? 169 : 252);
+        const sumY = box.y + (tall ? 235 : 252);
         text(pen, `${trial.sum.toLocaleString('en-US')} ${trial.comparison === 'small' ? '<' : '>'} ${model.target.toLocaleString('en-US')}`, box.x + box.w / 2, sumY, tall ? 17 : 25, box.w - 8, colors);
         text(pen, trial.comparison === 'small' ? 'TOO SMALL' : 'TOO BIG', box.x + box.w / 2, sumY + (tall ? 28 : 42), tall ? 11 : 16, box.w - 8, colors);
       }
 
       if (time >= 11000) {
-        text(pen, 'NP-COMPLETE', box.x + box.w / 2, box.y + (tall ? 189 : 278), tall ? 17 : 25, box.w - 8, colors);
-        text(pen, 'KARP 1972 · KNAPSACK', box.x + box.w / 2, box.y + (tall ? 224 : 326), tall ? 11 : 17, box.w - 8, colors);
+        text(pen, 'NP-COMPLETE', box.x + box.w / 2, box.y + (tall ? 245 : 278), tall ? 17 : 25, box.w - 8, colors);
+        text(pen, 'KARP 1972 · KNAPSACK', box.x + box.w / 2, box.y + (tall ? 275 : 326), tall ? 11 : 17, box.w - 8, colors);
       }
 
       return;
     }
 
     if (division < 1) return;
+
+    if (tall) {
+      pen.strokeStyle = colors.ink;
+      pen.lineWidth = .55;
+
+      for (let column = 0; column < model.half; column++) {
+        const fromX = square.x + square.side / 2 - 21 + (column - 2.5) * 26;
+        line(pen, fromX, square.y - 14.5, square.x + (column + .5) * square.side / model.half, square.y - 2);
+      }
+    }
 
     const sorting = sortProgress(time);
     const filled = Math.floor(fillProgress(time) * model.cells.length);
@@ -137,13 +157,14 @@ export class SelectionSquareFilm {
     if (time >= 52250) this.aliases(square, time);
 
     const footerY = square.y + square.side + (tall ? 15 : 24);
+    const footerWidth = tall ? 170 : square.side;
 
     if (time < 27250) {
-      text(pen, `${filled.toLocaleString('en-US')} / ${model.cells.length.toLocaleString('en-US')} SELECTIONS`, square.x + square.side / 2, footerY, tall ? 10 : 15, square.side, colors);
+      text(pen, `${filled.toLocaleString('en-US')} / ${model.cells.length.toLocaleString('en-US')} SELECTIONS`, square.x + square.side / 2, footerY, tall ? 10 : 15, footerWidth, colors);
 
-      if (filled === model.cells.length) text(pen, 'ALL CHECKED WHEN NONE WORKS', square.x + square.side / 2, footerY + (tall ? 18 : 25), tall ? 8.5 : 12, square.side, colors);
+      if (filled === model.cells.length) text(pen, 'ALL CHECKED WHEN NONE WORKS', square.x + square.side / 2, footerY + (tall ? 18 : 25), tall ? 8.5 : 12, footerWidth, colors);
     } else if (time < 31500) {
-      text(pen, sorting < 1 ? 'ROWS ASCENDING · COLS DESCENDING' : '64 + 64 SUMS LISTED', square.x + square.side / 2, footerY, tall ? 9.5 : 14, square.side, colors);
+      text(pen, sorting < 1 ? 'ROWS ASCENDING · COLS DESCENDING' : '64 + 64 SUMS LISTED', square.x + square.side / 2, footerY, tall ? 9.5 : 14, footerWidth, colors);
     } else {
       const index = Math.floor(walkProgress(time) * (model.walk.length - 1));
       const step = model.walk[index];
@@ -155,8 +176,8 @@ export class SelectionSquareFilm {
 
       if (!row || !col) throw new Error('The current square cell retains both half-selection sums.');
 
-      text(pen, `${row.sum.toLocaleString('en-US')} + ${col.sum.toLocaleString('en-US')} = ${step.sum.toLocaleString('en-US')}`, square.x + square.side / 2, footerY, tall ? 10 : 15, square.side + 25, colors);
-      text(pen, `${index + 1} CELLS VISITED OF ${model.cells.length.toLocaleString('en-US')}`, square.x + square.side / 2, footerY + (tall ? 19 : 25), tall ? 9 : 13, square.side, colors);
+      text(pen, `${row.sum.toLocaleString('en-US')} + ${col.sum.toLocaleString('en-US')} = ${step.sum.toLocaleString('en-US')}`, square.x + square.side / 2, footerY, tall ? 10 : 15, tall ? footerWidth : square.side + 25, colors);
+      text(pen, `${index + 1} CELLS VISITED OF ${model.cells.length.toLocaleString('en-US')}`, square.x + square.side / 2, footerY + (tall ? 14 : 25), tall ? 9 : 13, footerWidth, colors);
     }
   }
 
