@@ -14,7 +14,7 @@ function chartFrame(width: number, height: number): Plot {
     left: width * (phone ? .14 : .60),
     right: width * (phone ? .88 : .92),
     top: height * (phone ? .55 : .32),
-    bottom: height * (phone ? .74 : .66),
+    bottom: height * (phone ? .67 : .66),
     mMin: 100,
     mMax: 600,
     yMax: chartValues(600).half * 1.1,
@@ -35,11 +35,11 @@ function claim(ctx: CanvasRenderingContext2D, width: number, height: number, tim
   if (time < SCENE_TIMES.chart) {
     if (motionAt(time).definitionRetirement < 1) return;
 
-    labels.place('claim-fraction', width * (phone ? .5 : .75), height * (phone ? .48 : .065));
-    labels.place('claim-matching', width * (phone ? .5 : .75), height * (phone ? .53 : .17));
-    drawText(ctx, 'ONLY AN UNSPECIFIED LARGE-ORDER FAMILY', width * (phone ? .5 : .75), height * (phone ? .58 : .25), { size: phone ? 8.5 : 11, color: tones.ink });
-    drawWrappedText(ctx, 'AN EDGE ALREADY HAS MATCHING SIZE 1\nORDER ABOVE 100 IS NECESSARY, NOT SUFFICIENT', width * (phone ? .5 : .75), height * (phone ? .64 : .35), width * (phone ? .90 : .44), { size: phone ? 9 : 12, color: tones.ink });
-    drawText(ctx, 'NO EXAMPLE IS ASSERTED AT A DISPLAYED ORDER', width * (phone ? .5 : .75), height * (phone ? .77 : .54), { size: phone ? 8 : 10, color: tones.ink });
+    labels.place('claim-fraction', width * (phone ? .5 : .75), height * (phone ? .42 : .065));
+    labels.place('claim-matching', width * (phone ? .5 : .75), height * (phone ? .51 : .17));
+    drawText(ctx, 'ONLY AN UNSPECIFIED LARGE-ORDER FAMILY', width * (phone ? .5 : .75), height * (phone ? .575 : .25), { size: phone ? 8.5 : 11, color: tones.ink });
+    drawWrappedText(ctx, 'AN EDGE ALREADY HAS MATCHING SIZE 1\nORDER ABOVE 100 IS NECESSARY, NOT SUFFICIENT', width * (phone ? .5 : .75), height * (phone ? .62 : .35), width * (phone ? .90 : .44), { size: phone ? 9 : 12, color: tones.ink });
+    drawText(ctx, 'NO EXAMPLE IS ASSERTED AT A DISPLAYED ORDER', width * (phone ? .5 : .75), height * (phone ? .78 : .54), { size: phone ? 8 : 10, color: tones.ink });
   }
 }
 
@@ -51,8 +51,8 @@ function chart(ctx: CanvasRenderingContext2D, width: number, height: number, tim
   const plot = chartFrame(width, height);
   const currentM = mix(plot.mMin, plot.mMax, motion.chart);
   const center = width * (phone ? .5 : .76);
-  labels.place('count-bound', center, height * (phone ? .485 : .20));
-  drawText(ctx, 'UNSPECIFIED FAMILY · NO GRAPH VALUES MEASURED', center, height * (phone ? .52 : .265), { size: phone ? 8 : 10.5, color: tones.ink });
+  labels.place('count-bound', phone ? width * .30 : center, height * (phone ? .42 : .20));
+  drawText(ctx, 'UNSPECIFIED FAMILY · NO GRAPH VALUES MEASURED', center, height * (phone ? .505 : .265), { size: phone ? 8 : 10.5, color: tones.ink });
   drawLine(ctx, plot.left, plot.bottom, plot.right, plot.bottom, tones.ink, .9);
   drawLine(ctx, plot.left, plot.bottom, plot.left, plot.top, tones.ink, .9);
 
@@ -104,10 +104,16 @@ function chart(ctx: CanvasRenderingContext2D, width: number, height: number, tim
   }
 
   if (motion.chart === 1) {
-    const halfTarget = { x: width * (phone ? .60 : .78), y: height * (phone ? .56 : .30) };
-    drawLine(ctx, halfB.x, halfB.y, halfTarget.x, halfTarget.y + 8, tones.ink, .7);
+    const halfTarget = { x: width * (phone ? .77 : .78), y: height * (phone ? .42 : .30) };
+
+    if (phone) {
+      const elbow = width * .95;
+      drawLine(ctx, halfB.x, halfB.y, elbow, halfB.y, tones.ink, .7);
+      drawLine(ctx, elbow, halfB.y, elbow, halfTarget.y + 14, tones.ink, .7);
+      drawLine(ctx, elbow, halfTarget.y + 14, halfTarget.x, halfTarget.y + 14, tones.ink, .7);
+    } else drawLine(ctx, halfB.x, halfB.y, halfTarget.x, halfTarget.y + 8, tones.ink, .7);
     labels.place('chart-half', halfTarget.x, halfTarget.y);
-    const upperY = height * (phone ? .788 : .72);
+    const upperY = height * (phone ? .76 : .72);
     const elbow = plot.right + (phone ? 19 : 24);
     drawLine(ctx, upperB.x, upperB.y, elbow, upperB.y, tones.blue, .7);
     drawLine(ctx, elbow, upperB.y, elbow, upperY, tones.blue, .7);
@@ -144,7 +150,7 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
   const left = width * (phone ? .055 : .55);
   const right = width * (phone ? .945 : .97);
   const top = height * (phone ? .82 : .85);
-  const step = height * (phone ? .027 : .023);
+  const step = phone ? Math.max(10, height * .027) : height * .023;
   const rows = [
     'UNREVIEWED · 17 OCT 2026',
     'LEAN STATEMENT · 56 LINES · CATALOGUED',
@@ -157,11 +163,14 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
   for (const [index, value] of rows.entries()) {
     if (motion.ledger < index / rows.length) continue;
 
-    const y = top + 11 + index * step;
+    const replayRow = index === 3;
+    const compactReplay = replayRow && phone && width < 300;
+    const y = top + 11 + index * step - (compactReplay ? 1 : 0);
     drawText(ctx, value, center, y, { size: phone ? 8 : 9.5, color: tones.ink, family: index === rows.length - 1 ? 'math' : 'type' });
 
-    if (index === 3 && motion.replayMark > 0) {
-      drawLine(ctx, mix(left, right, .25), y + 6, mix(mix(left, right, .25), mix(left, right, .75), motion.replayMark), y + 6, tones.ink, .7);
+    if (replayRow && motion.replayMark > 0) {
+      const underlineY = y + (compactReplay ? 3.75 : 6);
+      drawLine(ctx, mix(left, right, .25), underlineY, mix(mix(left, right, .25), mix(left, right, .75), motion.replayMark), underlineY, tones.ink, .7);
     }
   }
 }

@@ -7,6 +7,11 @@ uruk-branch-sets [data-label^="claim-"] { color: var(--blue); }
 }
 
 @container hcfilm (width < 600px) {
-  uruk-branch-sets .film-stage { aspect-ratio: 4 / 9; }
+  uruk-branch-sets .film-stage { aspect-ratio: 4 / 5; }
   uruk-branch-sets .film-label { font-size: .75rem; }
+}
+
+@container hcfilm (width < 274px) {
+  uruk-branch-sets [data-cue="9"] .film-phrase { display: block; margin-inline: -10px; }
+  uruk-branch-sets [data-cue="9"] math { flex-wrap: nowrap; }
 }

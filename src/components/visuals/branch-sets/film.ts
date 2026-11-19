@@ -113,7 +113,7 @@ class BranchSetsFilm implements FilmDrawing {
   private field(motion: Motion): Field {
     const { width: w, height: h } = this;
     const phone = w < PHONE_STAGE_WIDTH;
-    const regular = { x: w * (phone ? .5 : .28), y: h * (phone ? .24 : .38), radius: Math.min(w * (phone ? .33 : .21), h * (phone ? .16 : .25)) };
+    const regular = { x: w * (phone ? .5 : .28), y: h * (phone ? .255 : .38), radius: Math.min(w * (phone ? .33 : .21), h * (phone ? .14 : .25)) };
     const small = { x: w * (phone ? .85 : .19), y: h * (phone ? .09 : .13), radius: h * (phone ? .035 : .065) };
     const retirement = motion.cloud * (1 - motion.definitionCloudShift);
 
@@ -223,7 +223,7 @@ class BranchSetsFilm implements FilmDrawing {
       if (radius > .05) this.glyph(point, colour, radius);
 
       if (motion.scene === 'contraction' && motion.contraction === 1) {
-        this.text(vertex === 0 ? '{0,1,2}' : String(vertex), point.x, point.y - (phone ? 14 : 17), phone ? 10 : 12, true);
+        this.text(vertex === 0 ? '{0,1,2}' : String(vertex), point.x, point.y - (phone ? 10 : 17), phone ? 10 : 12, true);
       }
     }
   }
@@ -339,18 +339,18 @@ class BranchSetsFilm implements FilmDrawing {
     this.text(`m = ${current.graph.n}    χ = ${current.chi}    h = ${current.minor.h}`, w * (phone ? .5 : .76), h * (phone ? .50 : .30), phone ? 16 : 20, true);
     this.text(`α = ${current.alpha}    cm = ${current.matching.cm}`, w * (phone ? .5 : .76), h * (phone ? .56 : .40), phone ? 15 : 18, true);
     this.labels.place('half', w * (phone ? .5 : .76), h * (phone ? .64 : .53));
-    this.text(`m/2 = ${(current.graph.n / 2).toFixed(1)}`, w * (phone ? .5 : .76), h * (phone ? .69 : .61), phone ? 12 : 16, true);
+    this.text(`m/2 = ${(current.graph.n / 2).toFixed(1)}`, w * (phone ? .5 : .76), h * (phone ? .705 : .61), phone ? 12 : 16, true);
     this.note('EACH COLOUR CLASS HAS AT MOST TWO\nTHESE SMALL EXAMPLES OBEY HADWIGER', w * (phone ? .5 : .76), h * (phone ? .77 : .72), w * (phone ? .92 : .43), phone ? 9 : 12);
   }
 
   private cloud(time: number, motion: Motion): void {
     const { width: w, height: h, pen, tones } = this;
     const phone = w < PHONE_STAGE_WIDTH;
-    const regular = { x: w * (phone ? .5 : .28), y: h * (phone ? .27 : .42) };
-    const definition = { x: w * (phone ? .5 : .30), y: h * (phone ? .62 : .78) };
+    const regular = { x: w * (phone ? mix(.5, .72, motion.claim) : .28), y: h * (phone ? mix(.27, .21, motion.claim) : .42) };
+    const definition = { x: w * (phone ? .5 : .30), y: h * (phone ? .66 : .78) };
     const center = between(regular, definition, motion.definitionCloudShift);
-    const rx = w * (phone ? .34 : .21) * mix(1, .65, motion.definitionCloudShift);
-    const ry = h * (phone ? .12 : .21) * mix(1, .48, motion.definitionCloudShift);
+    const rx = w * (phone ? mix(.34, .22, motion.claim) : .21) * mix(1, .65, motion.definitionCloudShift);
+    const ry = h * (phone ? mix(.12, .075, motion.claim) : .21) * mix(1, .48, motion.definitionCloudShift);
     const sourceField = this.field({ ...motion, cloud: 0 });
 
     for (let index = 8; index < this.model.cloud.length; index++) {
@@ -373,9 +373,9 @@ class BranchSetsFilm implements FilmDrawing {
     if (time < SCENE_TIMES.matching || time >= SCENE_TIMES.claim) {
       const returning = motion.definitionExpansion > 0 && motion.definitionRetirement < 1;
 
-      if (motion.chart === 0 && !returning && motion.claim === 0) this.text('NO EXPLICIT COUNTEREXAMPLE GRAPH', w * (phone ? .43 : .28), h * .045, phone ? 8.5 : 13);
+      if (motion.chart === 0 && !returning && motion.claim === 0) this.text('NO EXPLICIT COUNTEREXAMPLE GRAPH', w * (phone ? .43 : .28), h * (phone ? .055 : .045), phone ? 8.5 : 13);
 
-      this.text('LAYOUT MARKS · ADJACENCIES NOT DRAWN', center.x, center.y + ry * 1.25 + (phone ? 8 : 12), phone ? 8.5 : 11);
+      this.text('LAYOUT MARKS · ADJACENCIES NOT DRAWN', phone ? w / 2 : center.x, center.y + ry * 1.25 + (phone ? 8 : 12), phone ? 8.5 : 11);
       this.text('8-DOT EXAMPLE', w * (phone ? .85 : .19), h * (phone ? .025 : .23), phone ? 8 : 10);
     }
 
@@ -432,11 +432,14 @@ class BranchSetsFilm implements FilmDrawing {
       }
     }
 
-    this.text(motion.definitionRetirement > 0 ? 'THE EXACT EXAMPLE RETURNS TO ITS ICON' : 'DEFINITION ON THE EIGHT-DOT EXAMPLE', w * .5, h * .045, phone ? 9 : 14);
+    const heading = motion.definitionRetirement > 0 ? 'THE EXACT EXAMPLE RETURNS TO ITS ICON' : 'DEFINITION ON THE EIGHT-DOT EXAMPLE';
+
+    if (phone) this.note(heading, w * .36, 5, w * .66, 9);
+    else this.text(heading, w * .5, h * .045, 14);
 
     if (motion.scene === 'matching' && motion.definitionExpansion === 1) {
-      this.text(`${current.matching.cm} DISJOINT EDGES · ${current.matching.connections.length} PAIRS TO JOIN`, w * (phone ? .5 : .76), h * (phone ? .46 : .31), phone ? 10 : 13);
-      this.note('ONE CROSS EDGE PER PAIR IS ENOUGH\nALL CROSS EDGES SHOWN ARE ACTUAL LINKS', w * (phone ? .5 : .76), h * (phone ? .50 : .42), w * (phone ? .92 : .40), phone ? 8.5 : 12);
+      this.text(`${current.matching.cm} DISJOINT EDGES · ${current.matching.connections.length} PAIRS TO JOIN`, w * (phone ? .5 : .76), h * (phone ? .485 : .31), phone ? 10 : 13);
+      this.note('ONE CROSS EDGE PER PAIR IS ENOUGH\nALL CROSS EDGES SHOWN ARE ACTUAL LINKS', w * (phone ? .5 : .76), h * (phone ? .525 : .42), w * (phone ? .92 : .40), phone ? 8.5 : 12);
       this.text('COUNTEREXAMPLE ADJACENCIES NOT DRAWN', w * .5, h * (phone ? .77 : .94), phone ? 9 : 12);
     }
   }
