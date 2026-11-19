@@ -155,7 +155,7 @@ export class UniqueRulesFilm {
     const order = [1, 2, 3, 4, 5, 6, 0];
     const rules = t < 17500 ? EDGES : BAD_EDGES;
     const labels = maxCut > .5 ? CUT_LABELS : best > .5 ? HIDDEN_LABELS : walk;
-    const marks = fade(t, 13500, 16000, 17500, 18200) + fade(t, 24500, 26500, 33000, 34000);
+    const showMarks = (t >= 16000 && t <= 17500) || (t >= 26500 && t <= 33000);
     this.words(t >= 84500 ? 'BUILT FROM 3SAT · SCHEMATIC' : maxCut > .5 ? (this.tall ? 'MAX-CUT · BEST: 9 OF 12' : 'MAX-CUT') : 'ONE REPLY AT EACH END', center.x, this.height * (this.tall ? .025 : .08), this.width * (this.tall ? .86 : .43));
 
     for (const [index, rule] of rules.entries()) {
@@ -180,9 +180,9 @@ export class UniqueRulesFilm {
         this.circle(mid, 10, 'blue', false, changed * (1 - ease(t, 33000, 35000)));
       }
 
-      if (marks > .01 && t < 34000) {
+      if (showMarks) {
         const offset = rule.from === 0 ? -13 : 13;
-        this.words(kept ? '✓' : '×', mid.x + normal.x * offset, mid.y + normal.y * offset, 25, Math.min(1, marks), kept ? 'muted' : 'blue', false);
+        this.words(kept ? '✓' : '×', mid.x + normal.x * offset, mid.y + normal.y * offset, 25, 1, kept ? 'muted' : 'blue', false);
       }
     }
 
@@ -239,14 +239,21 @@ export class UniqueRulesFilm {
     const yes = .95 - .45 * oldYes;
     const tickY = box.y + 25;
     const claiming = t >= 84500 && t < 93000;
+    const yesRoom = ease(t, 76000, 77000) * (1 - ease(t, 86150, 86800));
+    const titleOffset = this.tall ? 30 + 15 * yesRoom : 60;
+    const compactPhone = this.tall && this.width < 300;
+    const agreementExit = this.tall && t > 112500 && t < 114000;
     const title = claiming ? 'CLAIMED · OPENAI 2026' : cut > .5 ? 'SHARE OF OPTIMUM\nGUARANTEED' : t >= 50500 && t < 58500 ? 'SHORT LABELS: CLOSE TO 1\nSCHEMATIC' : 'SHARE OF RULES KEPT';
-    this.words(title, mid, box.y - (this.tall ? 30 : 60), box.w + 20, appear * (this.tall ? 1 - proofStage : 1), claiming ? 'blue' : 'ink');
+    this.words(title, mid, box.y - titleOffset, box.w + 20, appear * (this.tall ? 1 - proofStage : 1), claiming ? 'blue' : 'ink');
     this.line({ x: box.x, y: box.y }, { x: box.x + box.w, y: box.y }, 'ink', appear);
 
     for (const value of [0, .5, 1]) {
       const x = box.x + value * box.w;
       this.line({ x, y: box.y - 4 }, { x, y: box.y + 4 }, 'ink', appear);
-      this.words(String(value), x, tickY, 30, appear * lowerLabels, 'muted');
+      const tickOverBitKey = compactPhone && value === .5 && t > 57800 && t < 58500;
+      const tickOverAgreement = agreementExit && (value === .5 || (compactPhone && value === 1));
+      const tickOpacity = tickOverBitKey || tickOverAgreement ? 0 : lowerLabels;
+      this.words(String(value), x, tickY, 30, appear * tickOpacity, 'muted');
     }
 
     const early = fade(t, 12000, 14500, 33000, 34000);
@@ -255,7 +262,7 @@ export class UniqueRulesFilm {
     const value = 1 - walk / 3 + best / 4;
     const x = box.x + value * box.w;
     this.circle({ x, y: box.y }, 4, 'blue', true, early);
-    this.words(t < 17500 ? 'ALL 12 KEPT' : best > .8 ? 'BEST LABELLING: 11 OF 12' : 'FOLLOWING THE LINES: 8 OF 12', mid, box.y + 62, box.w + 35, early, 'blue');
+    this.words(t < 17500 ? 'ALL 12 KEPT' : best > .8 ? 'BEST LABELLING: 11 OF 12' : 'FOLLOWING THE LINES: 8 OF 12', mid, box.y + 62, box.w + 35, t > 33000 ? 0 : early, 'blue');
     this.line({ x, y: box.y + 6 }, { x: mid, y: box.y + 47 }, 'blue', early * .4);
 
     if (zones > .01) {
@@ -264,9 +271,14 @@ export class UniqueRulesFilm {
       this.line({ x: box.x + yes * box.w, y: box.y }, { x: box.x + box.w, y: box.y }, 'blue', zones, 5);
       this.words('NO', box.x + .075 * box.w, box.y - 28, 40, zones * (1 - ease(t, 50000, 50500) + ease(t, 58500, 59000)), 'blue');
       this.words('YES', box.x + (yes + 1) / 2 * box.w, box.y - 28, 40, zones * (1 - ease(t, 50000, 50500) + ease(t, 58500, 59000)), 'blue');
-      this.labels.place('no', box.x + .06 * box.w, box.y + 52, zones * lowerLabels);
+      this.labels.place('no', box.x + .06 * box.w, box.y + 52, zones * (agreementExit ? 0 : lowerLabels));
       this.labels.place('yes', box.x + .92 * box.w, box.y + 52, zones * (1 - oldYes) * lowerLabels);
-      this.words('PROMISED NOT TO HAPPEN', box.x + .5 * box.w, box.y + 51, box.w * .55, zones * (1 - ease(t, 84500, 86000)) * lowerLabels);
+      const promiseOverEarlyLeader = t > 33000 && t < 35500;
+      const promiseOverBitKey = this.tall && t > 57800 && t < 58500;
+      const promiseOpacity = promiseOverEarlyLeader || promiseOverBitKey ? 0 : zones * lowerLabels;
+      const compactClaim = !this.tall && this.width >= 660 && this.width < 700;
+      const promiseExit = compactClaim && t > 84500 && t < 86000 ? 0 : 1 - ease(t, 84500, 86000);
+      this.words('PROMISED NOT TO HAPPEN', box.x + .5 * box.w, box.y + 51, box.w * .55, promiseOpacity * promiseExit);
       this.words('ε AND δ CHOSEN FIRST · SCHEMATIC', mid, box.y + 83, box.w + 25, fade(t, 33000, 35000, 41000, 42000), 'muted');
       this.words('WHICH ZONE? AS HARD AS 3SAT', mid, box.y + 83, box.w + 24, fade(t, 42000, 43500, 49000, 50000), 'blue');
       this.words('2018: YES CASE NEAR 1/2', mid, box.y + 75, box.w + 30, oldYes * (1 - ease(t, 84000, 84500)), 'blue');
@@ -289,16 +301,19 @@ export class UniqueRulesFilm {
       const at = box.x + .87856 * box.w;
       this.line({ x: box.x, y: box.y }, { x: at, y: box.y }, 'blue', cut, 5);
       this.hatch({ x: at, y: box.y - 14, w: box.w * (1 - .87856), h: 28 }, cut * .6);
-      this.words('0.878…', at, box.y - 26, 65, cut, 'blue', false);
-      this.words('GOEMANS–WILLIAMSON · 1995', mid, box.y + (this.tall ? 44 : 58), box.w + 25, cut * (1 - coverStage));
-      this.words('UNDER THE CONJECTURE\nNO BETTER GUARANTEE UNLESS P = NP', mid, box.y + (this.tall ? 77 : 91), box.w + 30, cut * (1 - coverStage), 'muted');
+      this.words('0.878…', at, box.y - 26, 65, compactPhone && cut < 1 ? 0 : cut, 'blue', false);
+      const approximationOpacity = this.tall && t > 67500 ? 0 : cut * (1 - coverStage);
+      const methodOpacity = compactPhone ? approximationOpacity : cut * (1 - coverStage);
+      this.words('GOEMANS–WILLIAMSON · 1995', mid, box.y + (this.tall ? 44 : 58), box.w + 25, methodOpacity);
+      this.words('UNDER THE CONJECTURE\nNO BETTER GUARANTEE UNLESS P = NP', mid, box.y + (this.tall ? 77 : 91), box.w + 30, approximationOpacity, 'muted');
     }
 
     const cover = fade(t, 67500, 69000, 75000, 76000);
 
     if (cover > .01) {
       const y = box.y + (this.tall ? this.height * .24 : 146);
-      this.words('VERTEX COVER: TIMES THE SMALLEST', mid, y - 24, box.w + 25, cover);
+      const coverLabel = this.tall && cover < 1 ? 0 : cover;
+      this.words('VERTEX COVER: TIMES THE SMALLEST', mid, y - 24, box.w + 25, coverLabel);
       this.line({ x: box.x, y }, { x: box.x + box.w, y }, 'ink', cover);
       const x2 = box.x + box.w * 2 / 3;
       this.hatch({ x: box.x, y: y - 7, w: x2 - box.x, h: 14 }, cover * .3);
@@ -308,7 +323,7 @@ export class UniqueRulesFilm {
       this.words('2.5', box.x + box.w, y + 21, 35, cover);
     }
 
-    const status = ease(t, 112000, 114000);
+    const status = t >= 114000 ? 1 : 0;
     this.labels.place('status', mid, box.y + 104, status);
   }
 
@@ -327,20 +342,24 @@ export class UniqueRulesFilm {
     const spacing = this.tall ? 22 : 26;
     const left = x - (count - 1) * spacing / 2;
     const noise = ease(t, 95400, 96600);
-    this.words(isCode ? 'CODE + NOISE · SCHEMATIC' : 'A RULE: FLIP BITS 1 AND 3', x, y - (this.tall ? (isCode ? 15 : 18) : 30), this.width * (this.tall ? .9 : .42), opacity);
+    const headingOpacity = this.tall && (isCode || t > 57500) && opacity < 1 ? 0 : opacity;
+    this.words(isCode ? 'CODE + NOISE · SCHEMATIC' : 'A RULE: FLIP BITS 1 AND 3', x, y - (this.tall ? (isCode ? 15 : 18) : 30), this.width * (this.tall ? .9 : .42), headingOpacity);
+    const bitOpacity = opacity === 1 ? 1 : 0;
+    const clearTopRamp = this.tall && (t < 52500 || t >= 102000);
+    const clearBottomRamp = isCode && t < 94700 && (this.tall || (this.width >= 660 && this.width < 700));
 
     for (let bit = 0; bit < count; bit++) {
       const original = bit % 3 === 0;
       const flipped = bit === 0 || bit === 2;
       const px = left + bit * spacing;
-      this.words(original ? '1' : '0', px, y, spacing, opacity, 'ink', false);
+      this.words(original ? '1' : '0', px, y, spacing, clearTopRamp ? opacity : bitOpacity, 'ink', false);
       this.line({ x: px, y: y + 10 }, { x: px, y: y + 23 }, flipped ? 'blue' : 'muted', opacity * .5);
       const changed = flipped && (rule > .5 || noise > .5);
-      this.words(original !== changed ? '1' : '0', px, y + 34, spacing, opacity, changed ? 'blue' : 'ink', false);
+      this.words(original !== changed ? '1' : '0', px, y + 34, spacing, clearBottomRamp ? opacity : bitOpacity, changed ? 'blue' : 'ink', false);
 
       if (flipped) {
         this.circle({ x: px, y: y + 34 }, 11, 'blue', false, opacity * (rule > .5 ? .6 : noise));
-        this.words(original !== changed ? '1' : '0', px, y + 34, spacing, opacity, changed ? 'blue' : 'ink', false);
+        this.words(original !== changed ? '1' : '0', px, y + 34, spacing, clearBottomRamp ? opacity : bitOpacity, changed ? 'blue' : 'ink', false);
       }
     }
 
