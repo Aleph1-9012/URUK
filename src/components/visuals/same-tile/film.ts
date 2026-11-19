@@ -110,7 +110,7 @@ class SameTileFilm implements FilmDrawing {
   private field(index: number): Field {
     const { width: w, height: h } = this;
     const phone = w < PHONE_STAGE_WIDTH;
-    const unit = phone ? w * .0315 : Math.min(13, w * .022, h * .024);
+    const unit = phone ? Math.min(w * .0315, h * .015) : Math.min(13, w * .022, h * .024);
     const rows = phone ? 13 : 24;
     const top = h * (phone ? index === 0 ? .14 : .43 : .17);
 
@@ -124,7 +124,7 @@ class SameTileFilm implements FilmDrawing {
   private opening(time: number): void {
     const { width: w, height: h } = this;
     const phone = w < PHONE_STAGE_WIDTH;
-    const settledUnit = phone ? w * .0315 : Math.min(13, w * .022, h * .021);
+    const settledUnit = phone ? Math.min(w * .0315, h * .015) : Math.min(13, w * .022, h * .021);
     const pull = smooth(time, 750, 2250);
     const unit = mix(phone ? 29 : 40, settledUnit, pull);
     const origin = { x: w * .5, y: h * mix(.39, .64, pull) };
@@ -221,7 +221,7 @@ class SameTileFilm implements FilmDrawing {
     }
 
     const center = { x: w * .5, y: h * mix(.57, .40, select) };
-    const unit = mix(phone ? 6 : 9, phone ? 16 : 23, select) * appear;
+    const unit = mix(phone ? 6 : 9, phone ? Math.min(16, h * .028) : 23, select) * appear;
     const target = { x: w * .86, y: h * .12 };
 
     for (const point of this.model.l.translations) {
@@ -237,8 +237,8 @@ class SameTileFilm implements FilmDrawing {
 
     if (time < 14750) {
       this.text('OTHER TRANSLATIONAL TILES', w * .5, h * .045, phone ? 10 : 16);
-      this.text('SQUARES', w * .25, h * .40, phone ? 9 : 12);
-      this.text('HEXAGONS · SCHEMATIC', w * .75, h * .43, phone ? 8 : 11);
+      this.text('SQUARES', w * (phone ? mix(.10, .25, appear) : .25), h * (phone ? mix(.46, .40, appear) : .40), phone ? 9 : 12);
+      this.text('HEXAGONS · SCHEMATIC', w * .75, h * (phone ? mix(.20, .43, appear) : .43), phone ? 8 : 11);
       this.text('L-TETROMINO · EXACT LATTICE PATCH', w * .5, h * .78, phone ? 9 : 12);
       this.text('HEXAGON ROW: NO COVER TEST CLAIMED', w * .5, h * .86, phone ? 8.5 : 11);
     } else if (time < 22250) {

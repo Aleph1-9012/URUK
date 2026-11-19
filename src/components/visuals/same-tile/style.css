@@ -6,6 +6,6 @@ uruk-same-tile .film-label { font-size: .875rem; }
 }
 
 @container tifilm (width < 600px) {
-  uruk-same-tile .film-stage { aspect-ratio: 4 / 9; }
+  uruk-same-tile .film-stage { aspect-ratio: 4 / 5; }
   uruk-same-tile .film-label { font-size: .75rem; }
 }

@@ -9,11 +9,11 @@ type Tones = { ink: string; muted: string; paper: string; blue: string };
 
 function diagramLayout(width: number, height: number) {
   const phone = width < PHONE_STAGE_WIDTH;
-  const pitch = Math.min(width * (phone ? .105 : .055), height * .078);
+  const pitch = Math.min(width * (phone ? .047 : .055), height * (phone ? .038 : .078));
 
   return {
     phone,
-    center: { x: width * (phone ? .5 : .30), y: height * (phone ? .29 : .36) },
+    center: { x: width * (phone ? .25 : .30), y: height * (phone ? .23 : .36) },
     pitch,
     depth: { x: -pitch * .60, y: -pitch * .45 },
   };
@@ -61,18 +61,19 @@ function ladder(ctx: CanvasRenderingContext2D, width: number, height: number, ti
   ];
 
   if (phone) {
-    const y = height * .52;
-    drawLine(ctx, width * .18, y, width * .82, y, tones.ink, .9);
+    const x = width * .525;
+    const offset = height * .33 * (1 - smooth(time, 55000, 55500));
+    drawLine(ctx, x, height * .13 + offset, x, height * .38 + offset, tones.ink, .9);
 
     for (const [index, rung] of rungs.entries()) {
-      const x = width * (.2 + index * .3);
-      drawLine(ctx, x, y - 5, x, y + 5, tones.ink, 1.1);
-      drawText(ctx, rung.space, x, height * .488, { size: 12, color: tones.ink, family: 'math' });
-      drawText(ctx, rung.author, x, height * .553, { size: 8.5, color: tones.ink });
-      drawText(ctx, rung.year, x, height * .575, { size: 10, color: tones.ink, family: 'math' });
+      const y = height * (.16 + index * .10) + offset;
+      drawLine(ctx, x - 4, y, x + 4, y, tones.ink, 1.1);
+      drawText(ctx, rung.space, width * .58, y, { size: 12, color: tones.ink, family: 'math' });
+      drawText(ctx, rung.author, width * .755, y, { size: 8.5, color: tones.ink });
+      drawText(ctx, rung.year, width * .945, y, { size: 10, color: tones.ink, family: 'math' });
     }
 
-    drawText(ctx, 'ℝ² · ARBITRARY MEASURABLE TILES STILL OPEN', width * .5, height * .609, { size: 8.5, color: tones.ink, family: 'math' });
+    drawText(ctx, 'ℝ² · ARBITRARY MEASURABLE TILES STILL OPEN', width * .5, height * .475 + offset, { size: 8.5, color: tones.ink, family: 'math' });
 
     return;
   }
@@ -97,11 +98,11 @@ function claim(ctx: CanvasRenderingContext2D, width: number, height: number, tim
   const small = phone ? 8.5 : 11;
 
   if (phone) {
-    labels.place('tiling', width * .5, height * .64);
-    drawText(ctx, 'CLAIMED: NO FULLY PERIODIC TILING', width * .5, height * .68, { size: 9, color: tones.ink });
-    labels.place('thickening', width * .5, height * .72);
-    drawText(ctx, 'ℝ³ · ARBITRARY REAL TRANSLATIONS', width * .5, height * .755, { size: 9, color: tones.ink, family: 'math' });
-    drawText(ctx, 'NO FULLY PERIODIC TILING HERE EITHER', width * .5, height * .785, { size: 8.5, color: tones.ink });
+    labels.place('tiling', width * .5, height * .535);
+    drawText(ctx, 'CLAIMED: NO FULLY PERIODIC TILING', width * .5, height * .595, { size: 9, color: tones.ink });
+    labels.place('thickening', width * .5, height * .65);
+    drawText(ctx, 'ℝ³ · ARBITRARY REAL TRANSLATIONS', width * .5, height * .72, { size: 9, color: tones.ink, family: 'math' });
+    drawText(ctx, 'NO FULLY PERIODIC TILING HERE EITHER', width * .5, height * .76, { size: 8.5, color: tones.ink });
   } else {
     drawText(ctx, 'CLAIMED', width * .09, height * .70, { size: 12, color: tones.ink, align: 'left' });
     labels.place('tiling', width * .35, height * .70);
@@ -112,12 +113,12 @@ function claim(ctx: CanvasRenderingContext2D, width: number, height: number, tim
   }
 
   const arrowX = width * (phone ? .19 : .26);
-  const arrowY = height * (phone ? .825 : .859);
+  const arrowY = height * (phone ? .812 : .859);
   drawLine(ctx, arrowX - 16, arrowY, arrowX + 16, arrowY, tones.ink, 1.2, [3, 3]);
   drawLine(ctx, arrowX + 16, arrowY, arrowX + 11, arrowY - 4, tones.ink, 1.2);
   drawLine(ctx, arrowX + 16, arrowY, arrowX + 11, arrowY + 4, tones.ink, 1.2);
-  drawText(ctx, 'ONE PERIOD NOT EXCLUDED', width * .31, height * (phone ? .817 : .848), { size: small, color: tones.ink, align: 'left' });
-  drawText(ctx, 'NOT ASSERTED TO EXIST', width * .31, height * (phone ? .844 : .875), { size: small, color: tones.ink, align: 'left' });
+  drawText(ctx, 'ONE PERIOD NOT EXCLUDED', width * .31, height * (phone ? .797 : .848), { size: small, color: tones.ink, align: 'left' });
+  drawText(ctx, 'NOT ASSERTED TO EXIST', width * .31, height * (phone ? .832 : .875), { size: small, color: tones.ink, align: 'left' });
 }
 
 function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, tones: Tones): void {
@@ -131,10 +132,10 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
     'ADDS LEAST-DIMENSION CLAUSE',
     'NO OUTSIDE REPLAY · KERNEL CHECK ≠ READING',
   ];
-  drawLine(ctx, width * .05, height * (phone ? .88 : .90) + offset, width * .95, height * (phone ? .88 : .90) + offset, tones.ink, 1);
+  drawLine(ctx, width * .05, height * (phone ? .845 : .90) + offset, width * .95, height * (phone ? .845 : .90) + offset, tones.ink, 1);
 
   for (const [index, value] of rows.entries()) {
-    drawText(ctx, value, width * .5, height * (phone ? .90 + index * .025 : .918 + index * .022) + offset, { size: phone ? 8.5 : 10.5, color: tones.ink, family: index === 3 ? 'math' : 'type' });
+    drawText(ctx, value, width * .5, (phone ? height * .875 + index * 11 : height * (.918 + index * .022)) + offset, { size: phone ? 8.5 : 10.5, color: tones.ink, family: index === 3 ? 'math' : 'type' });
   }
 }
 
@@ -166,21 +167,21 @@ export function drawDimensionSequence(ctx: CanvasRenderingContext2D, width: numb
     const titleX = phone ? width * .5 : width * .30;
     drawText(ctx, "PAPER'S TILE AND TRANSLATION SET NOT DRAWN", titleX, height * (phone ? .035 : .055), { size: small, color: tones.ink });
     drawText(ctx, 'SCHEMATIC LAYOUT · NOT THE DOMINO SET OR PAPER A', titleX, height * (phone ? .067 : .095), { size: phone ? 8.5 : 10, color: tones.ink });
-    const box = { x: width * (phone ? .80 : .47), y: height * (phone ? .105 : .13), width: phone ? 28 : 38, height: phone ? 19 : 25 };
+    const box = { x: width * (phone ? .43 : .47), y: height * (phone ? .085 : .13), width: phone ? 18 : 38, height: phone ? 12 : 25 };
     ctx.save();
     ctx.strokeStyle = tones.ink;
     ctx.lineWidth = 1;
     ctx.setLineDash([1, 3]);
     ctx.strokeRect(box.x, box.y, box.width, box.height);
     ctx.restore();
-    drawText(ctx, 'EMPTY PLACEHOLDER', width * (phone ? .41 : .28), box.y + box.height / 2, { size: small, color: tones.ink });
+    drawText(ctx, 'EMPTY PLACEHOLDER', width * (phone ? .20 : .28), box.y + box.height / 2, { size: small, color: tones.ink });
     const origin = dimensionPoint(width, height, time, 3, 4);
     drawLine(ctx, origin.x, origin.y, origin.x + depth.x * 2 * depthAmount, origin.y + depth.y * 2 * depthAmount, tones.ink, .8, [3, 3]);
-    const y = height * (phone ? .433 : .59);
+    const y = height * (phone ? .35 : .59);
     const marks = [
-      { fraction: phone ? .23 : .17, angle: 0 },
-      { fraction: phone ? .50 : .30, angle: -Math.PI / 2 },
-      { fraction: phone ? .77 : .43, angle: -Math.PI / 4 },
+      { fraction: phone ? .10 : .17, angle: 0 },
+      { fraction: phone ? .25 : .30, angle: -Math.PI / 2 },
+      { fraction: phone ? .40 : .43, angle: -Math.PI / 4 },
     ];
 
     for (const [index, mark] of marks.entries()) {
@@ -188,7 +189,7 @@ export function drawDimensionSequence(ctx: CanvasRenderingContext2D, width: numb
       periodMark(ctx, { x: width * mark.fraction, y }, mark.angle, broken, claimed ? tones.blue : tones.ink, phone ? 14 : 19);
     }
 
-    drawText(ctx, 'STATEMENT MARKS · NOT INVARIANCE TESTS', center.x, height * (phone ? .468 : .64), { size: small, color: tones.ink });
+    drawText(ctx, 'STATEMENT MARKS · NOT INVARIANCE TESTS', phone ? width * .5 : center.x, height * (phone ? .43 : .64), { size: small, color: tones.ink });
   } else {
     drawText(ctx, 'KNOWN INTEGER-LATTICE DIMENSIONS', phone ? width * .5 : center.x, height * (phone ? .045 : .06), { size: phone ? 10 : 14, color: tones.ink });
     drawText(ctx, 'DIMENSION ILLUSTRATION · NOT A NEW TILING TEST', phone ? width * .5 : center.x, height * (phone ? .08 : .105), { size: small, color: tones.ink });
