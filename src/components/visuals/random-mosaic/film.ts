@@ -75,7 +75,7 @@ class RandomMosaicFilm implements FilmDrawing {
     const small = Math.min(w * .30 / diagram.width, h * .14 / diagram.height);
     const firstScale = this.phone ? mix(large, small, carry) : large;
     const finalScale = Math.min(w * (this.phone ? .14 : .15) / diagram.width, h * .17 / diagram.height);
-    const x = this.phone ? .5 : .26;
+    const x = this.phone ? mix(.5, .20, carry) : .26;
     const y = this.phone ? mix(.28, .16, carry) : .43;
 
     return { x: w * mix(x, this.phone ? .16 : .13, motion.mosaicInset), y: h * mix(y, .12, motion.mosaicInset), scale: mix(firstScale, finalScale, motion.mosaicInset), angle };
@@ -89,7 +89,7 @@ class RandomMosaicFilm implements FilmDrawing {
   }
 
   private plotBounds(): Rect {
-    return { left: this.width * (this.phone ? .13 : .55), right: this.width * .94, top: this.height * (this.phone ? .36 : .24), bottom: this.height * (this.phone ? .64 : .66) };
+    return { left: this.width * (this.phone ? .13 : .55), right: this.width * .94, top: this.height * (this.phone ? .36 : .24), bottom: this.height * (this.phone ? .60 : .66) };
   }
 
   private plotPoint(x: number, probability: number): Point {
@@ -294,8 +294,8 @@ class RandomMosaicFilm implements FilmDrawing {
 
   private compass(): void {
     const { width: w, height: h, pen, tones } = this;
-    const center = { x: w * (this.phone ? .5 : .76), y: h * (this.phone ? .62 : .36) };
-    const radius = Math.min(w * (this.phone ? .09 : .045), h * .085);
+    const center = { x: w * (this.phone ? .5 : .76), y: h * (this.phone ? .61 : .36) };
+    const radius = Math.min(w * (this.phone ? .07 : .045), h * (this.phone ? .065 : .085));
     pen.strokeStyle = tones.ink;
     pen.lineWidth = .9;
     pen.beginPath();
@@ -362,7 +362,7 @@ class RandomMosaicFilm implements FilmDrawing {
       pen.arc(point.x, point.y, 2.1, 0, 2 * Math.PI);
       pen.fill();
       const dx = motion.halfLine === 0 ? (index < 2 ? -9 : 9) : 0;
-      const dy = motion.halfLine === 0 ? (index === 0 || index === 3 ? -10 : 10) : -13;
+      const dy = motion.halfLine === 0 ? (index === 0 || index === 3 ? this.phone ? -4 : -10 : 10) : -13;
       drawText(pen, name, point.x + dx, point.y + dy, { size: this.phone ? 13 : 16, family: 'math', color: tones.ink, paper: tones.paper });
 
       if (motion.halfLine === 1) drawText(pen, value, point.x, point.y + 13, { size: this.phone ? 11 : 14, family: 'math', color: tones.ink, paper: tones.paper });
@@ -379,7 +379,7 @@ class RandomMosaicFilm implements FilmDrawing {
       for (const value of [0, .5, 1]) {
         const point = this.plotPoint(value, 0);
         drawLine(pen, point.x, point.y - 3, point.x, point.y + 3, tones.ink);
-        drawText(pen, String(value), point.x, point.y + 12, { size: this.phone ? 10 : 12, family: 'math', color: tones.ink, paper: tones.paper });
+        drawText(pen, String(value), point.x, point.y + (this.phone ? 8 : 12), { size: this.phone ? 10 : 12, family: 'math', color: tones.ink, paper: tones.paper });
         const vertical = this.plotPoint(0, value);
         drawText(pen, String(value), vertical.x - 12, vertical.y, { size: this.phone ? 10 : 12, family: 'math', color: tones.ink, paper: tones.paper });
       }
@@ -464,7 +464,7 @@ class RandomMosaicFilm implements FilmDrawing {
     const columns = this.phone ? 20 : 40;
     const spacing = Math.min(this.phone ? 9 : 10, w * (this.phone ? .86 : .44) / columns);
     const left = w * (this.phone ? .5 : .26) - (columns - 1) * spacing / 2;
-    const top = h * (this.phone ? .255 : .86);
+    const top = h * (this.phone ? .24 : .86);
     const count = Math.floor(40 * motion.annealedTicks);
 
     for (let index = 0; index < count; index++) {

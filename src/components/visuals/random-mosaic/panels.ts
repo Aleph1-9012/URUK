@@ -27,7 +27,7 @@ export function drawRandomMosaicPanels(ctx: CanvasRenderingContext2D, w: number,
   }
 
   function knownCardyTag(): void {
-    if (phone) note('CARDY: TRIANGULAR SITE\nSMIRNOV 2001', .295, 8, false, false, .62, .68);
+    if (phone) note('CARDY: TRIANGULAR SITE\nSMIRNOV 2001', .13, 8, false, false, .68, .56);
     else note('CARDY · TRIANGULAR SITE · SMIRNOV 2001', .055, 10);
   }
 
@@ -111,16 +111,16 @@ export function drawRandomMosaicPanels(ctx: CanvasRenderingContext2D, w: number,
     case 'claim':
       knownCardyTag();
       if (motion.claimTags > 0) {
-        note('CLAIMED · POISSON-VORONOI LIMIT', .70, phone ? 9 : 12, false, true);
-        note(motion.companion > 0 ? 'ANNEALED · COINS 1/2 · INTENSITY → ∞' : 'ANNEALED · FAIR COLOURS 1/2', .75, phone ? 9 : 12, true, true);
-        note('ANY BOUNDED JORDAN DOMAIN', .795, phone ? 8.5 : 11, false, true);
-        formula('crossing-limit', .852);
-        if (motion.companion === 0) note('POINT INTENSITY → ∞', .90, phone ? 9 : 12, true, true);
+        note('CLAIMED · POISSON-VORONOI LIMIT', phone ? .65 : .70, phone ? 9 : 12, false, true);
+        note(motion.companion > 0 ? 'ANNEALED · COINS 1/2 · INTENSITY → ∞' : 'ANNEALED · FAIR COLOURS 1/2', phone ? .695 : .75, phone ? 9 : 12, true, true);
+        note('ANY BOUNDED JORDAN DOMAIN', phone ? .74 : .795, phone ? 8.5 : 11, false, true);
+        formula('crossing-limit', phone ? .805 : .852);
+        if (motion.companion === 0) note('POINT INTENSITY → ∞', phone ? .88 : .90, phone ? 9 : 12, true, true);
       }
       if (motion.companion > 0) {
-        note('COMPANIONS ASSUME THE MAIN THEOREM', .885, phone ? 8 : 10, false, true);
-        formula('pivotal-law', .945);
-        note('NEAR-CRITICAL: GIVEN THE MOSAIC', .98, phone ? 8 : 10, false, true);
+        note('COMPANIONS ASSUME THE MAIN THEOREM', phone ? .85 : .885, phone ? 8 : 10, false, true);
+        formula('pivotal-law', phone ? .92 : .945);
+        note('NEAR-CRITICAL: GIVEN THE MOSAIC', phone ? .97 : .98, phone ? 8 : 10, false, true);
       }
       break;
     case 'annealed':

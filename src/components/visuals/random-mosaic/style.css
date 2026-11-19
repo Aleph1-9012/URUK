@@ -8,6 +8,7 @@ uruk-random-mosaic [data-label="pivotal-law"] { color: var(--blue); }
 }
 
 @container vpfilm (width < 600px) {
-  uruk-random-mosaic .film-stage { aspect-ratio: 4 / 9; }
+  uruk-random-mosaic .film-stage { aspect-ratio: 4 / 5; }
   uruk-random-mosaic .film-label { font-size: .75rem; }
+  uruk-random-mosaic .film-label > span { padding-block: 0; }
 }
