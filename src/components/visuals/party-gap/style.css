@@ -9,7 +9,7 @@ uruk-party-gap .film-label[data-label='log-claim'],
 uruk-party-gap .film-label[data-label='general-log'] { color: var(--blue); }
 
 @container plate (max-width: 599px) {
-  uruk-party-gap .film-stage { aspect-ratio: 4 / 6; }
+  uruk-party-gap .film-stage { aspect-ratio: 4 / 5; }
   uruk-party-gap .film-label { font-size: .6875rem; }
   uruk-party-gap .film-label[data-label='classical'],
   uruk-party-gap .film-label[data-label='aks'],

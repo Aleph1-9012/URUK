@@ -94,7 +94,7 @@ export class PartyGapFilm {
     pen.setLineDash([]);
   }
 
-  private person(point: Point, index: number, tall: boolean, radius = 3): void {
+  private person(point: Point, index: number, tall: boolean, radius = 3, labelSpread = 0): void {
     const { pen, colors } = this;
     pen.strokeStyle = colors.ink;
     pen.fillStyle = colors.paper;
@@ -102,10 +102,10 @@ export class PartyGapFilm {
     dot(pen, { x: point.x, y: point.y - 3 }, radius);
     line(pen, point.x, point.y + radius - 3, point.x, point.y + 7);
     line(pen, point.x - 4, point.y + 4, point.x + 4, point.y + 4);
-    text(pen, String(index + 1), point.x, point.y + 17, tall ? 11 : 15, 20, colors);
+    text(pen, String(index + 1), point.x, point.y + 17 + (index % 2) * labelSpread, tall ? 11 : 15, 20, colors);
   }
 
-  private drawParty(points: Point[], edges: readonly Edge[], colors: readonly boolean[], time: number, tall: boolean, count = 6, hunt = false): void {
+  private drawParty(points: Point[], edges: readonly Edge[], colors: readonly boolean[], time: number, tall: boolean, count = 6, hunt = false, labelSpread = 0): void {
     for (const [index, [a, b]] of edges.entries()) {
       const first = points[a];
       const second = points[b];
@@ -137,7 +137,7 @@ export class PartyGapFilm {
       }
     }
 
-    for (const [index, point] of points.entries()) this.person(point, index, tall, tall ? 3 : 4);
+    for (const [index, point] of points.entries()) this.person(point, index, tall, tall ? 3 : 4, labelSpread);
   }
 
   private triangle(points: Point[], vertices: Triple, heavy: boolean): void {
@@ -240,7 +240,7 @@ export class PartyGapFilm {
     }
   }
 
-  private flagPositions(box: Box, time: number): Point[] {
+  private flagPositions(box: Box, time: number, tall: boolean): Point[] {
     const amount = smooth(time, 63250, 64350);
     const radius = Math.min(box.w * .31, box.h * .31) * .48;
     const lift = smooth(time, 87250, 88500);
@@ -248,12 +248,12 @@ export class PartyGapFilm {
 
     return this.model.toy.flags.map((_, index) => {
       const angle = -Math.PI / 2 + index * Math.PI * 2 / 43;
-      const start = { x: box.x + box.w * .24 + radius * Math.cos(angle), y: box.y + box.h * .31 + radius * Math.sin(angle) };
-      const end = { x: box.x + box.w * (.045 + .91 * index / 19), y: box.y + box.h * .46 };
+      const start = { x: box.x + box.w * .24 + radius * Math.cos(angle), y: box.y + box.h * (tall ? .40 : .31) + radius * Math.sin(angle) };
+      const end = { x: box.x + box.w * (.045 + .91 * index / 19), y: box.y + (tall ? 24 : box.h * .46) };
       const position = blend(start, end, amount);
       const selection = independent.indexOf(index);
 
-      if (selection >= 0) return blend(position, { x: box.x + box.w * (.06 + .88 * selection / 9), y: box.y + box.h * .65 }, lift);
+      if (selection >= 0) return blend(position, { x: box.x + box.w * (.06 + .88 * selection / 9), y: box.y + (tall ? 31 : box.h * .65) }, lift);
 
       return position;
     });
@@ -261,7 +261,7 @@ export class PartyGapFilm {
 
   private flags(box: Box, time: number, tall: boolean): void {
     const { pen, colors, model } = this;
-    const points = this.flagPositions(box, time);
+    const points = this.flagPositions(box, time, tall);
     const amount = smooth(time, 63250, 64350);
     pen.strokeStyle = colors.ink;
     pen.fillStyle = colors.ink;
@@ -272,7 +272,7 @@ export class PartyGapFilm {
 
       for (let index = 20; index < 43; index++) {
         const angle = -Math.PI / 2 + index * Math.PI * 2 / 43;
-        const start = { x: box.x + box.w * .24 + radius * Math.cos(angle), y: box.y + box.h * .31 + radius * Math.sin(angle) };
+        const start = { x: box.x + box.w * .24 + radius * Math.cos(angle), y: box.y + box.h * (tall ? .40 : .31) + radius * Math.sin(angle) };
         const point = blend(start, { x: box.x - 10, y: box.y - 15 }, amount);
         dot(pen, point, tall ? 1.8 : 2.8);
       }
@@ -285,7 +285,7 @@ export class PartyGapFilm {
       if (!first || !second) throw new Error('Every toy edge has two stream positions.');
 
       const draw = index < 3 ? smooth(time, 64350 + index * 600, 64750 + index * 600) : smooth(time, 66200, 67100);
-      const midpoint = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 - Math.min(box.h * .38, Math.abs(second.x - first.x) * .45) };
+      const midpoint = { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 - Math.min(tall ? 6 : box.h * .38, Math.abs(second.x - first.x) * .45) };
       pen.beginPath();
       pen.moveTo(first.x, first.y);
 
@@ -330,12 +330,12 @@ export class PartyGapFilm {
 
     text(pen, title, box.x + box.w / 2, box.y + 9, tall ? 9 : 14, box.w - 4, colors);
     const tags = time >= 75250 ? `NO TRIANGLE · ${model.toy.streamsChecked.toLocaleString('en-US')} RANDOM STREAMS OF 30\n10 RINGS · NO TWO JOINED\nTOY: d = 2 · PAPERS: d = s − 1, HUGE q` : `13 POINTS · 13 LINES · 52 FLAGS\n${time < 67100 ? 'ADDING ' : ''}31 EDGES · TOY: d = 2 · HUGE q IN PAPERS`;
-    text(pen, tags, box.x + box.w / 2, box.y + box.h - (time >= 75250 ? tall ? 29 : 42 : tall ? 16 : 27), tall ? 8 : 11, box.w - 4, colors);
+    text(pen, tags, box.x + box.w / 2, box.y + box.h - (time >= 75250 ? tall ? 21 : 42 : tall ? 16 : 27), tall ? 8 : 11, box.w - 4, colors);
   }
 
   private closingParty(box: Box, time: number, tall: boolean): void {
     const amount = smooth(time, 107750, 108850);
-    const from = this.flagPositions({ ...box, h: tall ? box.h : box.h * .54 }, 107750);
+    const from = this.flagPositions({ ...box, h: tall ? box.h : box.h * .54 }, 107750, tall);
     const ringBox = { x: box.x, y: box.y + 12, w: box.w, h: box.h - 12 };
     const radius = Math.min(ringBox.w * .31, ringBox.h * .31);
     const points: Point[] = [];
@@ -356,7 +356,7 @@ export class PartyGapFilm {
       }
     }
 
-    this.drawParty(points, this.model.party.pairs, this.model.party.colors, time, tall);
+    this.drawParty(points, this.model.party.pairs, this.model.party.colors, time, tall, 6, false, tall ? 12 * (1 - amount) : 0);
     text(this.pen, amount < 1 ? 'BACK TO THE SIX-PERSON PARTY' : 'TWO ACQUAINTED TRIOS · EVERY SIX HAS A TRIO', box.x + box.w / 2, box.y + 9, tall ? 8.5 : 13, box.w - 4, this.colors);
   }
 }

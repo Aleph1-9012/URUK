@@ -82,7 +82,7 @@ function ladder(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
   const claimed = time >= 79250;
   const flagRule = time >= 63250 && time < 79250;
   const scope = time >= 99500 && time < 107750;
-  const positions = tall ? [59, 103, 157] : [box.h * .28, box.h * .49, box.h * .72];
+  const positions = tall ? [59, 105, 159] : [box.h * .28, box.h * .49, box.h * .72];
   const title = scope ? 'LOG EXPONENT: CLAIMED · CONSTANT: OPEN' : 'POWER OF log t';
   text(pen, title, x, box.y + 9, tall ? 10 : 14, box.w - 5, colors);
   pen.strokeStyle = colors.muted;
@@ -126,9 +126,9 @@ function ladder(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
     if (row.arrived > 0) {
       const lowerY = y - 19 * (1 - row.arrived);
       line(pen, at(row.lower), lowerY - 5, at(row.lower), lowerY + 5);
-      const labelX = Math.min(at(row.lower), right - (row.s === 3 ? 0 : tall ? 48 : 65));
+      const labelX = tall && row.s !== 3 ? x : Math.min(at(row.lower), right - (row.s === 3 ? 0 : tall ? 48 : 65));
       line(pen, at(row.lower), y + 5, labelX, y + 11);
-      text(pen, row.label, labelX, y + 16, tall ? 9 : 12, row.s === 3 ? 90 : width * .90, colors);
+      text(pen, row.label, labelX, y + 16, tall ? 9 : 12, row.s === 3 ? 90 : tall ? box.w - 5 : width * .90, colors);
     }
 
     if (row.s === 5 && claimed) {
@@ -144,7 +144,7 @@ function ladder(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
 
   if (claimed) {
     const reveal = smooth(time, 79250, 80300);
-    const y = box.y + (tall ? 208 : box.h * .92) + (1 - reveal) * 35;
+    const y = box.y + (tall ? 204 : box.h * .92) + (1 - reveal) * (tall ? 4 : 35);
     const upper = left + width * .30;
     const lower = upper + 8;
     pen.strokeStyle = colors.muted;
@@ -164,7 +164,7 @@ function ladder(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
     place('general-log', left + width * .65, y + 13);
     text(pen, 'POSITION SCHEMATIC', right - 48, y - 14, tall ? 8 : 10, 100, colors);
   } else if (flagRule) {
-    place('flag-rule', x, box.y + box.h - 30);
+    place('flag-rule', x, box.y + box.h - (tall ? 16 : 30));
   } else if (!closing) {
     text(pen, 'UPPER RINGS · LOWER MARKS · HATCHED GAP', x, box.y + box.h - 3, tall ? 8.5 : 11, box.w - 5, colors);
   }

@@ -33,7 +33,7 @@ export function layout(width: number, height: number, time: number): { stage: Bo
     };
   }
 
-  const split = .52 - .15 * smooth(time, 46000, 46800);
+  const split = .43 - .17 * smooth(time, 46000, 46800);
 
   return {
     stage: { x: width * .04, y: height * .02, w: width * .92, h: height * (split - .04) },
