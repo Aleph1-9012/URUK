@@ -44,10 +44,10 @@ export class PolarProductFilm {
     const { width: w, height: h, pen, tones } = this;
     const tall = w < PHONE_STAGE_WIDTH;
     const tucked = smooth(time, 35000, 36750);
-    const scale = w * mix(tall ? .23 : .105, tall ? .145 : .065, tucked);
+    const scale = w * mix(tall ? .15 : .105, tall ? .095 : .065, tucked);
     const assemblyDrop = tall ? h * .04 * smooth(time, 32750, 34250) * (1 - smooth(time, 35000, 36750)) : 0;
-    const body: Center = { x: w * mix(tall ? .5 : .23, tall ? .25 : .13, tucked), y: h * mix(tall ? .205 : .42, tall ? .18 : .34, tucked) + assemblyDrop, scale };
-    const dual: Center = { x: w * mix(tall ? .5 : .59, tall ? .25 : .35, tucked), y: h * mix(tall ? .49 : .42, tall ? .40 : .34, tucked) + assemblyDrop, scale };
+    const body: Center = { x: w * mix(tall ? .5 : .23, tall ? .25 : .13, tucked), y: h * mix(tall ? .205 : .42, tall ? .16 : .34, tucked) + assemblyDrop, scale };
+    const dual: Center = { x: w * mix(tall ? .5 : .59, tall ? .25 : .35, tucked), y: h * mix(tall ? .49 : .42, tall ? .34 : .34, tucked) + assemblyDrop, scale };
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     pen.clearRect(0, 0, w, h);
     pen.lineCap = 'round';
@@ -75,8 +75,8 @@ export class PolarProductFilm {
       this.octahedron(dual, spatial);
     }
 
-    this.labels.place('body', tall ? body.x + scale * 1.65 : body.x - scale * 1.70, body.y);
-    this.labels.place('polar', tall ? dual.x + scale * 1.45 : dual.x - scale * 1.70, dual.y);
+    this.labels.place('body', tall ? body.x + scale * 1.65 + 6 : body.x - scale * 1.70, body.y);
+    this.labels.place('polar', tall ? dual.x + scale * 1.45 + 6 : dual.x - scale * 1.70, dual.y);
 
     if (time >= 2500 && time < 32750) {
       const y = h * (tall ? .76 : .70);
@@ -164,7 +164,7 @@ export class PolarProductFilm {
       this.line(center.x - 2, center.y + sign * center.scale, center.x + 2, center.y + sign * center.scale);
     }
 
-    this.text('1', center.x + center.scale + 8, center.y + 10, 12, this.width < PHONE_STAGE_WIDTH ? 8 : 10, '"Garamond Math"');
+    this.text('1', center.x + center.scale + 8, center.y + (this.width < PHONE_STAGE_WIDTH ? 17 : 10), 12, this.width < PHONE_STAGE_WIDTH ? 8 : 10, '"Garamond Math"');
     pen.fillStyle = tones.ink;
     pen.beginPath();
     pen.arc(center.x, center.y, 1.8, 0, Math.PI * 2);
@@ -226,7 +226,7 @@ export class PolarProductFilm {
     const tall = w < PHONE_STAGE_WIDTH;
     const t = (value - 7.6) / 2.5;
     const original = tall ? { x: w * (.12 + .76 * t), y: h * .855 } : { x: w * .89, y: h * (.77 - .59 * t) };
-    const final = { x: w * (.08 + .36 * t), y: h * .67 };
+    const final = { x: w * (.08 + .36 * t), y: h * (tall ? .68 : .67) };
 
     return lerpPoint(original, final, tucked);
   }
@@ -258,7 +258,7 @@ export class PolarProductFilm {
 
     if (time >= 25500) {
       const p = this.meterPoint(8, tucked);
-      this.text(tucked > .5 ? 'PLANE: PROVED 8' : 'PLANE · PROVED BY MAHLER', w * (tucked > .5 ? .26 : tall ? .5 : .88), h * (tucked > .5 ? .755 : tall ? .945 : .88), w * (tucked > .5 ? .43 : tall ? .9 : .23), tall ? 8.5 : 11);
+      this.text(tucked > .5 ? 'PLANE: PROVED 8' : 'PLANE · PROVED BY MAHLER', w * (tucked > .5 ? tall ? .32 : .26 : tall ? .5 : .88), h * (tucked > .5 ? tall ? .64 : .755 : tall ? .98 : .88), w * (tucked > .5 ? .43 : tall ? .9 : .23), tall ? 8.5 : 11);
       pen.lineWidth = .7;
       const q = this.meterPoint(7.6, tucked);
       pen.setLineDash([2, 4]);
@@ -294,7 +294,7 @@ export class PolarProductFilm {
       pen.fill();
     }
 
-    if (time >= 36750) this.text(tall ? '200 OF 1500 · EXAMPLES' : '1500 COMPUTED EXAMPLES', w * .26, h * .785, w * .46, tall ? 8 : 10);
+    if (time >= 36750) this.text(tall ? '200 OF 1500 · EXAMPLES' : '1500 COMPUTED EXAMPLES', w * .26, h * (tall ? .79 : .785), w * .46, tall ? 8 : 10);
 
     pen.lineWidth = 1.2;
   }
@@ -364,7 +364,7 @@ export class PolarProductFilm {
     const { width: w, height: h } = this;
     const tall = w < PHONE_STAGE_WIDTH;
     const x = w * mix(tall ? .5 : .4, tall ? .25 : .25, tucked);
-    const y = h * mix(tall ? .72 : .71, tall ? .565 : .53, tucked);
+    const y = h * mix(tall ? .72 : .71, .53, tucked);
 
     if (amount < 1) {
       this.text('ASSEMBLING THE THIRD DIMENSION', x, y, w * (tall ? .92 : .64), tall ? 9 : 12);
