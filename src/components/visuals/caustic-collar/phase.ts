@@ -163,10 +163,10 @@ export function drawPhase(pen: CanvasRenderingContext2D, width: number, height: 
     pen.strokeStyle = colors.ink;
     pen.lineWidth = .7;
     pen.beginPath();
-    pen.moveTo(plot.x + plot.w - 5, plot.y + plot.h - band);
-    pen.lineTo(plot.x + plot.w + 4, plot.y + plot.h - band);
-    pen.lineTo(plot.x + plot.w + 4, plot.y + plot.h);
-    pen.lineTo(plot.x + plot.w - 5, plot.y + plot.h);
+    pen.moveTo(plot.x + plot.w - 11, plot.y + plot.h - band);
+    pen.lineTo(plot.x + plot.w - 2, plot.y + plot.h - band);
+    pen.lineTo(plot.x + plot.w - 2, plot.y + plot.h);
+    pen.lineTo(plot.x + plot.w - 11, plot.y + plot.h);
     pen.stroke();
 
     if (!tall) words(pen, 'ASSUMED GAP-FREE BAND · SCHEMATIC', plot.x + plot.w / 2, plot.y + plot.h - band - 13, plot.w, colors, 9);
