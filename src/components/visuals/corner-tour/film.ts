@@ -282,7 +282,7 @@ export class CornerTourFilm {
     this.pen.strokeStyle = this.colors.ink;
     this.pen.lineWidth = 2;
     line(this.pen, middle.x - dy / length * size, middle.y + dx / length * size, middle.x + dy / length * size, middle.y - dx / length * size);
-    text(this.pen, 'PRESCRIBED EDGE · THE TOUR AVOIDS IT', camera.x, camera.y + camera.scale * 1.23, tall ? 8.5 : 13, camera.scale * 2.75, this.colors);
+    text(this.pen, 'PRESCRIBED EDGE · THE TOUR AVOIDS IT', camera.x, camera.y + camera.scale * 1.23, tall ? 8.5 : 13, tall ? Math.max(180, camera.scale * 2.75) : camera.scale * 2.75, this.colors);
   }
 
   private trees(solid: Solid, camera: Camera, amount: number, tall: boolean): void {
@@ -366,7 +366,7 @@ export class CornerTourFilm {
     }
 
     if (amount === 1) {
-      for (const [camera, name] of [[cubeCamera, 'CUBE'], [prismCamera, 'PRISM'], [truncCamera, 'TRUNCATED']] as const) text(this.pen, name, camera.x, camera.y + camera.scale * (name === 'CUBE' ? 1.56 : 1.25) - (tall && name === 'CUBE' ? 8 : 0), tall ? 8.5 : 13, camera.scale * 2.8, this.colors);
+      for (const [camera, name] of [[cubeCamera, 'CUBE'], [prismCamera, 'PRISM'], [truncCamera, 'TRUNCATED']] as const) text(this.pen, name, camera.x + (tall && name === 'CUBE' ? camera.scale * .75 : 0), camera.y + camera.scale * (name === 'CUBE' ? 1.56 : 1.25) - (tall && name === 'CUBE' ? 11 : 0), tall ? 8.5 : 13, camera.scale * 2.8, this.colors);
     }
   }
 }
