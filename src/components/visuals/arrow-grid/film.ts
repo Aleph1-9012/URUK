@@ -69,8 +69,8 @@ class ArrowGridFilm implements FilmDrawing {
 
   private correlationBounds(split: number): Rect {
     const { width: w, height: h } = this;
-    const full = { left: w * (this.phone ? .13 : .12), right: w * (this.phone ? .93 : .56), top: h * .29, bottom: h * .63 };
-    const small = { left: w * (this.phone ? .13 : .09), right: w * (this.phone ? .93 : .46), top: h * (this.phone ? .25 : .31), bottom: h * (this.phone ? .43 : .64) };
+    const full = { left: w * (this.phone ? .13 : .12), right: w * (this.phone ? .93 : .56), top: h * .29, bottom: h * (this.phone ? .60 : .63) };
+    const small = { left: w * (this.phone ? .13 : .09), right: w * (this.phone ? .93 : .46), top: h * (this.phone ? .25 : .31), bottom: h * (this.phone ? .40 : .64) };
 
     return betweenRects(full, small, split);
   }
@@ -78,7 +78,7 @@ class ArrowGridFilm implements FilmDrawing {
   private lengthBounds(): Rect {
     const { width: w, height: h } = this;
 
-    return { left: w * (this.phone ? .13 : .59), right: w * .93, top: h * (this.phone ? .59 : .31), bottom: h * (this.phone ? .78 : .64) };
+    return { left: w * (this.phone ? .13 : .59), right: w * .93, top: h * (this.phone ? .59 : .31), bottom: h * (this.phone ? .75 : .64) };
   }
 
   private correlationPoint(logR: number, logC: number, bounds: Rect): Point {
@@ -236,7 +236,7 @@ class ArrowGridFilm implements FilmDrawing {
     const actual = model.windingExample;
     const bounds = this.gridBounds(motion.gridInset);
     const original = this.site(actual.i + .5, actual.j + .5, bounds);
-    const center = { x: w * (this.phone ? .5 : .77), y: h * (this.phone ? .68 : .48) };
+    const center = { x: w * (this.phone ? .5 : .77), y: h * (this.phone ? .64 : .48) };
     const zoom = motion.vortexZoom * (1 - motion.gridInset);
     const carried = between(original, center, zoom);
     const spacing = mix((bounds.right - bounds.left) / model.size, this.phone ? 42 : 66, zoom);
@@ -265,12 +265,12 @@ class ArrowGridFilm implements FilmDrawing {
     if (zoom === 1) this.text('ACTUAL FOUR ARROWS · WINDING +1', { x: center.x, y: center.y + spacing / 2 + 23 }, this.phone ? 8 : 10);
   }
 
-  private axes(bounds: Rect, horizontal: string, vertical: string): void {
+  private axes(bounds: Rect, horizontal: string, vertical: string, labelCarry = 0): void {
     const { pen, tones } = this;
     drawLine(pen, bounds.left, bounds.top, bounds.left, bounds.bottom, tones.ink, .7);
     drawLine(pen, bounds.left, bounds.bottom, bounds.right, bounds.bottom, tones.ink, .7);
     this.text(horizontal, { x: bounds.right + 8, y: bounds.bottom + 30 }, this.phone ? 11 : 14, true);
-    this.text(vertical, { x: bounds.left, y: bounds.top - 17 }, this.phone ? 11 : 14, true);
+    this.text(vertical, { x: bounds.left + 18 * labelCarry, y: bounds.top - 17 + 12 * labelCarry }, this.phone ? 11 : 14, true);
   }
 
   private correlation(motion: Motion): void {
@@ -278,7 +278,7 @@ class ArrowGridFilm implements FilmDrawing {
 
     const { pen, tones, model } = this;
     const bounds = this.correlationBounds(motion.lengthAxis);
-    this.axes(bounds, 'r', 'C(r)');
+    this.axes(bounds, 'r', 'C(r)', this.phone ? motion.lengthAxis : 0);
 
     for (const r of [10, 100, 10000, 1e8]) {
       const point = this.correlationPoint(Math.log(r), -5.1, bounds);

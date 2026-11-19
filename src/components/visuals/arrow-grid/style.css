@@ -6,6 +6,6 @@ uruk-arrow-grid .film-label { font-size: .875rem; }
 }
 
 @container xyfilm (width < 600px) {
-  uruk-arrow-grid .film-stage { aspect-ratio: 4 / 9; }
+  uruk-arrow-grid .film-stage { aspect-ratio: 4 / 5; }
   uruk-arrow-grid .film-label { font-size: .75rem; }
 }

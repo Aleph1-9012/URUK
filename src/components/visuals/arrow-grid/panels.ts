@@ -30,7 +30,7 @@ export function drawArrowGridPanels(ctx: CanvasRenderingContext2D, w: number, h:
     note(description, center, phone ? .52 : .12, phone ? .91 : .40, !turning && !assembling, false, phone ? 12 : 18);
   } else {
     note('FORMULA CURVES · SCHEMATIC', phone ? .65 : .52, phone ? .035 : .045, phone ? .55 : .75, false, false, phone ? 8 : 11);
-    if (motion.gridInset === 1) note('TOY', phone ? .18 : .24, phone ? .19 : .12, .20, false, false, phone ? 7.5 : 9);
+    if (motion.gridInset === 1) note('TOY', phone ? .29 : .24, phone ? .19 : .12, .20, false, false, phone ? 7.5 : 9);
   }
 
   switch (motion.scene) {
@@ -58,14 +58,14 @@ export function drawArrowGridPanels(ctx: CanvasRenderingContext2D, w: number, h:
     case 'vortices': {
       note('FILLED +1', phone ? .18 : .64, phone ? .64 : .30, .25, true);
       note('OPEN −1', phone ? .18 : .90, phone ? .71 : .30, .25, true);
-      note('FINAL STORED COUNTS', center, phone ? .83 : .72);
+      note('FINAL STORED COUNTS', center, phone ? .82 : .72);
 
       for (const [index, sample] of model.samples.entries()) {
         const x = phone ? .20 + .30 * index : .64 + .13 * index;
-        drawText(ctx, `b=${sample.beta}: ${sample.vortexCount}`, w * x, h * (phone ? .89 : .81), { size: phone ? 10.5 : 13, family: 'math', color: tones.ink, paper: tones.paper });
+        drawText(ctx, `b=${sample.beta}: ${sample.vortexCount}`, w * x, h * (phone ? .87 : .81), { size: phone ? 10.5 : 13, family: 'math', color: tones.ink, paper: tones.paper });
       }
 
-      note('SMALL GRID · COUNTS ONLY\nNOT A TEST OF THE TRANSITION OR UNBINDING', center, phone ? .95 : .92, undefined, false, false, phone ? 8 : 10);
+      note('SMALL GRID · COUNTS ONLY\nNOT A TEST OF THE TRANSITION OR UNBINDING', center, phone ? .925 : .92, undefined, false, false, phone ? 8 : 10);
       break;
     }
     case 'correlation':
@@ -75,14 +75,14 @@ export function drawArrowGridPanels(ctx: CanvasRenderingContext2D, w: number, h:
       }
 
       note('AMPLITUDE B = 1\nNOT MEASURED FROM THE GRID', phone ? .65 : .77, phone ? .14 : .16, phone ? .55 : .40, false, false, phone ? 8 : 11);
-      formula('correlation-pure', center, phone ? .72 : .36);
-      formula('correlation-corrected', center, phone ? .80 : .51);
+      formula('correlation-pure', phone ? .28 : center, phone ? .72 : .36);
+      formula('correlation-corrected', phone ? .68 : center, phone ? .72 : .51);
 
       if (motion.slopeReadouts > 0) {
-        formula('local-slope', center, phone ? .89 : .67);
+        formula('local-slope', center, phone ? .83 : .67);
         const rows = model.correlationReadouts.slice(0, 3);
         const values = rows.map(row => `${row.r === 10000 ? '10⁴' : row.r}: ${row.localSlope.toFixed(3)}`);
-        note(phone ? `${values[0]} · ${values[1]}\n${values[2]} · → −¼` : values.join(' · ') + '\n→ −¼', center, phone ? .96 : .84, undefined, true, false, phone ? 10 : 13);
+        note(phone ? `${values[0]} · ${values[1]}\n${values[2]} · → −¼` : values.join(' · ') + '\n→ −¼', center, phone ? .90 : .84, undefined, true, false, phone ? 10 : 13);
       }
 
       break;
@@ -116,15 +116,15 @@ export function drawArrowGridPanels(ctx: CanvasRenderingContext2D, w: number, h:
     case 'claim':
     case 'review':
       formula('critical-claim', phone ? .5 : .28, phone ? .51 : .79);
-      formula('length-units', phone ? .5 : .76, phone ? .86 : .20);
-      note('ILLUSTRATIVE UNITS\nCRITICAL VALUE NOT COMPUTED', phone ? .5 : .76, phone ? .90 : .255, phone ? .91 : .34, false, false, phone ? 7.5 : 9);
+      formula('length-units', phone ? .65 : .76, phone ? .14 : .20);
+      note('ILLUSTRATIVE UNITS\nCRITICAL VALUE NOT COMPUTED', phone ? .65 : .76, phone ? .20 : .255, phone ? .55 : .34, false, false, phone ? 7.5 : 9);
 
       if (!phone) formula('length-general', .76, .79);
 
       if (motion.scene === 'claim') {
-        note('CLAIMED · NEAREST-NEIGHBOUR SQUARE LATTICE\nNOT CHECKED', .5, phone ? .95 : .94, .94, false, true, phone ? 8.5 : 12);
+        note('CLAIMED · NEAREST-NEIGHBOUR SQUARE LATTICE\nNOT CHECKED', .5, phone ? .915 : .94, .94, false, true, phone ? 8.5 : 12);
       } else if (motion.ledger > 0) {
-        note('UNREVIEWED · 20 OCT 2026\nMACHINE CHECK: NONE', .5, phone ? .95 : .93, .94, false, false, phone ? 9 : 12);
+        note('UNREVIEWED · 20 OCT 2026\nMACHINE CHECK: NONE', .5, phone ? .915 : .93, .94, false, false, phone ? 9 : 12);
       }
 
       break;
