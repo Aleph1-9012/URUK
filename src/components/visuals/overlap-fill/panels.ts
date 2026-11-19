@@ -8,16 +8,17 @@ type Tones = { ink: string; muted: string; paper: string; blue: string };
 
 type Point = { x: number; y: number };
 
-export function ingredientLayout(width: number, height: number) {
+export function ingredientLayout(width: number, height: number, time: number) {
   const phone = width < PHONE_STAGE_WIDTH;
+  const claim = smooth(time, 66650, 68350);
 
   return {
     left: width * (phone ? .09 : .07),
     right: width * (phone ? .91 : .62),
-    top: height * (phone ? .35 : .48),
-    bottom: height * (phone ? .50 : .65),
-    ratioTop: height * (phone ? .54 : .69),
-    ratioBottom: height * (phone ? .61 : .76),
+    top: height * (phone ? mix(139, 198, claim) / 310 : .48),
+    bottom: height * (phone ? mix(183, 216, claim) / 310 : .65),
+    ratioTop: height * (phone ? mix(217, 238, claim) / 310 : .69),
+    ratioBottom: height * (phone ? mix(254, 253, claim) / 310 : .76),
   };
 }
 
@@ -36,7 +37,11 @@ export function drawIngredients(ctx: CanvasRenderingContext2D, width: number, he
 
   const phone = width < PHONE_STAGE_WIDTH;
   const small = phone ? 8.5 : 10.5;
-  const { left, right, top, bottom, ratioTop, ratioBottom } = ingredientLayout(width, height);
+  const { left, right, top, bottom, ratioTop, ratioBottom } = ingredientLayout(width, height, time);
+  const claim = smooth(time, 66650, 68350);
+  const headerOffset = phone ? 8 * (1 - progress(width, 248, 318)) * (1 - claim) : 0;
+  const ratioRight = phone ? width * .49 : right;
+  const ratioXAt = (value: number) => left + (value - .4) / .5 * (ratioRight - left);
   const length = right - left;
   const xAt = (value: number) => left + (value - .4) / .5 * length;
   const yAt = (value: number) => bottom - value * (bottom - top);
@@ -45,10 +50,10 @@ export function drawIngredients(ctx: CanvasRenderingContext2D, width: number, he
   const maximum = .4 + .5 * reveal;
   drawLine(ctx, left, bottom, mix(left, right, reveal), bottom, tones.ink, .9);
   drawLine(ctx, left, bottom, left, mix(bottom, top, reveal), tones.ink, .9);
-  drawLine(ctx, left, ratioBottom, mix(left, right, reveal), ratioBottom, tones.ink, .9);
+  drawLine(ctx, left, ratioBottom, mix(left, ratioRight, reveal), ratioBottom, tones.ink, .9);
   drawLine(ctx, left, ratioBottom, left, mix(ratioBottom, ratioTop, reveal), tones.ink, .9);
   drawLine(ctx, left, yAt(Math.LN2), mix(left, right, reveal), yAt(Math.LN2), tones.ink, .9, [3, 3]);
-  drawLine(ctx, left, ratioTop, mix(left, right, reveal), ratioTop, tones.muted, .7);
+  drawLine(ctx, left, ratioTop, mix(left, ratioRight, reveal), ratioTop, tones.muted, .7);
   ctx.save();
   ctx.strokeStyle = tones.ink;
   ctx.lineWidth = 1.5;
@@ -82,8 +87,8 @@ export function drawIngredients(ctx: CanvasRenderingContext2D, width: number, he
 
     const y = ratioAt(ingredients(value).conditionalDimension);
 
-    if (beginning) ctx.moveTo(xAt(value), y);
-    else ctx.lineTo(xAt(value), y);
+    if (beginning) ctx.moveTo(ratioXAt(value), y);
+    else ctx.lineTo(ratioXAt(value), y);
 
     beginning = false;
   }
@@ -93,25 +98,26 @@ export function drawIngredients(ctx: CanvasRenderingContext2D, width: number, he
 
   if (time < 32000) return;
 
-  drawText(ctx, 'ENTROPY / CONTRACTION · NATS PER STEP', (left + right) / 2, top - (phone ? 12 : 6), { size: small, color: tones.ink });
-  drawText(ctx, 'H(p) = ln 2', left + .35 * length, yAt(Math.LN2) - 8, { size: phone ? 11 : 13, color: tones.ink, family: 'math', paper: tones.paper });
-  labels.place('chi', right - (phone ? 48 : 66), top + 10);
+  drawText(ctx, 'ENTROPY / CONTRACTION · NATS PER STEP', (left + right) / 2, top - (phone ? mix(30, 24, claim) : 6) + headerOffset, { size: small, color: tones.ink });
+  const entropyCaptionY = phone && claim < 1 ? mix(top - 10, yAt(Math.LN2) - 12.5, claim) : yAt(Math.LN2) - (phone ? 12.5 : 8);
+  drawText(ctx, 'H(p) = ln 2', left + .35 * length, entropyCaptionY + headerOffset * .75, { size: phone ? 11 : 13, color: tones.ink, family: 'math', paper: tones.paper });
+  labels.place('chi', right - (phone ? mix(48, 28, claim) : 66), top + (phone ? -mix(10, 8, claim) : 10) + headerOffset * .75);
   drawText(ctx, 'IF NO EXACT OVERLAPS · NOT MEASURED', (left + right) / 2, (bottom + ratioTop) / 2, { size: small, color: tones.ink });
-  labels.place('conditional', (left + right) / 2, ratioBottom - .32 * (ratioBottom - ratioTop));
+  labels.place('conditional', phone ? width * .75 : (left + right) / 2, phone ? height * mix(236, 246, claim) / 310 : ratioBottom - .32 * (ratioBottom - ratioTop));
   drawText(ctx, '1', left - 8, ratioTop, { size: phone ? 11 : 13, color: tones.ink, family: 'math' });
 
   for (const value of [.4, .5, .9]) {
-    const x = xAt(value);
+    const x = ratioXAt(value);
     drawLine(ctx, x, ratioBottom, x, ratioBottom + 3, tones.ink, .8);
     drawText(ctx, value.toFixed(1), x, ratioBottom + (phone ? 10 : 14), { size: phone ? 10 : 12, color: tones.ink, family: 'math' });
   }
 
-  drawText(ctx, 'λ', phone ? left + .55 * length : right + 12, ratioBottom + (phone ? 12 : -10), { size: phone ? 10 : 13, color: tones.ink, family: 'math', align: phone ? 'center' : 'left' });
+  drawText(ctx, 'λ', phone ? left + .55 * (ratioRight - left) : right + 12, ratioBottom + (phone ? 12 : -10), { size: phone ? 10 : 13, color: tones.ink, family: 'math', align: phone ? 'center' : 'left' });
   const current = ingredients(lambda);
   dot(ctx, { x: xAt(lambda), y: yAt(current.chi) }, phone ? 2.3 : 3, tones.ink);
 
   if (time >= 46500) {
-    const x = xAt(GOLDEN_LAMBDA);
+    const x = ratioXAt(GOLDEN_LAMBDA);
     drawLine(ctx, x, ratioTop - 2, x, ratioBottom + 4, tones.ink, 1);
     dot(ctx, { x, y: ratioTop }, phone ? 3 : 4, tones.ink, false, tones.paper);
   }
@@ -122,15 +128,15 @@ function mapLayout(width: number, height: number) {
 
   return {
     phone,
-    countX: width * (phone ? .285 : .83),
-    titleY: height * (phone ? .652 : .23),
-    nY: height * (phone ? .681 : .29),
-    wordsY: height * (phone ? .714 : .355),
-    mapsY: height * (phone ? .747 : .42),
-    traceLeft: width * (phone ? .57 : .71),
+    countX: width * (phone ? .76 : .83),
+    titleY: height * (phone ? 23 / 310 : .23),
+    nY: height * (phone ? 37 / 310 : .29),
+    wordsY: height * (phone ? 37 / 310 : .355),
+    mapsY: height * (phone ? 52 / 310 : .42),
+    traceLeft: width * (phone ? .61 : .71),
     traceRight: width * (phone ? .94 : .95),
-    traceTop: height * (phone ? .688 : .62),
-    traceBottom: height * (phone ? .747 : .73),
+    traceTop: height * (phone ? 88 / 310 : .62),
+    traceBottom: height * (phone ? 103 / 310 : .73),
   };
 }
 
@@ -146,8 +152,8 @@ export function drawMaps(ctx: CanvasRenderingContext2D, width: number, height: n
   if (!row) throw new Error('Every displayed golden count needs its exact finite map row.');
 
   drawText(ctx, 'EXACT: F(n+3)−1 MAPS', countX, titleY, { size: phone ? 8.5 : 11, color: tones.ink, family: 'math' });
-  drawText(ctx, 'n = ' + row.n, countX, nY, { size: phone ? 11 : 18, color: tones.ink, family: 'math' });
-  drawText(ctx, row.words.toLocaleString('en-US') + ' WORDS', countX, wordsY, { size: phone ? 9.5 : 18, color: tones.ink, family: 'math' });
+  drawText(ctx, 'n = ' + row.n, phone ? width * .585 : countX, nY, { size: phone ? 11 : 18, color: tones.ink, family: 'math' });
+  drawText(ctx, row.words.toLocaleString('en-US') + ' WORDS', phone ? width * .825 : countX, wordsY, { size: phone ? 9.5 : 18, color: tones.ink, family: 'math' });
   drawText(ctx, row.maps.toLocaleString('en-US') + ' MAPS', countX, mapsY, { size: phone ? 12 : 23, color: tones.ink, family: 'math' });
 
   if (!phone) {
@@ -159,7 +165,7 @@ export function drawMaps(ctx: CanvasRenderingContext2D, width: number, height: n
   const entropy = time >= 63750;
   const carrying = entropy && time < 65250;
   const title = carrying ? 'ICON TO TRACE\nLAYOUT CARRY' : entropy ? phone ? 'FINITE H/n\nNO LIMIT VALUE' : 'FINITE H/n\nLIMIT NOT COMPUTED' : 'MERGE ICON\nSCHEMATIC';
-  const traceTitleTop = phone ? height * .641 : height * .555;
+  const traceTitleTop = phone ? height * 59 / 310 : height * .555;
   drawWrappedText(ctx, title, (traceLeft + traceRight) / 2, traceTitleTop, traceRight - traceLeft, { size: phone ? 8.5 : 10.5, color: tones.ink, family: entropy ? 'math' : 'type' });
   const span = traceRight - traceLeft;
   const high = traceBottom - traceTop;
@@ -201,7 +207,7 @@ export function drawMaps(ctx: CanvasRenderingContext2D, width: number, height: n
 
   if (entropy) {
     drawLine(ctx, traceLeft, traceTop, traceRight, traceTop, tones.muted, .7, [2, 3]);
-    drawText(ctx, 'ln 2', traceRight, traceTop + (phone ? 7 : 8), { size: phone ? 8.5 : 10, color: tones.ink, family: 'math', align: 'right' });
+    drawText(ctx, 'ln 2', traceRight, traceTop + (phone ? -6 : 8), { size: phone ? 8.5 : 10, color: tones.ink, family: 'math', align: 'right' });
 
     for (let position = 8; position < rows.length; position++) {
       const before = tracePoint(position - 1);
@@ -221,17 +227,17 @@ export function drawClaimAndLedger(ctx: CanvasRenderingContext2D, width: number,
   const phone = width < PHONE_STAGE_WIDTH;
 
   if (time >= 68750) {
-    const layout = ingredientLayout(width, height);
+    const layout = ingredientLayout(width, height, time);
     const horizontal = smooth(time, 68750, 69500);
     const vertical = smooth(time, 69500, 70250);
-    const bandY = layout.ratioBottom + 4;
+    const bandY = layout.ratioBottom + (phone ? height * 19 / 310 : 4);
     const corner = width * (phone ? .96 : .98);
     drawLine(ctx, layout.left, bandY, mix(layout.left, corner, horizontal), bandY, tones.blue, phone ? 2.5 : 3);
 
     if (vertical > 0) {
-      drawLine(ctx, corner, bandY, corner, mix(bandY, height * (phone ? .76 : .23), vertical), tones.blue, phone ? 2.5 : 3);
+      drawLine(ctx, corner, bandY, corner, mix(bandY, height * (phone ? 103 / 310 : .23), vertical), tones.blue, phone ? 2.5 : 3);
     }
-    labels.place('dimension', width * .5, height * (phone ? .785 : .81));
+    labels.place('dimension', width * .5, height * (phone ? 116 / 310 : .81));
     const rows = phone ? [
       'CLAIMED: SIMILARITIES OF THE LINE',
       'FINITE FAMILY · 0<|rᵢ|<1 · SIGNED/UNEQUAL',
@@ -243,22 +249,22 @@ export function drawClaimAndLedger(ctx: CanvasRenderingContext2D, width: number,
     ];
 
     for (const [index, value] of rows.entries()) {
-      drawText(ctx, value, width * .5, height * (phone ? .82 + index * .03 : .85 + index * .026), { size: phone ? 8.5 : 10.5, color: tones.ink, family: phone && index > 0 ? 'math' : 'type' });
+      drawText(ctx, value, width * .5, height * (phone ? (137 + index * 12) / 310 : .85 + index * .026), { size: phone ? 8.5 : 10.5, color: tones.ink, family: phone && index > 0 ? 'math' : 'type' });
     }
   }
 
   if (time < 77500) return;
 
   const amount = smooth(time, 77500, 78750);
-  const offset = (1 - amount) * height * .15;
+  const offset = phone ? 0 : (1 - amount) * height * .15;
   const rows = [
     'UNREVIEWED · 20 OCT 2026',
     'SelfSimilar.lean · STATEMENT CATALOGUED',
     'COROLLARIES: LINKED, NOT CATALOGUED',
   ];
-  drawLine(ctx, width * .05, height * .923 + offset, width * .95, height * .923 + offset, tones.ink, 1);
+  drawLine(ctx, width * .05, height * (phone ? 277 / 310 : .923) + offset, width * (phone ? mix(.05, .95, amount) : .95), height * (phone ? 277 / 310 : .923) + offset, tones.ink, 1);
 
   for (const [index, value] of rows.entries()) {
-    drawText(ctx, value, width * .5, height * (.94 + index * .022) + offset, { size: phone ? 8.5 : 10.5, color: tones.ink });
+    drawText(ctx, value, width * .5, height * (phone ? (284 + index * 10) / 310 : .94 + index * .022) + offset, { size: phone ? 8.5 : 10.5, color: tones.ink });
   }
 }

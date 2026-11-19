@@ -90,10 +90,10 @@ class OverlapFilm implements FilmDrawing {
     const tucked = smooth(time, 29000, 32000);
 
     return {
-      left: w * mix(.07, tall ? .06 : .07, tucked),
-      right: w * mix(.93, tall ? .94 : .62, tucked),
-      base: h * mix(.47, tall ? .18 : .28, tucked),
-      height: h * mix(.25, tall ? .10 : .18, tucked),
+      left: w * mix(.07, tall ? .05 : .07, tucked),
+      right: w * mix(.93, tall ? .50 : .62, tucked),
+      base: h * mix(.47, tall ? 43 / 310 : .28, tucked),
+      height: h * mix(.25, tall ? 18 / 310 : .18, tucked),
       tucked,
     };
   }
@@ -171,15 +171,17 @@ class OverlapFilm implements FilmDrawing {
     const size = tall ? 8.5 : 11;
 
     if (time >= 32000) {
-      this.text('14 TERMS · 16,384 EQUALLY WEIGHTED WORDS', cx, h * (tall ? .025 : .045), size);
-      this.fillRuler(law, box.left, box.right, h * (tall ? .20 : .315));
-      this.text(`${law.occupied}/64 BINS OCCUPIED · ${(law.occupiedFraction * 100).toFixed(1)}%`, cx, h * (tall ? .225 : .35), size);
+      this.text('14 TERMS · 16,384 EQUALLY WEIGHTED WORDS', tall ? w / 2 : cx, h * (tall ? 8 / 310 : .045), size);
+      this.fillRuler(law, box.left, box.right, h * (tall ? 49 / 310 : .315));
+      this.text(`${law.occupied}/64 BINS OCCUPIED · ${(law.occupiedFraction * 100).toFixed(1)}%`, cx, h * (tall ? 62 / 310 : .35), size);
 
       if (time >= 47000) {
-        this.labels.place('golden', cx, h * (tall ? .26 : .39));
-        this.text('ONE EXACT-OVERLAP EXAMPLE', cx, h * (tall ? .295 : .435), size);
+        this.labels.place('golden', cx, h * (tall ? 82 / 310 : .39));
+        this.text('ONE EXACT-OVERLAP EXAMPLE', cx, h * (tall ? 99 / 310 : .435), size);
+      } else if (tall) {
+        drawWrappedText(pen, `λ = ${law.lambda.toFixed(4)} · BIN COUNTS,\nNOT DIMENSION`, cx, h * 74 / 310, box.right - box.left, { size: 10, color: tones.ink, family: 'math' });
       } else {
-        this.text(`λ = ${law.lambda.toFixed(4)} · BIN COUNTS, NOT DIMENSION`, cx, h * (tall ? .27 : .40), tall ? 10 : 12, true);
+        this.text(`λ = ${law.lambda.toFixed(4)} · BIN COUNTS, NOT DIMENSION`, cx, h * .40, 12, true);
       }
 
       return;
@@ -306,7 +308,7 @@ class OverlapFilm implements FilmDrawing {
     if (time < 29000 || time >= 32000) return;
 
     const box = this.box(29000);
-    const plot = ingredientLayout(this.width, this.height);
+    const plot = ingredientLayout(this.width, this.height, time);
     const amount = smooth(time, 29000, 32000);
     const y = mix(box.base, plot.ratioBottom, amount);
     drawLine(this.pen, mix(box.left, plot.left, amount), y, mix(box.right, plot.right, amount), y, this.tones.ink, 1.2);

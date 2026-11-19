@@ -6,6 +6,6 @@ uruk-overlap-fill .film-label { font-size: .875rem; }
 }
 
 @container ssfilm (width < 600px) {
-  uruk-overlap-fill .film-stage { aspect-ratio: 4 / 9; }
+  uruk-overlap-fill .film-stage { aspect-ratio: 4 / 5; }
   uruk-overlap-fill .film-label { font-size: .75rem; }
 }
