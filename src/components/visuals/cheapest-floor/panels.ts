@@ -106,8 +106,8 @@ function energyChart(pen: CanvasRenderingContext2D, box: Box, time: number, colo
   pen.stroke();
   pen.fillStyle = colors.ink;
   dot(pen, current, tall ? 2.8 : 3.8);
-  const labelX = Math.min(chart.right - 25, Math.max(chart.left + 27, current.x));
-  const labelY = current.y - 20 < chart.top + 6 ? current.y + 18 : current.y - 20;
+  const labelX = tall && compact ? chart.left + (chart.right - chart.left) * .35 : Math.min(chart.right - 25, Math.max(chart.left + 27, current.x));
+  const labelY = tall && compact ? chart.top + 7 : current.y - 20 < chart.top + 6 ? current.y + 18 : current.y - 20;
   line(pen, current.x, current.y, labelX, labelY + (labelY < current.y ? 4 : -4));
   text(pen, energy.toFixed(step >= 2100 ? 5 : 3), labelX, labelY, tall ? 11 : 15, 75, colors);
 
@@ -235,7 +235,7 @@ function carriedClaim(pen: CanvasRenderingContext2D, box: Box, colors: Colors, m
 function certificatePlot(box: Box, tall: boolean): Plot {
   const top = box.y + (tall ? 23 : 25);
 
-  return { left: box.x + 12, right: box.x + box.w - 15, top, bottom: top + (tall ? 30 : 40) };
+  return { left: box.x + 12, right: box.x + box.w - 15, top, bottom: top + (tall ? 20 : 40) };
 }
 
 function certificatePoint(chart: Plot, radius: number, value: number): Point {
@@ -316,7 +316,7 @@ function certificate(pen: CanvasRenderingContext2D, box: Box, time: number, colo
     pen.setLineDash([3, 3]);
     curve(pen, chart, radius => schematicAuxiliary(radius, radii), 0, 2.4, -.18, 1.05, smooth(time, 70750, 74800));
     pen.setLineDash([]);
-    text(pen, 'f', certificatePoint(chart, .56, gaussian(.56) - .08).x, certificatePoint(chart, .56, gaussian(.56) - .08).y + 9, tall ? 12 : 17, 20, colors);
+    text(pen, 'f', certificatePoint(chart, .56, gaussian(.56) - .08).x, certificatePoint(chart, .56, gaussian(.56) - .08).y + (tall ? 5 : 9), tall ? 12 : 17, 20, colors);
   }
 
   text(pen, 'r', chart.right + 9, zeroY, tall ? 12 : 16, 15, colors);
@@ -324,8 +324,8 @@ function certificate(pen: CanvasRenderingContext2D, box: Box, time: number, colo
 
   if (close) return;
 
-  const fourier = { left: chart.left, right: chart.right, top: labelsEnd + (tall ? 28 : 33), bottom: box.y + box.h - (tall ? 68 : 82) };
-  text(pen, 'FOURIER TRANSFORM: NEVER BELOW 0', x, labelsEnd + (tall ? 17 : 20), tall ? 9 : 12, box.w - 5, colors);
+  const fourier = { left: chart.left, right: chart.right, top: labelsEnd + (tall ? 20 : 33), bottom: box.y + box.h - (tall ? 56 : 82) };
+  text(pen, 'FOURIER TRANSFORM: NEVER BELOW 0', x, labelsEnd + (tall ? 13 : 20), tall ? 9 : 12, box.w - 5, colors);
   axes(pen, fourier, colors);
   pen.strokeStyle = colors.ink;
   pen.lineWidth = 1.2;
@@ -339,7 +339,7 @@ function certificate(pen: CanvasRenderingContext2D, box: Box, time: number, colo
 
   for (const shell of model.shells.slice(0, 3)) dot(pen, { x: fourier.left + shell.radius / 2.4 * (fourier.right - fourier.left), y: fourier.bottom }, tall ? 2 : 2.6, false);
 
-  place('bound', x, box.y + box.h - (tall ? 40 : 47));
+  place('bound', x, box.y + box.h - (tall ? 32 : 47));
   text(pen, 'f AND SPECTRUM SCHEMATIC · CONTACTS EXACT', x, box.y + box.h - 4, tall ? 8.5 : 11, box.w - 5, colors);
 }
 
