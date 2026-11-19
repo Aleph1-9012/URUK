@@ -1,5 +1,3 @@
-uruk-endless-bounce:not([data-ready]) .film-subtitles { display: none; }
-
 @container plate (max-width: 599px) {
   uruk-endless-bounce .film-stage { aspect-ratio: 4 / 5; }
 }

@@ -1,5 +1,3 @@
-import data from './data.json';
-
 export type Point = { x: number; y: number };
 
 export type Triangle = readonly [Point, Point, Point];
@@ -39,7 +37,7 @@ export type ComputedTable = {
 
 export type BounceExperiment = Record<TableKey, ComputedTable>;
 
-export type ComputationState = { kind: 'pending' } | { kind: 'ready'; cases: BounceExperiment } | { kind: 'failed'; reason: string };
+export type ComputationState = { kind: 'pending' } | { kind: 'ready'; cases: BounceExperiment };
 
 export const START = { x: .31, y: .12 };
 
@@ -350,25 +348,17 @@ export function directionStats(directions: readonly number[], sectors = 24) {
   return { distinct: distinct.size, headings, bins, empty: bins.reduce((sum, count) => sum + Number(count === 0), 0) };
 }
 
-function tableCase(key: TableKey, alpha: number, beta: number, reference: typeof data.irrational) {
-  const triangle = triangleFromAngles(alpha, beta);
-
-  return {
-    key, triangle, angles: [alpha, beta, Math.PI - alpha - beta], run: runBilliard(triangle), areaShare: areaShareLeft(triangle),
-    reference: {
-      directions: reference.directions, emptySectors: reference.direction_bins_empty, areaShare: reference.area_share_left,
-      shares: (['100', '1000', '10000', '100000'] as const).map(at => ({ bounces: Number(at), share: reference.time_share_left[at] })),
-    },
-  };
+function tableCase(alpha: number, beta: number) {
+  return { triangle: triangleFromAngles(alpha, beta), angles: [alpha, beta, Math.PI - alpha - beta] };
 }
 
 export function createBounceModel(): BounceModel {
   return {
     start: START, heading: HEADING, divider: DIVIDER_X,
     cases: {
-      irrational: tableCase('irrational', 1, 1.2, data.irrational),
-      equilateral: tableCase('equilateral', Math.PI / 3, Math.PI / 3, data.equilateral),
-      right_isosceles: tableCase('right_isosceles', Math.PI / 2, Math.PI / 4, data.right_isosceles),
+      irrational: tableCase(1, 1.2),
+      equilateral: tableCase(Math.PI / 3, Math.PI / 3),
+      right_isosceles: tableCase(Math.PI / 2, Math.PI / 4),
     },
     coneAnglesDegrees: [2, 2.4, 2 * (Math.PI - 2.2)].map(angle => angle * 180 / Math.PI),
     computation: { kind: 'pending' },

@@ -3,7 +3,7 @@ import { line } from '../../plate/canvas/strokes';
 import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { type Box, type Colors, text } from './drawing';
-import { apply, barycentric, collisionSide, compose, fromBarycentric, IDENTITY, packedPoint, reflection, samplePackedRunByDistance, sampleRunByDistance, type BounceModel, type Isometry, type Point, type TableKey, type Triangle } from './math';
+import { apply, barycentric, collisionSide, compose, fromBarycentric, IDENTITY, packedPoint, reflection, samplePackedRunByDistance, type BounceModel, type Isometry, type PackedBilliardRun, type Point, type TableKey, type Triangle } from './math';
 import { drawPanels } from './panels';
 import { layout, MORPHS, playbackDistance, playbackDistanceFor, tableAt } from './story';
 
@@ -82,41 +82,26 @@ export class EndlessBounceFilm {
     this.labels.endFrame();
   }
 
-  private sample(key: TableKey, distance: number) {
+  private run(key: TableKey): PackedBilliardRun {
     const state = this.model.computation;
 
-    return state.kind === 'ready' ? samplePackedRunByDistance(state.cases[key].run, distance) : sampleRunByDistance(this.model.cases[key].run, distance);
+    if (state.kind !== 'ready') throw new Error('Playback needs a computed trajectory.');
+
+    return state.cases[key].run;
   }
 
-  private point(key: TableKey, index: number): Point {
-    const state = this.model.computation;
-
-    if (state.kind === 'ready') return packedPoint(state.cases[key].run, index);
-
-    const point = this.model.cases[key].run.points[index];
-
-    if (!point) throw new Error('The playback sample has this collision point.');
-
-    return point;
-  }
-
-  private timeAt(key: TableKey, index: number): number {
-    const state = this.model.computation;
-    const at = state.kind === 'ready' ? state.cases[key].run.times[index] : this.model.cases[key].run.times[index];
-
-    if (at === undefined) throw new Error('The playback sample has this event time.');
-
-    return at;
-  }
-
-  private trail(key: TableKey, distance: number): Vertex[] {
-    const sample = this.sample(key, distance);
+  private trail(run: PackedBilliardRun, sample: ReturnType<typeof samplePackedRunByDistance>, distance: number): Vertex[] {
     const vertices: Vertex[] = [];
 
-    for (let index = Math.max(0, sample.bounce - 399); index <= sample.bounce; index++) vertices.push({ point: this.point(key, index), distance: this.timeAt(key, index) });
+    for (let index = Math.max(0, sample.bounce - 399); index <= sample.bounce; index++) {
+      const at = run.times[index];
 
-    const state = this.model.computation;
-    const last = state.kind === 'ready' ? state.cases[key].run.times.at(-1) : this.model.cases[key].run.times.at(-1);
+      if (at === undefined) throw new Error('The playback sample has this event time.');
+
+      vertices.push({ point: packedPoint(run, index), distance: at });
+    }
+
+    const last = run.times.at(-1);
 
     if (last === undefined) throw new Error('The playback sample has a terminal event time.');
 
@@ -166,12 +151,11 @@ export class EndlessBounceFilm {
 
     const table = model.cases[state.key];
     const distance = playbackDistance(time);
-    const sample = this.sample(state.key, distance);
-    const vertices = this.trail(state.key, distance);
+    const run = this.run(state.key);
+    const sample = samplePackedRunByDistance(run, distance);
+    const vertices = this.trail(run, sample, distance);
     const unfolding = smooth(time, 62250, 64250) * (1 - smooth(time, 76250, 77500));
-
-    const computation = model.computation;
-    const available = computation.kind === 'ready' ? computation.cases[state.key].run.directions.length : table.run.directions.length;
+    const available = run.directions.length;
 
     if (unfolding > 0 && sample.bounce < available) this.double(box, camera, vertices, sample.bounce, sample.point, unfolding, tall);
     else {
@@ -241,8 +225,10 @@ export class EndlessBounceFilm {
     const triangle: Triangle = [from[0], from[1], blend(from[2], to[2], state.amount)];
     const oldDistance = playbackDistanceFor(state.from, morph.start) + (time - morph.start) / 1000 * 2.8;
     const newDistance = playbackDistanceFor(state.to, morph.start);
-    const oldTrail = this.trail(state.from, oldDistance).map(vertex => barycentric(vertex.point, from));
-    const newTrail = this.trail(state.to, newDistance).map(vertex => barycentric(vertex.point, to));
+    const oldRun = this.run(state.from);
+    const newRun = this.run(state.to);
+    const oldTrail = this.trail(oldRun, samplePackedRunByDistance(oldRun, oldDistance), oldDistance).map(vertex => barycentric(vertex.point, from));
+    const newTrail = this.trail(newRun, samplePackedRunByDistance(newRun, newDistance), newDistance).map(vertex => barycentric(vertex.point, to));
     const parameters = new Set<number>();
 
     for (let index = 0; index < oldTrail.length; index++) parameters.add(index / (oldTrail.length - 1));
@@ -262,12 +248,13 @@ export class EndlessBounceFilm {
 
   private unfoldingMap(key: TableKey, bounce: number): Isometry {
     const maps = this.maps[key];
+    const run = this.run(key);
     const triangle = this.model.cases[key].triangle;
 
     while (maps.length <= bounce) {
       const index = maps.length - 1;
       const previous = maps[index];
-      const side = collisionSide(triangle, this.point(key, index + 1));
+      const side = collisionSide(triangle, packedPoint(run, index + 1));
       const a = triangle[side];
       const b = triangle[(side + 1) % 3];
 

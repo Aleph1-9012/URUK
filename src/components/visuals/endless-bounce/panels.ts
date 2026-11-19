@@ -1,13 +1,13 @@
 import { smooth } from '../../../lib/animation';
 import { line } from '../../plate/canvas/strokes';
 import { type Box, type Colors, type Place, text } from './drawing';
-import { type BounceModel, type TableKey, directionStats, samplePackedRunByDistance, sampleRunByDistance, timeShareLeft } from './math';
+import { type BounceModel, type TableKey, directionStats, samplePackedRunByDistance } from './math';
 import { checkpointAt, playbackDistance, tableAt } from './story';
 
 type CircleStats = ReturnType<typeof directionStats>;
 
 type Readout = {
-  kind: 'computed' | 'prefix';
+  kind: 'computed';
   stats: CircleStats;
   bounces: number;
   gaugeBounces: number;
@@ -17,35 +17,20 @@ type Readout = {
 } | { kind: 'stopped'; reason: string };
 
 function experimentReadout(model: BounceModel, key: TableKey, time: number): Readout {
-  const distance = playbackDistance(time);
+  if (model.computation.kind !== 'ready') throw new Error('The readout needs a completed experiment.');
 
-  if (model.computation.kind === 'failed') return { kind: 'stopped', reason: model.computation.reason };
+  const computed = model.computation.cases[key];
 
-  if (model.computation.kind === 'ready') {
-    const computed = model.computation.cases[key];
+  if (computed.run.kind !== 'complete') return { kind: 'stopped', reason: computed.run.reason ?? 'THE COMPUTED PATH STOPS HERE' };
 
-    if (computed.run.kind !== 'complete') return { kind: 'stopped', reason: computed.run.reason ?? 'THE COMPUTED PATH STOPS HERE' };
+  const checkpoint = key === 'irrational' ? checkpointAt(time) : 100000;
+  const anchor = computed.shares.find(row => row.bounces === checkpoint);
 
-    const checkpoint = key === 'irrational' ? checkpointAt(time) : 100000;
-    const anchor = computed.shares.find(row => row.bounces === checkpoint);
-
-    if (!anchor) throw new Error(`The completed experiment has no ${checkpoint}-bounce time share.`);
-
-    return {
-      kind: 'computed', stats: computed.stats, bounces: computed.bounces, gaugeBounces: anchor.bounces,
-      share: anchor.share, area: computed.areaShare, heading: samplePackedRunByDistance(computed.run, distance).heading,
-    };
-  }
-
-  const table = model.cases[key];
-
-  if (table.run.kind !== 'complete') return { kind: 'stopped', reason: table.run.reason };
-
-  const bounces = table.run.directions.length;
+  if (!anchor) throw new Error(`The completed experiment has no ${checkpoint}-bounce time share.`);
 
   return {
-    kind: 'prefix', stats: directionStats(table.run.directions), bounces, gaugeBounces: bounces,
-    share: timeShareLeft(table.run), area: table.areaShare, heading: sampleRunByDistance(table.run, distance).heading,
+    kind: 'computed', stats: computed.stats, bounces: computed.bounces, gaugeBounces: anchor.bounces,
+    share: anchor.share, area: computed.areaShare, heading: samplePackedRunByDistance(computed.run, playbackDistance(time)).heading,
   };
 }
 
@@ -123,9 +108,7 @@ function directionCircle(pen: CanvasRenderingContext2D, box: Box, time: number, 
   const captionX = tall ? box.x + box.w * .75 : circle.x;
   const captionWidth = tall ? box.w * .48 : box.w - 5;
   text(pen, title, captionX, box.y + box.h * (tall ? .20 : .48), tall ? 10 : 16, captionWidth, colors);
-  const status = readout.kind === 'computed'
-    ? `COMPUTED${tall ? '\n' : ' '}${readout.bounces.toLocaleString('en-US')} BOUNCES`
-    : `${readout.bounces} BOUNCES ·${tall ? '\n' : ' '}CALCULATING 100,000`;
+  const status = `COMPUTED${tall ? '\n' : ' '}${readout.bounces.toLocaleString('en-US')} BOUNCES`;
   text(pen, status, captionX, box.y + box.h * (tall ? .36 : .52), tall ? 9 : 13, captionWidth, colors);
 }
 

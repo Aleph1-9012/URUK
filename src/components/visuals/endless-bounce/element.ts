@@ -22,9 +22,6 @@ defineFilm('uruk-endless-bounce', TIMELINE, (film) => {
       worker?.terminate();
       film.redraw();
     },
-    onFailure(reason) {
-      model.computation = { kind: 'failed', reason };
-    },
     cannotStart: 'The 100000-bounce calculation could not start.',
     cannotFinish: 'The 100000-bounce calculation could not finish.',
     cannotTransfer: 'The computed billiard data could not be transferred.',

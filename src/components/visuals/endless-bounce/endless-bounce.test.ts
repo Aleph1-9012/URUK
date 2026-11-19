@@ -5,11 +5,16 @@ import { apply, areaShareLeft, collisionSide, compose, computeBounceExperiment, 
 const model = createBounceModel();
 
 const KEYS = ['irrational', 'equilateral', 'right_isosceles'] as const;
+const prefixes = {
+  irrational: runBilliard(model.cases.irrational.triangle),
+  equilateral: runBilliard(model.cases.equilateral.triangle),
+  right_isosceles: runBilliard(model.cases.right_isosceles.triangle),
+};
 
 test('150: live collision points reproduce the reference trajectory and preserve unit specular motion', () => {
   for (const key of KEYS) {
     const table = model.cases[key];
-    const run = table.run;
+    const run = prefixes[key];
     expect(run.kind).toBe('complete');
     let largestPointError = 0;
     let largestReflectionError = 0;
@@ -58,21 +63,22 @@ test('150: the hundred-thousand-bounce experiments give six/eight rational headi
     expect(computed.stats.bins.reduce((total, count) => total + count, 0)).toBe(computed.bounces);
 
     for (const row of computed.shares) {
-      const recorded = table.reference.shares.find(source => source.bounces === row.bounces);
+      const recorded = Object.entries(reference[key].time_share_left).find(([bounces]) => Number(bounces) === row.bounces);
 
       if (!recorded) throw new Error('The computed gauge milestone has an independent reference.');
 
-      expect(Math.abs(row.share - recorded.share)).toBeLessThan(.000051);
+      expect(Math.abs(row.share - recorded[1])).toBeLessThan(.000051);
     }
 
     expect(Math.abs(areaShareLeft(table.triangle) - reference[key].area_share_left)).toBeLessThan(.000051);
-    const endTime = table.run.times.at(-1);
+    const run = prefixes[key];
+    const endTime = run.times.at(-1);
 
     if (endTime === undefined) throw new Error('The immediate run has its final event time.');
 
     for (const distance of [0, .05, 1, endTime - .001]) {
       const packed = samplePackedRunByDistance(computed.run, distance);
-      const immediate = sampleRunByDistance(table.run, distance);
+      const immediate = sampleRunByDistance(run, distance);
       expect(packed.bounce).toBe(immediate.bounce);
       expect(Math.hypot(packed.point.x - immediate.point.x, packed.point.y - immediate.point.y)).toBeLessThan(1e-12);
     }
@@ -80,12 +86,12 @@ test('150: the hundred-thousand-bounce experiments give six/eight rational headi
 
   const transferred = structuredClone(experiment, { transfer: experimentBuffers(experiment) });
   expect(transferred.irrational.run.times.length).toBe(100001);
-  expect(samplePackedRunByDistance(transferred.equilateral.run, 1).point).toEqual(sampleRunByDistance(model.cases.equilateral.run, 1).point);
+  expect(samplePackedRunByDistance(transferred.equilateral.run, 1).point).toEqual(sampleRunByDistance(prefixes.equilateral, 1).point);
 });
 
 test('150: event-time sampling travels at unit speed and a corner encounter stops visibly instead of choosing a side', () => {
   const table = model.cases.irrational;
-  const run = table.run;
+  const run = prefixes.irrational;
   const last = run.times.at(-1);
 
   if (last === undefined) throw new Error('The trajectory has its final event time.');
@@ -121,13 +127,14 @@ test('150: event-time sampling travels at unit speed and a corner encounter stop
 test('150: composing actual wall reflections unfolds each trajectory into its initial straight unit-speed ray', () => {
   for (const key of KEYS) {
     const table = model.cases[key];
+    const run = prefixes[key];
     let map = IDENTITY;
     let largestError = 0;
 
     for (let collision = 0; collision < 100; collision++) {
-      const point = table.run.points[collision + 1];
-      const distance = table.run.times[collision + 1];
-      const recordedSide = table.run.sides[collision];
+      const point = run.points[collision + 1];
+      const distance = run.times[collision + 1];
+      const recordedSide = run.sides[collision];
 
       if (!point || distance === undefined || recordedSide === undefined) throw new Error('The unfolding uses one hundred complete recorded collisions.');
 
