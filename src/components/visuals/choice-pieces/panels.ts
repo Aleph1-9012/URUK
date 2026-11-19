@@ -47,15 +47,15 @@ export function drawChoicePiecesPanels(ctx: CanvasRenderingContext2D, w: number,
   function claim(): void {
     if (motion.claimTag > 0) {
       note('CLAIMED · RELATIVE CONSISTENCY', phone ? .465 : .13, phone ? 8.5 : 11, true);
-      formula('con-zf', phone ? .53 : .25);
-      formula('con-extension', phone ? .595 : .385);
+      formula('con-zf', phone ? .54 : .25);
+      formula('con-extension', phone ? .63 : .385);
     } else {
       note('KNOWN IMPLICATIONS OVER ZF', phone ? .48 : .22);
     }
 
-    note('SCHEMATIC · THE FINITE PICTURE IS NOT A MODEL', phone ? .665 : .49, phone ? 8 : 9);
+    note('SCHEMATIC · THE FINITE PICTURE IS NOT A MODEL', phone ? .69 : .49, phone ? 8 : 9);
 
-    if (motion.scopeTags > 0) note('THEOREM 1.1: NO ATOMS · NO LARGE CARDINALS', phone ? .705 : .565, phone ? 8 : 10);
+    if (motion.scopeTags > 0) note('THEOREM 1.1: NO ATOMS · NO LARGE CARDINALS', phone ? .735 : .565, phone ? 8 : 10);
   }
 
   questionLabels();
@@ -79,7 +79,7 @@ export function drawChoicePiecesPanels(ctx: CanvasRenderingContext2D, w: number,
       break;
     case 'board':
       if (motion.boardFill === 1) {
-        if (phone) note('ALL ONE-TO-ONE ASSIGNMENTS', .40, 8.5);
+        if (phone) note('ALL ONE-TO-ONE ASSIGNMENTS', .39, 8.5);
         note(`${model.counts.injections} INJECTIONS · ${model.counts.inside} ALL INSIDE`, phone ? .82 : .74);
         note(`${model.counts.outside} OTHER INJECTIONS`, phone ? .865 : .815, phone ? 8.5 : 10);
       }
@@ -107,20 +107,20 @@ export function drawChoicePiecesPanels(ctx: CanvasRenderingContext2D, w: number,
       break;
     case 'reader':
       claim();
-      if (motion.readerMark > 0) note('READ BY ONE EXPERT · KARAGILA', phone ? .765 : .65, phone ? 8.5 : 10);
-      if (motion.exposition > 0) note('EXPOSITION REJECTED · NO ERROR REPORTED', phone ? .825 : .75, phone ? 8 : 10);
-      if (motion.reviewDate > 0) note('UNREVIEWED · 18 OCTOBER 2026', phone ? .925 : .91, phone ? 8.5 : 10);
+      if (motion.readerMark > 0) note('READ BY ONE EXPERT · KARAGILA', phone ? .79 : .65, phone ? 8.5 : 10);
+      if (motion.exposition > 0) note('EXPOSITION REJECTED · NO ERROR REPORTED', phone ? .845 : .75, phone ? 8 : 10);
+      if (motion.reviewDate > 0) note('UNREVIEWED · 18 OCTOBER 2026', phone ? .93 : .91, phone ? 8.5 : 10);
       break;
     case 'ledger':
       claim();
-      note('UNREVIEWED · 18 OCTOBER 2026', phone ? .76 : .65, phone ? 8.5 : 10);
+      note('UNREVIEWED · 18 OCTOBER 2026', phone ? .78 : .65, phone ? 8.5 : 10);
       if (motion.ledger > 0) {
-        note('CATALOGUED: INACCESSIBLE ASSUMPTION', phone ? .805 : .725, phone ? 8 : 10);
-        note('THEOREM 1.1: LINKED, NOT CATALOGUED', phone ? .85 : .805, phone ? 8 : 10);
+        note('CATALOGUED: INACCESSIBLE ASSUMPTION', phone ? .83 : .725, phone ? 8 : 10);
+        note('THEOREM 1.1: LINKED, NOT CATALOGUED', phone ? .875 : .805, phone ? 8 : 10);
       }
       if (motion.replay > 0) {
-        note('NO OUTSIDE REPLAY FOUND', phone ? .90 : .885, phone ? 8.5 : 10);
-        note('KERNEL CHECK IS NOT APPROVAL', phone ? .95 : .955, phone ? 8 : 10);
+        note('NO OUTSIDE REPLAY FOUND', phone ? .915 : .885, phone ? 8.5 : 10);
+        note('KERNEL CHECK IS NOT APPROVAL', phone ? .965 : .955, phone ? 8 : 10);
       }
       break;
   }

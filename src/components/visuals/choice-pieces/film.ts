@@ -150,7 +150,11 @@ class ChoicePiecesFilm implements FilmDrawing {
     if (motion.pieces === 1 && motion.diagramCarry === 0) {
       for (let index = 0; index < model.pieces.length; index++) {
         const source = this.origin(index, motion);
-        this.text(`P${index + 1}`, source.x, source.y + (this.phone ? 13 : 17), this.phone ? 9 : 12, true);
+        if (this.phone) {
+          const piece = this.piece(index, motion);
+          drawText(this.pen, `P${index + 1}`, source.x, piece.y - piece.height / 2 - 10, { size: 9, color: this.tones.ink, family: 'math' });
+        }
+        else this.text(`P${index + 1}`, source.x, source.y + 17, 12, true);
       }
     }
   }
@@ -235,7 +239,7 @@ class ChoicePiecesFilm implements FilmDrawing {
 
   private boardBox(motion: Motion): Box {
     const { width: w, height: h } = this;
-    const width = w * (this.phone ? .92 : .40);
+    const width = w * (this.phone ? .50 : .40);
     const height = width * 10 / 12;
     const center = this.phone ? { x: w * .5, y: h * .43 + height / 2 } : { x: w * .76, y: h * .42 };
     const parked = { x: w * (this.phone ? .84 : .075), y: h * (this.phone ? .29 : .10) };
@@ -497,7 +501,7 @@ class ChoicePiecesFilm implements FilmDrawing {
 
     const { width: w, height: h, pen, tones } = this;
     const nodes = [
-      { y: this.phone ? .11 : .19, width: this.phone ? .40 : .30, height: this.phone ? .12 : .18 },
+      { y: this.phone ? .11 : .19, width: this.phone ? .40 : .30, height: this.phone ? .14 : .18 },
       { y: this.phone ? .25 : .43, width: .24, height: this.phone ? .07 : .10 },
       { y: this.phone ? .39 : .67, width: .28, height: this.phone ? .08 : .12 },
     ];

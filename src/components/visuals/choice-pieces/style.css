@@ -8,6 +8,6 @@ uruk-choice-pieces [data-label="con-extension"] { color: var(--blue); }
 }
 
 @container ppfilm (width < 600px) {
-  uruk-choice-pieces .film-stage { aspect-ratio: 4 / 9; }
+  uruk-choice-pieces .film-stage { aspect-ratio: 4 / 5; }
   uruk-choice-pieces .film-label { font-size: .75rem; }
 }
