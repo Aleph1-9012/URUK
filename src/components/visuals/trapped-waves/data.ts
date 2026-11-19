@@ -13,11 +13,7 @@ export type WaveData = {
   strong: Float32Array<ArrayBuffer> | null;
   medium: Map<number, WaveFrame>;
   weak: Map<number, WaveFrame>;
-  complete: boolean;
-  error: string | null;
 };
-
-export const STRONG_STILL = initial.strongStill;
 
 export const LOCALIZED_STATES = initial.states;
 
@@ -26,10 +22,10 @@ export const EIGENVALUES = initial.energies;
 export const STRONG_STATS = initial.strongStats;
 
 export function createWaveData(): WaveData {
-  return { unit: null, strong: null, medium: new Map(), weak: new Map(), complete: false, error: null };
+  return { unit: null, strong: null, medium: new Map(), weak: new Map() };
 }
 
-export function applyWaveMessage(data: WaveData, message: WaveWorkerMessage): void {
+export function applyWaveMessage(data: WaveData, message: Exclude<WaveWorkerMessage, { kind: 'complete' | 'error' }>): void {
   switch (message.kind) {
     case 'initial':
       data.unit = message.unit;
@@ -37,12 +33,6 @@ export function applyWaveMessage(data: WaveData, message: WaveWorkerMessage): vo
       break;
     case 'frame':
       (message.disorder === 5 ? data.medium : data.weak).set(message.index, message.frame);
-      break;
-    case 'complete':
-      data.complete = true;
-      break;
-    case 'error':
-      data.error = message.message;
       break;
   }
 }

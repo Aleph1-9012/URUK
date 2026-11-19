@@ -16,13 +16,11 @@ defineFilm('uruk-trapped-waves', TIMELINE, (film) => {
         return;
       }
 
-      drawing.setData(message);
-
-      if (message.kind === 'complete') numerics.ready();
-
-      if (message.kind !== 'frame') film.redraw();
+      if (message.kind === 'complete') {
+        numerics.ready();
+        film.redraw();
+      } else drawing.setData(message);
     },
-    onFailure: (message) => drawing.setData({ kind: 'error', message }),
     cannotFinish: 'The numerical wave data could not be loaded.',
   });
 

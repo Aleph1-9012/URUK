@@ -18,7 +18,7 @@ export class TrappedWavesFilm {
     this.labels = new FilmLabels(root, { horizontal: 7, vertical: 6 });
   }
 
-  setData(message: WaveWorkerMessage): void {
+  setData(message: Exclude<WaveWorkerMessage, { kind: 'complete' | 'error' }>): void {
     applyWaveMessage(this.data, message);
   }
 

@@ -1,11 +1,3 @@
-export const UNIT_SIDE = 201;
-
-export const STRONG_SIDE = 31;
-
-export const STRONG_STEP = .25;
-
-export const STRONG_FRAMES = 161;
-
 export type { WaveFrame } from './data';
 
 export function besselValues(argument: number, count: number): Float64Array<ArrayBuffer> {
@@ -68,16 +60,8 @@ export function freeStandingWave(side = 31, k = 3, l = 5): { energy: number; den
   return { energy: 2 * Math.cos(Math.PI * k / (side + 1)) + 2 * Math.cos(Math.PI * l / (side + 1)), density };
 }
 
-export function spectrumBounds(dimension: number, disorder: number): readonly [number, number] {
-  return [-2 * dimension - disorder, 2 * dimension + disorder];
-}
-
 export function separationCost(ratio: number): number {
   return 2 * Math.PI / Math.log(ratio);
-}
-
-export function logProfile(radius: number, inner: number, outer: number): number {
-  return Math.max(0, Math.min(1, Math.log(radius / inner) / Math.log(outer / inner)));
 }
 
 export function binaryApproximation(unitValue: number, digits: number): number {

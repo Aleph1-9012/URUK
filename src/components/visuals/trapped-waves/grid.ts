@@ -162,7 +162,7 @@ export function drawWaveGrid(pen: CanvasRenderingContext2D, width: number, heigh
   const cell = size / pair.view * boxScale;
   const energyY = height * (tall ? .46 : .88);
   const available = pair.first.ready && pair.second.ready;
-  const readyText = data.error ? 'WAVE DATA UNAVAILABLE' : 'COMPUTING THIS WAVE…';
+  const readyText = 'COMPUTING THIS WAVE…';
   const text = (words: string, x: number, y: number, maxWidth: number, tone = colors.ink, large = false): void => {
     const font = large ? (tall ? 13 : 16) : (tall ? 9 : 11);
     pen.font = large ? `italic ${font}px Alegreya, serif` : `${font}px "Special Elite", monospace`;
