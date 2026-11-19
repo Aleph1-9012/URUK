@@ -1,4 +1,4 @@
 @container plate (max-width: 599px) {
-  uruk-three-lanes .film-stage { aspect-ratio: 4 / 11; }
+  uruk-three-lanes .film-stage { aspect-ratio: 4 / 5; }
   uruk-three-lanes .film-label { font-size: .75rem; }
 }

@@ -11,17 +11,17 @@ function header(pen: CanvasRenderingContext2D, box: Box, rows: readonly string[]
 
 function footer(pen: CanvasRenderingContext2D, box: Box, first: string, second: string, colors: Colors, tall: boolean): void {
   const x = box.x + box.w / 2;
-  text(pen, first, x, box.y + box.h - 40, tall ? 11 : 14, box.w - 6, colors);
-  text(pen, second, x, box.y + box.h - 15, tall ? 8.5 : 11, box.w - 6, colors);
+  text(pen, first, x, box.y + box.h - (tall ? 26 : 40), tall ? 11 : 14, box.w - 6, colors);
+  text(pen, second, x, box.y + box.h - (tall ? 6 : 15), tall ? 8.5 : 11, box.w - 6, colors);
 }
 
 function opening(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, model: SchedulingModel, tall: boolean): void {
   const x = box.x + box.w / 2;
 
   if (time < 8250) {
-    text(pen, `${model.n} ONE-HOUR JOBS`, x, box.y + box.h * .13, tall ? 25 : 34, box.w - 6, colors);
-    text(pen, `${model.arcs.length} ARROWS: WAIT FOR THE EARLIER JOB`, x, box.y + box.h * .27, tall ? 10 : 14, box.w - 6, colors);
-    text(pen, 'IDENTICAL WORKERS · JOBS CANNOT BE SPLIT', x, box.y + box.h * .42, tall ? 10 : 14, box.w - 6, colors);
+    text(pen, `${model.n} ONE-HOUR JOBS`, x, tall ? box.y + 10 : box.y + box.h * .13, tall ? 25 : 34, box.w - 6, colors);
+    text(pen, `${model.arcs.length} ARROWS: WAIT FOR THE EARLIER JOB`, x, tall ? box.y + 91 : box.y + box.h * .27, tall ? 10 : 14, box.w - 6, colors);
+    text(pen, 'IDENTICAL WORKERS · JOBS CANNOT BE SPLIT', x, tall ? box.y + 154 : box.y + box.h * .42, tall ? 10 : 14, box.w - 6, colors);
 
     return;
   }
@@ -73,14 +73,15 @@ function claimLedger(pen: CanvasRenderingContext2D, box: Box, time: number, colo
   if (time < 70500) header(pen, box, ['CLAIMED: NONEMPTY PRECEDENCE DAGS', 'UNIT NONPREEMPTIVE JOBS', 'THREE IDENTICAL MACHINES'], colors, tall);
   else header(pen, box, ['UNREVIEWED', 'LEAN STATEMENT ONLY', 'NOT IN THE CATALOGUE'], colors, tall);
 
-  const y = box.y + box.h - 40;
+  const y = box.y + box.h - (tall ? 20 : 40);
   text(pen, 'INPUT-LENGTH EXPONENT', box.x + box.w * .34, y, tall ? 9 : 12, box.w * .63, colors);
   place('runtime-exponent', box.x + box.w * .83, y);
-  text(pen, 'NO PRACTICAL RUNNING-TIME CLAIM', box.x + box.w / 2, box.y + box.h - 15, tall ? 8.5 : 11, box.w - 6, colors);
+  text(pen, 'NO PRACTICAL RUNNING-TIME CLAIM', box.x + box.w / 2, box.y + box.h - (tall ? 3 : 15), tall ? 8.5 : 11, box.w - 6, colors);
 }
 
-export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: SchedulingModel, tall: boolean): void {
+export function drawPanels(pen: CanvasRenderingContext2D, panel: Box, time: number, colors: Colors, place: Place, model: SchedulingModel, tall: boolean): void {
   pen.setLineDash([]);
+  const box = tall && time >= 8250 ? { x: 6, y: 4, w: pen.canvas.clientWidth - 12, h: pen.canvas.clientHeight - 8 } : panel;
 
   if (time < 13250) opening(pen, box, time, colors, model, tall);
   else if (time < 33500) twoLanes(pen, box, time, colors, model, tall);

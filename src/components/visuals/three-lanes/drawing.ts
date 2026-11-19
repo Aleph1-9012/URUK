@@ -15,7 +15,7 @@ export type LaneGrid = Box & { hours: number; lanes: number; cellW: number; cell
 export type ScheduleRegion = 'single' | 'rule' | 'best';
 
 export function graphLayout(box: Box, tall: boolean): GraphLayout {
-  const tile = Math.min(tall ? 28 : 38, box.w * .135, box.h * .12);
+  const tile = tall ? 28 : Math.min(38, box.w * .135, box.h * .12);
   const margin = tile / 2 + 10;
 
   return { box, inner: { x: box.x + margin, y: box.y + (tall ? 44 : 58), w: box.w - margin * 2, h: box.h - (tall ? 90 : 120) }, tile };
@@ -51,13 +51,55 @@ export function laneGrid(box: Box, tall: boolean, region: ScheduleRegion, lanes 
   const fraction = region === 'single' ? .32 : region === 'rule' ? .25 : .61;
   const left = tall ? 25 : 34;
   const width = box.w - left - (tall ? 8 : 12);
-  const cellH = Math.min(tall ? 30 : 36, box.h * .077);
+  const cellH = tall ? 20 : Math.min(36, box.h * .077);
+  const top = tall ? region === 'single' ? 62 : region === 'rule' ? 37 : 136 : box.h * fraction;
 
-  return { x: box.x + left, y: box.y + box.h * fraction, w: width, h: lanes * cellH, hours: 5, lanes, cellW: width / 5, cellH };
+  return { x: box.x + left, y: box.y + top, w: width, h: lanes * cellH, hours: 5, lanes, cellW: width / 5, cellH };
 }
 
 export function slotPoint(grid: LaneGrid, hour: number, lane: number): Point {
   return { x: grid.x + (hour + .5) * grid.cellW, y: grid.y + (lane + .5) * grid.cellH };
 }
 
-export const text = fittedText(words => /[α-ωΑ-Ωℓ⊥≤≥≡∞√∇−→⇒⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/u.test(words) ? '"Garamond Math", serif' : /[À-ž]/u.test(words) ? '"Alegreya", "Garamond Math", serif' : '"Special Elite", monospace');
+const fontFor = (words: string) => /[α-ωΑ-Ωℓ⊥≤≥∞√∇−⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/u.test(words) ? '"Garamond Math", serif' : /[À-ž]/u.test(words) ? '"Alegreya", "Garamond Math", serif' : '"Special Elite", monospace';
+
+const fitted = fittedText(fontFor);
+
+export function text(pen: CanvasRenderingContext2D, words: string, x: number, y: number, size: number, maxWidth: number, colors: Colors, align: CanvasTextAlign = 'center', tone = colors.ink): void {
+  if (pen.canvas.clientWidth >= 600) {
+    fitted(pen, words, x, y, size, maxWidth, colors, align, tone);
+
+    return;
+  }
+
+  pen.font = `${size}px ${fontFor(words)}`;
+  const rows: string[] = [];
+
+  for (const paragraph of words.replace(/\s+([:;,.·!?])/gu, '\u00a0$1').split('\n')) {
+    let row = '';
+
+    for (const word of paragraph.split(' ')) {
+      const next = row ? row + ' ' + word : word;
+
+      if (row && pen.measureText(next).width > maxWidth) {
+        rows.push(row);
+        row = word;
+      } else row = next;
+    }
+
+    if (row) rows.push(row);
+  }
+
+  pen.textAlign = align;
+  pen.textBaseline = 'middle';
+
+  for (const [index, row] of rows.entries()) {
+    const baseline = y + (index - (rows.length - 1) / 2) * size * 1.3;
+    const bounds = pen.measureText(row);
+    const left = align === 'left' ? x : align === 'right' ? x - bounds.width : x - bounds.width / 2;
+    pen.fillStyle = colors.paper;
+    pen.fillRect(left - 3, baseline - bounds.actualBoundingBoxAscent - 3, bounds.width + 6, bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent + 6);
+    pen.fillStyle = tone;
+    pen.fillText(row, x, baseline);
+  }
+}

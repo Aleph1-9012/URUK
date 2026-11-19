@@ -275,14 +275,14 @@ export class ThreeLanesFilm {
 
     if (actor.reveal < 1) return;
 
-    pen.font = `${Math.max(tall ? 11 : 13, actor.size * .43)}px "Garamond Math", serif`;
+    pen.font = `${tall ? 12.04 : Math.max(13, actor.size * .43)}px "Garamond Math", serif`;
     pen.textAlign = 'center';
     pen.textBaseline = 'middle';
-    pen.fillText(`${actor.job + 1}`, x - (label === null ? 0 : actor.size * .08), y + (label === null ? 0 : actor.size * .12));
+    pen.fillText(`${actor.job + 1}`, x - (label === null ? 0 : tall ? 2.5 : actor.size * .08), y + (label === null ? 0 : tall ? 2 : actor.size * .12));
 
     if (label !== null) {
       pen.font = `${Math.max(tall ? 7.5 : 8.5, actor.size * .25)}px "Garamond Math", serif`;
-      pen.fillText(`${label}`, x + actor.size * .27, y - actor.size * .27);
+      pen.fillText(`${label}`, x + (tall ? 5 : actor.size * .27), y - (tall ? 5 : actor.size * .27));
     }
   }
 
