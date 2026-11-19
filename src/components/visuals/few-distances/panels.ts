@@ -1,14 +1,17 @@
 import { line } from '../../plate/canvas/strokes';
 import type { DistanceModel } from './math';
 import { claimProgress, flattenProgress, ladderProgress, randomProgress, ratioProgress } from './story';
-import { ladderBox, ladderPoint, ratioChartBox, ratioPoint, subpolyPoint, text, type Box, type Colors, type Place, type Point } from './drawing';
+import { ladderBox, ladderPoint, phoneText, ratioChartBox, ratioPoint, subpolyPoint, text, type Box, type Colors, type Place, type Point } from './drawing';
 
 export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: DistanceModel, tall: boolean): void {
   const x = box.x + box.w / 2;
   const size = tall ? 11 : 13;
   const titleSize = tall ? 14 : 18;
   const at = (fraction: number) => box.y + box.h * fraction;
-  const label = (words: string, fraction: number, fontSize = size) => text(pen, words, x, at(fraction), fontSize, box.w - 6, colors);
+  const label = (words: string, fraction: number, fontSize = size) => {
+    if (tall) phoneText(pen, words, x, at(fraction) - fontSize * .6, fontSize, box.w - 4, colors);
+    else text(pen, words, x, at(fraction), fontSize, box.w - 6, colors);
+  };
 
   if (time < 13000) {
     label(time < 8000 ? 'EVERY PAIR OF POINTS' : 'HOW FEW DIFFERENT LENGTHS?', .12, titleSize);
@@ -57,16 +60,18 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
     return;
   }
 
-  label('LOWER-BOUND EXPONENT · THREE DIMENSIONS', .035, tall ? 10 : 13);
+  if (tall) phoneText(pen, 'LOWER-BOUND EXPONENT · THREE DIMENSIONS', x, box.y, 10, box.w - 4, colors);
+  else label('LOWER-BOUND EXPONENT · THREE DIMENSIONS', .035, 13);
   drawLadder(pen, box, time, colors, place, model, tall);
 
   if (time >= 74000) drawRatios(pen, box, time, colors, place, model, tall);
 
   if (time >= 83500) {
-    const ledgerY = tall ? box.y + box.h - 7 : at(.978);
-    text(pen, 'UNREVIEWED · NO LEAN', x, ledgerY, tall ? 11 : 14, box.w - 6, colors);
-  } else if (time >= 66000) label('CLAIM: n ≥ 2 DISTINCT POINTS · FIXED d ≥ 3', .978, tall ? 10 : 12);
-  else label('THE NEAR-TOP OFFSET IS SCHEMATIC', .978, tall ? 10 : 12);
+    if (tall) phoneText(pen, 'UNREVIEWED · NO LEAN', x, box.y + box.h - 28, 11, box.w - 4, colors);
+    else text(pen, 'UNREVIEWED · NO LEAN', x, at(.978), 14, box.w - 6, colors);
+  } else if (tall) phoneText(pen, time >= 66000 ? 'CLAIM: n ≥ 2 DISTINCT POINTS · FIXED d ≥ 3' : 'THE NEAR-TOP OFFSET IS SCHEMATIC', x, box.y + box.h - 28, 10, box.w - 4, colors);
+  else if (time >= 66000) label('CLAIM: n ≥ 2 DISTINCT POINTS · FIXED d ≥ 3', .978, 12);
+  else label('THE NEAR-TOP OFFSET IS SCHEMATIC', .978, 12);
 }
 
 function drawLadder(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: DistanceModel, tall: boolean): void {
@@ -112,12 +117,13 @@ function drawLadder(pen: CanvasRenderingContext2D, box: Box, time: number, color
     if (rung.formula) {
       place(rung.formula, plot.x + plot.w * (tall ? .49 : .25), y);
 
-      if (tall && index === 4) text(pen, 'o(1) OFFSET SCHEMATIC', plot.x + plot.w * .52, y + 16, 8, plot.w - 10, colors);
+      if (tall && index === 4) phoneText(pen, 'o(1) OFFSET SCHEMATIC', plot.x + plot.w * .52, y + 11, 8, box.w - 4, colors);
       if (!tall) {
         const authorY = y + (index === 4 ? 9 : index === 1 ? -6 : 0);
         text(pen, rung.words, plot.x + plot.w * .73, authorY, 9, plot.w * .52, colors);
       }
-    } else text(pen, rung.words, plot.x + plot.w * .52, y, tall ? 10 : 11, plot.w - 10, colors);
+    } else if (tall) phoneText(pen, rung.words, plot.x + plot.w * .55, y - 6, 10, box.w - 2, colors);
+    else text(pen, rung.words, plot.x + plot.w * .52, y, 11, plot.w - 10, colors);
   }
 
   const claim = claimProgress(time);
@@ -131,7 +137,8 @@ function drawLadder(pen: CanvasRenderingContext2D, box: Box, time: number, color
 
     if (claim === 1) {
       place('claimed-bound', plot.x + plot.w * .50, top.y);
-      text(pen, 'CLAIMED', plot.x + plot.w * .88, top.y, tall ? 9 : 11, plot.w * .23, colors);
+      if (tall) text(pen, 'CLAIMED', plot.x + plot.w * .55, top.y - 21, 9, plot.w, colors);
+      else text(pen, 'CLAIMED', plot.x + plot.w * .88, top.y, 11, plot.w * .23, colors);
     }
   }
 }
@@ -150,8 +157,13 @@ function drawRatios(pen: CanvasRenderingContext2D, box: Box, time: number, color
   pen.lineWidth = .6;
   line(pen, plot.x, plot.y, plot.x, plot.y + plot.h);
   line(pen, plot.x, plot.y + plot.h, plot.x + plot.w, plot.y + plot.h);
-  text(pen, 'GRID ONLY · d = 3', plot.x, plot.y - 17, tall ? 8 : 10, plot.w * .48, colors, 'left');
-  place('ratio-definition', plot.x + plot.w * .78, plot.y - 17);
+  if (tall) {
+    text(pen, 'GRID ONLY · d = 3', box.x + box.w / 2, plot.y - 40, 8, box.w - 4, colors);
+    place('ratio-definition', box.x + box.w / 2, plot.y - 20);
+  } else {
+    text(pen, 'GRID ONLY · d = 3', plot.x, plot.y - 17, 10, plot.w * .48, colors, 'left');
+    place('ratio-definition', plot.x + plot.w * .78, plot.y - 17);
+  }
 
   for (const value of [0, .75, 1.5]) {
     const point = ratioPoint(2, value, plot);

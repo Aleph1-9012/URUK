@@ -40,7 +40,7 @@ export function cameraAngle(time: number): number { return .41 + time / 1000 * .
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
-  if (tall) return { stage: { x: width * .03, y: height * .018, w: width * .94, h: height * .45 }, panel: { x: width * .04, y: height * .48, w: width * .92, h: height * .50 }, tall };
+  if (tall) return { stage: { x: 4, y: 4, w: width * .42 - 6, h: height - 8 }, panel: { x: width * .45, y: 4, w: width * .55 - 5, h: height - 8 }, tall };
 
   return { stage: { x: width * .025, y: height * .03, w: width * .46, h: height * .90 }, panel: { x: width * .52, y: height * .03, w: width * .45, h: height * .90 }, tall };
 }

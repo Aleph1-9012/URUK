@@ -1,4 +1,5 @@
 import { fittedText } from '../../plate/canvas/fitted-text';
+import { drawWrappedText } from '../../plate/canvas/wrapped-text';
 
 export type Box = { x: number; y: number; w: number; h: number };
 
@@ -15,6 +16,13 @@ export type CubeLayout = { center: Point; scale: number; pointRadius: number };
 export type TallyLayout = { x: number; y: number; pitch: number; rowGap: number; columns: number; cellSize: number; barHeight: number };
 
 export function cubeLayout(box: Box, tall: boolean): CubeLayout {
+  if (tall) {
+    const top = box.y + (box.w < 80 ? 48 : 62);
+    const bottom = box.y + 145 + Math.max(0, box.h - 302) * .4;
+
+    return { center: { x: box.x + box.w / 2, y: (top + bottom) / 2 }, scale: Math.min(box.w / 6.8, (bottom - top) / 6.35), pointRadius: 1.35 };
+  }
+
   const top = box.y + (tall ? 35 : 42);
   const bottom = box.y + box.h * .70 - (tall ? 14 : 18);
   const height = bottom - top;
@@ -39,6 +47,14 @@ export function projectPoint(point: Point3, geometry: CubeLayout, angle: number,
 }
 
 export function tallyLayout(box: Box, tall: boolean): TallyLayout {
+  if (tall) {
+    const pitch = box.w * .94 / 12;
+
+    const extra = Math.max(0, box.h - 302);
+
+    return { x: box.x + box.w * .03, y: box.y + 222 + extra * .5, pitch, rowGap: 16 + extra * .15, columns: 12, cellSize: Math.min(6, pitch * .65), barHeight: Math.min(24, 6 + extra * .08) };
+  }
+
   const columns = tall ? 24 : 48;
   const pitch = box.w * .94 / columns;
 
@@ -52,6 +68,8 @@ export function tallyPoint(squared: number, geometry: TallyLayout): Point {
 }
 
 export function ladderBox(box: Box, tall: boolean): Box {
+  if (tall) return { x: box.x + 25, y: box.y + 54, w: box.w - 34, h: Math.max(124, ratioChartBox(box, true).y - box.y - 106) };
+
   return { x: box.x + (tall ? 27 : 30), y: box.y + box.h * .11, w: box.w - (tall ? 41 : 46), h: box.h * .48 };
 }
 
@@ -64,6 +82,12 @@ export function subpolyPoint(plot: Box, tall: boolean): Point {
 }
 
 export function ratioChartBox(box: Box, tall: boolean): Box {
+  if (tall) {
+    const height = Math.min(35, Math.max(23, box.h - 279));
+
+    return { x: box.x + 25, y: box.y + box.h - 49 - height, w: box.w - 38, h: height };
+  }
+
   return { x: box.x + (tall ? 27 : 30), y: box.y + box.h * .70, w: box.w - (tall ? 43 : 46), h: box.h * (tall ? .17 : .20) };
 }
 
@@ -72,3 +96,10 @@ export function ratioPoint(t: number, ratio: number, plot: Box): Point {
 }
 
 export const text = fittedText(words => /[α-ωΑ-Ωℓ⊥≤≥≡∞√∇−→⇒⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/u.test(words) ? '"Garamond Math", serif' : /[À-ž]/u.test(words) ? '"Alegreya", "Garamond Math", serif' : '"Special Elite", monospace');
+
+export function phoneText(pen: CanvasRenderingContext2D, words: string, x: number, top: number, size: number, width: number, colors: Colors, math = false): number {
+  const family = math || /[α-ωΑ-Ωℓ⊥≤≥≡∞√∇−→⇒⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉]/u.test(words) ? 'math' : /[À-ž]/u.test(words) ? 'serif' : 'type';
+  const bounds = drawWrappedText(pen, words.replace(/\s+([:;,.·!?])/g, '\u00a0$1'), x, top, width, { size, family, color: colors.ink, paper: colors.paper });
+
+  return bounds.y + bounds.height;
+}

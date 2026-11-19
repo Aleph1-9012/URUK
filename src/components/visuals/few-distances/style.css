@@ -4,6 +4,6 @@ uruk-few-distances .film-label[data-label="ratio-definition"] { font-size: .75re
 uruk-few-distances:not([data-ready]) .film-subtitles { display: none; }
 
 @container plate (max-width: 599px) {
-  uruk-few-distances .film-stage { aspect-ratio: 4 / 12; }
+  uruk-few-distances .film-stage { aspect-ratio: 4 / 5; }
   uruk-few-distances .film-label { font-size: .75rem; }
 }

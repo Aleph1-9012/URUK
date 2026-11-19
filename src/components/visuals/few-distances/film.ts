@@ -3,7 +3,7 @@ import { line } from '../../plate/canvas/strokes';
 import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
 import { type DistanceModel, type DistancePair, type Point3 } from './math';
-import { type Box, type Colors, type CubeLayout, type Point, comparisonBoxes, cubeLayout, projectPoint, tallyLayout, tallyPoint, text } from './drawing';
+import { type Box, type Colors, type CubeLayout, type Point, comparisonBoxes, cubeLayout, phoneText, projectPoint, tallyLayout, tallyPoint, text } from './drawing';
 import { cameraAngle, flattenProgress, layout, nodeProgress, randomProgress, tallyProgress } from './story';
 import { drawPanels } from './panels';
 
@@ -146,8 +146,8 @@ export class FewDistancesFilm {
     }
 
     const x = box.x + box.w / 2;
-    const y = box.y + box.h * .69;
-    this.plain(`3D SQUARED LENGTH: ${pair.squared}`, x, y, tall ? 9 : 13);
+    const y = tall ? box.y + 161 + Math.max(0, box.h - 302) * .4 : box.y + box.h * .69;
+    this.plain(`3D SQUARED LENGTH: ${pair.squared}`, x, y, tall ? 9 : 13, box.w - 4);
   }
 
   private repeated(geometry: CubeLayout, angle: number, tall: boolean): void {
@@ -176,23 +176,28 @@ export class FewDistancesFilm {
       second = comparison === 1 ? `${model.grid.length} POINTS IN EACH CUBE` : 'COMPARISON IN TRANSIT';
     } else if (time >= 8000 && time < 13000) first = 'HOW MANY DIFFERENT LENGTHS?';
 
-    text(pen, first, box.x + box.w / 2, box.y + 8, tall ? 9.5 : 14, box.w - 6, colors);
-    text(pen, second, box.x + box.w / 2, box.y + (tall ? 24 : 29), tall ? 8 : 11, box.w - 6, colors);
+    if (tall) {
+      const bottom = phoneText(pen, first, box.x + box.w / 2, box.y, 9.5, box.w, colors);
+      phoneText(pen, second, box.x + box.w / 2, bottom + 4, 8, box.w, colors);
+    } else {
+      text(pen, first, box.x + box.w / 2, box.y + 8, 14, box.w - 6, colors);
+      text(pen, second, box.x + box.w / 2, box.y + 29, 11, box.w - 6, colors);
+    }
 
     if (phase !== 'cube' || time < 13000) return;
 
     if (comparison === 1) {
-      this.plain(`GRID: ${model.distinct} / ${model.pairCount.toLocaleString('en-US')}`, box.x + box.w * .235, box.y + box.h * .69, tall ? 8 : 11);
-      this.plain(`RANDOM: ${model.randomDistinct.toLocaleString('en-US')} / ${model.randomPairs.length.toLocaleString('en-US')}`, box.x + box.w * .765, box.y + box.h * .69, tall ? 8 : 11);
+      this.plain(`GRID: ${model.distinct} / ${model.pairCount.toLocaleString('en-US')}`, box.x + box.w * .235, tall ? box.y + 167 + Math.max(0, box.h - 302) * .4 : box.y + box.h * .69, tall ? 8 : 11, box.w * .47);
+      this.plain(`RANDOM: ${model.randomDistinct.toLocaleString('en-US')} / ${model.randomPairs.length.toLocaleString('en-US')}`, box.x + box.w * .765, tall ? box.y + 167 + Math.max(0, box.h - 302) * .4 : box.y + box.h * .69, tall ? 8 : 11, box.w * .47);
     } else if (comparison === 0) {
       const words = time >= 15000 && time < 25000 ? `${model.repeatedFive.length} SHOWN PAIRS · ALL SQUARED LENGTH ${model.common.squared}` : 'OBLIQUE VIEW · TRUE 3D DISTANCES';
-      this.plain(words, box.x + box.w / 2, box.y + box.h * .69, tall ? 8 : 11);
+      this.plain(words, box.x + box.w / 2, tall ? box.y + 161 + Math.max(0, box.h - 302) * .4 : box.y + box.h * .69, tall ? 8 : 11, box.w - 4);
     }
   }
 
   private ordinal(randomBox: Box, stage: Box, tall: boolean): void {
     const { pen, colors } = this;
-    const y = stage.y + stage.h * .58;
+    const y = tall ? stage.y + 127 + Math.max(0, stage.h - 302) * .4 : stage.y + stage.h * .58;
     const start = randomBox.x + randomBox.w * .13;
     const pitch = randomBox.w * .055;
     pen.fillStyle = colors.ink;
@@ -205,7 +210,7 @@ export class FewDistancesFilm {
     line(pen, start + 12 * pitch, y + 2, end, y + 2);
     line(pen, end - 3, y - 1, end, y + 2);
     line(pen, end - 3, y + 5, end, y + 2);
-    this.plain(`FIRST 12 OF ${this.model.randomDistinct.toLocaleString('en-US')} VALUES`, randomBox.x + randomBox.w / 2, y + (tall ? 15 : 18), tall ? 7 : 10);
+    this.plain(`FIRST 12 OF ${this.model.randomDistinct.toLocaleString('en-US')} VALUES`, tall ? stage.x + stage.w / 2 : randomBox.x + randomBox.w / 2, y + (tall ? 15 : 18), tall ? 7 : 10, stage.w - 4);
   }
 
   private tally(box: Box, time: number, phase: Phase, tall: boolean): void {
@@ -247,7 +252,7 @@ export class FewDistancesFilm {
     }
 
     const captionY = tall ? geometry.y - geometry.barHeight - 6 : geometry.y + 28;
-    this.plain('GRID SQUARED VALUES · 1 THROUGH 48', box.x + box.w / 2, captionY, tall ? 7.5 : 11);
+    this.plain('GRID SQUARED VALUES · 1 THROUGH 48', box.x + box.w / 2, tall ? box.y + 195 + Math.max(0, box.h - 302) * .4 : captionY, tall ? 7.5 : 11, box.w - 4);
     let footer = 'COLLECTING THE DISTINCT SQUARED VALUES';
 
     if (transitional) footer = 'TALLY IN TRANSIT · COUNTS HIDDEN';
@@ -255,10 +260,17 @@ export class FewDistancesFilm {
     else if (time >= 25000) footer = `${model.distinct} VALUES · ${model.missing.length} GAPS · PEAK ${model.common.squared}: ${model.common.count} PAIRS`;
     else if (time >= 13000) footer = `DISTINCT VALUES FOUND: ${Math.ceil(tallyProgress(time) * model.distinct)}`;
 
-    this.plain(footer, box.x + box.w / 2, box.y + box.h * .97, tall ? 8 : 11);
+    if (tall && time < 13000) this.plain(footer, this.width / 2, this.height - 10, 8, this.width - 12);
+    else this.plain(footer, box.x + box.w / 2, tall ? box.y + box.h - 15 : box.y + box.h * .97, tall ? 8 : 11, box.w - 4);
   }
 
-  private plain(words: string, x: number, y: number, size: number): void {
+  private plain(words: string, x: number, y: number, size: number, width = this.width): void {
+    if (this.width < 600) {
+      phoneText(this.pen, words, x, y - size * .6, size, width, this.colors, true);
+
+      return;
+    }
+
     this.pen.fillStyle = this.colors.ink;
     this.pen.font = `${size}px "Garamond Math", serif`;
     this.pen.textAlign = 'center';
