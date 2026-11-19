@@ -73,7 +73,7 @@ export function claimProgress(time: number): number { return progress(time, 6350
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
-  if (tall) return { stage: { x: width * .03, y: height * .015, w: width * .94, h: height * .48 }, panel: { x: width * .05, y: height * .52, w: width * .90, h: height * .46 }, tall };
+  if (tall) return { stage: { x: width * .03, y: height * .015, w: width * .94, h: height * .38 }, panel: { x: width * .05, y: height * .40, w: width * .90, h: height * .59 }, tall };
 
   return { stage: { x: width * .025, y: height * .025, w: width * .53, h: height * .94 }, panel: { x: width * .59, y: height * .045, w: width * .385, h: height * .90 }, tall };
 }

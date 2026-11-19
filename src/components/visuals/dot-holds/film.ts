@@ -93,7 +93,7 @@ export class DotHoldsFilm {
     };
     const visible = arrowProgress(time) * snapshot.arcs.length;
     const title = state.turning ? 'TURNING ONE ARROW · COUNTS HELD' : `${model.n} DOTS · ${Math.floor(visible)} OF ${snapshot.arcs.length} ARROWS`;
-    text(pen, title, box.x + box.w / 2, box.y + 8, tall ? 9.5 : 15, box.w - 4, colors);
+    text(pen, title, box.x + box.w / 2, box.y + (tall ? 5 : 8), tall ? 9.5 : 15, box.w - 4, colors);
 
     for (const [index, arc] of snapshot.arcs.entries()) {
       if (change && samePair(arc, change.pair)) continue;
@@ -155,7 +155,11 @@ export class DotHoldsFilm {
 
         if (!unit) throw new Error('Each outside count belongs to its circle vertex.');
 
-        this.number(`${data.firstCount} | ${data.secondCount}`, point.x + unit.x * geometry.countOffset, point.y + unit.y * geometry.countOffset, tall ? 9 : 13);
+        const bottom = tall && unit.y > .7;
+        const sideOffset = tall && !bottom && Math.abs(unit.x) > .1 ? Math.sign(unit.x) * 12 : 0;
+        const countX = point.x + unit.x * geometry.countOffset + (bottom ? Math.sign(unit.x) * 29 : 0) + sideOffset;
+        const countY = point.y + (bottom ? 7 : unit.y * geometry.countOffset);
+        this.number(`${data.firstCount} | ${data.secondCount}`, countX, countY, tall ? 9 : 13);
       }
     }
   }
