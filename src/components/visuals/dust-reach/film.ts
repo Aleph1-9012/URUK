@@ -74,9 +74,9 @@ export class DustReachFilm {
     const tall = w < PHONE_STAGE_WIDTH;
     const small = tall ? 9 : 13;
     const ladder = smooth(time, 20500, 22250);
-    const squareSize = tall ? w * .52 : Math.min(w * .40, h * .64);
+    const squareSize = tall ? w * .42 : Math.min(w * .40, h * .64);
     const square: Box = { x: mix((w - squareSize) / 2, w * .055, ladder), y: tall ? h * .09 : h * .10, w: squareSize, h: squareSize };
-    const bar: Box = { x: w * .085, y: h * (tall ? .565 : .80), w: w * .83, h: tall ? 18 : 22 };
+    const bar: Box = { x: w * .085, y: h * (tall ? .61 : .80), w: w * .83, h: tall ? 18 : 22 };
     const frame = this.cloudAt(time);
     const barFrame = this.barAt(time);
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
@@ -103,14 +103,14 @@ export class DustReachFilm {
       note(pen, `12 POINTS · ${count} OF 66 PAIRS`, w / 2, setY, w - 25, small, colors.ink);
     } else if (time < 10000) {
       note(pen, 'SOLID SQUARE · SIDE 0.30', w / 2, setY, w - 25, small, colors.ink);
-      note(pen, 'CONTINUUM: ZERO TO THE DIAGONAL', w / 2, tall ? h * .68 : h * .92, w - 24, small, colors.ink);
-      note(pen, '41 BY 41 SAMPLE CHECK IS SEPARATE', w / 2, tall ? h * .75 : h * .97, w - 24, small - 1, colors.muted);
+      note(pen, 'CONTINUUM: ZERO TO THE DIAGONAL', w / 2, tall ? h * .78 : h * .92, w - 24, small, colors.ink);
+      note(pen, '41 BY 41 SAMPLE CHECK IS SEPARATE', w / 2, tall ? h * .86 : h * .97, w - 24, small - 1, colors.muted);
 
-      if (moving) note(pen, 'POINTS AND BAR IN TRANSIT · SCHEMATIC', w / 2, h * (tall ? .85 : .62), w - 24, small - 1, colors.ink);
+      if (moving) note(pen, 'POINTS AND BAR IN TRANSIT · SCHEMATIC', w / 2, h * (tall ? .96 : .62), w - 24, small - 1, colors.ink);
     } else if (time < 14500) {
       note(pen, moving ? 'RETURNING TO 12 POINTS · SCHEMATIC' : '12 POINTS · AT MOST 66 DISTANCES', w / 2, setY, w - 25, small, colors.ink);
-      this.labels.place('pair-count', w / 2, h * (tall ? .74 : .94));
-      note(pen, 'ERDŐS ASKED HOW FEW · GUTH–KATZ 2010', w / 2, tall ? h * .84 : h * .98, w - 24, small, colors.ink, 'Alegreya');
+      this.labels.place('pair-count', w / 2, h * (tall ? .79 : .94));
+      note(pen, 'ERDŐS ASKED HOW FEW · GUTH–KATZ 2010', w / 2, tall ? h * .91 : h * .98, w - 24, small, colors.ink, 'Alegreya');
     } else if (time < 50750) {
       const dust = this.model.dusts[frame.dust];
 
@@ -118,14 +118,14 @@ export class DustReachFilm {
 
       note(pen, `${moving ? 'TARGET LIMIT' : 'LIMIT'} DIMENSION ${dust.dimension.toFixed(3)}`, middleX, middleY, middleW, small, colors.ink);
       const info = moving ? 'POINTS AND BAR IN TRANSIT · SCHEMATIC' : `${dust.points.length.toLocaleString('en-US')} POINTS · ${dust.hitBins.length} OF ${dust.totalBins} CELLS HIT`;
-      note(pen, info, w / 2, h * (tall ? .70 : .91), w - 25, small, colors.ink);
+      note(pen, info, w / 2, h * (tall ? .77 : .91), w - 25, small, colors.ink);
 
-      if (!moving) note(pen, `${(100 * dust.hitBins.length / dust.totalBins).toFixed(1)}% · COMMON CELL SIZE 0.0105`, w / 2, h * (tall ? .77 : .96), w - 24, small, colors.ink);
+      if (!moving) note(pen, `${(100 * dust.hitBins.length / dust.totalBins).toFixed(1)}% · COMMON CELL SIZE 0.0105`, w / 2, h * (tall ? .84 : .96), w - 24, small, colors.ink);
 
-      note(pen, 'FINITE BIN COVERAGE IS NOT LENGTH', w / 2, h * (tall ? .86 : .99), w - 25, small - 1, colors.ink);
+      note(pen, 'FINITE BIN COVERAGE IS NOT LENGTH', w / 2, h * (tall ? .94 : .99), w - 25, small - 1, colors.ink);
     } else if (time < 60750) {
-      note(pen, moving ? 'POINTS AND METRIC IN TRANSIT · SCHEMATIC' : '961 POINTS · SAME BINS FOR BOTH SETS', tall ? w / 2 : middleX, h * (tall ? .44 : .61), tall ? w - 25 : middleW, small, colors.ink);
-      note(pen, 'ONE SCALE · NOT THE ITERATED CONSTRUCTION', w / 2, h * (tall ? .89 : .98), w - 24, small - 1, colors.ink);
+      note(pen, moving ? 'POINTS AND METRIC IN TRANSIT · SCHEMATIC' : '961 POINTS · SAME BINS FOR BOTH SETS', tall ? w / 2 : middleX, h * (tall ? .49 : .61), tall ? w - 25 : middleW, small, colors.ink);
+      note(pen, 'ONE SCALE · NOT THE ITERATED CONSTRUCTION', w / 2, h * (tall ? .96 : .98), w - 24, small - 1, colors.ink);
     } else {
       this.claim(bar, time, tall, moving);
     }
@@ -375,7 +375,7 @@ export class DustReachFilm {
     this.barAxis(box, frame.squared, tall);
 
     if (time >= 50750 && time < 60750) {
-      const second = { ...box, y: box.y + (tall ? 58 : 64) };
+      const second = { ...box, y: box.y + 64 };
       const split = smooth(time, 55500, 57300);
       const collapse = smooth(time, 59500, 60750);
       const travel = { ...second, y: mix(mix(box.y, second.y, split), box.y, collapse) };
@@ -406,7 +406,8 @@ export class DustReachFilm {
     for (const value of [0, 1, 2]) {
       const py = axisY(value);
       line(pen, x - 3, py, x + 3, py);
-      note(pen, String(value), x - (tall ? 10 : 15), py + (value === 0 ? 8 : 0), 24, small, colors.ink);
+      const labelX = tall && value === 0 ? x + 10 : x - (tall ? 10 : 15);
+      note(pen, String(value), labelX, py + (value === 0 && !tall ? 8 : 0), 24, small, colors.ink);
     }
 
     this.labels.place('dimension', x, y - 18);
@@ -449,7 +450,7 @@ export class DustReachFilm {
 
     if (time >= 60750) {
       const amount = smooth(time, 60750, 62500);
-      const left = x - (tall ? 14 : 24);
+      const left = x - (tall ? 26 : 38);
       pen.strokeStyle = colors.blue;
       pen.lineWidth = tall ? 1.6 : 2.4;
       line(pen, left, axisY(1) - 5, left, mix(axisY(1) - 5, y, amount));
@@ -476,26 +477,26 @@ export class DustReachFilm {
     line(pen, box.x, y, box.x + box.w * amount, y);
     line(pen, box.x + box.w, y, box.x + box.w, y + 5);
     const x = tall ? w / 2 : w * .82;
-    const claimY = tall ? h * .445 : h * (narrowAspect ? .59 : .625);
+    const claimY = tall ? h * .455 : h * (narrowAspect ? .59 : .625);
     note(pen, 'CLAIMED', x, claimY, tall ? w - 24 : w * .43, size + 2, colors.blue);
 
-    const finiteY = tall ? h * .71 : h - (compact ? 52 : 69);
+    const finiteY = tall ? h * .76 : h - (compact ? 52 : 69);
 
     if (moving) note(pen, 'POINTS AND BAR IN TRANSIT · SCHEMATIC', w / 2, finiteY, w - 25, size - 1, colors.ink);
     else note(pen, 'FINITE SAMPLE · BIN COVERAGE IS NOT LENGTH', w / 2, finiteY, w - 25, size - 1, colors.ink);
 
-    this.labels.place('hausdorff', x - (tall ? 35 : 45), claimY + (tall ? 23 : 30));
-    note(pen, '>', x + (tall ? 2 : 4), claimY + (tall ? 23 : 30), 15, size + 4, colors.ink, '"Garamond Math"');
-    this.labels.place('half-dimension', x + (tall ? 34 : 46), claimY + (tall ? 23 : 30));
+    this.labels.place('hausdorff', x - (tall ? 35 : 45), claimY + (tall ? 20 : 30));
+    note(pen, '>', x + (tall ? 2 : 4), claimY + (tall ? 20 : 30), 15, size + 4, colors.ink, '"Garamond Math"');
+    this.labels.place('half-dimension', x + (tall ? 34 : 46), claimY + (tall ? 20 : 30));
     const status = time >= 68750 ? 'UNREVIEWED' : 'EVERY COMPACT SET · EVERY INTEGER d ≥ 2';
-    note(pen, status, w / 2, tall ? h * .80 : h - (compact ? 37 : 49), w - 24, time >= 68750 ? size + 2 : size, colors.ink, time >= 68750 ? '"Special Elite"' : '"Garamond Math"');
+    note(pen, status, w / 2, tall ? h * .84 : h - (compact ? 37 : 49), w - 24, time >= 68750 ? size + 2 : size, colors.ink, time >= 68750 ? '"Special Elite"' : '"Garamond Math"');
 
     if (time < 68750) {
-      this.labels.place('positive-length', tall ? w / 2 : x, h * (tall ? .875 : narrowAspect ? .72 : .74));
-      note(pen, 'POSITIVE LENGTH · NO INTERVAL ASSERTED', w / 2, tall ? h * .95 : h - 10, w - 24, size - 1, colors.ink);
+      this.labels.place('positive-length', tall ? w / 2 : x, h * (tall ? .90 : narrowAspect ? .72 : .74));
+      note(pen, 'POSITIVE LENGTH · NO INTERVAL ASSERTED', w / 2, tall ? h * .98 : h - 10, w - 24, size - 1, colors.ink);
     } else if (time >= 75500) {
-      note(pen, 'LEAN STATEMENTS ONLY', w / 2, tall ? h * .88 : h - (compact ? 22 : 29), w - 24, size, colors.ink);
-      note(pen, 'PLANAR CATALOGUED · ALL-DIMENSIONS NOT', w / 2, tall ? h * .95 : h - (compact ? 7 : 9), w - 24, size - 1, colors.ink);
-    } else note(pen, 'NO PUBLIC HUMAN CHECK · 18 OCTOBER 2026', w / 2, tall ? h * .90 : h - (compact ? 10 : 20), w - 24, size - 1, colors.ink);
+      note(pen, 'LEAN STATEMENTS ONLY', w / 2, tall ? h * .90 : h - (compact ? 22 : 29), w - 24, size, colors.ink);
+      note(pen, 'PLANAR CATALOGUED · ALL-DIMENSIONS NOT', w / 2, tall ? h * .98 : h - (compact ? 7 : 9), w - 24, size - 1, colors.ink);
+    } else note(pen, 'NO PUBLIC HUMAN CHECK · 18 OCTOBER 2026', w / 2, tall ? h * .94 : h - (compact ? 10 : 20), w - 24, size - 1, colors.ink);
   }
 }

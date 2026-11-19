@@ -6,6 +6,6 @@ uruk-dust-reach .film-label { font-size: .875rem; }
 }
 
 @container fafilm (width < 600px) {
-  uruk-dust-reach .film-stage { aspect-ratio: 4 / 7; }
+  uruk-dust-reach .film-stage { aspect-ratio: 4 / 5; }
   uruk-dust-reach .film-label { font-size: .75rem; }
 }
