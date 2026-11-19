@@ -7,7 +7,7 @@ import { motionAt } from './story';
 export function layout(w: number, h: number) {
   const phone = w < PHONE_STAGE_WIDTH;
   const compact = !phone && w < 760;
-  const sphere = { cx: (phone ? .5 : compact ? .27 : .29) * w, cy: (phone ? .23 : .48) * h, radius: Math.min((phone ? .42 : compact ? .22 : .25) * w, (phone ? .19 : compact ? .34 : .36) * h) };
+  const sphere = { cx: (phone ? .5 : compact ? .27 : .29) * w, cy: (phone ? .23 : .48) * h, radius: Math.min((phone ? .42 : compact ? .22 : .25) * w, (phone ? .17 : compact ? .34 : .36) * h) };
 
   return {
     phone,
@@ -36,7 +36,7 @@ export function drawClosingUpPanels(ctx: CanvasRenderingContext2D, w: number, h:
 
   function compactClaim(): void {
     note('CLAIMED · HIGHER SPHERES', phone ? .49 : .10, phone ? 9 : 12, true);
-    formula('new-dimensions', phone ? .55 : .23);
+    formula('new-dimensions', phone ? .565 : .23);
     note('PRIME GEODESICS · PAIRWISE DISTINCT IMAGES', phone ? .61 : .35, phone ? 8 : 10, true);
     note('TWO-SPHERE CASE: CLASSICAL INPUT', phone ? .69 : .47, phone ? 8.5 : 10);
   }
@@ -98,7 +98,7 @@ export function drawClosingUpPanels(ctx: CanvasRenderingContext2D, w: number, h:
     case 'claim':
       if (motion.claim > 0) {
         note('CLAIMED · HIGHER SPHERES', phone ? .49 : .08, phone ? 9 : 12, true);
-        formula('new-dimensions', phone ? .55 : .18);
+        formula('new-dimensions', phone ? .565 : .18);
         note('EVERY SMOOTH RIEMANNIAN METRIC', phone ? .61 : .29, phone ? 8.5 : 11, true);
         note('INFINITELY MANY PRIME CLOSED GEODESICS', phone ? .67 : .40, phone ? 8 : 10, true);
         note('PAIRWISE DISTINCT IMAGES', phone ? .725 : .51, phone ? 8.5 : 11, true);

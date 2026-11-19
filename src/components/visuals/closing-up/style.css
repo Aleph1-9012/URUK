@@ -8,6 +8,6 @@ uruk-closing-up [data-label="infinity"] { color: var(--blue); }
 }
 
 @container cgfilm (width < 600px) {
-  uruk-closing-up .film-stage { aspect-ratio: 4 / 9; }
+  uruk-closing-up .film-stage { aspect-ratio: 4 / 5; }
   uruk-closing-up .film-label { font-size: .75rem; }
 }
