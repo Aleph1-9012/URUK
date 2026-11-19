@@ -129,11 +129,11 @@ export function layout(width: number, height: number, time = 0): Layout {
     const closing = smooth(time, 111750, 112750);
 
     return {
-      stage: { x: width * .04, y: height * .035, w: width * .92, h: height * mix(mix(mix(.70, .38, proof), .70, cube), .54, closing) },
+      stage: { x: width * .04, y: height * .035, w: width * .92, h: height * mix(mix(mix(.60, .25, proof), .60, cube), .45, closing) },
       chart: growth
         ? { x: width * .05, y: height * .04, w: width * .90, h: height * .65 }
-        : { x: width * .05, y: height * .445, w: width * .90, h: height * .29 },
-      ledger: { x: width * .04, y: height * mix(.77, .62, closing), w: width * .92, h: height * mix(.22, .37, closing) },
+        : { x: width * .05, y: height * .31, w: width * .90, h: height * (.35 + .07 * proof) },
+      ledger: { x: width * .04, y: height * mix(.68 + .055 * proof, .51, closing), w: width * .92, h: height * mix(.31, .48, closing) },
       tall,
     };
   }

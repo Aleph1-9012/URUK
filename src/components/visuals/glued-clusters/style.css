@@ -2,6 +2,6 @@ uruk-glued-clusters .film-label { font-size: .875rem; }
 uruk-glued-clusters .film-label[data-label="gluing"] { font-size: .8125rem; }
 
 @container plate (max-width: 599px) {
-  uruk-glued-clusters .film-stage { aspect-ratio: 4 / 6; }
+  uruk-glued-clusters .film-stage { aspect-ratio: 4 / 5; }
   uruk-glued-clusters .film-label[data-label="gluing"] { font-size: .6875rem; }
 }

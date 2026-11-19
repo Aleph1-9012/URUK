@@ -226,7 +226,7 @@ function missBars(pen: CanvasRenderingContext2D, box: Box, time: number, colors:
   }
 }
 
-function crossing(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors): void {
+function crossing(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, tall: boolean): void {
   const small = box.h < 170;
   const { point, plot } = probabilityAxes(pen, box, colors, 21, small ? 62 : 70);
   const low = point(.49, 0).x;
@@ -246,8 +246,8 @@ function crossing(pen: CanvasRenderingContext2D, box: Box, time: number, colors:
   pen.fillStyle = colors.ink;
   dot(pen, read);
   text(pen, 'A FINITE EVENT IS A POLYNOMIAL IN p', box.x + box.w / 2, box.y + 3, 10, colors, box.w);
-  text(pen, `p = 0.48: ${crossingAt(.48).toFixed(4)}`, box.x + box.w / 2, box.y + box.h - 34, small ? 10 : 12, colors, box.w);
-  text(pen, `0.49: ${crossingAt(.49).toFixed(4)} · 0.50: ${crossingAt(.5).toFixed(4)}`, box.x + box.w / 2, box.y + box.h - 17, small ? 10 : 12, colors, box.w);
+  text(pen, `p = 0.48: ${crossingAt(.48).toFixed(4)}`, box.x + box.w / 2, box.y + box.h - (tall ? 37 : 34), small ? 10 : 12, colors, box.w);
+  text(pen, `0.49: ${crossingAt(.49).toFixed(4)} · 0.50: ${crossingAt(.5).toFixed(4)}`, box.x + box.w / 2, box.y + box.h - (tall ? 20 : 17), small ? 10 : 12, colors, box.w);
 }
 
 function growth(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors): void {
@@ -287,13 +287,13 @@ function growth(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
   text(pen, 'RADIUS r', plot.x + plot.w * .45, plot.y + plot.h + 11, 10, colors, plot.w);
 }
 
-export function drawChart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place): void {
+export function drawChart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, tall: boolean): void {
   if (time < 60000) return;
 
   pen.save();
 
   if (time < 76250) gluing(pen, box, time, colors, place);
-  else if (time >= 83500 && time < 98250) crossing(pen, box, time, colors);
+  else if (time >= 83500 && time < 98250) crossing(pen, box, time, colors, tall);
   else if (time >= 107250 && time < 111750) growth(pen, box, time, colors);
 
   pen.restore();
@@ -477,13 +477,13 @@ function settled(pen: CanvasRenderingContext2D, box: Box, time: number, colors: 
   text(pen, 'LEAN: TWO 63-LINE STATEMENTS · NOT COUNTED AS APPROVAL', box.x + box.w / 2, box.y + box.h - 7, 10, colors, box.w);
 }
 
-export function drawLedger(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors): void {
+export function drawLedger(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, tall: boolean): void {
   pen.save();
   const small = box.w < 400;
   const axis = small ? box : { ...box, w: box.w * .25 };
   pAxis(pen, axis, time, colors);
   const body = small
-    ? { x: box.x, y: box.y + 35, w: box.w, h: box.h - 35 }
+    ? { x: box.x, y: box.y + (tall ? 31 : 35), w: box.w, h: box.h - (tall ? 31 : 35) }
     : { x: box.x + box.w * .29, y: box.y + 7, w: box.w * .71, h: box.h - 7 };
 
   if (time >= 112750 || !small && time >= 111750) {

@@ -139,7 +139,7 @@ function drawingAt(p: number): Drawing {
   return result;
 }
 
-function sample(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: FilmLabels['place'], closing = false): void {
+function sample(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: FilmLabels['place'], closing = false, tall = false): void {
   const p = pAt(time);
   const drawing = drawingAt(p);
   const fenced = closing || time >= 22750 && time < 30250;
@@ -246,7 +246,7 @@ function sample(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
     tag(pen, `LARGEST ${largest}/1,024 · ${drawing.state.components.length} CLUSTERS`, box.x + box.w / 2, y + side + 15, 10, colors, box.w);
   }
 
-  if (time >= 14500 && time < 22750) place('pc', box.x + box.w / 2, y + side + 33);
+  if (time >= 14500 && time < 22750) place('pc', box.x + box.w / 2, y + side + (tall ? 38 : 33));
 }
 
 function star(pen: CanvasRenderingContext2D, point: Point, radius: number): void {
@@ -266,8 +266,8 @@ function star(pen: CanvasRenderingContext2D, point: Point, radius: number): void
   pen.stroke();
 }
 
-function smallPanel(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors): void {
-  const step = Math.min(box.w / 4.3, (box.h - 32) / 3);
+function smallPanel(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, tall: boolean): void {
+  const step = Math.min(box.w / 4.3, (box.h - 32) / 3, tall ? 15 : Infinity);
   const x = box.x + (box.w - step * 3) / 2;
   const y = box.y + 25 + step * 2;
   const pointAt = (vertex: number): Point => {
@@ -372,10 +372,10 @@ function sheetBypass(pen: CanvasRenderingContext2D, box: Box, time: number, colo
   tag(pen, 'A PATH GOES ROUND THE SHEET · SCHEMATIC', box.x + box.w / 2, box.y + 6, 11, colors, box.w);
 }
 
-function contradiction(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: FilmLabels['place']): void {
-  const side = Math.min(box.w * .76, box.h * .70);
-  const x = box.x + (box.w - side) / 2;
-  const y = box.y + (box.h - side) / 2 + 5;
+function contradiction(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: FilmLabels['place'], phone = false): void {
+  const side = Math.min(box.w * .76, box.h * (phone ? .62 : .70));
+  const x = box.x + (phone ? box.w * .12 : (box.w - side) / 2);
+  const y = phone ? box.y + 26 : box.y + (box.h - side) / 2 + 5;
   pen.strokeStyle = colors.muted;
   pen.lineWidth = .8;
   pen.strokeRect(x, y, side, side);
@@ -393,7 +393,7 @@ function contradiction(pen: CanvasRenderingContext2D, box: Box, time: number, co
   if (time < 91500) tag(pen, 'SUPPOSE AN INFINITE CLUSTER · SCHEMATIC', box.x + box.w / 2, box.y + 6, 10.5, colors, box.w);
   else place('below-critical', box.x + box.w / 2, box.y + 6);
 
-  if (time >= 92500) tag(pen, 'CONTRADICTION', box.x + box.w / 2, box.y + box.h * .92, 13, colors, box.w);
+  if (time >= 92500) tag(pen, 'CONTRADICTION', box.x + box.w * (phone ? .71 : .5), phone ? y + side / 2 : box.y + box.h * .92, 13, colors, box.w);
 }
 
 function quarterFaces(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors): void {
@@ -459,11 +459,11 @@ function quarterFaces(pen: CanvasRenderingContext2D, box: Box, time: number, col
   tag(pen, collapse < .5 ? '24 QUARTER-FACES · SCHEMATIC' : 'COARSE CUBES INDEXED BY A PLANE · SCHEMATIC', box.x + box.w / 2, box.y + 6, 10.5, colors, box.w);
 }
 
-export function drawStage(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: FilmLabels['place']): void {
-  if (time < 30250 || time >= 111750) sample(pen, box, time, colors, place, time >= 111750);
+export function drawStage(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: FilmLabels['place'], tall: boolean): void {
+  if (time < 30250 || time >= 111750) sample(pen, box, time, colors, place, time >= 111750, tall);
   else if (time < 35500) sheetBypass(pen, box, time, colors);
-  else if (time < 60000) sample(pen, box, time, colors, place);
-  else if (time < 76250) smallPanel(pen, box, time, colors);
-  else if (time < 98250) contradiction(pen, box, time, colors, place);
+  else if (time < 60000) sample(pen, box, time, colors, place, false, tall);
+  else if (time < 76250) smallPanel(pen, box, time, colors, tall);
+  else if (time < 98250) contradiction(pen, box, time, colors, place, tall);
   else if (time < 107250) quarterFaces(pen, box, time, colors);
 }

@@ -33,9 +33,9 @@ export class GluedClustersFilm {
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawStage(this.pen, boxes.stage, time, this.colors, this.labels.place);
-    drawChart(this.pen, boxes.chart, time, this.colors, this.labels.place);
-    drawLedger(this.pen, boxes.ledger, time, this.colors);
+    drawStage(this.pen, boxes.stage, time, this.colors, this.labels.place, boxes.tall);
+    drawChart(this.pen, boxes.chart, time, this.colors, this.labels.place, boxes.tall);
+    drawLedger(this.pen, boxes.ledger, time, this.colors, boxes.tall);
     this.labels.endFrame();
   }
 }
