@@ -6,6 +6,7 @@ uruk-three-of-seven .film-label { font-size: .875rem; }
 }
 
 @container mbfilm (width < 600px) {
-  uruk-three-of-seven .film-stage { aspect-ratio: 4 / 9; }
+  uruk-three-of-seven .film-stage { aspect-ratio: 4 / 5; }
   uruk-three-of-seven .film-label { font-size: .75rem; }
+  uruk-three-of-seven .film-label > span { padding-block: 0; }
 }

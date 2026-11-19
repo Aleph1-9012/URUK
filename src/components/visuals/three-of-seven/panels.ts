@@ -62,8 +62,8 @@ export function drawThreeOfSevenPanels(ctx: CanvasRenderingContext2D, w: number,
       note('PROTOCOLS ARE NOT DRAWN', .95, phone ? 8 : 9);
       break;
     case 'primes':
-      formula('upper-bound', .79);
-      note('COMPLETE SETS FOR THE SHOWN PRIMES', .86, phone ? 8.5 : 11);
+      formula('upper-bound', phone ? .83 : .79);
+      note('COMPLETE SETS FOR THE SHOWN PRIMES', phone ? .885 : .86, phone ? 8.5 : 11);
       note('OTHER PRIME POWERS ARE NOT DRAWN', .95, phone ? 8 : 9);
       break;
     case 'six':
@@ -84,11 +84,11 @@ export function drawThreeOfSevenPanels(ctx: CanvasRenderingContext2D, w: number,
       break;
     case 'ledger':
       claims();
-      if (motion.unreviewed > 0) note('UNREVIEWED · 18 OCTOBER 2026', phone ? .78 : .835, phone ? 8 : 9);
-      if (motion.replication > 0) note(phone ? 'JASWAL · 13 OCT REPLICATION\nNOT AN EXPERT PROOF CHECK' : 'JASWAL · 13 OCT REPLICATION · NOT AN EXPERT PROOF CHECK', phone ? .82 : .875, phone ? 8 : 9);
+      if (motion.unreviewed > 0) note('UNREVIEWED · 18 OCTOBER 2026', phone ? .77 : .835, phone ? 8 : 9);
+      if (motion.replication > 0) note(phone ? 'JASWAL · 13 OCT REPLICATION\nNOT AN EXPERT PROOF CHECK' : 'JASWAL · 13 OCT REPLICATION · NOT AN EXPERT PROOF CHECK', phone ? .815 : .875, phone ? 8 : 9);
       if (motion.lean > 0) {
-        note('LINKED LEAN MODEL: AT MOST FIVE · UNCATALOGUED', phone ? .885 : .925, phone ? 7.5 : 9);
-        note('DOES NOT ESTABLISH THREE OR EXCLUDE FOUR', phone ? .935 : .97, phone ? 8 : 9);
+        note('LINKED LEAN MODEL: AT MOST FIVE · UNCATALOGUED', phone ? .895 : .925, phone ? 7.5 : 9);
+        note('DOES NOT ESTABLISH THREE OR EXCLUDE FOUR', phone ? .945 : .97, phone ? 8 : 9);
       }
       break;
   }

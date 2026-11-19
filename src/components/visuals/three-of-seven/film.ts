@@ -56,7 +56,7 @@ class ThreeOfSevenFilm implements FilmDrawing {
   private primeTile(index: number): Square {
     const side = Math.min(this.width * .105, this.height * .09);
 
-    return { x: this.width * .18 - side / 2, y: this.height * (.13 + index * .14) - side / 2, side };
+    return { x: this.width * (this.phone ? .205 : .18) - side / 2, y: this.height * (.13 + index * .14) - side / 2, side };
   }
 
   private sixTable(): Square {
@@ -248,7 +248,7 @@ class ThreeOfSevenFilm implements FilmDrawing {
 
     if (motion.primePowerTicks > 0 && motion.scene === 'primes') {
       this.text('4 · 8 · 9', w * .5, h * .70, this.phone ? 14 : 18, true);
-      this.text('KNOWN COMPLETE · NOT DRAWN', w * .5, h * .735, this.phone ? 8 : 10);
+      this.text('KNOWN COMPLETE · NOT DRAWN', w * .5, h * (this.phone ? .76 : .735), this.phone ? 8 : 10);
     }
   }
 
@@ -301,7 +301,7 @@ class ThreeOfSevenFilm implements FilmDrawing {
 
       if (amount === 1) {
         this.text(`BASES ${pair.first + 1}–${pair.second + 1}`, target.x + side / 2, target.y - (this.phone ? 13 : 14), this.phone ? 7.5 : 9);
-        this.text('1/6', target.x + side / 2, target.y + side + (this.phone ? 10 : 12), this.phone ? 10 : 11, true);
+        this.text('1/6', this.phone ? target.x + side + 11 : target.x + side / 2, this.phone ? target.y + side / 2 : target.y + side + 12, this.phone ? 10 : 11, true);
       }
     }
   }
