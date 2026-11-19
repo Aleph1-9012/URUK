@@ -199,9 +199,9 @@ export class UnitSheet {
     return { x: b.x + 10, y: b.y + 28, w: b.w - 20, h: b.h - (this.tall ? 64 : 88) };
   }
 
-  private footer(text: string, second = ''): void {
+  private footer(text: string, second = '', firstRowOffset = 0): void {
     const b = this.box;
-    this.words(text, b.x + b.w / 2, b.y + b.h - (second ? 32 : 20), b.w);
+    this.words(text, b.x + b.w / 2, b.y + b.h - (second ? 32 - firstRowOffset : 20), b.w);
 
     if (second) this.words(second, b.x + b.w / 2, b.y + b.h - 13, b.w, 'muted', this.tall ? 8 : 10);
   }
@@ -277,7 +277,7 @@ export class UnitSheet {
     this.pen.clip();
     this.grid(6, 1, angle, { x: area.x - area.w * (zoom - 1) / 2, y: area.y - area.h * (zoom - 1) / 2, w: area.w * zoom, h: area.h * zoom });
     this.pen.restore();
-    this.footer(shear === 1 ? 'TRIANGULAR GRID · 85 LINKS' : shear > 0 ? 'TURNING THE GRID · UNIT SIDES' : grow < 1 ? 'THE GRID GROWS' : '36 POINTS · 60 LINKS', shear === 1 ? '2.36 LINKS PER POINT' : shear === 0 && grow === 1 ? '1.67 LINKS PER POINT' : '');
+    this.footer(shear === 1 ? 'TRIANGULAR GRID · 85 LINKS' : shear > 0 ? 'TURNING THE GRID · UNIT SIDES' : grow < 1 ? 'THE GRID GROWS' : '36 POINTS · 60 LINKS', shear === 1 ? '2.36 LINKS PER POINT' : shear === 0 && grow === 1 ? '1.67 LINKS PER POINT' : '', this.tall ? 8 : 0);
   }
 
   private latticeConstruction(time: number): void {
@@ -313,7 +313,8 @@ export class UnitSheet {
   }
 
   private circleBounds(time: number): void {
-    const area = this.area();
+    const gridArea = this.area();
+    const area = { ...gridArea, h: gridArea.h - 8 };
     const cardExit = smooth(time, 74500, 76500);
     const zoom = mix(.82, 1, smooth(time, 32000, 34000)) * mix(1, 2.9, cardExit);
     const drawing = { x: area.x + area.w * (1 - zoom) / 2, y: area.y + area.h * (1 - zoom) / 2, w: area.w * zoom, h: area.h * zoom };
@@ -328,8 +329,13 @@ export class UnitSheet {
     const nonround = smooth(time, 47500, 50000) * (1 - smooth(time, 56000, 58200));
     const card = smooth(time, 61500, 63500);
     const circleSize = 1 - card * .7;
-    const circleP = between(p, { x: area.x + area.w * .14, y: area.y + area.h * .2 }, card);
-    const circleQ = between(q, { x: area.x + area.w * .25, y: area.y + area.h * .28 }, card);
+    const margin = radius * circleSize + 2;
+    const inside = (point: Point): Point => ({
+      x: Math.max(area.x + margin, Math.min(area.x + area.w - margin, point.x)),
+      y: Math.max(area.y + margin, Math.min(area.y + area.h - margin, point.y)),
+    });
+    const circleP = inside(between(p, { x: area.x + area.w * .14, y: area.y + area.h * .2 }, card));
+    const circleQ = inside(between(q, { x: area.x + area.w * .25, y: area.y + area.h * .28 }, card));
     const power = 2 + 1.4 * nonround;
     this.circle(circleP, radius * circleSize, smooth(time, 32000, 34000), power);
     this.circle(circleQ, radius * circleSize, smooth(time, 33300, 35200), power);
@@ -357,10 +363,10 @@ export class UnitSheet {
     }
 
     if (card > 0) {
-      const left = area.x + area.w * .09;
-      const top = mix(area.y - area.h * .6, area.y + area.h * .32, card) - cardExit * area.h;
-      const width = area.w * .82;
-      const height = area.h * .44;
+      const left = gridArea.x + gridArea.w * .09;
+      const top = mix(gridArea.y - gridArea.h * .6, gridArea.y + gridArea.h * .32, card) - cardExit * gridArea.h;
+      const width = gridArea.w * .82;
+      const height = gridArea.h * .44;
       this.pen.fillStyle = this.colors.paper;
       this.pen.fillRect(left, top, width, height);
       this.pen.strokeStyle = this.colors.ink;
@@ -380,7 +386,8 @@ export class UnitSheet {
   }
 
   private wedges(width: number, height: number, time: number, label: Label): void {
-    const area = this.area();
+    const gridArea = this.area();
+    const area = { x: gridArea.x + 4, y: gridArea.y + 4, w: gridArea.w - 8, h: gridArea.h - 16 };
     const reveal = smooth(time, 76500, 78500);
     const view = this.grid(11, 25, Math.PI / 2, area, reveal, .2);
     const sample = time < 81000 ? 0 : Math.min(3, Math.floor((time - 81000) / 850));

@@ -47,8 +47,8 @@ export function jumpDialAt(width: number, height: number, time: number): JumpDia
 
   return {
     x: exponent.x + exponent.w * .5,
-    y: exponent.y + exponent.h * (tall ? .25 : .29),
-    radius: Math.min(width * .10, exponent.h * .20),
+    y: exponent.y + exponent.h * (tall ? .25 : .29) + (tall ? 12 : 0),
+    radius: Math.min(width * .10, exponent.h * .20) - (tall ? 3 : 0),
     dx: Math.cos(angle),
     dy: Math.sin(angle),
   };
@@ -119,7 +119,7 @@ export function drawExponent(pen: CanvasRenderingContext2D, width: number, heigh
   const headingY = box.y + (tall ? 0 : box.h * .015);
 
   const heading = proofDial && tall ? time < 92500 ? 'JUMPS IN TWO COORDINATES' : 'AN EXAMPLE RATIO OF TWO JUMPS' : tall ? 'THE MOST LINKS GROW LIKE n TO A POWER' : 'THE MOST LINKS GROW LIKE\nn TO THE POWER...';
-  words(heading, center, headingY - (proofDial && tall ? 6 : 0), box.w, 'ink', tall ? 9 : 11);
+  words(heading, center, headingY - (proofDial && tall ? 2 : 0), box.w, 'ink', tall ? 9 : 11);
   line({ x: axisLeft, y: axisY }, { x: axisRight, y: axisY }, 'muted', .8, smooth(time, 0, 1200));
 
   for (const value of [1, 1.5]) {
@@ -164,7 +164,7 @@ export function drawExponent(pen: CanvasRenderingContext2D, width: number, heigh
   const capProgress = smooth(time, 40500, 42500);
   const upperX = at(1.5 - capProgress / 6);
   const capHeight = 10 * smooth(time, 32000, 33400);
-  line({ x: upperX, y: axisY - capHeight }, { x: upperX, y: axisY + capHeight }, 'ink', 1.5);
+  line({ x: upperX, y: axisY - capHeight }, { x: upperX, y: axisY + Math.min(capHeight, 6) }, 'ink', 1.5);
 
   if (time >= 40500) {
     pen.globalAlpha = .25;
@@ -231,10 +231,10 @@ export function drawExponent(pen: CanvasRenderingContext2D, width: number, heigh
     if (time < 88500) {
       const forwardLabelX = dial.x - dial.radius - (tall ? 45 : 58);
       const reciprocalLabelX = dial.x + dial.radius + (tall ? 45 : 58);
-      words('z = x + iy', forwardLabelX, dial.y - (tall ? 17 : 30), tall ? 86 : 110, 'ink', tall ? 9 : 10);
-      words('w = x − iy', reciprocalLabelX, dial.y - (tall ? 17 : 30), tall ? 86 : 110, 'ink', tall ? 9 : 10);
-      label('jump-forward', forwardLabelX, dial.y + (tall ? 6 : -8));
-      label('jump-reciprocal', reciprocalLabelX, dial.y + (tall ? 6 : 8));
+      words('z = x + iy', forwardLabelX, dial.y - 30, tall ? 86 : 110, 'ink', tall ? 9 : 10);
+      words('w = x − iy', reciprocalLabelX, dial.y - 30, tall ? 86 : 110, 'ink', tall ? 9 : 10);
+      label('jump-forward', forwardLabelX, dial.y + (tall ? -10 : -8));
+      label('jump-reciprocal', reciprocalLabelX, dial.y + (tall ? -10 : 8));
     }
 
     if (time >= 87200 && time < 92500) {
@@ -251,7 +251,7 @@ export function drawExponent(pen: CanvasRenderingContext2D, width: number, heigh
       const ratioX = 24 / 25;
       const ratioY = 7 / 25;
       arrow(dial, { x: dial.x + radius * ratioX, y: dial.y - radius * ratioY }, 'blue', smooth(time, 92500, 93500));
-      label('jump-ratio', dial.x + (tall ? -radius - 45 : radius + 55), dial.y);
+      label('jump-ratio', dial.x + (tall ? -radius - 45 : radius + 55), dial.y - (tall ? 10 : 0));
 
       if (tall) words('EXAMPLE', dial.x + radius + 41, dial.y, 65, 'ink', 9);
 
@@ -274,7 +274,7 @@ export function drawExponent(pen: CanvasRenderingContext2D, width: number, heigh
     words("REACHED IN VALTR'S NORM", center, tagY, box.w);
     label('exp-four-thirds', center, formulaY);
   } else if (time < 61500) {
-    words('A ROUND-CIRCLE FEATURE\nMUST BE USED', center, tagY, box.w);
+    words('A ROUND-CIRCLE FEATURE\nMUST BE USED', center, tagY - (tall && width < 318 ? 8 : 0), box.w);
     label('exp-four-thirds', center, formulaY);
   } else if (time < 68500) {
     words(tall ? 'MAY 2026 · A CONSTRUCTION' : 'SAWIN · MAY 2026\nALONG A SEQUENCE', center, tagY, box.w);
