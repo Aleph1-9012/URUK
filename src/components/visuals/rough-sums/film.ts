@@ -73,7 +73,7 @@ export class RoughSumsFilm {
 
     const tucked = smooth(time, 7000, 8750) * (1 - smooth(time, 31000, 32750));
     const fullWidth = tall ? w * .88 : w * .60;
-    const full: Box = { x: w * .06, y: h * (tall ? .32 : .31), w: fullWidth, h: fullWidth / 2 };
+    const full: Box = { x: w * .06, y: h * (tall ? .35 : .31), w: fullWidth, h: tall ? fullWidth * .275 : fullWidth / 2 };
     const miniWidth = w * (tall ? .35 : .30);
     const mini: Box = { x: w * .075, y: h * (tall ? .25 : .26), w: miniWidth, h: miniWidth / 2 };
     const plot: Box = { x: mix(full.x, mini.x, tucked), y: mix(full.y, mini.y, tucked), w: mix(full.w, mini.w, tucked), h: mix(full.h, mini.h, tucked) };
@@ -83,7 +83,7 @@ export class RoughSumsFilm {
     this.plot(plot, this.cache, order, ymax, time, tall, tucked);
 
     if (time < 7000) this.opening(full, tall);
-    else if (time < 31000) this.history(time, tall);
+    else if (time < 31000) this.history(time, tall, full);
     else if (time < 45250) this.integrals(time, tall, this.data);
     else if (time < 56000) this.sampleNotes(tall, this.data);
     else this.claim(time, tall);
@@ -176,7 +176,7 @@ export class RoughSumsFilm {
       const label = adding ? `ADDING COSINE ${Math.ceil(order)}` : `N = ${Math.round(order)} · SOLID SUM · DASHED f`;
 
       if (time >= 56000) words(pen, 'N = 200 · SOLID', box.x + box.w * .80, box.y + 13, box.w * .38, size - 1, colors.ink);
-      else words(pen, label, box.x + box.w / 2, box.y + box.h + (tall ? 35 : 40), box.w + 10, size, colors.ink, adding ? '"Special Elite"' : 'Alegreya');
+      else words(pen, label, box.x + box.w / 2, box.y + box.h + (tall ? 27 : 40), box.w + 10, size, colors.ink, adding ? '"Special Elite"' : 'Alegreya');
     } else words(pen, 'OUR EXAMPLE · N = 5', box.x + box.w / 2, box.y - 16, box.w + 20, Math.max(8, size), colors.ink);
   }
 
@@ -258,7 +258,7 @@ export class RoughSumsFilm {
       const half = (tall ? 24 : 40) * smooth(time, 56000, 57500);
       pen.strokeStyle = colors.blue;
       pen.lineWidth = tall ? 1.7 : 2.3;
-      const top = y - 33;
+      const top = tall ? Math.max(4, y - 33) : y - 33;
       pen.beginPath();
       pen.moveTo(at(endpoint) - half, top + 9);
       pen.lineTo(at(endpoint) - half, top);
@@ -281,16 +281,19 @@ export class RoughSumsFilm {
     if (!tall) words(pen, 'ON THE CIRCLE · −π TO π', plot.x + plot.w / 2, y, plot.w, 13, colors.ink, '"Garamond Math"');
   }
 
-  private history(time: number, tall: boolean): void {
+  private history(time: number, tall: boolean, openingPlot: Box): void {
     const { width: w, height: h, pen, colors } = this;
     const x = tall ? w * .70 : w * .69;
     const width = tall ? w * .48 : w * .49;
     const size = tall ? 9 : 14;
+    const arriving = 1 - smooth(time, 7000, 8750);
+    const rightOffset = Math.max(0, openingPlot.x + openingPlot.w + 10 - (x - width / 2)) * arriving;
+    const lowerOffset = Math.max(0, openingPlot.y + openingPlot.h + (tall ? 27 : 40) + 24 - h * .72) * arriving;
 
     if (time < 14750) {
-      words(pen, '1923 · KOLMOGOROV', x, h * .36, width, size, colors.ink, 'Alegreya');
-      words(pen, 'ONE COUNTEREXAMPLE DIVERGES ALMOST EVERYWHERE', x, h * .48, width, size, colors.ink);
-      words(pen, "KOLMOGOROV'S FUNCTION IS NOT DRAWN", w / 2, h * .72, w - 25, size, colors.ink);
+      words(pen, '1923 · KOLMOGOROV', x + rightOffset, h * .36 + (tall ? 3 : 0), width, size, colors.ink, 'Alegreya');
+      words(pen, 'ONE COUNTEREXAMPLE DIVERGES ALMOST EVERYWHERE', x + rightOffset, h * .48, width, size, colors.ink);
+      words(pen, "KOLMOGOROV'S FUNCTION IS NOT DRAWN", w / 2, h * .72 + lowerOffset, w - 25, size, colors.ink);
     } else if (time < 27000) {
       words(pen, '1966 · CARLESON', x, h * .36, width, size, colors.ink, 'Alegreya');
       words(pen, 'SQUARE-INTEGRABLE FUNCTIONS CONVERGE ALMOST EVERYWHERE', x, h * .49, width, size, colors.ink);
@@ -299,7 +302,7 @@ export class RoughSumsFilm {
       words(pen, 'CONVERGENCE ALMOST EVERYWHERE', x, h * .49, width, size, colors.ink);
     }
 
-    words(pen, 'THE SMALL GRAPH REMAINS OUR EXAMPLE', w / 2, h * .84, w - 24, size - 1, colors.ink);
+    words(pen, 'THE SMALL GRAPH REMAINS OUR EXAMPLE', w / 2, h * .84 + lowerOffset, w - 24, size - 1, colors.ink);
   }
 
   private integrals(time: number, tall: boolean, data: RoughSumsData): void {
@@ -311,12 +314,12 @@ export class RoughSumsFilm {
 
     const x = tall ? w / 2 : w * .84;
     const size = tall ? 9 : w < 880 ? 11 : 13;
-    this.labels.place('integral', x, h * (tall ? .70 : .36));
-    this.labels.place('cutoff-' + index, x, h * (tall ? .76 : .45));
-    this.labels.place('model-f', w * (tall ? .36 : .78), h * (tall ? .82 : .56));
-    this.labels.place('comparison', w * (tall ? .36 : .78), h * (tall ? .895 : .66));
-    words(pen, row.k3.toFixed(4), w * (tall ? .81 : .94), h * (tall ? .82 : .56), w * .20, size + 1, colors.ink);
-    words(pen, row.k2.toFixed(4), w * (tall ? .81 : .94), h * (tall ? .895 : .66), w * .20, size + 1, colors.ink);
+    this.labels.place('integral', tall ? w * .37 : x, h * (tall ? .70 : .36));
+    this.labels.place('cutoff-' + index, tall ? w * .85 : x, h * (tall ? .70 : .45));
+    this.labels.place('model-f', w * (tall ? .36 : .78), h * (tall ? .785 : .56));
+    this.labels.place('comparison', w * (tall ? .36 : .78), h * (tall ? .87 : .66));
+    words(pen, row.k3.toFixed(4), w * (tall ? .81 : .94), h * (tall ? .785 : .56), w * .20, size + 1, colors.ink);
+    words(pen, row.k2.toFixed(4), w * (tall ? .81 : .94), h * (tall ? .87 : .66), w * .20, size + 1, colors.ink);
     this.labels.place('cut-domain', x, h * (tall ? .97 : .79));
   }
 

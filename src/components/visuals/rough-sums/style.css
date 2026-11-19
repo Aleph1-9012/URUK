@@ -6,6 +6,6 @@ uruk-rough-sums .film-label { font-size: .875rem; }
 }
 
 @container lffilm (width < 600px) {
-  uruk-rough-sums .film-stage { aspect-ratio: 4 / 7; }
+  uruk-rough-sums .film-stage { aspect-ratio: 4 / 5; }
   uruk-rough-sums .film-label { font-size: .75rem; }
 }
