@@ -7,6 +7,6 @@ uruk-carry-tree [data-label="claim-parameters"] { color: var(--blue); }
 }
 
 @container hmfilm (width < 600px) {
-  uruk-carry-tree .film-stage { aspect-ratio: 4 / 9; }
+  uruk-carry-tree .film-stage { aspect-ratio: 4 / 5; }
   uruk-carry-tree .film-label { font-size: .75rem; }
 }

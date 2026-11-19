@@ -123,7 +123,7 @@ class CarryTreeFilm implements FilmDrawing {
       if (motion.toyRotations > 0) {
         const rotation = circleRotation(action.input, this.model.toyLevel);
         const label = action.moving ? `TURNING TO a=${action.input}` : `a=${action.input} · ${rotation.label} TURN`;
-        this.text(label, this.width * (this.phone ? .76 : .18), this.height * (this.phone ? .245 : .54), this.phone ? 8 : 11, true);
+        this.text(label, this.width * (this.phone ? .29 : .18), this.height * (this.phone ? .245 : .54), this.phone ? 8 : 11, true);
       }
     }
   }
@@ -168,8 +168,10 @@ class CarryTreeFilm implements FilmDrawing {
 
   private nodePoint(node: TreeNode, motion: Motion): Point {
     const left = this.width * (this.phone ? .08 : .40);
-    const width = this.width * (this.phone ? .88 : .30);
-    const point = { x: left + (node.order + .5) / 2 ** node.level * width, y: this.height * ((this.phone ? .28 : .14) + node.level * (this.phone ? .06 : .10)) };
+    const width = this.width * (this.phone ? mix(.88, .58, motion.quotient) : .30);
+    const top = this.phone ? mix(.28, .31, motion.quotient) : .14;
+    const gap = this.phone ? mix(.052, .045, motion.quotient) : .10;
+    const point = { x: left + (node.order + .5) / 2 ** node.level * width, y: this.height * (top + node.level * gap) };
 
     if (this.phone && node.level === this.model.maxLevel && node.parentOrder !== null) {
       const parent = this.model.levels[node.level - 1]?.[node.parentOrder];
@@ -276,7 +278,7 @@ class CarryTreeFilm implements FilmDrawing {
     for (let level = 0; level <= model.maxLevel; level++) {
       if (this.levelAmount(level, motion) !== 1) continue;
 
-      this.text(`k=${level}`, this.width * (this.phone ? .035 : .37), this.height * ((this.phone ? .28 : .14) + level * (this.phone ? .06 : .10)), this.phone ? 8 : 10, true);
+      this.text(`k=${level}`, this.width * (this.phone ? .035 : .37), this.height * ((this.phone ? mix(.28, .31, motion.quotient) : .14) + level * (this.phone ? mix(.052, .045, motion.quotient) : .10)), this.phone ? 8 : 10, true);
     }
   }
 
@@ -286,7 +288,7 @@ class CarryTreeFilm implements FilmDrawing {
     const { row, phase } = this.odometerState(motion);
     const { pen, width: w, height: h, tones } = this;
     const x = w * (this.phone ? .76 : .83);
-    const top = h * (this.phone ? .09 : .12);
+    const top = h * (this.phone ? .05 : .12);
     const gap = this.phone ? 12 : 18;
     const size = this.phone ? 10 : 14;
     const labelX = x - this.width * (this.phone ? .16 : .11);
@@ -308,8 +310,8 @@ class CarryTreeFilm implements FilmDrawing {
     }
 
     this.text('LOW DIGIT FIRST', x, top + (this.phone ? 44 : 60), this.phone ? 7 : 9);
-    this.text(`${row.from} → ${row.nextInteger}`, x, h * (this.phone ? .215 : .34), this.phone ? 10 : 14, true);
-    this.text(row.overflow ? '16: FIFTH DIGIT IS 1' : `${row.carries} CARRY${row.carries === 1 ? '' : 'S'}`, x, h * (this.phone ? .25 : .41), this.phone ? 7 : 9, true);
+    this.text(`${row.from} → ${row.nextInteger}`, x, h * (this.phone ? .235 : .34), this.phone ? 10 : 14, true);
+    this.text(row.overflow ? '16: FIFTH DIGIT IS 1' : `${row.carries} CARRY${row.carries === 1 ? '' : 'S'}`, x, h * (this.phone ? .28 : .41), this.phone ? 7 : 9, true);
     const affected = Math.min(row.carries + 1, this.model.maxLevel);
     const pulse = clamp(phase) * affected;
     const level = Math.min(affected, Math.floor(pulse) + 1);
@@ -341,7 +343,7 @@ class CarryTreeFilm implements FilmDrawing {
     const right = w * .94;
     const ending = this.phone ? 18 : 32;
     const cell = Math.min(this.phone ? 40 : 78, (right - left - ending) / 5);
-    const y = h * (this.phone ? .64 : .77);
+    const y = h * (this.phone ? .66 : .77);
     const height = this.phone ? 24 : 34;
     const width = cell * 5;
 
@@ -396,14 +398,14 @@ class CarryTreeFilm implements FilmDrawing {
     if (motion.ruler === 1) this.text('…', left + width + ending / 2, y, this.phone ? 13 : 18, true);
 
     if (motion.regularity > 0) {
-      const bandY = h * (this.phone ? .612 : .72);
+      const bandY = h * (this.phone ? .61 : .72);
       drawLine(pen, left, bandY, left + (width + ending) * motion.regularity, bandY, tones.ink, .8);
     }
 
     if (motion.claimBracket > 0) {
       const start = left + 3 * cell;
       const end = left + width + ending * .8;
-      const below = h * (this.phone ? .69 : .83);
+      const below = h * (this.phone ? .71 : .83);
       pen.strokeStyle = tones.blue;
       pen.lineWidth = 1.7;
       pen.beginPath();

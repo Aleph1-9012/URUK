@@ -23,14 +23,14 @@ export function drawCarryTreePanels(ctx: CanvasRenderingContext2D, w: number, h:
   }
 
   function toyFormulas(): void {
-    if (motion.quotient > 0) formula('quotient-eight', phone ? .09 : .13, phone ? .76 : center);
-    if (motion.toyRotations > 0) formula('rotation-rule', phone ? .145 : .25, phone ? .76 : center);
-    if (motion.kernel > 0) formula('kernel', phone ? .205 : .38, phone ? .76 : center);
+    if (motion.quotient > 0) formula('quotient-eight', phone ? .085 : .13, phone ? .72 : center);
+    if (motion.toyRotations > 0) formula('rotation-rule', phone ? .175 : .25, phone ? .72 : center);
+    if (motion.kernel > 0) formula('kernel', phone ? .265 : .38, phone ? .72 : center);
   }
 
   function knownResults(): void {
     if (motion.regularity > 0) {
-      drawWrappedText(ctx, 'SMOOTH · LIPSCHITZ · QUASICONFORMAL', w * .5, h * (phone ? .59 : .69), w * .94, {
+      drawWrappedText(ctx, 'SMOOTH · LIPSCHITZ · QUASICONFORMAL', w * (phone ? .25 : .5), h * (phone ? .53 : .69), w * (phone ? .46 : .94), {
         size: phone ? 8 : 10,
         color: tones.ink,
         paper: tones.paper,
@@ -38,7 +38,7 @@ export function drawCarryTreePanels(ctx: CanvasRenderingContext2D, w: number, h:
     }
 
     if (motion.pardon > 0) {
-      drawWrappedText(ctx, '1, 2 CLASSICAL · 3 PARDON 2013', w * .5, h * (phone ? .73 : .90), w * .94, {
+      drawWrappedText(ctx, '1, 2 CLASSICAL · 3 PARDON 2013', w * (phone ? .75 : .5), h * (phone ? .53 : .90), w * (phone ? .46 : .94), {
         size: phone ? 8.5 : 10,
         color: tones.ink,
         paper: tones.paper,
@@ -47,10 +47,17 @@ export function drawCarryTreePanels(ctx: CanvasRenderingContext2D, w: number, h:
   }
 
   function claim(): void {
-    note('CLAIMED · NONZERO KERNEL', phone ? .77 : .10, phone ? 8.5 : 11, true);
-    formula('claim-parameters', phone ? .81 : .20);
-    note('CONNECTED · HAUSDORFF\nSECOND-COUNTABLE · WITHOUT BOUNDARY', phone ? .85 : .28, phone ? 8 : 10, true);
-    note('JOINTLY CONTINUOUS · k ACTION-DEPENDENT', phone ? .90 : .44, phone ? 8 : 10, true);
+    if (phone) {
+      drawWrappedText(ctx, 'CLAIMED · NONZERO KERNEL', w * .25, h * .74, w * .46, { size: 8.5, color: tones.blue, paper: tones.paper });
+      formula('claim-parameters', .78, .75);
+      drawWrappedText(ctx, 'CONNECTED · HAUSDORFF\nSECOND-COUNTABLE · WITHOUT BOUNDARY', w * .25, h * .83, w * .46, { size: 8, color: tones.blue, paper: tones.paper });
+      drawWrappedText(ctx, 'JOINTLY CONTINUOUS · k ACTION-DEPENDENT', w * .75, h * .83, w * .46, { size: 8, color: tones.blue, paper: tones.paper });
+    } else {
+      note('CLAIMED · NONZERO KERNEL', .10, 11, true);
+      formula('claim-parameters', .20);
+      note('CONNECTED · HAUSDORFF\nSECOND-COUNTABLE · WITHOUT BOUNDARY', .28, 10, true);
+      note('JOINTLY CONTINUOUS · k ACTION-DEPENDENT', .44, 10, true);
+    }
 
     if (!phone) note('TOPOLOGICAL n-MANIFOLD · FULL SCOPE IN CAPTION', .54, 9, true);
   }
@@ -104,16 +111,16 @@ export function drawCarryTreePanels(ctx: CanvasRenderingContext2D, w: number, h:
     case 'ledger':
       claim();
       if (motion.scene === 'scope' && motion.manifoldScope > 0) {
-        note('NONCOMPACT AND NONORIENTABLE ALLOWED', phone ? .94 : .61, phone ? 8 : 9);
-        note('BOUNDARY NOT COVERED', phone ? .975 : .66, phone ? 8 : 9);
+        note('NONCOMPACT AND NONORIENTABLE ALLOWED', phone ? .935 : .61, phone ? 8 : 9);
+        note('BOUNDARY NOT COVERED', phone ? .97 : .66, phone ? 8 : 9);
       }
       if (motion.scene === 'review') {
-        if (motion.publicReview > 0) note('NO PUBLIC READING OR CHECK', phone ? .94 : .61, phone ? 8.5 : 10);
-        if (motion.reviewDate > 0) note('AS OF 18 OCTOBER 2026', phone ? .975 : .66, phone ? 8 : 9);
+        if (motion.publicReview > 0) note('NO PUBLIC READING OR CHECK', phone ? .935 : .61, phone ? 8.5 : 10);
+        if (motion.reviewDate > 0) note('AS OF 18 OCTOBER 2026', phone ? .97 : .66, phone ? 8 : 9);
       }
       if (motion.scene === 'ledger') {
-        note('UNREVIEWED · 18 OCTOBER 2026', phone ? .94 : .61, phone ? 8 : 9);
-        if (motion.ledger > 0) note('RELEASE CATALOGUE: NO ENTRY', phone ? .975 : .66, phone ? 8 : 9);
+        note('UNREVIEWED · 18 OCTOBER 2026', phone ? .935 : .61, phone ? 8 : 9);
+        if (motion.ledger > 0) note('RELEASE CATALOGUE: NO ENTRY', phone ? .97 : .66, phone ? 8 : 9);
       }
       break;
   }
