@@ -33,7 +33,6 @@ export class FastestRoutesFilm {
   private readonly rasterPen: CanvasRenderingContext2D;
   private readonly pixels: ImageData;
   private rasterTime = -1;
-  private previewRaster = false;
   private prepared: RouteResult | null = null;
   private outlines: Outline[] = [];
   private guide: Point[] = [];
@@ -58,7 +57,6 @@ export class FastestRoutesFilm {
     this.colors = tones;
 
     this.rasterTime = -1;
-    this.previewRaster = false;
     this.labels.resize(width, height);
   }
 
@@ -90,12 +88,10 @@ export class FastestRoutesFilm {
     this.outlines = [20, 30, 40].map(time => ({ time, segments: outerBallSegments(result.centre, time) }));
     this.guide = schematicGuide(result.centre, 40);
     this.rasterTime = -1;
-    this.previewRaster = false;
   }
 
-  private paintBall(passageTime: number, result: RouteResult | null): void {
-    if (result && !this.previewRaster && this.rasterTime === passageTime) return;
-    if (!result && this.previewRaster) return;
+  private paintBall(passageTime: number, result: RouteResult): void {
+    if (this.rasterTime === passageTime) return;
 
     const { rasterPen, model, pixels } = this;
     rasterPen.fillStyle = this.colors.ink;
@@ -118,22 +114,15 @@ export class FastestRoutesFilm {
       pixels.data[target + 3] = stipple(vertex);
     };
 
-    if (result) {
-      for (const [vertex, distance] of result.centre.distances.entries()) {
-        if (distance <= passageTime) paint(Math.floor(vertex / model.N), vertex % model.N);
-      }
-    } else {
-      for (const [row, start, end] of model.preview.ball40Runs) {
-        for (let col = start; col <= end; col++) paint(row, col);
-      }
+    for (const [vertex, distance] of result.centre.distances.entries()) {
+      if (distance <= passageTime) paint(Math.floor(vertex / model.N), vertex % model.N);
     }
 
     rasterPen.putImageData(pixels, 0, 0);
-    this.previewRaster = result === null;
     this.rasterTime = passageTime;
   }
 
-  private ball(camera: Camera, passageTime: number, result: RouteResult | null): void {
+  private ball(camera: Camera, passageTime: number, result: RouteResult): void {
     this.paintBall(passageTime, result);
     this.pen.imageSmoothingEnabled = false;
     const side = this.model.N * camera.scale;
@@ -178,18 +167,7 @@ export class FastestRoutesFilm {
     pen.clip();
 
     if (time < 9000) this.closeView(camera, time, tall);
-    else if (model.computation.kind !== 'ready') {
-      const previewCamera = this.camera(box, 12000);
-      this.ball(previewCamera, 40, null);
-      pen.beginPath();
-
-      for (const route of model.preview.treePaths40) this.path(route.map(gridPoint), previewCamera);
-
-      pen.strokeStyle = colors.ink;
-      pen.lineWidth = tall ? .7 : 1;
-      pen.stroke();
-      this.origin(previewCamera, tall);
-    } else {
+    else if (model.computation.kind === 'ready') {
       const result = model.computation.result;
       this.prepare(result);
       this.ball(camera, ballTime(time), result);
@@ -204,7 +182,7 @@ export class FastestRoutesFilm {
     }
 
     pen.restore();
-    const heading = time < 9000 ? 'CLOSE VIEW · THE SAME RANDOM GRID' : model.computation.kind !== 'ready' ? 'COMPUTED TIME-40 PREVIEW' : time < 19750 ? 'REACHABLE FROM THE CENTRE' : time < 28750 ? 'FASTEST ROUTE PREFIXES' : time < 46750 ? 'FOUR FINITE TESTS' : time < 57250 ? 'BALLS DIVIDED BY THEIR TIMES' : 'THE GENERAL CLAIMS';
+    const heading = time < 9000 ? 'CLOSE VIEW · THE SAME RANDOM GRID' : time < 19750 ? 'REACHABLE FROM THE CENTRE' : time < 28750 ? 'FASTEST ROUTE PREFIXES' : time < 46750 ? 'FOUR FINITE TESTS' : time < 57250 ? 'BALLS DIVIDED BY THEIR TIMES' : 'THE GENERAL CLAIMS';
     text(pen, heading, box.x + box.w / 2, box.y + 5, tall ? 9 : 14, box.w - 5, colors);
   }
 

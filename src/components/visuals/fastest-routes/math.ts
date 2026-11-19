@@ -1,4 +1,4 @@
-// NumPy seed-212 weights and finite-grid previews are emitted by 212-checks/fpp.py.
+// NumPy seed-212 weights and the close-view data are emitted by 212-checks/fpp.py.
 // The browser worker recomputes every distance, predecessor and route.
 import data from './data.json';
 
@@ -21,8 +21,6 @@ export type Hunt = { halfDistance: number; separation: number; source: number; t
 
 export type RouteResult = { centre: Search; targets: Int32Array<ArrayBuffer>; tree: PackedPaths; branches: BranchCount[]; hunts: Hunt[]; treeTime: number; firstBoundaryTime: number };
 
-export type CellRun = readonly [row: number, startCol: number, endCol: number];
-
 export type CloseView = {
   // Nine vertices per side: horizontal is 9x8, vertical is 8x9, both row-major.
   horizontal: number[];
@@ -37,8 +35,7 @@ export type RouteModel = {
   R: number;
   source: number;
   close: CloseView;
-  preview: { ball40Runs: CellRun[]; treePaths40: number[][] };
-  computation: { kind: 'pending' } | { kind: 'ready'; result: RouteResult } | { kind: 'failed'; reason: string };
+  computation: { kind: 'pending' } | { kind: 'ready'; result: RouteResult };
 };
 
 function entry(values: ArrayLike<number>, index: number): number {
@@ -61,19 +58,11 @@ export function gridPoint(vertex: number): Point {
 }
 
 export function createRouteModel(): RouteModel {
-  const ball40Runs = data.ball40_runs.map(row => {
-    const [y, start, end] = row;
-
-    if (y === undefined || start === undefined || end === undefined || y < 0 || y >= N || start < 0 || end >= N || start > end) throw new Error('Each canonical occupancy run lies in one finite-grid row.');
-
-    return [y, start, end] satisfies CellRun;
-  });
-
   if (data.close.horizontal.length !== 72 || data.close.vertical.length !== 72) throw new Error('The close view contains all edges of nine by nine vertices.');
 
   for (const vertex of data.close.route) validVertex(vertex);
 
-  return { N, R, source: R * N + R, close: data.close, preview: { ball40Runs, treePaths40: data.tree_paths40 }, computation: { kind: 'pending' } };
+  return { N, R, source: R * N + R, close: data.close, computation: { kind: 'pending' } };
 }
 
 /** Input format is explicitly little-endian Float64, horizontal then vertical. */

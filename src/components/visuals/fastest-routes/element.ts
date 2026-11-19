@@ -31,9 +31,6 @@ defineFilm('uruk-fastest-routes', TIMELINE, (film) => {
       worker?.terminate();
       film.redraw();
     },
-    onFailure(reason) {
-      model.computation = { kind: 'failed', reason };
-    },
     cannotStart: 'The full-grid fastest-route calculation could not start.',
     cannotFinish: 'The full-grid fastest-route calculation could not finish.',
     cannotTransfer: 'The computed routes could not be transferred.',

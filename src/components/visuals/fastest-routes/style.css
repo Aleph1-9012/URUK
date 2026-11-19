@@ -1,5 +1,3 @@
-uruk-fastest-routes:not([data-ready]) .film-subtitles { display: none; }
-
 @container plate (max-width: 599px) {
   uruk-fastest-routes .film-stage { aspect-ratio: 4 / 5; }
   uruk-fastest-routes .film-label { font-size: .75rem; }

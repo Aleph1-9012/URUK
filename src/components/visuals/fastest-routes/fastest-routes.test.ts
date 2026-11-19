@@ -120,7 +120,9 @@ test('212: all 360 routes give the canonical first-circle branch counts and all 
 test('212: occupancy previews, route prefixes and scaled outlines retain the exact finite-grid geometry', () => {
   const preview = new Uint8Array(N * N);
 
-  for (const [row, start, end] of model.preview.ball40Runs) {
+  for (const [row, start, end] of reference.ball40_runs) {
+    if (row === undefined || start === undefined || end === undefined || row < 0 || row >= N || start < 0 || end >= N || start > end) throw new Error('Each canonical occupancy run lies in one finite-grid row.');
+
     for (let col = start; col <= end; col++) preview[row * N + col] = 1;
   }
 
@@ -140,9 +142,9 @@ test('212: occupancy previews, route prefixes and scaled outlines retain the exa
     expect(reading.touchesBoundary).toBe(false);
   }
 
-  expect(model.preview.treePaths40.length).toBe(60);
+  expect(reference.tree_paths40.length).toBe(60);
 
-  for (const [index, discrete] of model.preview.treePaths40.entries()) {
+  for (const [index, discrete] of reference.tree_paths40.entries()) {
     const route = treeRoute(result.tree, index * 6);
     const expected: number[] = [];
 

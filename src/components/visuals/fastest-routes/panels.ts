@@ -16,20 +16,6 @@ function timeReading(pen: CanvasRenderingContext2D, box: Box, value: string, y: 
   text(pen, `= ${value}`, x + (tall ? 20 : 25), box.y + y, tall ? 20 : 28, box.w * .70, colors);
 }
 
-function fallbackPanel(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: RouteModel, tall: boolean): void {
-  const failed = model.computation.kind === 'failed';
-  rows(pen, box, [failed ? 'LIVE ROUTES UNAVAILABLE' : 'CALCULATING FASTEST ROUTES'], tall ? 6 : 20, tall ? 11.5 : 18, 20, colors);
-  text(pen, 'COMPUTED STILL', box.x + box.w / 2, box.y + (tall ? 42 : 105), tall ? 13 : 22, box.w - 6, colors);
-  timeReading(pen, box, '40', tall ? 67 : 145, colors, place, tall);
-
-  if (time >= 73750) {
-    rows(pen, box, ['UNREVIEWED'], tall ? 111 : 247, tall ? 23 : 34, 20, colors);
-    text(pen, 'ONE FINITE GRID · A PICTURE, NOT A PROOF', box.x + box.w / 2, box.y + (tall ? 141 : 289), tall ? 8.5 : 12, box.w - 6, colors);
-  } else {
-    rows(pen, box, ['THE SAME FINITE-GRID PREVIEW', 'LIVE READOUTS WAIT FOR THE SOLVE'], tall ? 108 : 230, tall ? 9.5 : 14, tall ? 19 : 28, colors);
-  }
-}
-
 function branchReading(pen: CanvasRenderingContext2D, box: Box, branches: readonly BranchCount[], time: number, colors: Colors, tall: boolean): void {
   const radius = branchRadius(time);
   const entry = branches.find(candidate => candidate.radius === radius);
@@ -66,11 +52,7 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
 
   const state = model.computation;
 
-  if (state.kind !== 'ready') {
-    fallbackPanel(pen, box, time, colors, place, model, tall);
-
-    return;
-  }
+  if (state.kind !== 'ready') return;
 
   const result = state.result;
 
