@@ -223,7 +223,13 @@ export function drawCurvePlane(
       pen.stroke();
     }
 
-    if (!tall) text(String(index + 1), at.x + (pin.x > .7 ? -11 : 11), at.y - 12, 24, pinOpacity, colors.muted);
+    if (!tall) {
+      const sharedInk = index === 0 || index === 3 || index === 6
+        || (width < 675 && index === 8)
+        || (index === 9 && time >= 97000);
+      const labelInk = sharedInk ? Number(pinOpacity === 1) : pinOpacity;
+      text(String(index + 1), at.x + (pin.x > .7 ? -11 : 11), at.y - 12, 24, labelInk, colors.muted);
+    }
   }
 
   pen.restore();
@@ -252,5 +258,7 @@ export function drawCurvePlane(
   } else if (time >= 74000 && time < 78000) note = 'THE OTHER POINT MOVES ONTO THE CUBIC';
 
   text(heading, center.x, Math.max(13, top - (tall ? 10 : 23)), width * (tall ? .9 : .45));
-  text(note, center.x, top + size + (tall ? height * .025 : 24), width * (tall ? .92 : .46), tall && model > .5 ? 1 - fade(time, 81500, 82500, 98500, 99000) : 1, colors.muted);
+  const noteOpacity = tall && model > .5 ? 1 - fade(time, 81500, 82500, 98500, 99000) : 1;
+  const noteLeaving = tall && width < 300 && time > 81500 && time < 82500;
+  text(note, center.x, top + size + (tall ? height * .025 : 24), width * (tall ? .92 : .46), noteLeaving ? 0 : noteOpacity, colors.muted);
 }
