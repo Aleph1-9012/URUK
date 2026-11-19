@@ -147,11 +147,11 @@ class RingRulesFilm implements FilmDrawing {
   }
 
   private smallCenter(): Point {
-    return { x: this.fieldX, y: this.height * .16 };
+    return { x: this.phone ? this.width * .56 : this.fieldX, y: this.height * .16 };
   }
 
   private smallRadius(): number {
-    return Math.min(this.width * (this.phone ? .125 : .063), this.height * .10);
+    return Math.min(this.width * (this.phone ? .125 : .063), this.height * (this.phone ? .0677 : .10));
   }
 
   private integerPoint(value: number): Point {
@@ -230,7 +230,7 @@ class RingRulesFilm implements FilmDrawing {
         if (!this.phone && motion.rowToRing === 1) {
           this.text('FIXED RULE', w * .46, h * .12, 9);
           this.text('COEFFICIENTS', w * .46, h * .17, 9);
-        } else this.text('FIXED RULE COEFFICIENTS', this.fieldX, h * (motion.rowToRing === 1 ? .035 : .19), this.phone ? 8.5 : 11);
+        } else this.text('FIXED RULE COEFFICIENTS', this.phone && motion.rowToRing === 1 ? w * .25 : this.fieldX, h * (motion.rowToRing === 1 ? this.phone ? .05 : .035 : .19), this.phone ? 8.5 : 11);
       }
     }
 
@@ -366,8 +366,8 @@ class RingRulesFilm implements FilmDrawing {
         pen.stroke();
       }
 
-      this.text(`${sample.x} + ${sample.y} = ${sample.decoded}`.replaceAll('-', '−'), this.fieldX, h * (this.phone ? .56 : .80), this.phone ? 16 : 23, true);
-      this.text('WINDOW ONLY · Z IS INFINITE', this.fieldX, h * (this.phone ? .62 : .91), this.phone ? 8 : 10);
+      this.text(`${sample.x} + ${sample.y} = ${sample.decoded}`.replaceAll('-', '−'), this.fieldX, h * (this.phone ? .58 : .80), this.phone ? 16 : 23, true);
+      this.text('WINDOW ONLY · Z IS INFINITE', this.fieldX, h * (this.phone ? .63 : .91), this.phone ? 8 : 10);
     }
 
     for (let residue = 0; residue < model.window.order; residue++) {

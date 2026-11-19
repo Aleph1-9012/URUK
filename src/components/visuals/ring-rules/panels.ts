@@ -49,7 +49,7 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
   const phone = width < PHONE_STAGE_WIDTH;
   const motion = motionAt(time);
   const center = width * .5;
-  const top = height * .65;
+  const top = height * (phone ? .67 : .65);
   drawText(ctx, 'UNREVIEWED · 3 NOV 2026', center, top, { size: phone ? 10 : 12, color: tones.ink });
   const rows = [
     'LEAN CATALOGUE: THREE OF FOUR PAPERS',
@@ -66,7 +66,7 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
     if (motion.ledger < index / rows.length) continue;
 
     const bounds = drawWrappedText(ctx, row, center, y, width * .90, { size: phone ? 8.5 : 10.5, color: tones.ink });
-    y = bounds.y + bounds.height + (phone ? 5 : 4);
+    y = bounds.y + bounds.height + (phone ? 3 : 4);
   }
 }
 
@@ -111,7 +111,7 @@ export function drawRingRulesPanels(ctx: CanvasRenderingContext2D, width: number
       note(ctx, 'THE SAME STENCIL · THREE CYCLIC CELLS', width, height, .66, .16, tones);
       place(labels, 'ring-rule', width, height, .75, .34);
       note(ctx, `${model.three.configurations.length} CONFIGURATIONS · ${model.three.groups.length} IMAGES\n${model.three.kernel.length} PREIMAGES PER IMAGE`, width, height, .84, .51, tones);
-      note(ctx, 'MERGING AND UNREACHABLE STATES\nARRIVE TOGETHER', width, height, .94, .74, tones, phone ? 8.5 : 11);
+      note(ctx, 'MERGING AND UNREACHABLE STATES\nARRIVE TOGETHER', width, height, .92, .74, tones, phone ? 8.5 : 11);
       break;
     case 'sofic': {
       if (motion.windowRing < 1) {
@@ -124,7 +124,7 @@ export function drawRingRulesPanels(ctx: CanvasRenderingContext2D, width: number
       note(ctx, `CYCLIC GROUP: ${model.window.order} CELLS\nINTEGER WINDOW: −10 TO 10`, width, height, .75, .32, tones);
       const checked = Math.floor(model.window.checks * motion.windowChecks);
       note(ctx, `${checked} OF ${model.window.checks} SUMS CHECKED\nINPUTS −5 TO 5 · ${model.window.errors} ERRORS`, width, height, .85, .52, tones);
-      note(ctx, 'SCHEMATIC SOFIC IDEA\nNO COUNTEREXAMPLE GROUP DRAWN', width, height, .95, .74, tones, phone ? 8.5 : 10.5);
+      note(ctx, 'SCHEMATIC SOFIC IDEA\nNO COUNTEREXAMPLE GROUP DRAWN', width, height, .93, .74, tones, phone ? 8.5 : 10.5);
       break;
     }
     case 'claim':
@@ -141,15 +141,15 @@ export function drawRingRulesPanels(ctx: CanvasRenderingContext2D, width: number
       if (motion.claimMap === 1) note(ctx, 'INJECTIVE · NOT ONTO', width, height, .97, .81, tones, phone ? 8.5 : 11);
       break;
     case 'torsionFree':
-      note(ctx, '4 OCTOBER · TORSION-FREE CLAIM', width, height, .66, .10, tones, phone ? 8.5 : 11);
+      note(ctx, '4 OCTOBER · TORSION-FREE CLAIM', width, height, .64, .10, tones, phone ? 8.5 : 11);
       place(labels, 'torsion-field', width, height, .72, .23);
-      place(labels, 'torsion-hypothesis', width, height, .79, .36);
+      place(labels, 'torsion-hypothesis', width, height, .805, .36);
 
-      if (motion.proof >= .2) place(labels, 'proof-assumption', width, height, .85, .50);
-      if (motion.proof >= .4) place(labels, 'proof-first', width, height, .90, .63);
-      if (motion.proof >= .7) place(labels, 'proof-second', width, height, .95, .76);
+      if (motion.proof >= .2) labels.place('proof-assumption', width * (phone ? .19 : .77), height * (phone ? .897 : .50));
+      if (motion.proof >= .4) labels.place('proof-first', width * (phone ? .52 : .77), height * (phone ? .897 : .63));
+      if (motion.proof >= .7) labels.place('proof-second', width * (phone ? .83 : .77), height * (phone ? .897 : .76));
 
-      note(ctx, 'SYMBOLS ONLY · NO EXAMPLE COMPUTED', width, height, .98, .91, tones, phone ? 8 : 10);
+      note(ctx, 'SYMBOLS ONLY · NO EXAMPLE COMPUTED', width, height, .95, .91, tones, phone ? 8 : 10);
       break;
     case 'recipe':
       note(ctx, 'NO SMALL EXAMPLE IS WRITTEN DOWN', width, height, .67, .22, tones);
