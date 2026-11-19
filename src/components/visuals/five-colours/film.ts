@@ -1,6 +1,6 @@
 import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
 import { FilmLabels } from '../../plate/labels';
-import { smooth } from '../../../lib/animation';
+import { progress, smooth } from '../../../lib/animation';
 import { SPINDLE, SPINDLE_EDGES, SPINDLE_ANGLE, PALETTE, FORCED_COLOURS, hexTiles, hexVertices, classAt, rulerAt, type Point } from './math';
 
 import { drawColourLedger, spindleCardPose } from './ledger';
@@ -20,6 +20,82 @@ function lerp(a: number, b: number, amount: number): number {
 
 function blend(a: Pose, b: Pose, amount: number): Pose {
   return { x: lerp(a.x, b.x, amount), y: lerp(a.y, b.y, amount), unit: lerp(a.unit, b.unit, amount) };
+}
+
+// Carry the caption under the growing spindle and around its right tip.
+const SPINDLE_CAPTION_PATH = [
+  { at: 13000, x: 0, y: 0 },
+  { at: 14000, x: -.10, y: .09 },
+  { at: 18300, x: -.10, y: .09 },
+  { at: 18700, x: -.13, y: .29 },
+  { at: 19100, x: .12, y: .50 },
+  { at: 19500, x: .25, y: .41 },
+  { at: 20000, x: .29, y: .45 },
+  { at: 20300, x: .46, y: .46 },
+  { at: 20500, x: .47, y: .25 },
+  { at: 20800, x: .33, y: .09 },
+  { at: 21200, x: .23, y: .06 },
+  { at: 21800, x: .11, y: .05 },
+  { at: 22300, x: 0, y: 0 },
+] as const;
+
+// The compact caption passes above the diameter. The wide caption passes below it.
+const PHONE_TILING_CAPTION_PATH = [
+  { at: 31200, x: 0, y: 0 },
+  { at: 31650, x: 0.202, y: -0.435 },
+  { at: 31700, x: 0.167, y: -0.47 },
+  { at: 32000, x: -0.007, y: -0.122 },
+  { at: 33200, x: 0.061, y: -0.009 },
+  { at: 34400, x: -0.019, y: -0.017 },
+  { at: 35600, x: 0.003, y: -0.157 },
+  { at: 35850, x: -0.146, y: -0.504 },
+  { at: 36100, x: -0.649, y: -0.678 },
+  { at: 36400, x: -0.852, y: -0.798 },
+  { at: 37200, x: -0.911, y: -0.816 },
+  { at: 38250, x: -1.377, y: -0.17 },
+  { at: 38350, x: -1.424, y: 0.003 },
+  { at: 38500, x: -1.336, y: 0.316 },
+  { at: 38550, x: -1.235, y: 0.384 },
+  { at: 38800, x: -0.798, y: 0.41 },
+  { at: 40000, x: -0.077, y: 0.4 },
+  { at: 41200, x: 0.01, y: -0.005 },
+  { at: 42200, x: 0, y: 0 },
+] as const;
+
+const WIDE_TILING_CAPTION_PATH = [
+  { at: 32300, x: 0, y: 0 },
+  { at: 33200, x: 0.042, y: -0.087 },
+  { at: 33300, x: 0.039, y: -0.037 },
+  { at: 34500, x: -0.014, y: -0.004 },
+  { at: 35700, x: 0.012, y: -0.002 },
+  { at: 36900, x: 0.006, y: -0.012 },
+  { at: 38100, x: 0.23, y: 0.562 },
+  { at: 38150, x: 0.194, y: 0.619 },
+  { at: 38400, x: -0.119, y: 0.584 },
+  { at: 38450, x: -0.153, y: 0.527 },
+  { at: 38550, x: -0.11, y: 0.336 },
+  { at: 39750, x: 0.011, y: 0.005 },
+  { at: 40950, x: 0.036, y: 0.013 },
+  { at: 42200, x: 0, y: 0 },
+] as const;
+
+type CaptionFrame = Readonly<{ at: number; x: number; y: number }>;
+type CaptionPath = readonly [CaptionFrame, ...CaptionFrame[]];
+
+function captionOffset(path: CaptionPath, time: number, unit: number): Point {
+  let from = path[0];
+
+  for (const to of path) {
+    if (to.at > from.at && time <= to.at) {
+      const amount = progress(time, from.at, to.at);
+
+      return { x: unit * lerp(from.x, to.x, amount), y: unit * lerp(from.y, to.y, amount) };
+    }
+
+    from = to;
+  }
+
+  return { x: 0, y: 0 };
 }
 
 export class FiveColoursFilm {
@@ -108,7 +184,7 @@ export class FiveColoursFilm {
     this.pen.rect(box.x, box.y, box.w, box.h);
     this.pen.clip();
 
-    if (time >= 32000 && time < 64500 || time >= 117500) this.hexagons(box);
+    const gap = time >= 32000 && time < 64500 || time >= 117500 ? this.hexagons(box) : undefined;
 
     if (time >= 61500 && time < 117500) {
       this.pen.save();
@@ -131,6 +207,9 @@ export class FiveColoursFilm {
 
     this.ruler(box);
     this.pen.restore();
+
+    if (gap) this.hexagonGapLabel(box, gap[0], gap[1]);
+
     drawColourLedger(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
     this.spindle(box);
 
@@ -241,11 +320,12 @@ export class FiveColoursFilm {
     }
   }
 
-  private hexagons(box: Box, closing = false): void {
+  private hexagons(box: Box, closing = false): readonly [Point, Point] | undefined {
     const t = this.time;
     const unit = this.tall ? Math.max(50, box.w * .19) : box.w * .18;
     const origin = { x: box.x + box.w * .5, y: box.y + box.h * .5 };
     const reach = closing || t >= 38000 ? 20 : 1 + 7 * smooth(t, 32000, 38000);
+    let gap: readonly [Point, Point] | undefined;
 
     for (const tile of TILES) {
       if (Math.max(Math.abs(tile.q), Math.abs(tile.r), Math.abs(tile.q + tile.r)) > reach) continue;
@@ -282,7 +362,7 @@ export class FiveColoursFilm {
 
         for (const point of [a, b]) this.line([{ x: point.x - normal.x, y: point.y - normal.y }, { x: point.x + normal.x, y: point.y + normal.y }], 'ink', 1, 1);
 
-        if (t >= 37500) this.words('SAME COLOUR GAP > 1', (a.x + b.x) / 2, (a.y + b.y) / 2 - 15, box.w * .8);
+        if (t >= 37500) gap = [a, b];
       }
 
       const hexagon = hexVertices(1, 0);
@@ -300,6 +380,22 @@ export class FiveColoursFilm {
       this.words('WITHIN ONE HEXAGON', box.x + box.w * .72, box.y + box.h - 63, box.w * .54);
       this.labels.place('diameter', box.x + box.w * .72, box.y + box.h - 43);
       this.labels.place('gap', box.x + box.w / 2, box.y + box.h - 12);
+    }
+
+    return gap;
+  }
+
+  private hexagonGapLabel(box: Box, from: Point, to: Point): void {
+    const x = (from.x + to.x) / 2;
+    const aboveGap = to.y - 21;
+
+    if (this.tall && aboveGap - 7 < box.y + 20) {
+      const right = box.x + box.w - 12;
+      const elbow = { x: right, y: to.y - 9 };
+      this.line([{ x: right, y: 15 }, elbow, { x: to.x + 4, y: to.y - 3 }], 'muted', 1, .65);
+      this.words('SAME COLOUR GAP > 1', right - 40, 8, box.w * .8);
+    } else {
+      this.words('SAME COLOUR GAP > 1', x, aboveGap, box.w * .8);
     }
   }
 
@@ -374,7 +470,9 @@ export class FiveColoursFilm {
       if (p && q) {
         const middle = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
         this.words('×', middle.x, middle.y, 25, 'blue', 20);
-        this.words(t < 31500 ? 'SAME COLOUR · ONE UNIT APART' : 'NEEDS FOUR COLOURS', box.x + box.w / 2, box.y + box.h - 10, box.w * .96, 'blue');
+        const captionY = this.tall && t >= 112500 ? Math.max(box.y + box.h - 10, focus.y + focus.unit + 11.7) : box.y + box.h - 10;
+        const captionX = box.x + box.w / 2 + (t >= 112500 ? Math.max(0, 250 - box.w) / 2 : 0);
+        this.words(t < 31500 ? 'SAME COLOUR · ONE UNIT APART' : 'NEEDS FOUR COLOURS', captionX, captionY, box.w * .96, 'blue');
       }
     }
 
@@ -418,10 +516,12 @@ export class FiveColoursFilm {
       this.disc(to, 2, this.tall ? 8 : 10);
     }
 
-    if (t >= 36000 && t < 61500 || t >= 117500) {
+    const drawEnds = (): void => {
       this.disc(from, classAt(path.start), this.tall ? 6 : 8);
       this.disc(to, classAt(path.end), this.tall ? 6 : 8);
-    }
+    };
+
+    if (t >= 117500) drawEnds();
 
     this.line([from, to], 'blue', 1, 2, smooth(t, 0, 1500));
     const nx = -Math.sin(pose.angle) * 5;
@@ -429,6 +529,50 @@ export class FiveColoursFilm {
 
     for (const point of [from, to]) this.line([{ x: point.x - nx, y: point.y - ny }, { x: point.x + nx, y: point.y + ny }], 'blue', 1, 1.4);
 
-    if (t < 61500 || t >= 115000) this.words('1 UNIT', (from.x + to.x) / 2, (from.y + to.y) / 2 + 17, 70, 'blue');
+    if (t >= 36000 && t < 61500) drawEnds();
+
+    if (t < 61500 || t >= 117500) {
+      const closing = this.tall && t >= 115000;
+      const spindleOffset = smooth(t, 18000, 20000) * (1 - smooth(t, 34100, 36000));
+      const tiledOffset = this.tall && t < 61500 ? -8 * smooth(t, 34100, 36000) : 0;
+      const dx = closing ? 28 : lerp(tiledOffset, nx * 5.6, spindleOffset);
+      const dy = closing ? 0 : lerp(17, ny * 5.6, spindleOffset);
+      const spindleCaption = captionOffset(SPINDLE_CAPTION_PATH, t, opening.unit);
+      const openingCaption = 1 - smooth(t, 13200, 15400);
+      const orbitAngle = .70 + .1 * Math.sin(pose.angle);
+      const orbitRadius = opening.unit + 31;
+      const outsideX = smooth(t, 1800, 2500) * (1 - smooth(t, 9000, 9900));
+      const outsideY = smooth(t, 1300, 1800) * (1 - smooth(t, 9900, 10400));
+      const openingX = lerp(lerp(from.x, to.x, .32) + nx * 5, opening.x + orbitRadius * Math.cos(orbitAngle), outsideX);
+      const openingY = lerp(lerp(from.y, to.y, .32) + ny * 5, opening.y + orbitRadius * Math.sin(orbitAngle), outsideY);
+      const x = lerp((from.x + to.x) / 2 + dx + spindleCaption.x, openingX, openingCaption);
+      const y = lerp((from.y + to.y) / 2 + dy + spindleCaption.y, openingY, openingCaption);
+
+      // The caption travels around the end of the turning ruler before returning below it.
+      const tuck = smooth(t, 33000, 33900) * (1 - smooth(t, this.tall ? 42100 : 43400, this.tall ? 43100 : 44000));
+      const side = Math.min(box.x + box.w - 24, Math.max(from.x, to.x) + 29);
+      const beside = this.tall ? Math.min(y, box.y + box.h - 80) : y;
+      const below = Math.max(from.y, to.y) + (this.tall ? 17 : 19);
+      const sideY = lerp(beside, below, smooth(t, 40100, 41900));
+
+      const tilingCaption = captionOffset(this.tall ? PHONE_TILING_CAPTION_PATH : WIDE_TILING_CAPTION_PATH, t, opening.unit);
+      const captionX = lerp(x, side, tuck) + tilingCaption.x;
+      const tuckY = lerp(y, sideY, tuck);
+      const underDisc = smooth(t, 41200, 42100) * (1 - smooth(t, this.tall ? 43300 : 43850, this.tall ? 43900 : 44000));
+      const settledPhone = this.tall && t < 61500 ? 2 * smooth(t, 44300, 44500) : 0;
+      const captionY = !this.tall && t >= 117500 ? below : lerp(tuckY, Math.max(tuckY, below), underDisc) + tilingCaption.y + settledPhone;
+      // The spindle edges sweep through this leader before and after the gap.
+      const spindleTether = smooth(t, 20350, 20700) * (1 - smooth(t, 21300, 21700));
+      const tether = Math.max(outsideX, outsideY, spindleTether);
+
+      if (tether > 0) {
+        const dx = captionX - to.x;
+        const dy = captionY - to.y;
+        const approach = 1 - Math.min(1, 23 / Math.abs(dx), 9.5 / Math.abs(dy));
+        this.line([to, { x: to.x + approach * dx, y: to.y + approach * dy }], 'muted', 1, .65, tether);
+      }
+
+      this.words('1 UNIT', captionX, captionY, 70, 'blue');
+    }
   }
 }

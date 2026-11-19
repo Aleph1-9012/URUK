@@ -104,7 +104,7 @@ export function drawColourLedger(pen: CanvasRenderingContext2D, width: number, h
     pen.stroke();
     pen.globalAlpha = 1;
   };
-  const words = (text: string, x: number, y: number, maxWidth: number, tone: keyof Ink = 'ink', size = tall ? 10 : 11) => {
+  const words = (text: string, x: number, y: number, maxWidth: number, tone: keyof Ink = 'ink', size = tall ? 10 : 11, backing = true) => {
     pen.font = `${size}px "Special Elite", monospace`;
     pen.textAlign = 'center';
     pen.textBaseline = 'middle';
@@ -129,8 +129,11 @@ export function drawColourLedger(pen: CanvasRenderingContext2D, width: number, h
       const extent = pen.measureText(content).width;
       const cx = x;
       const cy = y + (index - (lines.length - 1) / 2) * (size + 3);
-      pen.fillStyle = colors.paper;
-      pen.fillRect(cx - extent / 2 - 2, cy - size * .65, extent + 4, size * 1.3);
+      if (backing) {
+        pen.fillStyle = colors.paper;
+        pen.fillRect(cx - extent / 2 - 2, cy - size * .65, extent + 4, size * 1.3);
+      }
+
       pen.fillStyle = colors[tone];
       pen.fillText(content, cx, cy);
     }
@@ -309,7 +312,7 @@ export function drawColourLedger(pen: CanvasRenderingContext2D, width: number, h
   if (time >= 61500 && time < 96000 && !tall) words('NO FINITE PATTERN BUILT', middle, height * .95, span + 10, 'muted');
 
   if (time >= 115000) {
-    if (tall) words('POLYMATH16 · NO VERDICT YET', middle, height * .98, span + 15, 'muted');
+    if (tall) words('POLYMATH16 · NO VERDICT YET', middle, height * .98, span + 15, 'muted', 10, false);
     else label('status', middle, height * .87);
   }
 }

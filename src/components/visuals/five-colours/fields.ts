@@ -190,7 +190,7 @@ export function drawColourFields(
       }
     } else {
       tag('WEAK MEASURABLE COLOURING', box.x + box.w / 2, box.y + 14, box.w - 12);
-      tag('NEGLIGIBLE EXCEPTIONS ALLOWED', box.x + box.w / 2, box.y + box.h - 31, box.w - 12);
+      tag('NEGLIGIBLE EXCEPTIONS ALLOWED', box.x + box.w * .70, box.y + box.h - 31, box.w * .55);
 
       if (time >= 76000) {
         const progress = smooth(time, 76000, 77500);
@@ -311,10 +311,15 @@ export function drawColourFields(
 
       tag(phone ? 'AT MOST TWO PER DIRECTION' : 'AT MOST TWO COLOURS PER DIRECTION', box.x + box.w / 2, box.y + 14, box.w - 12);
     } else {
-      tag(time < 110000 ? 'THREE COLOURS INSIDE · TWO OUTSIDE' : 'ONLY THREE HERE · SPINDLE NEEDS FOUR', box.x + box.w / 2, box.y + 14, box.w - 12);
+      const captionY = phone && time >= 110000 ? Math.min(box.y + 14, focus.y - focus.unit - 9) : box.y + 14;
+      tag(time < 110000 ? 'THREE COLOURS INSIDE · TWO OUTSIDE' : 'ONLY THREE HERE · SPINDLE NEEDS FOUR', box.x + box.w / 2, captionY, box.w - 12);
     }
   }
 
-  tag('SCHEMATIC', box.x + box.w / 2, box.y + box.h - 12, box.w - 12, 'muted');
+  const schematicOffset = Math.min(100, box.w / 2 - 31) * smooth(time, 110000, 112500);
+  const schematicBaseline = box.y + box.h - 12;
+  const schematicBelowCircle = Math.max(schematicBaseline, focus.y + focus.unit + 9.7);
+  const schematicY = phone ? schematicBaseline + (schematicBelowCircle - schematicBaseline) * smooth(time, 109500, 110000) : schematicBaseline;
+  tag('SCHEMATIC', box.x + box.w / 2 - schematicOffset, schematicY, box.w - 12, 'muted');
   ctx.restore();
 }
