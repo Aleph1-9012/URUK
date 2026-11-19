@@ -20,6 +20,9 @@ export function drawDisorderMap(pen: CanvasRenderingContext2D, width: number, he
   const titleX = width * (tall ? .5 : .76);
   const headerY = height * (tall ? time >= 101000 && time < 111000 ? .58 : .535 : .045);
   const gaugeScene = time >= 84000 && time < 101000;
+  const edgeProofs = time >= 27000 && time < 35500;
+  const allDisorder = time >= 59500 && time < 66000;
+  const coexistence = !tall && time >= 75500 && time < 80500;
   const size = tall ? 9 : 11;
   const words = (text: string, x: number, y: number, maxWidth: number, tone: keyof Colors = 'ink', alpha = 1): void => {
     if (alpha < .005) return;
@@ -76,6 +79,22 @@ export function drawDisorderMap(pen: CanvasRenderingContext2D, width: number, he
     pen.setLineDash([]);
     pen.globalAlpha = 1;
   };
+  const inside2DOutline = (box: Box, text: string, centerY: number): number => {
+    pen.font = `${size}px "Special Elite", monospace`;
+    const rows = text.split('\n');
+
+    for (const [index, row] of rows.entries()) {
+      const widthWithMargin = pen.measureText(row).width + 7;
+      // The 2D trapezoid tapers from 28/32 at the top to 8/32 at the bottom.
+      const sideLimit = box.y + box.h * (14 - 16 * widthWithMargin / box.w) / 10;
+      const lowestRowBottom = Math.min(sideLimit, box.y + box.h - 1.5);
+      const bottomOffset = (index - (rows.length - 1) / 2) * (size + 3) + size / 2 + 2;
+
+      centerY = Math.min(centerY, lowestRowBottom - bottomOffset);
+    }
+
+    return centerY;
+  };
   const hatch = (path: Path2D, box: Box, alpha = .35): void => {
     pen.save();
     pen.clip(path);
@@ -85,18 +104,11 @@ export function drawDisorderMap(pen: CanvasRenderingContext2D, width: number, he
     pen.restore();
   };
 
-  if (time < 18000) {
-    if (!tall) {
-      line([{ x: width * .57, y: height * .14 }, { x: width * .57, y: height * .81 }, { x: width * .95, y: height * .81 }], 'muted', .6, false, .15);
-      words('WHO IS TRAPPED? · REGIONS SCHEMATIC', titleX, headerY, width * .4, 'muted');
-    }
-
-    return;
-  }
+  if (time < 18000) return;
 
   if (!tall || !gaugeScene) words(zoom > .4 ? '3D: NEAR THE BOTTOM · WIDTHS SCHEMATIC' : 'WHO IS TRAPPED? · REGIONS SCHEMATIC', titleX, headerY, width * (tall ? .94 : .43));
   const boxes: Box[] = tall
-    ? [{ x: width * .09, y: height * .65, w: width * .36, h: height * .21 }, { x: width * .57, y: height * .65, w: width * .36, h: height * .21 }]
+    ? [{ x: width * .02, y: height * .69, w: width * .47, h: height * .17 }, { x: width * .51, y: height * .69, w: width * .47, h: height * .17 }]
     : [{ x: width * .59, y: height * .17, w: width * .35, h: height * .23 }, { x: width * .59, y: height * .59, w: width * .35, h: height * .23 }];
 
   for (const [index, base] of boxes.entries()) {
@@ -209,36 +221,50 @@ export function drawDisorderMap(pen: CanvasRenderingContext2D, width: number, he
 
     if (panelZoom < .5) words(String(2 * d), point(2 * d, 0).x, box.y + box.h + 12, 25, 'muted');
 
-    words('ENERGY', box.x + box.w / 2, box.y + box.h + (tall ? 27 : gaugeScene && index === 1 ? 18 : 32), box.w, 'muted');
-    words('h', box.x - 10, box.y - 3, 20, 'muted');
+    const energyX = box.x + (tall ? box.w / 2 : 13);
+    const energyY = box.y + box.h + (tall ? 27 : 12);
+    words('ENERGY', energyX, energyY, box.w, 'muted');
+    words('h', tall ? box.x + 3 : box.x - 10, box.y - (tall ? 13 : 3), 20, 'muted');
 
     if (panelZoom > .6) {
       label('interval', point(-5.90, .05).x, point(-5.90, .05).y);
-      label('threshold', point(-5.90, .10).x, point(-5.90, .10).y - 16);
+      const threshold = point(-5.90, .10);
+      const thresholdY = threshold.y - 16;
+      label('threshold', threshold.x, tall ? Math.max(thresholdY, box.y + 12) : thresholdY);
       words('EXISTS · NOT COMPUTED', box.x + box.w * .70, box.y - 20, box.w * .6, 'blue');
 
       if (time >= 75500) {
         words('J', point(-6.06, .08).x, point(-6.06, .08).y, 15);
         words('MOBILITY EDGE: OPEN ?', box.x + box.w / 2, box.y + box.h * .90, box.w * .9, 'blue');
       }
-    } else if (time < 27000) words('PREDICTED', box.x + box.w / 2, box.y + box.h * .63, box.w, 'muted');
-    else if (time < 35500) words('OPEN', box.x + box.w / 2, box.y + box.h * .73, box.w);
-    else if (time < 44500) words(`SIMON’S PROBLEM ${index === 0 ? 2 : 1}\nCLAIMED · 2026`, box.x + box.w / 2, box.y + box.h * .7, box.w, 'blue');
-    else if (time < 59500) words(index === 0 ? 'PURE POINT' : 'ABSOLUTELY\nCONTINUOUS', box.x + box.w / 2, box.y + box.h * .7, box.w, index === 0 ? 'ink' : 'blue');
-    else if (index === 0 && time < 111000) words('ALL h > 0\nCLAIMED', box.x + box.w / 2, box.y + box.h * .67, box.w, 'blue');
-    else if (time < 111000) words('OTHER ENERGIES:\nNOT ADDRESSED', box.x + box.w / 2, box.y + box.h * .6, box.w, 'muted');
+    } else if (time < 27000) words('PREDICTED', box.x + box.w / 2, box.y + box.h * (tall ? .30 : .63), box.w, 'muted');
+    else if (time < 35500) words('OPEN', box.x + box.w / 2, box.y + box.h * (tall ? .30 : .73), box.w);
+    else if (time < 44500) {
+      const text = tall ? `SIMON’S\nPROBLEM ${index === 0 ? 2 : 1}\nCLAIMED ·\n2026` : `SIMON’S PROBLEM ${index === 0 ? 2 : 1}\nCLAIMED · 2026`;
+      const baseY = box.y + box.h * (tall ? .385 : .7);
+      const captionY = tall ? Math.max(baseY, box.y + 25.5) : index === 0 ? inside2DOutline(box, text, baseY) : baseY;
+      words(text, box.x + box.w / 2, captionY, box.w, 'blue');
+    }
+    else if (time < 59500) words(index === 0 ? 'PURE POINT' : 'ABSOLUTELY\nCONTINUOUS', box.x + box.w / 2, box.y + box.h * (tall ? .30 : .7), box.w, index === 0 ? 'ink' : 'blue');
+    else if (index === 0 && time < 111000) words('ALL h > 0\nCLAIMED', box.x + box.w / 2, box.y + box.h * (tall ? .30 : .67), box.w, 'blue');
+    else if (time < 111000) words(tall ? 'OTHER ENERGIES:\nNOT\nADDRESSED' : 'OTHER ENERGIES:\nNOT ADDRESSED', box.x + box.w / 2, box.y + box.h * (tall ? .38 : .6), box.w, 'muted');
 
     if (time >= 111000) {
-      label(index === 0 ? 'status2d' : 'status3d', box.x + box.w / 2, box.y + box.h * .28);
-      words(index === 0 ? 'NO EXPERT\nDISCUSSION FOUND' : 'JAKSIC–LAST\nLAST STEP READ', box.x + box.w / 2, box.y + box.h * .78, box.w, 'muted');
+      const compact2D = index === 0 && !tall && box.w < 250;
+      const text = index === 0 ? tall || compact2D ? 'NO EXPERT\nDISCUSSION\nFOUND' : 'NO EXPERT\nDISCUSSION FOUND' : 'JAKSIC–LAST\nLAST STEP READ';
+      const baseY = box.y + box.h * (tall ? .57 : .78);
+      const captionY = index === 0 ? inside2DOutline(box, text, baseY) : baseY;
+      const statusY = tall ? box.y - 29 : box.y + box.h * .28;
+      label(index === 0 ? 'status2d' : 'status3d', box.x + box.w / 2, compact2D ? Math.min(statusY, captionY - 38.5) : statusY);
+      words(text, box.x + box.w / 2, captionY, tall ? box.w * .57 : box.w, 'muted');
     }
   }
 
-  if (!tall && time < 66000) label('spectrum', titleX, height * .105);
+  if (!tall && time < 66000) label('spectrum', width * .89, height * .105);
 
-  if (time >= 27000 && time < 35500) words('KNOWN: STRONG DISORDER OR EXTREME ENERGY', titleX, height * (tall ? .585 : .475), width * (tall ? .92 : .43), 'muted');
-  else if (time >= 59500 && time < 66000) words('2D CLAIM: NO TRAP SIZE GIVEN', titleX, height * (tall ? .58 : .475), width * (tall ? .92 : .43), 'blue');
-  else if (!tall && time >= 75500 && time < 80500) words('TRAPPED J + SPREADING I₃ · ONE OPERATOR', titleX, height * (tall ? .585 : .475), width * (tall ? .94 : .43), 'blue');
+  if (edgeProofs) words('KNOWN: STRONG DISORDER OR EXTREME ENERGY', titleX, height * (tall ? .585 : .475), width * (tall ? .92 : .43), 'muted');
+  else if (allDisorder) words('2D CLAIM: NO TRAP SIZE GIVEN', titleX, height * (tall ? .58 : .475), width * (tall ? .92 : .43), 'blue');
+  else if (coexistence) words('TRAPPED J + SPREADING I₃ · ONE OPERATOR', titleX, height * .475, width * .43, 'blue');
 
   if (gauge > 0) {
     const box = tall ? { x: width * .09, y: height * .71, w: width * .36, h: height * .15 } : { x: width * .63, y: height * .88, w: width * .27, h: height * .075 };
