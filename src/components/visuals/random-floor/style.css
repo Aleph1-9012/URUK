@@ -7,6 +7,6 @@ uruk-random-floor [data-label="claimed-inequality"] { color: var(--blue); }
 }
 
 @container sdfilm (width < 600px) {
-  uruk-random-floor .film-stage { aspect-ratio: 4 / 9; }
+  uruk-random-floor .film-stage { aspect-ratio: 4 / 5; }
   uruk-random-floor .film-label { font-size: .75rem; }
 }

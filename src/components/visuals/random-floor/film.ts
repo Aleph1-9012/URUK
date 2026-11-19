@@ -133,7 +133,19 @@ export class RandomFloorFilm implements FilmDrawing {
     for (const [index, position] of positions.entries()) {
       this.dot(position, (this.page.phone ? 3 : 4) * contraction * motion.host);
 
-      if (motion.host === 1 && contraction === 1) this.text(String(index + 1), position.x + (index < 3 ? -12 : 12), position.y, this.page.phone ? 10 : 14, true);
+      if (this.page.compact && motion.host === 1 && contraction === 1) this.text(String(index + 1), position.x + (index < 3 ? -12 : 12), position.y, 14, true);
+    }
+  }
+
+  private hostNumbers(motion: Motion): void {
+    const contraction = (1 - motion.paper) * (1 - motion.triples);
+
+    if (this.page.compact || motion.host !== 1 || contraction !== 1) return;
+
+    const offset = this.page.phone ? 24 : 16;
+
+    for (const [index, position] of this.hostPositions(this.page.host).entries()) {
+      this.text(String(index + 1), position.x + (index < 3 ? -offset : offset), position.y, this.page.phone ? 10 : 14, true);
     }
   }
 
@@ -323,7 +335,7 @@ export class RandomFloorFilm implements FilmDrawing {
       }
     }
 
-    if (motion.scene === 'pairs' && motion.triples === 1) this.text(`PAIR ${active.points[0] + 1}, ${active.points[1] + 1}: TWO TRIPLES`, (box.left + box.right) / 2, box.bottom + (this.page.phone ? 14 : 20), this.page.phone ? 8 : 10);
+    if (motion.scene === 'pairs' && motion.triples === 1) this.text(`PAIR ${active.points[0] + 1}, ${active.points[1] + 1}: TWO TRIPLES`, (box.left + box.right) / 2, box.bottom + (this.page.phone ? 4 : 20), this.page.phone ? 8 : 10);
   }
 
   private paper(model: RandomFloorModel, motion: Motion): void {
@@ -376,6 +388,7 @@ export class RandomFloorFilm implements FilmDrawing {
     const row = model.primary.byPattern[key];
     this.host(model, motion);
     this.pattern(model, motion);
+    this.hostNumbers(motion);
     this.maps(model, motion);
     this.triples(model, motion);
     this.paper(model, motion);

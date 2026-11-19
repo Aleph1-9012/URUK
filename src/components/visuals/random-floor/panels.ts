@@ -23,7 +23,7 @@ export function layout(w: number, h: number) {
     host: { cx: (phone ? .73 : .52) * w, cy: (phone ? .18 : .26) * h, w: (phone ? .34 : .25) * w, h: (phone ? .20 : .36) * h },
     paper: { left: (phone ? .08 : .06) * w, right: (phone ? .92 : .31) * w, top: (phone ? .07 : .10) * h, bottom: (phone ? .27 : .54) * h },
     hostFrame: { left: (phone ? .15 : .40) * w, right: (phone ? .85 : .65) * w, top: (phone ? .31 : .10) * h, bottom: (phone ? .39 : .54) * h },
-    gauge: { left: (phone ? .12 : .75) * w, right: (phone ? .88 : .94) * w, top: (phone ? .435 : .12) * h, bottom: (phone ? .54 : .50) * h, horizontal: phone },
+    gauge: { left: (phone ? .12 : .75) * w, right: (phone ? .88 : .94) * w, top: (phone ? .40 : .12) * h, bottom: (phone ? .56 : .50) * h, horizontal: phone },
     triples: { left: (phone ? .10 : .06) * w, right: (phone ? .90 : .65) * w, top: (phone ? .07 : .08) * h, bottom: (phone ? .35 : .53) * h },
     sweep: { left: (phone ? .08 : .06) * w, right: (phone ? .92 : .65) * w, top: (phone ? .34 : .49) * h, bottom: (phone ? .39 : .55) * h },
     panel: { center: .5, width: phone ? .92 : .90 },
@@ -50,19 +50,19 @@ export function drawRandomFloorPanels(ctx: CanvasRenderingContext2D, w: number, 
 
     if (motion.host > 0) labels.place('host-name', page.host.cx, page.text.hostHeading);
 
-    if (motion.host === 1) note('TOY HOST · SIX VERTICES', phone ? .31 : .48, phone ? 8 : 10, phone ? .73 : .52, phone ? .44 : .29);
+    if (motion.host === 1) note('TOY HOST · SIX VERTICES', phone ? .295 : page.compact ? .48 : .455, phone ? 8 : 10, phone ? .73 : .52, phone ? .44 : .29);
   }
 
   function paperHeadings(): void {
     if (motion.paper < 1) return;
 
     labels.place('pattern-name', (page.paper.left + page.paper.right) / 2, page.text.patternHeading);
-    note('PAPER H · IN THE PAPER, NOT DRAWN', phone ? .285 : .575, phone ? 8 : 10, phone ? .5 : .185, phone ? .92 : .29);
+    note('PAPER H · IN THE PAPER, NOT DRAWN', phone ? .27 : .575, phone ? 8 : 10, phone ? .5 : .185, phone ? .92 : .29);
     note('PAPER G · IN THE PAPER, NOT DRAWN', phone ? .405 : .575, phone ? 8 : 10, phone ? .5 : .525, phone ? .92 : .29);
   }
 
   function schematicGauge(): void {
-    note('CLAIMED · HEIGHTS SCHEMATIC', phone ? .575 : .055, phone ? 8 : 10, phone ? .5 : .845, phone ? .92 : .27);
+    note('CLAIMED · HEIGHTS SCHEMATIC', phone ? .56 : .055, phone ? 8 : 10, phone ? .5 : .845, phone ? .92 : .27);
   }
 
   function claimedFormula(y = .635): void {
