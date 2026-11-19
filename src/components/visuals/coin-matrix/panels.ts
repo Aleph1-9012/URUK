@@ -1,4 +1,4 @@
-import { drawWrappedText } from '../../plate/canvas/wrapped-text';
+import { drawWrappedText, type TextStyle } from '../../plate/canvas/wrapped-text';
 import { PHONE_STAGE_WIDTH, type FilmTones } from '../../plate/frame';
 import type { FilmLabels } from '../../plate/labels';
 import type { CoinMatrixModel } from './math';
@@ -13,15 +13,41 @@ export function drawCoinMatrixPanels(ctx: CanvasRenderingContext2D, w: number, h
   const independent = size * (size + 1) / 2;
   const copies = size * (size - 1) / 2;
 
-  function note(value: string, y: number, fontSize = phone ? 9 : 11, math = false, blue = false): void {
-    drawWrappedText(ctx, value, w * center, h * y, w * panelWidth, { size: fontSize, family: math ? 'math' : 'type', color: blue ? tones.blue : tones.ink, paper: tones.paper });
+  function note(value: string, y: number, fontSize = phone ? 9 : 11, math = false, blue = false, backing = true): void {
+    const style: TextStyle = { size: fontSize, family: math ? 'math' : 'type', color: blue ? tones.blue : tones.ink };
+
+    if (backing) style.paper = tones.paper;
+
+    drawWrappedText(ctx, value, w * center, h * y, w * panelWidth, style);
   }
 
   function formula(id: string, y: number): void {
     labels.place(id, w * center, h * y);
   }
 
+  function cornerNote(value: string, y: number, fontSize: number): void {
+    if (phone) drawWrappedText(ctx, value, w * .32, h * y, w * .64, { size: fontSize, color: tones.ink, paper: tones.paper });
+    else note(value, y, fontSize);
+  }
+
   function laterClaims(): void {
+    if (phone) {
+      note('CLAIMED · SYMMETRIC SIGNS', 130 / 310, 8.5, false, true, false);
+      labels.place('fair-rate', w * .29, h * 158 / 310);
+      drawWrappedText(ctx, 'DIAGONAL INCLUDED ·\nRATE ONLY', w * .29, h * 176 / 310, w * .44, { size: 8, color: tones.blue, paper: tones.paper });
+
+      if (motion.biasClaim > 0) {
+        formula('biased-probability', 213 / 310);
+        labels.place('biased-rate', w * .77, h * 158 / 310);
+        labels.place('fixed-p', w * .24, h * 250 / 310);
+      }
+
+      if (motion.biasAgreement === 1) labels.place('bias-example', w * .73, h * 250 / 310);
+      if (motion.biasScope > 0) drawWrappedText(ctx, 'FIXED p · NO UNIFORM\np(n) CLAIM', w * .77, h * 176 / 310, w * .44, { size: 8, family: 'math', color: tones.ink, paper: tones.paper });
+
+      return;
+    }
+
     note('CLAIMED · SYMMETRIC SIGNS', phone ? .285 : .12, phone ? 8.5 : 11, false, true);
     formula('fair-rate', phone ? .365 : .23);
     note('DIAGONAL INCLUDED · RATE ONLY', phone ? .415 : .33, phone ? 8 : 10, false, true);
@@ -47,35 +73,40 @@ export function drawCoinMatrixPanels(ctx: CanvasRenderingContext2D, w: number, h
       note('SYMMETRY REUSES RANDOMNESS', phone ? .82 : .64, phone ? 8.5 : 11);
       break;
     case 'dependent':
-      note(motion.corner < 1 ? 'KEEPING THE TOP-LEFT CORNER' : 'TEMPORARY TWO-BY-TWO CORNER', phone ? .52 : .20);
-      formula('unknown-two', phone ? .65 : .40);
+      cornerNote(motion.corner < 1 ? 'KEEPING THE TOP-LEFT CORNER' : 'TEMPORARY TWO-BY-TWO CORNER', phone ? .52 : .20, phone ? 9 : 11);
+      if (phone) labels.place('unknown-two', w * .32, h * .65);
+      else formula('unknown-two', .40);
       if (motion.cornerFlip === 1) {
-        note('BOTH ROWS ASK FOR THE SAME SUM', phone ? .78 : .61, phone ? 8.5 : 11);
+        cornerNote('BOTH ROWS ASK FOR THE SAME SUM', phone ? .78 : .61, phone ? 8.5 : 11);
         note('CORNER ONLY · TWO EQUAL ROWS', phone ? .90 : .80, phone ? 8 : 10);
       }
       break;
     case 'kernel':
-      note('THIS CORNER HAS A NONZERO KERNEL', phone ? .52 : .19, phone ? 9 : 11);
-      if (motion.kernelTwo > 0) formula('kernel-two', phone ? .65 : .40);
+      cornerNote('THIS CORNER HAS A NONZERO KERNEL', phone ? .52 : .19, phone ? 9 : 11);
+      if (motion.kernelTwo > 0) {
+        if (phone) labels.place('kernel-two', w * .32, h * .65);
+        else formula('kernel-two', .40);
+      }
       if (motion.zeroProducts === 1) {
-        note('BOTH ROW PRODUCTS ARE ZERO', phone ? .79 : .62);
+        cornerNote('BOTH ROW PRODUCTS ARE ZERO', phone ? .79 : .62, phone ? 9 : 11);
         note('SINGULAR · THE TWO-BY-TWO EXAMPLE', phone ? .91 : .81, phone ? 8 : 10);
       }
       break;
     case 'invertible':
-      note('RESTORING THE ORIGINAL CORNER SIGN', phone ? .51 : .14, phone ? 8.5 : 11);
+      cornerNote('RESTORING THE ORIGINAL CORNER SIGN', phone ? .49 : .14, phone ? 8.5 : 11);
       if (motion.cornerRestore === 1) {
-        formula('determinant-two', phone ? .58 : .29);
-        note('THIS CORNER IS INVERTIBLE', phone ? .64 : .40, phone ? 8 : 10);
+        if (phone) labels.place('determinant-two', w * .32, h * 190 / 310);
+        else formula('determinant-two', .29);
+        cornerNote('THIS CORNER IS INVERTIBLE', phone ? .68 : .40, phone ? 8 : 10);
       }
       if (motion.equations > 0) {
-        formula('equation-one', phone ? .73 : .53);
-        formula('equation-two', phone ? .82 : .66);
+        formula('equation-one', phone ? .78 : .53);
+        formula('equation-two', phone ? .88 : .66);
       }
-      note('THE SIX-BY-SIX EXAMPLE IS SEPARATE', phone ? .93 : .91, phone ? 8 : 10);
+      note('THE SIX-BY-SIX EXAMPLE IS SEPARATE', phone ? .96 : .91, phone ? 8 : 10);
       break;
     case 'lowerBound':
-      formula('lower-bound', phone ? .55 : .24);
+      formula('lower-bound', phone ? .67 - .12 * Math.min(1, Math.max(0, (motion.regrow - .85) / .15)) : .24);
       note('ELEMENTARY EQUAL-ROW EVENT', phone ? .75 : .42, phone ? 8.5 : 11);
       if (motion.lowerBound > 0) formula('six-bound', phone ? .84 : .61);
       note('SPECIFIED TWO ROWS · n ≥ 2', phone ? .94 : .92, phone ? 8.5 : 11, true);
@@ -95,25 +126,28 @@ export function drawCoinMatrixPanels(ctx: CanvasRenderingContext2D, w: number, h
       }
       break;
     case 'fair':
-      note('CLAIMED · FAIR SYMMETRIC SIGNS', phone ? .275 : .10, phone ? 8.5 : 11, false, true);
+      note('CLAIMED · FAIR SYMMETRIC SIGNS', phone ? 130 / 310 : .10, phone ? 8.5 : 11, false, true, !phone);
       if (motion.fairClaim > 0) {
-        formula('fair-probability', phone ? .335 : .24);
-        formula('fair-rate', phone ? .405 : .37);
+        formula('fair-probability', phone ? 159 / 310 : .24);
+        if (phone) labels.place('fair-rate', w * .29, h * 192 / 310);
+        else formula('fair-rate', .37);
       }
       if (motion.fairScope > 0) {
-        note('REAL SYMMETRIC · INDEPENDENT FAIR SIGNS', phone ? .55 : .50, phone ? 8.5 : 11, false, true);
-        note('ON AND ABOVE THE DIAGONAL, INCLUDING IT', phone ? .62 : .61, phone ? 8 : 10, false, true);
-        note('EXPONENTIAL RATE ONLY', phone ? .72 : .72, phone ? 9 : 12, false, true);
-        note('THE LEADING FACTOR IS NOT DETERMINED', phone ? .80 : .91, phone ? 8 : 10);
-        note('SMALL n ARE NOT THE LIMIT', phone ? .88 : .96, phone ? 8.5 : 10, true);
+        note('REAL SYMMETRIC · INDEPENDENT FAIR SIGNS', phone ? 217 / 310 : .50, phone ? 8.5 : 11, false, true);
+        note('ON AND ABOVE THE DIAGONAL, INCLUDING IT', phone ? 235 / 310 : .61, phone ? 8 : 10, false, true);
+        if (phone) drawWrappedText(ctx, 'EXPONENTIAL\nRATE ONLY', w * .77, h * 180 / 310, w * .44, { size: 9, color: tones.blue, paper: tones.paper });
+        else note('EXPONENTIAL RATE ONLY', .72, 12, false, true);
+        note('THE LEADING FACTOR IS NOT DETERMINED', phone ? 260 / 310 : .91, phone ? 8 : 10);
+        note('SMALL n ARE NOT THE LIMIT', phone ? 282 / 310 : .96, phone ? 8.5 : 10, true);
       }
       break;
     case 'biased':
       laterClaims();
       if (motion.biasAgreement > 0 && motion.biasClaim === 0) {
-        formula('pair-agreement', phone ? .60 : .47);
-        formula('bias-example', phone ? .74 : .63);
-        note('TWO COINS WITH THE SAME FIXED BIAS', phone ? .84 : .92, phone ? 8 : 10);
+        formula('pair-agreement', phone ? 213 / 310 : .47);
+        if (phone) labels.place('bias-example', w * .73, h * 250 / 310);
+        else formula('bias-example', .63);
+        note('TWO COINS WITH THE SAME FIXED BIAS', phone ? 276 / 310 : .92, phone ? 8 : 10);
       }
       if (motion.biasClaim > 0) note('Q ILLUSTRATES A RATE, NOT A FAILURE PERCENTAGE', phone ? .93 : .92, phone ? 7.5 : 9);
       break;
@@ -124,10 +158,10 @@ export function drawCoinMatrixPanels(ctx: CanvasRenderingContext2D, w: number, h
       break;
     case 'catalogue':
       laterClaims();
-      note('UNREVIEWED · 7 NOVEMBER 2026', .90, phone ? 8 : 10);
+      note('UNREVIEWED · 7 NOVEMBER 2026', phone ? 272 / 310 : .90, phone ? 8 : 10);
       if (motion.catalogue > 0) {
-        note('LEAN CATALOGUE: NONE', .935, phone ? 8.5 : 11);
-        note('NO RELEASE PROOF REPLAY', .97, phone ? 8 : 10);
+        note('LEAN CATALOGUE: NONE', phone ? 286 / 310 : .935, phone ? 8.5 : 11);
+        note('NO RELEASE PROOF REPLAY', phone ? 300 / 310 : .97, phone ? 8 : 10);
       }
       break;
   }

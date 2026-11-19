@@ -11,6 +11,6 @@ uruk-coin-matrix [data-label="fixed-p"] { color: var(--blue); }
 }
 
 @container smfilm (width < 600px) {
-  uruk-coin-matrix .film-stage { aspect-ratio: 4 / 9; }
+  uruk-coin-matrix .film-stage { aspect-ratio: 4 / 5; }
   uruk-coin-matrix .film-label { font-size: .75rem; }
 }
