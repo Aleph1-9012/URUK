@@ -10,6 +10,6 @@ uruk-two-forks [data-label="paper-required"] { color: var(--blue); }
 }
 
 @container snfilm (width < 600px) {
-  uruk-two-forks .film-stage { aspect-ratio: 4 / 9; }
+  uruk-two-forks .film-stage { aspect-ratio: 4 / 5; }
   uruk-two-forks .film-label { font-size: .75rem; }
 }

@@ -27,7 +27,7 @@ export function layout(w: number, h: number) {
     board: { left: phone ? (w - boardSize) / 2 : .055 * w, top: boardTop, size: boardSize },
     inset: { left: boardLeft, top: (phone ? .49 : .74) * h, width: (phone ? .25 : .15) * w, height: (phone ? .11 : .16) * h },
     scale: { left: (phone ? .50 : .70) * w, right: .88 * w, top: (phone ? .07 : .10) * h, bottom: (phone ? .44 : .48) * h },
-    certificate: { left: (phone ? .14 : .10) * w, right: (phone ? .86 : .61) * w, top: .10 * h, bottom: (phone ? .28 : .43) * h },
+    certificate: { left: (phone ? .14 : .10) * w, right: phone ? .86 * w : compact ? .61 * w : Math.min(.61 * w, .055 * w + boardSize - 4), top: .10 * h, bottom: (phone ? .28 : .43) * h },
     panel: { center: phone ? .5 : .80, width: phone ? .92 : .31, top: (phone ? .56 : .08) * h },
     text: { boardHeading: (phone ? .02 : .025) * h, insetCaption: (phone ? .61 : .935) * h },
   };
@@ -97,7 +97,7 @@ export function drawTwoForksPanels(ctx: CanvasRenderingContext2D, w: number, h: 
       if (motion.height3 > 0) {
         note('COMBINE TWO HEIGHT-TWO CLAIMS', .80, .46);
         note('SECOND COPY: HALF TURN + SHIFT (5,1)', .87, .63, phone ? 8.5 : 10);
-        note(`TOY HEIGHT ${audit.height3Height} · ${audit.height3Required} REQUIRED CELLS ALREADY OWNED · ${audit.height3Envelope}-CELL ENVELOPE`, .95, .82, phone ? 8 : 10);
+        note(`TOY HEIGHT ${audit.height3Height} · ${audit.height3Required} REQUIRED CELLS ALREADY OWNED · ${audit.height3Envelope}-CELL ENVELOPE`, .93, .82, phone ? 8 : 10);
       } else {
         note('OUTSIDE T: EVERY CHILD STAYS CLEAR', .82, .53);
         note('THE TOY IS STILL A CONDITIONAL POSITION', .94, .79, phone ? 8 : 10);

@@ -118,8 +118,10 @@ class TwoForksFilm implements FilmDrawing {
       }
 
       if (hatch) {
-        pen.moveTo(point.x + step * .1, point.y + step * .4);
-        pen.lineTo(point.x + step * .4, point.y + step * .1);
+        const cornerInset = this.page.compact ? .1 : .015;
+        const cornerReach = this.page.compact ? .4 : .16;
+        pen.moveTo(point.x + step * cornerInset, point.y + step * cornerReach);
+        pen.lineTo(point.x + step * cornerReach, point.y + step * cornerInset);
       }
     }
 
@@ -193,9 +195,9 @@ class TwoForksFilm implements FilmDrawing {
 
   private pivotLabel(board: Board, cell: Cell): void {
     const center = this.center(board, cell);
-    const x = center.x - board.size / 9 * .85;
+    const x = this.page.phone ? board.left - 12 : center.x - board.size / 9 * .85;
     const y = center.y - board.size / 9 * .85;
-    this.line({ x: x + 4, y: y + 4 }, { x: center.x - 3, y: center.y - 3 }, .6);
+    this.line({ x: x + (this.page.phone ? 8 : 4), y: y + 4 }, { x: center.x - 3, y: center.y - 3 }, .6);
     this.labels.place('pivot-name', x, y);
   }
 
@@ -277,10 +279,23 @@ class TwoForksFilm implements FilmDrawing {
         this.text(label, board.left + board.size / 2, board.top + board.size + 12);
         break;
       }
-      case 'base':
+      case 'base': {
         this.outline(board, this.model.snaky, .8);
         this.replay(board, this.baseReplay, [motion.baseFinish], motion.base);
+
+        if (motion.baseFinish > 0 && !this.page.compact) {
+          const fresh = this.baseReplay.turns[0];
+
+          if (!fresh || fresh.player !== 'maker') throw new Error('The base finishes with its one fresh Maker claim.');
+
+          const center = this.center(board, fresh.cell);
+          const arm = board.size / 9 * .22 * motion.baseFinish;
+          drawLine(this.pen, center.x - arm, center.y, center.x + arm, center.y, this.tones.paper, 1.2);
+          drawLine(this.pen, center.x, center.y - arm, center.x, center.y + arm, this.tones.paper, 1.2);
+        }
+
         break;
+      }
       case 'fork': {
         const first = this.model.height2.children[0];
         const second = this.model.height2.children[1];
@@ -382,14 +397,17 @@ class TwoForksFilm implements FilmDrawing {
     if (motion.certificate === 0 || motion.pullback === 1) return;
 
     const box = this.page.certificate;
-    this.pen.fillStyle = this.tones.paper;
-    this.pen.fillRect(box.left - 3, box.top - 3, box.right - box.left + 6, box.bottom - box.top + 6);
+    if (this.page.compact) {
+      this.pen.fillStyle = this.tones.paper;
+      this.pen.fillRect(box.left - 3, box.top - 3, box.right - box.left + 6, box.bottom - box.top + 6);
+    }
+
     const middle = (box.top + box.bottom) / 2;
     this.pen.strokeStyle = this.tones.ink;
     this.pen.lineWidth = .8;
     this.pen.strokeRect(box.left, middle - 12, (box.right - box.left) * motion.certificate, 24);
 
-    this.text('COUNT ONLY · NO CARD DATA', (box.left + box.right) / 2, middle + 29, this.page.phone ? 8 : 11);
+    this.text('COUNT ONLY · NO CARD DATA', this.page.phone ? this.width * .40 : (box.left + box.right) / 2, middle + 29, this.page.phone ? 8 : 11);
   }
 
   private claimBadges(motion: Motion): void {
@@ -446,7 +464,10 @@ class TwoForksFilm implements FilmDrawing {
     pen.lineJoin = 'round';
     this.labels.beginFrame();
 
-    if (motion.pullback === 0) this.lattice(this.page.board, motion.grid);
+    if (motion.pullback === 0) {
+      const board = this.page.compact ? this.page.board : boardBetween(this.page.board, this.insetBoard(), motion.certificate);
+      this.lattice(board, motion.grid);
+    }
 
     this.toys(motion);
     this.certificate(motion);
