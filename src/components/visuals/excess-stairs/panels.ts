@@ -17,8 +17,8 @@ export function drawExcessStairsPanels(ctx: CanvasRenderingContext2D, w: number,
     });
   }
 
-  function formula(id: string, y: number): void {
-    labels.place(id, w * .5, h * y);
+  function formula(id: string, y: number, x = .5): void {
+    labels.place(id, w * x, h * y);
   }
 
   if (motion.questionBracket > 0) {
@@ -83,10 +83,12 @@ export function drawExcessStairsPanels(ctx: CanvasRenderingContext2D, w: number,
       note("NO WIDTH COMPARISON WITH Z OR LIEB'S WALL", .95, phone ? 8 : 10);
       break;
     case 'claim':
-      if (motion.uniformScope > 0) formula('total-charge', .77);
-      note('STRICT BINDING · FULL NONRELATIVISTIC MODEL · TWO SPINS', .825, phone ? 8 : 10);
-      note('FIXED NUCLEI · NO MAGNETIC FIELD', .87, phone ? 8 : 10);
-      note('C UNIVERSAL, NOT COMPUTED', .915, phone ? 8.5 : 11);
+      if (motion.uniformScope > 0) formula('total-charge', phone ? .81 : .77, phone ? .29 : .5);
+      if (phone) {
+        drawWrappedText(ctx, 'STRICT BINDING · FULL\nNONRELATIVISTIC MODEL ·\nTWO SPINS', w * .77, h * .75, w * .42, { size: 8, color: tones.ink, paper: tones.paper });
+      } else note('STRICT BINDING · FULL NONRELATIVISTIC MODEL · TWO SPINS', .825, 10);
+      note('FIXED NUCLEI · NO MAGNETIC FIELD', phone ? .88 : .87, phone ? 8 : 10);
+      note('C UNIVERSAL, NOT COMPUTED', phone ? .925 : .915, phone ? 8.5 : 11);
       note('24 SEPTEMBER 2026 · UNREVIEWED', .97, phone ? 8 : 10);
       break;
     case 'review':
@@ -94,8 +96,8 @@ export function drawExcessStairsPanels(ctx: CanvasRenderingContext2D, w: number,
       if (motion.companionLedger > 0) {
         note('COMPANIONS ONLY: IONIZATION CATALOGUED', .80, phone ? 8 : 10);
         note('RADII LINKED · NOT CATALOGUED', .85, phone ? 8 : 10);
-        note('EXCESS, FIRST IONIZATION, HALF-ELECTRON: NO RELEASE STATEMENT', .90, phone ? 8 : 10);
-        note('NO OUTSIDE REPLAY · DATED SEARCH', .975, phone ? 8 : 10);
+        note(phone ? 'EXCESS, FIRST IONIZATION, HALF-ELECTRON:\nNO RELEASE STATEMENT' : 'EXCESS, FIRST IONIZATION, HALF-ELECTRON: NO RELEASE STATEMENT', phone ? .88 : .90, phone ? 8 : 10);
+        note('NO OUTSIDE REPLAY · DATED SEARCH', phone ? .955 : .975, phone ? 8 : 10);
       }
       break;
   }

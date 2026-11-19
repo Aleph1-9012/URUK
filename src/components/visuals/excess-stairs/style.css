@@ -6,6 +6,6 @@ uruk-excess-stairs .film-label { font-size: .875rem; }
 }
 
 @container iofilm (width < 600px) {
-  uruk-excess-stairs .film-stage { aspect-ratio: 4 / 9; }
+  uruk-excess-stairs .film-stage { aspect-ratio: 4 / 5; }
   uruk-excess-stairs .film-label { font-size: .75rem; }
 }

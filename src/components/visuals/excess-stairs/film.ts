@@ -73,8 +73,7 @@ class ExcessStairsFilm implements FilmDrawing {
       let charge: number | null = null;
 
       if (motion.scene === 'neutral' || motion.scene === 'more') charge = 2;
-      else if (motion.scene === 'laboratory' || motion.scene === 'binding') charge = motion.hydrogen < .5 ? 2 : 1;
-      else if (motion.scene === 'plateau') charge = Math.min(4, 1 + Math.floor(motion.chargeCycle * 4));
+      else if (motion.scene === 'laboratory') charge = motion.hydrogen < .5 ? 2 : 1;
 
       if (charge !== null) this.text(`= ${charge}`, x, y + radius + 12, this.phone ? 11 : 15, true);
     } else {
@@ -149,7 +148,7 @@ class ExcessStairsFilm implements FilmDrawing {
     drawLine(pen, right - 4, chart.axisY + 3, right, chart.axisY, tones.ink, .8);
     this.labels.place('energy-axis', chart.left - 14, chart.top);
     this.text('n', right + 8, chart.axisY, this.phone ? 11 : 14, true);
-    this.text('SCHEMATIC · NO COMPUTED ATOM', w * (this.phone ? .5 : .68), h * (this.phone ? .22 : .09), this.phone ? 8 : 10);
+    this.text('SCHEMATIC · NO COMPUTED ATOM', w * (this.phone ? .42 : .68), h * (this.phone ? .23 : .09), this.phone ? 8 : 10);
     const generic = schematicStairAt(model, motion.chargeCycle);
     const first = clamp(motion.neutralElectrons * 2);
     const second = clamp(motion.neutralElectrons * 2 - 1);
