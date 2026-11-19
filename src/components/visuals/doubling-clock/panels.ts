@@ -11,10 +11,10 @@ export function layout(w: number, h: number) {
   return {
     phone,
     stacked,
-    ladder: { x: stacked ? 46 : .10 * w, labelX: stacked ? 20 : .055 * w, top: (stacked ? .075 : .12) * h, bottom: (stacked ? .40 : .80) * h },
-    chart: { left: (stacked ? .30 : .22) * w, right: (stacked ? .91 : .68) * w, top: (stacked ? .07 : .12) * h, bottom: (stacked ? .40 : .80) * h },
+    ladder: { x: stacked ? 46 : .10 * w, labelX: stacked ? 20 : .055 * w, top: (phone ? .09 : stacked ? .075 : .12) * h, bottom: (phone ? .34 : stacked ? .40 : .80) * h },
+    chart: { left: (stacked ? .30 : .22) * w, right: (stacked ? .91 : .68) * w, top: (phone ? .09 : stacked ? .07 : .12) * h, bottom: (phone ? .34 : stacked ? .40 : .80) * h },
     panel: { center: stacked ? .5 : .85, width: stacked ? .94 : .27 },
-    text: { top: (stacked ? .49 : .06) * h, toyY: (stacked ? .475 : .89) * h },
+    text: { top: (stacked ? .49 : .06) * h, toyY: (phone ? .46 : stacked ? .475 : .89) * h },
   };
 }
 
@@ -40,9 +40,9 @@ export function drawDoublingClockPanels(ctx: CanvasRenderingContext2D, w: number
   }
 
   function retainedGap(): void {
-    note('CLAIMED GAP · SUFFICIENTLY LARGE INDEX', stacked ? .50 : .08, phone ? 8 : 10, true);
-    formula('gap-bound', stacked ? .56 : .20);
-    note('c DEPENDS ON DATUM AND FIXED HORIZON', stacked ? .61 : .31, phone ? 8 : 9);
+    note('CLAIMED GAP · SUFFICIENTLY LARGE INDEX', phone ? .51 : stacked ? .50 : .08, phone ? 8 : 10, true);
+    formula('gap-bound', phone ? .57 : stacked ? .56 : .20);
+    note('c DEPENDS ON DATUM AND FIXED HORIZON', phone ? .625 : stacked ? .61 : .31, phone ? 8 : 9);
   }
 
   function globalTag(): void {
@@ -93,7 +93,7 @@ export function drawDoublingClockPanels(ctx: CanvasRenderingContext2D, w: number
       note('NOT ONE PHYSICAL PARTICLE THROUGH EVERY LEVEL', stacked ? .93 : .84, phone ? 8 : 9);
       break;
     case 'doubling':
-      formula('toy-constant', stacked ? .68 : .43);
+      formula('toy-constant', phone ? .69 : stacked ? .68 : .43);
       if (motion.harmonic > 0) {
         formula('harmonic-floor', stacked ? .77 : .58);
         note('A HARMONIC TAIL · THE TOY SUM DIVERGES', stacked ? .85 : .73, phone ? 8 : 10);

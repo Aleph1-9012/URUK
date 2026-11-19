@@ -309,7 +309,15 @@ class DoublingClockFilm implements FilmDrawing {
       const y = mix(this.plotPoint(1, 1, motion).y, chart.top, motion.assumptionRetire);
       drawLine(pen, chart.left, y, mix(chart.left, chart.right, motion.horizon * (1 - motion.assumptionRetire)), y, tones.muted, .8, [3, 3]);
 
-      if (motion.horizon === 1 && motion.assumptionRetire === 0) this.labels.place('max-time', (chart.left + chart.right) / 2, y - 14);
+      if (motion.horizon === 1 && motion.assumptionRetire === 0) {
+        if (phone) {
+          const leaderX = chart.left - 6;
+          drawLine(pen, chart.left, y, leaderX, y, tones.muted, .65);
+          drawLine(pen, leaderX, y, leaderX, chart.bottom + 7, tones.muted, .65);
+        }
+
+        this.labels.place('max-time', phone ? chart.left - 23 : (chart.left + chart.right) / 2, phone ? chart.bottom + 13 : y - 14);
+      }
     }
 
     if (motion.gaps > 0) {
@@ -343,10 +351,10 @@ class DoublingClockFilm implements FilmDrawing {
       for (const row of this.model.checkpoints) {
         const point = this.plotPoint(row.n, row.time, motion);
         const last = row.n === this.model.limit;
-        const x = point.x - (last ? 22 : 0);
-        const y = point.y - (last ? 15 : 12);
+        const x = point.x - (last ? 34 : 0);
+        const y = point.y - (last ? 6 : 16);
         drawLine(pen, point.x, point.y, x, y + 4, tones.ink, .6);
-        this.text(row.time.toFixed(3), x, y, phone ? 8 : 10, true);
+        drawText(pen, row.time.toFixed(3), x, y, { size: phone ? 8 : 10, family: 'math', color: tones.ink });
       }
     }
   }
@@ -366,16 +374,16 @@ class DoublingClockFilm implements FilmDrawing {
         if (row.horizon > 4) break;
 
         const y = chart.top + height * (.15 + .22 * (row.horizon - 1));
-        this.text(`T=${row.horizon}`, x, y, phone ? 8 : 10, true);
-        this.text(`N=${row.n}`, x, y + (phone ? 12 : 16), phone ? 8 : 10, true);
-        drawLine(pen, x - 9, y + 22, x + 9, y + 22, tones.ink, .7);
+        this.text(`T=${row.horizon}`, x - (phone ? 15 : 0), y, phone ? 8 : 10, true);
+        this.text(`N=${row.n}`, x + (phone ? 15 : 0), y + (phone ? 0 : 16), phone ? 8 : 10, true);
+        drawLine(pen, x - 9, y + (phone ? 9 : 22), x + 9, y + (phone ? 9 : 22), tones.ink, .7);
       }
 
       return;
     }
 
     for (let index = 0; index < 3; index++) {
-      const origin = chart.top + height * (.15 + .22 * (2 - index)) + 22;
+      const origin = chart.top + height * (.15 + .22 * (2 - index)) + (phone ? 9 : 22);
       const target = chart.bottom - height * (.25 + index * .28);
       const y = mix(origin, target, motion.caps);
       drawLine(pen, x - 9, y, x + 9, y, tones.ink, 1);
@@ -383,7 +391,7 @@ class DoublingClockFilm implements FilmDrawing {
       this.text(`T${index + 1}`, mix(x, x + 18, motion.caps), y - (1 - motion.caps) * 12, phone ? 9 : 11, true);
     }
 
-    const lastRow = chart.top + height * .81 + 22;
+    const lastRow = chart.top + height * .81 + (phone ? 9 : 22);
     drawLine(pen, x - 9 * (1 - motion.caps), lastRow, x + 9 * (1 - motion.caps), lastRow, tones.ink, .7);
 
     this.text('CAPS', x, ladder.top - 17, phone ? 8 : 10);
