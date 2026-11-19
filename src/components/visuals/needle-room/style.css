@@ -2,7 +2,7 @@ uruk-needle-room .film-label { font-size: .875rem; }
 uruk-needle-room .film-label[data-label='floor'], uruk-needle-room .film-label[data-label='maximal'] { color: var(--blue); }
 
 @container plate (max-width: 599px) {
-  uruk-needle-room .film-stage { aspect-ratio: 4 / 6; }
+  uruk-needle-room .film-stage { aspect-ratio: 4 / 5; }
   uruk-needle-room .film-label { font-size: .75rem; }
   uruk-needle-room .film-label[data-label='maximal'] { font-size: .625rem; }
 }

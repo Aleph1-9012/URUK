@@ -69,7 +69,7 @@ function layout(width: number, height: number, time: number): { stage: Box; pane
 
   const claimRoom = smooth(time, 79750, 80550) * (1 - smooth(time, 84750, 85550));
   const finalRoom = smooth(time, 103250, 104100);
-  const split = .54 - .16 * Math.max(claimRoom, finalRoom);
+  const split = .39 - .05 * Math.max(claimRoom, finalRoom);
 
   return { stage: { x: width * .035, y: height * .02, w: width * .93, h: height * (split - .04) }, panel: { x: width * .055, y: height * split, w: width * .89, h: height * (.98 - split) }, tall };
 }
@@ -438,9 +438,9 @@ export class NeedleRoomFilm {
 
   private hinge(box: Box, time: number, tall: boolean): void {
     const { pen, colors } = this;
-    const x = box.x + box.w * .10;
-    const y = box.y + box.h * .81;
-    const width = box.w * .32;
+    const x = box.x + box.w * (tall ? .035 : .10);
+    const y = box.y + box.h * (tall ? .56 : .81);
+    const width = box.w * (tall ? .28 : .32);
     pen.strokeStyle = colors.ink;
     pen.lineWidth = 1;
     line(pen, x, y, x + width, y);
@@ -451,7 +451,8 @@ export class NeedleRoomFilm {
 
     if (time >= 97500) {
       pen.lineWidth = 1.5;
-      line(pen, box.x + box.w * .25, box.y + box.h * .36, box.x + box.w * .77, box.y + box.h * .63);
+      const offset = tall ? .10 : 0;
+      line(pen, box.x + box.w * (.25 + offset), box.y + box.h * .36, box.x + box.w * (.77 + offset), box.y + box.h * .63);
       text(pen, 'CLAIMED: NO SUCH CONFIGURATION', box.x + box.w / 2, box.y + box.h * .27, tall ? 9 : 12, box.w - 6, colors);
     }
   }

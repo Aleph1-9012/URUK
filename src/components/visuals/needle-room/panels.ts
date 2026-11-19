@@ -110,7 +110,7 @@ function shareChart(pen: CanvasRenderingContext2D, box: Box, time: number, color
   const left = box.x + (tall ? 37 : 43);
   const right = box.x + box.w - (tall ? 18 : 23);
   const top = box.y + 29;
-  const bottom = box.y + box.h - (showMaximal ? (tall ? 116 : 125) : claimed && !compact ? 56 : 41);
+  const bottom = box.y + box.h - (showMaximal ? (tall ? 116 : 125) : claimed && !compact ? 56 : tall ? 48 : 41);
   const xMap = (lambda: number) => left + Math.log2(lambda / .25) / 2 * (right - left);
   const yMap = (share: number) => bottom - (Math.log10(share) + 4) / 4 * (bottom - top);
   const x = box.x + box.w / 2;
@@ -230,12 +230,12 @@ function movingChart(pen: CanvasRenderingContext2D, box: Box, time: number, colo
   const left = box.x + 19;
   const right = box.x + box.w - 14;
   const top = box.y + 38;
-  const bottom = box.y + box.h * .58;
+  const bottom = box.y + box.h * (tall ? .54 : .58);
   const chartH = bottom - top;
   const travel = smooth(time, 103250, 108800);
   const centre = mix(.25, .70, travel);
   text(pen, '4 DIMENSIONS · A LINE AS A MOVING POINT', x, box.y + 8, tall ? 9 : 12, box.w - 5, colors);
-  place('moving-point', x, box.y + 24);
+  place('moving-point', x, box.y + (tall ? 29 : 24));
   pen.strokeStyle = colors.muted;
   pen.lineWidth = .7;
   line(pen, left, bottom, right, bottom);
