@@ -43,6 +43,7 @@ class CircleFilm implements FilmDrawing {
   private width = 1;
   private height = 1;
   private density = 1;
+  private time = 0;
   private tones = PAGE_TONES;
   private readonly labels: FilmLabels;
   private readonly model = buildCircleModel();
@@ -81,7 +82,12 @@ class CircleFilm implements FilmDrawing {
   private field(): Field {
     const { width: w, height: h } = this;
 
-    return { x: w * (this.phone ? .5 : .28), y: h * (this.phone ? .27 : .37), radius: Math.min(w * (this.phone ? .38 : .23), h * (this.phone ? .20 : .32)) };
+    if (!this.phone) return { x: w * .28, y: h * .37, radius: Math.min(w * .23, h * .32) };
+
+    const motion = motionAt(this.time);
+    const tensor = motion.tensorPreparation * (1 - motion.exact);
+
+    return { x: w * mix(.5, .274, tensor), y: h * mix(.23, .22, tensor), radius: Math.min(w * .38, h * mix(.17, .11, tensor)) };
   }
 
   private project(point: Point): Point {
@@ -101,6 +107,7 @@ class CircleFilm implements FilmDrawing {
   draw(time: number): void {
     const { pen, width: w, height: h } = this;
     const motion = motionAt(time);
+    this.time = time;
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     pen.clearRect(0, 0, w, h);
     pen.lineCap = 'round';
@@ -165,10 +172,15 @@ class CircleFilm implements FilmDrawing {
     pen.setLineDash(motion.sixth > 0 ? [5, 4] : []);
     pen.stroke();
     pen.setLineDash([]);
-    const x = field.x;
-    const y = this.phone ? this.height * .05 : 10;
-    pen.strokeRect(x - 47, y - 8, 94, 16);
-    drawText(pen, 'CLAIMED TEST', x, y + .5, { size: 9, color: tones.blue, paper: tones.paper });
+    const x = this.phone ? 42 : field.x;
+    const y = this.phone ? 12 : 10;
+    const tagWidth = this.phone ? 72 : 94;
+    pen.strokeRect(x - tagWidth / 2, y - 8, tagWidth, 16);
+    const tagStyle: TextStyle = this.phone
+      ? { size: 9, color: tones.blue }
+      : { size: 9, color: tones.blue, paper: tones.paper };
+
+    drawText(pen, 'CLAIMED TEST', x, y + .5, tagStyle);
   }
 
   private configuration(time: number, motion: Motion): Mark[] {
@@ -424,7 +436,7 @@ class CircleFilm implements FilmDrawing {
         if (motion.tensorSplit * (1 - motion.tensorMerge) > 0) continue;
 
         const projected = this.project(point);
-        this.text(`(${original.map(rationalText).join(',')})`, projected.x, projected.y + (point.y < 0 ? 17 : -17), this.phone ? 10 : 13, true, true);
+        this.text(`(${original.map(rationalText).join(',')})`, projected.x + Math.sign(point.x) * (this.phone ? 25 : 27), projected.y + (this.phone ? 0 : point.y < 0 ? 17 : -17), this.phone ? 10 : 13, true, true);
       }
     }
 
@@ -442,7 +454,7 @@ class CircleFilm implements FilmDrawing {
 
   private matrix(): void {
     const { width: w, height: h, model, pen, tones } = this;
-    const center = { x: w * (this.phone ? .56 : .80), y: h * (this.phone ? .73 : .37) };
+    const center = { x: w * (this.phone ? .76 : .80), y: h * (this.phone ? .271 : .37) };
     const dx = this.phone ? 32 : 44;
     const dy = this.phone ? 17 : 22;
 

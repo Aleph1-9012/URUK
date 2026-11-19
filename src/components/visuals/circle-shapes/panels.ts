@@ -74,7 +74,10 @@ function claim(ctx: CanvasRenderingContext2D, width: number, height: number, tim
   if (motion.scene === 'classification') {
     note(ctx, 'CLAIMED: EXACT ALGEBRAIC CLASSIFICATION', width, height, .57, .18, tones);
     note(ctx, 'MAIN CRITERION: AT LEAST TWO POINTS\nFULL AFFINE SPAN', width, height, .67, .33, tones, phone ? 9 : 11);
-    note(ctx, 'SOME NON-SUBTRANSITIVE CYCLIC KITES: CLAIMED RAMSEY\nTHIS KITE\'S NON-SUBTRANSITIVITY NOT CHECKED', width, height, .78, .49, tones, phone ? 8.5 : 11);
+    const kiteNote = phone
+      ? 'SOME NON-SUBTRANSITIVE CYCLIC KITES:\nCLAIMED RAMSEY\nTHIS KITE\'S NON-SUBTRANSITIVITY NOT CHECKED'
+      : 'SOME NON-SUBTRANSITIVE CYCLIC KITES: CLAIMED RAMSEY\nTHIS KITE\'S NON-SUBTRANSITIVITY NOT CHECKED';
+    note(ctx, kiteNote, width, height, .78, .49, tones, phone ? 8.5 : 11);
     const bounds = note(ctx, 'LRW: SUBTRANSITIVITY IS NECESSARY', width, height, .92, .70, tones, phone ? 8.5 : 11);
     drawLine(ctx, bounds.x - 3, bounds.y + bounds.height / 2, mix(bounds.x - 3, bounds.x + bounds.width + 3, motion.rivalStrike), bounds.y + bounds.height / 2, tones.ink, 1.2);
   } else if (motion.scene === 'fivePoints') {
@@ -92,16 +95,21 @@ function tensor(ctx: CanvasRenderingContext2D, width: number, height: number, ti
 
   const phone = width < PHONE_STAGE_WIDTH;
   const center = width * (phone ? .5 : .77);
-  labels.place('tensor-left', width * (phone ? .28 : .16), height * (phone ? .48 : .76));
-  labels.place('tensor-right', width * (phone ? .72 : .40), height * (phone ? .48 : .76));
-  labels.place('multiply-map', width * (phone ? .5 : .28), height * (phone ? .53 : .85));
-  note(ctx, 'SPLIT AND MERGE: SCHEMATIC', width, height, .57, .10, tones, phone ? 8.5 : 11);
-  note(ctx, 'Q EXAMPLE ONLY · CLASSIFICATION NOT TESTED', width, height, .61, .17, tones, phone ? 8.5 : 11);
-  labels.place('square-matrix', width * (phone ? .22 : .64), height * (phone ? .73 : .37));
-  labels.place('square-residual', center, height * (phone ? .84 : .56));
-  note(ctx, `${model.tensor.evaluations.length} EXACT ZERO EVALUATIONS · IDENTITY SPATIAL BLOCK`, width, height, .88, .65, tones, phone ? 8 : 10.5);
-  labels.place('tensor-field', center, height * (phone ? .92 : .75));
-  note(ctx, 'DISPLAY RESCALED · ORIGINAL COORDINATES IN THE Q TEST', width, height, .96, .86, tones, phone ? 8 : 10.5);
+  labels.place('tensor-left', width * (phone ? .12 : .16), height * (phone ? .419 : .76));
+  labels.place('tensor-right', width * (phone ? .42 : .40), height * (phone ? .419 : .76));
+  labels.place('multiply-map', width * (phone ? .5 : .28), height * (phone ? .506 : .85));
+  if (phone) {
+    drawWrappedText(ctx, 'SPLIT AND MERGE: SCHEMATIC', width * .25, height * .55, width * .46, { size: 8.5, color: tones.ink });
+    drawWrappedText(ctx, 'Q EXAMPLE ONLY · CLASSIFICATION NOT TESTED', width * .75, height * .55, width * .46, { size: 8.5, color: tones.ink });
+  } else {
+    note(ctx, 'SPLIT AND MERGE: SCHEMATIC', width, height, .57, .10, tones, 11);
+    note(ctx, 'Q EXAMPLE ONLY · CLASSIFICATION NOT TESTED', width, height, .61, .17, tones, 11);
+  }
+  labels.place('square-matrix', width * (phone ? .76 : .64), height * (phone ? .094 : .37));
+  labels.place('square-residual', center, height * (phone ? .697 : .56));
+  note(ctx, `${model.tensor.evaluations.length} EXACT ZERO EVALUATIONS · IDENTITY SPATIAL BLOCK`, width, height, .761, .65, tones, phone ? 8 : 10.5);
+  labels.place('tensor-field', center, height * (phone ? .868 : .75));
+  note(ctx, 'DISPLAY RESCALED · ORIGINAL COORDINATES IN THE Q TEST', width, height, .932, .86, tones, phone ? 8 : 10.5);
 }
 
 function exact(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, tones: FilmTones): void {
@@ -125,10 +133,10 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
   const center = width * .5;
   const left = width * .055;
   const right = width * .945;
-  const top = height * (phone ? .64 : .74);
-  note(ctx, 'TWO SEPARATE ILLUSTRATIONS', width, height, .56, .25, tones, phone ? 8.5 : 11);
-  note(ctx, 'NO VERDICT ON THEIR COMBINED SET', width, height, .60, .34, tones, phone ? 8 : 10.5);
-  drawLine(ctx, left, top - 8, mix(left, right, motion.review), top - 8, tones.ink, .8);
+  const top = height * (phone ? .58 : .74);
+  note(ctx, 'TWO SEPARATE ILLUSTRATIONS', width, height, .44, .25, tones, phone ? 8.5 : 11);
+  note(ctx, 'NO VERDICT ON THEIR COMBINED SET', width, height, .49, .34, tones, phone ? 8 : 10.5);
+  drawLine(ctx, left, top - 13, mix(left, right, motion.review), top - 13, tones.ink, .8);
   drawText(ctx, 'UNREVIEWED · 20 OCT 2026', center, top, { size: phone ? 10 : 12, color: tones.ink });
   const rows = [
     'LEAN CATALOGUE:',
