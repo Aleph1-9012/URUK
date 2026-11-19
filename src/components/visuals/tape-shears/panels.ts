@@ -8,8 +8,8 @@ export function layout(w: number, h: number, claimed = false) {
   const phone = w < PHONE_STAGE_WIDTH;
   const compactClaim = claimed && !phone && w < 760;
   const stacked = w < 760 && !compactClaim;
-  const size = compactClaim ? Math.min(.43 * w, .55 * h) : stacked ? Math.min(.76 * w, (phone ? .34 : .40) * h) : Math.min(.48 * w, .66 * h);
-  const sheet = { x: stacked ? (w - size) / 2 : .04 * w, y: (compactClaim ? .08 : stacked ? .05 : .12) * h, size };
+  const size = compactClaim ? Math.min(.43 * w, .55 * h) : stacked ? Math.min(.76 * w, (phone ? claimed ? .25 : .34 : .40) * h) : Math.min(.48 * w, .66 * h);
+  const sheet = { x: stacked ? (w - size) / 2 : .04 * w, y: (compactClaim ? .08 : phone ? .08 : stacked ? .05 : .12) * h, size };
 
   return {
     phone,
@@ -17,8 +17,8 @@ export function layout(w: number, h: number, claimed = false) {
     sheet,
     panel: { center: compactClaim ? .76 : stacked ? .5 : .79, width: compactClaim ? .43 : stacked ? .94 : .36 },
     text: {
-      top: (phone ? claimed ? .56 : .49 : compactClaim ? .06 : stacked ? .56 : .08) * h,
-      toyY: sheet.y + sheet.size + 34,
+      top: (phone ? claimed ? .64 : .49 : compactClaim ? .06 : stacked ? .56 : .08) * h,
+      toyY: sheet.y + sheet.size + (phone ? 24 : 34),
       historyTop: (phone ? .66 : stacked ? .70 : .55) * h,
       historyBottom: (phone ? .84 : stacked ? .87 : .81) * h,
     },
@@ -54,7 +54,7 @@ export function drawTapeShearsPanels(ctx: CanvasRenderingContext2D, w: number, h
   }
 
   if (onSheet) {
-    drawWrappedText(ctx, "TOY ENCODING · NOT THE PAPER'S FORCE", page.sheet.x + page.sheet.size / 2, page.text.toyY, Math.min(w * .94, page.sheet.size + 38), {
+    drawWrappedText(ctx, "TOY ENCODING · NOT THE PAPER'S FORCE", page.sheet.x + page.sheet.size / 2, page.text.toyY, phone ? w * .94 : Math.min(w * .94, page.sheet.size + 38), {
       size: phone ? 8 : 10,
       color: tones.ink,
       paper: tones.paper,
@@ -103,18 +103,18 @@ export function drawTapeShearsPanels(ctx: CanvasRenderingContext2D, w: number, h
       const state = frame.state === 'halt' ? 'halt' : frame.state === 'q0' ? 'q₀' : 'q₁';
       const prefix = resetting ? 'NEXT INPUT' : moving ? 'FROM' : 'AT';
       const control = resetting ? 'DISPLAY RESET · A TO S' : `${machine} · ${prefix} STEP ${frame.step} · ${state}`;
-      formula('affine-step', row(.12));
-      formula(machine === 'S' || resetting ? 'shuttle-scales' : 'scale-factors', row(.28));
-      note(control, row(.42), phone ? 9 : 12, false, true);
-      note(`${prefix}: x=${fractionText(frame.x)}, y=${fractionText(frame.y)}`, row(.54), phone ? 10 : 13, false, true);
-      note(`L=${frame.left.join('')}0… · R=${frame.right.join('')}0…`, row(.65), phone ? 10 : 13, false, true);
+      formula('affine-step', row(phone ? .16 : .12));
+      formula(machine === 'S' || resetting ? 'shuttle-scales' : 'scale-factors', row(phone ? .35 : .28));
+      note(control, row(phone ? .46 : .42), phone ? 9 : 12, false, true);
+      note(`${prefix}: x=${fractionText(frame.x)}, y=${fractionText(frame.y)}`, row(phone ? .58 : .54), phone ? 10 : 13, false, true);
+      note(`L=${frame.left.join('')}0… · R=${frame.right.join('')}0…`, row(phone ? .70 : .65), phone ? 10 : 13, false, true);
 
-      if (resetting) note('EXPLANATORY MOVE · NO FLUID IS RUN BACKWARD', row(.77), phone ? 8 : 10);
-      else if (moving) note(`MOVING TO STEP ${frame.step + 1}`, row(.77));
-      else if (machine === 'A' && frame.state === 'halt') note(`A HALTS · STEP ${frame.step}`, row(.77), phone ? 9 : 11);
-      else if (machine === 'S' && frame.step >= model.machineS.repeatAfter) note(`FULL STATE REPEATS AFTER ${model.machineS.repeatAfter} STEPS · NEVER HALTS`, row(.77), phone ? 8 : 10);
+      if (resetting) note('EXPLANATORY MOVE · NO FLUID IS RUN BACKWARD', row(phone ? .82 : .77), phone ? 8 : 10);
+      else if (moving) note(`MOVING TO STEP ${frame.step + 1}`, row(phone ? .82 : .77));
+      else if (machine === 'A' && frame.state === 'halt') note(`A HALTS · STEP ${frame.step}`, row(phone ? .82 : .77), phone ? 9 : 11);
+      else if (machine === 'S' && frame.step >= model.machineS.repeatAfter) note(`FULL STATE REPEATS AFTER ${model.machineS.repeatAfter} STEPS · NEVER HALTS`, row(phone ? .82 : .77), phone ? 8 : 10);
 
-      note('EXACT ENDPOINTS · BOTH TAPES CONTINUE WITH BLANKS', row(.91), phone ? 8 : 9);
+      note('EXACT ENDPOINTS · BOTH TAPES CONTINUE WITH BLANKS', row(phone ? .95 : .91), phone ? 8 : 9);
       break;
     }
     case 'shears':
@@ -124,15 +124,15 @@ export function drawTapeShearsPanels(ctx: CanvasRenderingContext2D, w: number, h
       note('CENTER, FOUR SHEARS, THEN TRANSLATE', row(.92), phone ? 8 : 10);
       break;
     case 'history':
-      note('OVERWRITING CAN LOSE INFORMATION', phone ? .50 : stacked ? .57 : .10, phone ? 8.5 : 11);
-      note(`${model.history.withHistory} INPUTS · ${model.history.withoutHistory} DISTINCT xy OUTPUTS`, phone ? .57 : stacked ? .63 : .25, phone ? 8.5 : 10);
-      note('FOUR xy OUTPUTS × TWO h VALUES · EIGHT TRIPLES', phone ? .91 : stacked ? .93 : .88, phone ? 8 : 9);
+      note('OVERWRITING CAN LOSE INFORMATION', phone ? .54 : stacked ? .57 : .10, phone ? 8.5 : 11);
+      note(`${model.history.withHistory} INPUTS · ${model.history.withoutHistory} DISTINCT xy OUTPUTS`, phone ? .61 : stacked ? .63 : .25, phone ? 8.5 : 10);
+      note('FOUR xy OUTPUTS × TWO h VALUES · EIGHT TRIPLES', phone ? .955 : stacked ? .93 : .88, phone ? 8 : 9);
       break;
     case 'claim':
       note('EXPLANATORY OVERVIEW · NOT A SECOND LOADER', row(.04), phone ? 8 : 10);
       if (motion.claim > 0) {
         note('CLAIMED · FLAT THREE-TORUS · FROM REST', row(.23), phone ? 8 : 10, true);
-        formula('halting-equivalence', row(.51));
+        formula('halting-equivalence', row(phone ? .56 : .51));
         note('EFFECTIVE · SMOOTH · SOLENOIDAL · ZERO MEAN', row(.82), phone ? 8 : 10, true);
       }
       break;

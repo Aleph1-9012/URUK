@@ -125,7 +125,14 @@ class TapeShearsFilm implements FilmDrawing {
       }
     }
 
-    if (amount === 1) this.text('O', this.cube(.77, .95, .5, depth), this.page.phone ? 13 : 18, true, blue);
+    if (amount === 1) {
+      if (this.page.phone) {
+        const anchor = this.cube(1, .8, .5, depth);
+        const point = { x: this.page.sheet.x + this.page.sheet.size + 13, y: anchor.y };
+        this.line(anchor, { x: point.x - 10, y: point.y }, blue, .65);
+        this.text('O', point, 13, true, blue);
+      } else this.text('O', this.cube(.77, .95, .5, depth), 18, true, blue);
+    }
   }
 
   private fluid(time: number): void {
@@ -154,7 +161,7 @@ class TapeShearsFilm implements FilmDrawing {
 
     if (time >= 6000 && time < 14000) {
       const amount = smooth(time, 6000, 8000);
-      const a = this.sheet({ x: mix(0, .07, amount), y: .12 });
+      const a = this.sheet({ x: mix(0, .07, amount), y: -.25 });
       const { size } = this.page.sheet;
       this.pen.fillStyle = this.tones.paper;
       this.pen.fillRect(a.x, a.y - size * .17, size * .24, size * .17);
@@ -366,8 +373,8 @@ class TapeShearsFilm implements FilmDrawing {
       left,
       right,
       labelX: stacked ? this.width * .15 : left - 42,
-      top: this.height * (phone ? .66 : stacked ? .70 : .55),
-      bottom: this.height * (phone ? .83 : stacked ? .87 : .81),
+      top: this.height * (phone ? .74 : stacked ? .70 : .55),
+      bottom: this.height * (phone ? .865 : stacked ? .87 : .81),
     };
   }
 
@@ -407,8 +414,9 @@ class TapeShearsFilm implements FilmDrawing {
       const labelY = y + size + 20;
       this.labels.place('material-label', x + size / 2, labelY);
       this.labels.place('detector-strip', x + size / 2, labelY + (this.page.phone ? 23 : 32));
-      this.labels.place('torus', x + size * .08, y + size * .08);
-      this.text('INITIAL LABEL', { x: initial.x - 3, y: initial.y + 16 }, this.page.phone ? 7 : 9);
+      this.labels.place('torus', this.page.phone ? x - 17 : x + size * .08, y + size * (this.page.phone ? .15 : .08));
+      this.line({ x: initial.x + 6, y: initial.y + 6 }, { x: x + size + 4, y: initial.y + 16 }, false, .5);
+      this.text('INITIAL LABEL', { x: x + size + (this.page.phone ? 32 : 45), y: initial.y + 16 }, this.page.phone ? 7 : 9);
 
       if (time >= 70000) this.text('SCHEMATIC PATH · NO MACHINE RUN', { x: x + size / 2, y: y - 13 }, this.page.phone ? 7.5 : 10);
 

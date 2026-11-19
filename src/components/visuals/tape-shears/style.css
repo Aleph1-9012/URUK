@@ -8,6 +8,6 @@ uruk-tape-shears [data-label="halting-equivalence"] { color: var(--blue); }
 }
 
 @container fffilm (width < 600px) {
-  uruk-tape-shears .film-stage { aspect-ratio: 4 / 9; }
+  uruk-tape-shears .film-stage { aspect-ratio: 4 / 5; }
   uruk-tape-shears .film-label { font-size: .75rem; }
 }
