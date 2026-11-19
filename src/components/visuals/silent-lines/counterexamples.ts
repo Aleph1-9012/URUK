@@ -28,8 +28,8 @@ function segment(pen: CanvasRenderingContext2D, a: Point, b: Point, amount = 1):
   pen.stroke();
 }
 
-function metricPoint(box: Box): Point {
-  return { x: box.x + box.w * .69, y: box.y + box.h * .50 };
+function metricPoint(box: Box, phone = false): Point {
+  return { x: box.x + box.w * .69, y: box.y + box.h * (phone ? .44 : .50) };
 }
 
 function packetPoint(box: Box, id: number, count: number): Point {
@@ -43,7 +43,7 @@ function packetPoint(box: Box, id: number, count: number): Point {
   };
 }
 
-function grains(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, numerics: readonly (ModeNumerics | undefined)[]): void {
+function grains(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, numerics: readonly (ModeNumerics | undefined)[], phone = false): void {
   const tracks = numerics[6]?.tracks;
 
   if (!tracks) return;
@@ -53,7 +53,7 @@ function grains(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
   const intoPatch = smooth(time, 85250, 87650);
   const intoMetric = smooth(time, 93750, 95350);
   const backToPlate = smooth(time, 109500, 110600);
-  const fixed = metricPoint(box);
+  const fixed = metricPoint(box, phone);
   pen.fillStyle = colors.ink;
   pen.beginPath();
 
@@ -72,7 +72,7 @@ function grains(pen: CanvasRenderingContext2D, box: Box, time: number, colors: C
   pen.fill();
 }
 
-function corrugatedCircle(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors): void {
+function corrugatedCircle(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, phone = false): void {
   const plate = plateGeometry(box);
   const cx = plate.x + plate.size / 2;
   const cy = plate.y + plate.size / 2;
@@ -127,7 +127,7 @@ function corrugatedCircle(pen: CanvasRenderingContext2D, box: Box, time: number,
 
   pen.stroke();
   pen.restore();
-  tag(pen, 'PATCH MAGNIFIED', inset.x, inset.y + size + 11, 9, size * 2.5, colors);
+  tag(pen, 'PATCH MAGNIFIED', inset.x, inset.y + size + 11, 9, phone ? box.w * .30 : size * 2.5, colors);
   tag(pen, 'ONE FIXED SMOOTH METRIC · NEAR ROUND', box.x + box.w / 2, box.y + box.h - 3, 10, box.w, colors);
 }
 
@@ -137,10 +137,11 @@ function oval(pen: CanvasRenderingContext2D, centre: Point, rx: number, ry: numb
   pen.stroke();
 }
 
-function nestedMetrics(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place): void {
-  const centre = { x: box.x + box.w * .5, y: box.y + box.h * .51 };
-  const outerRadius = Math.max(53, box.h * .31);
-  const fixed = metricPoint(box);
+function nestedMetrics(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, phone = false): void {
+  const compacting = phone ? smooth(time, 102500, 103400) : 0;
+  const centre = { x: box.x + box.w * .5, y: box.y + box.h * (phone ? mix(.45, .48, compacting) : .51) };
+  const outerRadius = Math.max(phone ? mix(57, 50, compacting) : 53, box.h * .31);
+  const fixed = metricPoint(box, phone);
   const round = { x: box.x + box.w * .24, y: centre.y };
   pen.strokeStyle = colors.ink;
   pen.lineWidth = 1;
@@ -188,15 +189,15 @@ function nestedMetrics(pen: CanvasRenderingContext2D, box: Box, time: number, co
 
   if (time >= 100600) place('metric-limit', fixed.x, fixed.y + 14);
 
-  if (time < 102500) place(box.w < 400 ? 'neighbourhoods-compact' : 'neighbourhoods', box.x + box.w / 2, centre.y + outerRadius + 20);
-  tag(pen, 'SCHEMATIC · NEAR ROUND, NOT ROUND', centre.x, box.y + box.h - 2, 10, box.w, colors);
+  if (time < 102500) place(box.w < 400 ? 'neighbourhoods-compact' : 'neighbourhoods', box.x + box.w / 2, centre.y + outerRadius + (phone ? 27 : 20));
+  tag(pen, 'SCHEMATIC · NEAR ROUND, NOT ROUND', centre.x, phone ? centre.y + outerRadius + 9 : box.y + box.h - 2, 10, box.w, colors);
 }
 
-export function drawCounterexamples(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, numerics: readonly (ModeNumerics | undefined)[]): void {
+export function drawCounterexamples(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, numerics: readonly (ModeNumerics | undefined)[], phone = false): void {
   if (time < 85250 || time >= 110600) return;
 
-  if (time < 93750) corrugatedCircle(pen, box, time, colors);
-  else if (time < 109500) nestedMetrics(pen, box, time, colors, place);
+  if (time < 93750) corrugatedCircle(pen, box, time, colors, phone);
+  else if (time < 109500) nestedMetrics(pen, box, time, colors, place, phone);
 
-  grains(pen, box, time, colors, numerics);
+  grains(pen, box, time, colors, numerics, phone);
 }

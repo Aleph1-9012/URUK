@@ -80,10 +80,10 @@ function wedgePoint(plot: Box, k: number, length: number): Point {
   return { x: plot.x + k / 46 * plot.w, y: plot.y + (1 - length / 23) * plot.h };
 }
 
-function wedge(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, references: MeasuredReferences, labels = true, closing = false): void {
+function wedge(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, references: MeasuredReferences, labels = true, closing = false, phone = false, annotationHeight = box.h): void {
   const plot = wedgePlot(box, closing);
   const point = (k: number, length: number): Point => wedgePoint(plot, k, length);
-  const compact = box.h < 160;
+  const compact = annotationHeight < 160;
   pen.strokeStyle = colors.muted;
   pen.lineWidth = .7;
   line(pen, point(0, 0), point(0, 23), progress(time, 7750, 8400));
@@ -104,13 +104,20 @@ function wedge(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Co
       const high = point(46, 46 * upper);
       line(pen, low, { x: low.x + 6, y: low.y });
       line(pen, high, { x: high.x + 6, y: high.y });
-      place('wedge-lower', low.x + 25, low.y);
-      place('wedge-upper', high.x + 25, high.y);
+      const labelMidpoint = (low.y + high.y) / 2;
+      const lowY = phone ? Math.max(low.y, labelMidpoint + 11) : low.y;
+      const highY = phone ? Math.min(high.y, labelMidpoint - 11) : high.y;
+      if (phone) {
+        line(pen, { x: low.x + 6, y: low.y }, { x: low.x + 13, y: lowY });
+        line(pen, { x: high.x + 6, y: high.y }, { x: high.x + 13, y: highY });
+      }
+      place('wedge-lower', low.x + 25, lowY);
+      place('wedge-upper', high.x + 25, highY);
 
       if (!compact && time >= 31500 && time < 39750) {
         const anchor = point(28, 28 * lower);
         const x = box.x + box.w * .52;
-        const y = anchor.y + 27;
+        const y = phone ? plot.y + plot.h + 34 : anchor.y + 27;
         line(pen, anchor, { x, y: y - 9 });
         text(pen, 'BRÜNING 1978\nLOWER BOUND · SMOOTH SURFACES', x, y, 11, colors, box.w - 20);
       }
@@ -199,12 +206,12 @@ function firstLength(pen: CanvasRenderingContext2D, box: Box, stageBox: Box, tim
   pen.stroke();
 }
 
-function claimTick(pen: CanvasRenderingContext2D, x: number, y: number, colors: Colors, amount = 1): void {
+function claimTick(pen: CanvasRenderingContext2D, x: number, y: number, colors: Colors, amount = 1, lowerStem = 14): void {
   pen.save();
   pen.strokeStyle = colors.blue;
   pen.lineWidth = 3;
   pen.setLineDash([6, 3]);
-  line(pen, { x, y: y - 14 }, { x, y: y + 14 }, amount);
+  line(pen, { x, y: y - 14 }, { x, y: y + lowerStem }, amount);
   pen.restore();
 }
 
@@ -397,11 +404,13 @@ function metricThresholds(pen: CanvasRenderingContext2D, box: Box, time: number,
   text(pen, time < 100100 ? 'g₁ → g₂ → g₃' : 'g∞: ALL THRESHOLDS', box.x + box.w / 2, box.y + 2, 10, colors, box.w);
 }
 
-function dimensionsRuler(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, closing = 0): void {
+function dimensionsRuler(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, closing = 0, phone = false): void {
   const compact = box.h < 220;
-  const row = (box.h - 32) / 3;
+  const row = (box.h - (phone ? 21 : 32)) / 3;
   const left = mix(box.x + (compact ? 28 : 45), box.x + 24, closing);
-  const right = box.x + box.w - 24;
+  const right = mix(phone ? box.x + box.w * .44 : box.x + box.w - 24, box.x + box.w - 24, closing);
+  const captionX = phone ? box.x + box.w * .54 : box.x + box.w / 2;
+  const captionWidth = phone ? box.w * .46 : box.w;
   const at = (exponent: number): number => left + (exponent - .5) * 2 * (right - left);
   const claimMarks: Point[] = [];
   if (closing === 0) text(pen, 'EXPONENT x IN λˣ · CLAIMS', box.x + box.w / 2, box.y + 2, compact ? 10 : 12, colors, box.w);
@@ -409,8 +418,8 @@ function dimensionsRuler(pen: CanvasRenderingContext2D, box: Box, time: number, 
   for (let index = 0; index < 3; index++) {
     if ((time < 102950 && index > 0) || (time < 103400 && index > 1) || (closing > .2 && index > 0)) continue;
 
-    const nameY = box.y + 20 + index * row;
-    const y = mix(nameY + 22, box.y + box.h - 16, closing);
+    const nameY = box.y + (phone ? 18 : 20) + index * row;
+    const y = mix(nameY + (phone ? 17 : 22), box.y + box.h - 16, closing);
     pen.strokeStyle = colors.ink;
     pen.lineWidth = .7;
     line(pen, { x: left, y }, { x: right, y }, progress(time, 102500 + index * 180, 103500 + index * 180));
@@ -424,34 +433,39 @@ function dimensionsRuler(pen: CanvasRenderingContext2D, box: Box, time: number, 
 
     if (index === 0) {
       claimMarks.push({ x: left, y });
-      if (closing === 0) text(pen, 'CLAIMED: C√λ', box.x + box.w / 2, y + 13, 11, colors, box.w, 'center', 'blue');
+      if (closing === 0) text(pen, 'CLAIMED: C√λ', captionX, phone ? nameY - 1 : y + 13, 11, colors, captionWidth, phone ? 'left' : 'center', 'blue');
     } else if (index === 1) {
       const x = at(.55);
       line(pen, { x: left, y: y - 8 }, { x, y: y - 8 });
       line(pen, { x: left, y: y - 8 }, { x: left, y: y - 12 });
       line(pen, { x, y: y - 8 }, { x, y: y - 12 });
-      if (closing === 0) text(pen, 'UNBOUNDED RATIO · NO POWER', box.x + box.w / 2, y + 13, 10, colors, box.w);
+      if (closing === 0) text(pen, phone ? 'UNBOUNDED RATIO ·\nNO POWER' : 'UNBOUNDED RATIO · NO POWER', captionX, phone ? nameY - 1 : y + 13, 10, colors, captionWidth, phone ? 'left' : 'center');
     } else {
       claimMarks.push({ x: at(.58), y });
       if (closing === 0) {
-        const claimX = at(.58) + 7;
-        text(pen, 'CLAIMED · ε₀ > 0 FIXED', claimX, y + 13, 11, colors, box.x + box.w - claimX, 'left', 'blue');
-        text(pen, 'SIZE SCHEMATIC', box.x + box.w / 2, y + 26, 10, colors, box.w);
+        const claimX = phone ? captionX : at(.58) + 7;
+        text(pen, 'CLAIMED · ε₀ > 0 FIXED', claimX, phone ? nameY - 1 : y + 13, 11, colors, box.x + box.w - claimX, 'left', 'blue');
+        text(pen, 'SIZE SCHEMATIC', phone ? captionX + captionWidth / 2 : box.x + box.w / 2, phone ? y + 9 : y + 26, 10, colors, phone ? captionWidth : box.w);
       }
     }
   }
 
-  for (const mark of claimMarks) claimTick(pen, mark.x, mark.y, colors);
+  for (const mark of claimMarks) claimTick(pen, mark.x, mark.y, colors, 1, phone && closing === 0 ? 0 : 14);
 }
 
-export function drawChart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, numerics: readonly (ModeNumerics | undefined)[] = [], stageBox?: Box): void {
+export function drawChart(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, numerics: readonly (ModeNumerics | undefined)[] = [], stageBox?: Box, phone = false): void {
   if (time < 7750) return;
 
   pen.save();
   const references = DRAWN_MODES.map((_, index) => numerics[index]?.reference);
+  const focus = smooth(time, 16750, 18000) * (1 - smooth(time, 31500, 32500));
+  const dimensions = smooth(time, 102500, 103400);
+  const closing = smooth(time, 109500, 110600);
+  // Preserve the existing tick/caption inventory while reflowing the phone chart.
+  const annotationHeight = phone ? box.w / .90 * 1.5 * mix(mix(mix(.24, .34, focus), .44, dimensions), .31, closing) : box.h;
 
   if (time < 39750) {
-    wedge(pen, box, time, colors, place, references);
+    wedge(pen, box, time, colors, place, references, true, false, phone, annotationHeight);
 
     if (stageBox) firstLength(pen, box, stageBox, time, colors, numerics[0]);
   } else if (time < 56500) {
@@ -460,7 +474,7 @@ export function drawChart(pen: CanvasRenderingContext2D, box: Box, time: number,
     pen.rect(box.x - 4, box.y - 7, box.w + 8, box.h + 15);
     pen.clip();
 
-    if (change < 1) wedge(pen, { ...box, x: box.x + change * (box.w + 30) }, time, colors, place, references, false);
+    if (change < 1) wedge(pen, { ...box, x: box.x + change * (box.w + 30) }, time, colors, place, references, false, false, phone, annotationHeight);
 
     surfaceRuler(pen, { ...box, x: box.x - (1 - change) * (box.w + 30) }, time, colors, change === 1);
   } else if (time < 78250) {
@@ -468,21 +482,21 @@ export function drawChart(pen: CanvasRenderingContext2D, box: Box, time: number,
     surfaceRuler(pen, strip, time, colors, true, true);
     localGrowthBound(pen, box, time, colors, place, numerics[6]?.reference ?? numerics[3]?.reference);
 
-    if (box.h > 135) wedge(pen, { x: box.x + box.w * .37, y: box.y + box.h * .43, w: box.w * .63, h: box.h * .57 }, time, colors, place, references, false);
+    if (annotationHeight > 135) wedge(pen, { x: box.x + box.w * .37, y: box.y + box.h * .43, w: box.w * .63, h: box.h * .57 }, time, colors, place, references, false, false, phone, annotationHeight * .57);
   } else if (time < 85250) growthChart(pen, box, time, colors, references);
   else if (time < 93750) unboundedRatio(pen, box, time, colors);
   else if (time < 102500) metricThresholds(pen, box, time, colors);
-  else if (time < 109500) dimensionsRuler(pen, box, time, colors);
+  else if (time < 109500) dimensionsRuler(pen, box, time, colors, 0, phone);
   else {
     const change = smooth(time, 109500, 110600);
     pen.save();
     pen.beginPath();
     pen.rect(box.x - 4, box.y - 7, (box.w + 8) * change, box.h + 15);
     pen.clip();
-    wedge(pen, box, time, colors, place, references, change === 1, true);
+    wedge(pen, box, time, colors, place, references, change === 1, true, phone, annotationHeight);
     pen.restore();
 
-    if (change < 1) dimensionsRuler(pen, box, time, colors, change);
+    if (change < 1) dimensionsRuler(pen, box, time, colors, change, phone);
     else surfaceRuler(pen, { x: box.x, y: box.y + box.h - 30, w: box.w, h: 28 }, time, colors, true, true);
   }
 

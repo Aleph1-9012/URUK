@@ -10,7 +10,7 @@ uruk-silent-lines[data-numerics-error] .film-controls { display: none; }
 uruk-silent-lines[data-numerics-error] .slfilm-error-note { display: block; }
 
 @container plate (max-width: 599px) {
-  uruk-silent-lines .film-stage { aspect-ratio: 4 / 6; }
+  uruk-silent-lines .film-stage { aspect-ratio: 4 / 5; }
   uruk-silent-lines .film-label { font-size: .75rem; }
   uruk-silent-lines .film-label[data-label^="neighbourhoods"] { font-size: .6875rem; }
 }

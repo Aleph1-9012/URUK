@@ -43,8 +43,8 @@ export class SilentLinesFilm {
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
     drawStage(this.pen, boxes.stage, time, this.colors, this.labels.place, this.numerics);
-    drawCounterexamples(this.pen, boxes.stage, time, this.colors, this.labels.place, this.numerics);
-    drawChart(this.pen, boxes.chart, time, this.colors, this.labels.place, this.numerics, boxes.stage);
+    drawCounterexamples(this.pen, boxes.stage, time, this.colors, this.labels.place, this.numerics, boxes.tall);
+    drawChart(this.pen, boxes.chart, time, this.colors, this.labels.place, this.numerics, boxes.stage, boxes.tall);
     drawLedger(this.pen, boxes.ledger, time, this.colors);
     this.labels.endFrame();
   }

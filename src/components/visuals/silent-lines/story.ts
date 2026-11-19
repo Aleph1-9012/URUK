@@ -118,21 +118,22 @@ export function layout(width: number, height: number, time = 0): Layout {
 
   if (tall) {
     const lengthFocus = smooth(time, 16750, 18000) * (1 - smooth(time, 31500, 32500));
-    const lengthStageHeight = mix(.62, .53, lengthFocus);
-    const lengthChartY = mix(.68, .59, lengthFocus);
-    const lengthChartHeight = mix(.24, .34, lengthFocus);
+    const lengthStageHeight = mix(.52, .44, lengthFocus);
+    const lengthChartY = mix(.58, .50, lengthFocus);
+    const lengthChartHeight = mix(.27, .35, lengthFocus);
     const dimensions = smooth(time, 102500, 103400);
     const closing = smooth(time, 109500, 110600);
+    const longAnalyticCaption = width * 1.5 * .34 >= 160 && time >= 31500 && time < 39750;
 
     return {
-      stage: { x: width * .04, y: height * .035, w: width * .92, h: height * mix(mix(lengthStageHeight, .40, dimensions), .51, closing) },
+      stage: { x: width * .04, y: height * .035, w: width * .92, h: height * mix(mix(lengthStageHeight, .43, dimensions), .38, closing) },
       chart: {
         x: width * .05,
-        y: height * mix(mix(lengthChartY, .49, dimensions), .57, closing),
+        y: height * mix(mix(lengthChartY, .48, dimensions), .44, closing),
         w: width * .90,
-        h: height * mix(mix(lengthChartHeight, .44, dimensions), .31, closing),
+        h: height * mix(mix(lengthChartHeight, .39, dimensions), .41, closing),
       },
-      ledger: { x: width * .04, y: height * mix(.94, .91, closing), w: width * .92, h: height * mix(.05, .08, closing) },
+      ledger: { x: width * .04, y: height * (longAnalyticCaption ? .965 : .875), w: width * .92, h: height * mix(.05, .105, closing) },
       tall,
     };
   }
