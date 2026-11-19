@@ -74,12 +74,12 @@ class TiltedWavesFilm implements FilmDrawing {
 
   private gridPoint(index: number): Point {
     const columns = this.phone ? 4 : 5;
-    const pitch = this.phone ? Math.min(22, this.height * .04) : Math.min(28, this.height * .046);
-    const centerX = this.width * (this.phone ? .5 : .36);
+    const pitch = this.phone ? 18 : Math.min(28, this.height * .046);
+    const centerX = this.width * (this.phone ? .22 : .36);
 
     return {
       x: centerX + (index % columns - (columns - 1) / 2) * pitch,
-      y: this.height * (this.phone ? .055 : .065) + Math.floor(index / columns) * pitch,
+      y: this.height * (this.phone ? .075 : .065) + Math.floor(index / columns) * pitch,
     };
   }
 
@@ -90,9 +90,9 @@ class TiltedWavesFilm implements FilmDrawing {
     const count = this.phone ? 10 : 16;
     const columns = this.phone ? 4 : 5;
     const length = this.phone ? 16 : 18;
-    const span = w * (this.phone ? .80 : .55);
-    const left = w * (this.phone ? .10 : .09);
-    const rowY = h * (this.phone ? .09 : .10);
+    const span = w * (this.phone ? .40 : .55);
+    const left = w * (this.phone ? .04 : .09);
+    const rowY = h * (this.phone ? .13 : .10);
     const lift = clamp(motion.block / .45);
     const fold = clamp((motion.block - .45) / .55);
     const cold = this.model.rows.at(-1);
@@ -102,7 +102,7 @@ class TiltedWavesFilm implements FilmDrawing {
 
     const height = clamp(Math.log(sample.idealDensity / cold.idealDensity) / Math.log(hot.idealDensity / cold.idealDensity));
     const amplitude = (.12 + .45 * height) * motion.warm;
-    this.text('SCHEMATIC QUANTUM SPINS', w * (this.phone ? .5 : .35), h * .018, this.phone ? 7.5 : 9);
+    this.text('SCHEMATIC QUANTUM SPINS', w * (this.phone ? .22 : .35), h * .018, this.phone ? 7.5 : 9);
 
     for (let index = 0; index < count; index++) {
       const amount = clamp(motion.arrows * count - index);
@@ -115,7 +115,7 @@ class TiltedWavesFilm implements FilmDrawing {
 
       if (motion.shortWave > 0 && motion.block < 1) {
         const secondAmount = clamp(motion.shortWave * count - index) * (1 - clamp(motion.block / .25));
-        const secondY = h * (this.phone ? .165 : .26);
+        const secondY = h * (this.phone ? .22 : .26);
         const second = { x: mix(start.x, point.x, motion.block), y: mix(secondY, point.y, motion.block) };
         this.arrow(second, amplitude * Math.sin(phase * 3), length * secondAmount);
       }
@@ -134,7 +134,7 @@ class TiltedWavesFilm implements FilmDrawing {
     }
 
     if (motion.shortWave > 0 && motion.scene === 'waves') {
-      this.labels.place('spin-energy', w * (this.phone ? .5 : .825), h * (this.phone ? .215 : .22));
+      this.labels.place('spin-energy', w * (this.phone ? .22 : .825), h * (this.phone ? .34 : .22));
     }
 
     if (motion.unproved > 0 && motion.scene === 'unproved') {
@@ -144,10 +144,10 @@ class TiltedWavesFilm implements FilmDrawing {
 
   private chart() {
     return {
-      left: this.width * .16,
-      right: this.width * (this.phone ? .91 : .88),
-      top: this.height * (this.phone ? .31 : .41),
-      bottom: this.height * (this.phone ? .54 : .68),
+      left: this.width * (this.phone ? .54 : .16),
+      right: this.width * (this.phone ? .94 : .88),
+      top: this.height * (this.phone ? .145 : .41),
+      bottom: this.height * (this.phone ? .43 : .68),
     };
   }
 
@@ -200,8 +200,8 @@ class TiltedWavesFilm implements FilmDrawing {
     const end = mix(chart.left, chart.right, motion.axes);
     drawLine(pen, chart.left, chart.bottom, end, chart.bottom, tones.ink, .8);
     drawLine(pen, chart.left, chart.bottom, chart.left, mix(chart.bottom, chart.top, motion.axes), tones.ink, .8);
-    this.text('IDEAL NN MAGNONS · S=1', w * .53, h * (this.phone ? .245 : .365), this.phone ? 8 : 10);
-    this.text('NOT THE QUANTUM MAGNET', w * .53, h * (this.phone ? .272 : .395), this.phone ? 8 : 9);
+    this.text('IDEAL NN MAGNONS · S=1', w * (this.phone ? .73 : .53), h * (this.phone ? .035 : .365), this.phone ? 8 : 10);
+    this.text('NOT THE QUANTUM MAGNET', w * (this.phone ? .73 : .53), h * (this.phone ? .075 : .395), this.phone ? 8 : 9);
 
     if (motion.axes === 1) {
       for (const temperature of [1 / 128, 1 / 16, 1 / 2]) {
@@ -216,7 +216,7 @@ class TiltedWavesFilm implements FilmDrawing {
         this.text(String(density), chart.left - (this.phone ? 22 : 29), point.y, this.phone ? 8 : 10, true);
       }
 
-      this.labels.place('temperature-ratio', chart.left + (chart.right - chart.left) * .12, chart.bottom + 28);
+      this.labels.place('temperature-ratio', this.phone ? w * .42 : chart.left + (chart.right - chart.left) * .12, chart.bottom + (this.phone ? 18 : 28));
     }
 
     if (motion.warm === 0) {
@@ -228,11 +228,11 @@ class TiltedWavesFilm implements FilmDrawing {
     this.curve('idealDensity', motion.ideal);
 
     if (motion.bloch > 0) {
-      const legendY = chart.bottom + 28;
-      drawLine(pen, w * .55, legendY, w * .66, legendY, tones.ink, .9, [5, 4]);
-      this.text('BLOCH', w * .79, legendY, this.phone ? 8 : 10);
+      const legendY = chart.bottom + (this.phone ? 18 : 28);
+      drawLine(pen, w * (this.phone ? .60 : .55), legendY, w * (this.phone ? .70 : .66), legendY, tones.ink, .9, [5, 4]);
+      this.text('BLOCH', w * (this.phone ? .86 : .79), legendY, this.phone ? 8 : 10);
 
-      if (motion.experiment > 0) this.text('TEXTBOOK · EXPERIMENT', w * .75, legendY + 13, this.phone ? 7 : 8);
+      if (motion.experiment > 0) this.text('TEXTBOOK · EXPERIMENT', w * (this.phone ? .74 : .75), legendY + 13, this.phone ? 7 : 8);
     }
 
     if (motion.ideal > 0) {
@@ -245,7 +245,7 @@ class TiltedWavesFilm implements FilmDrawing {
 
       if (motion.claimBracket === 0 && motion.scene !== 'claim') {
         const temperature = sample.betaS === 2 ? '1/2' : sample.betaS === 8 ? '1/8' : sample.betaS === 128 ? '1/128' : sample.temperatureOverS.toPrecision(3);
-        this.text(`T/S=${temperature} · IDEAL/BLOCH ${sample.ratio.toFixed(4)}`, w * .5, h * (this.phone ? .645 : .775), this.phone ? 8.5 : 10, true);
+        this.text(`T/S=${temperature} · IDEAL/BLOCH ${sample.ratio.toFixed(4)}`, w * .5, h * (this.phone ? .58 : .775), this.phone ? 8.5 : 10, true);
       }
     }
 

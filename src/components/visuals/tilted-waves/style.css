@@ -6,6 +6,6 @@ uruk-tilted-waves .film-label { font-size: .875rem; }
 }
 
 @container blfilm (width < 600px) {
-  uruk-tilted-waves .film-stage { aspect-ratio: 4 / 9; }
+  uruk-tilted-waves .film-stage { aspect-ratio: 4 / 5; }
   uruk-tilted-waves .film-label { font-size: .75rem; }
 }

@@ -29,22 +29,22 @@ export function drawTiltedWavesPanels(ctx: CanvasRenderingContext2D, w: number, 
   }
 
   function limitingClaim(): void {
-    note('CLAIMED · ZERO-TEMPERATURE LIMIT ONLY', phone ? .68 : .27, phone ? 8 : 9, phone ? .5 : .825, phone ? .94 : .27);
+    note('CLAIMED · ZERO-TEMPERATURE LIMIT ONLY', phone ? .56 : .27, phone ? 8 : 9, phone ? .5 : .825, phone ? .94 : .27);
     if (motion.limitFormula > 0) {
-      formula('claim-leading', phone ? .72 : .075, phone ? .5 : .825);
-      formula('claim-limit', phone ? .785 : .17, phone ? .5 : .825);
+      formula('claim-leading', phone ? .64 : .075, phone ? .5 : .825);
+      formula('claim-limit', phone ? .745 : .17, phone ? .5 : .825);
     }
     if (motion.nextTerm > 0) {
-      note(`(IDEAL - BLOCH) / NEXT TERM: ${nextTermRatio}\nT/S=1/128`, phone ? .835 : .82, phone ? 8 : 10, phone ? .5 : .25, phone ? .94 : .43);
+      note(`(IDEAL - BLOCH) / NEXT TERM: ${nextTermRatio}\nT/S=1/128`, phone ? .81 : .82, phone ? 8 : 10, phone ? .5 : .25, phone ? .94 : .43);
     }
     if (motion.hypotheses > 0) {
-      note('3D · EVERY FIXED SPIN · SYMMETRIC NONNEGATIVE J', phone ? .885 : .80, phone ? 7.5 : 10, phone ? .5 : .75, phone ? .94 : .43);
-      note('FINITE RANGE · SUPPORT GENERATES THE LATTICE', phone ? .925 : .89, phone ? 8 : 10, phone ? .5 : .75, phone ? .94 : .43);
-      note('VOLUME, THEN FIELD, THEN TEMPERATURE', phone ? .965 : .94, phone ? 8 : 10, phone ? .5 : .25, phone ? .94 : .43);
+      note('3D · EVERY FIXED SPIN · SYMMETRIC NONNEGATIVE J', phone ? .88 : .80, phone ? 7.5 : 10, phone ? .5 : .75, phone ? .94 : .43);
+      note('FINITE RANGE · SUPPORT GENERATES THE LATTICE', phone ? .92 : .89, phone ? 8 : 10, phone ? .5 : .75, phone ? .94 : .43);
+      note('VOLUME, THEN FIELD, THEN TEMPERATURE', phone ? .96 : .94, phone ? 8 : 10, phone ? .5 : .25, phone ? .94 : .43);
     }
   }
 
-  if (motion.block > 0) note('SCHEMATIC SLICE OF A 3D SYSTEM', phone ? .215 : .315, phone ? 7.5 : 10, phone ? .5 : .375, phone ? .94 : .50);
+  if (motion.block > 0) note('SCHEMATIC SLICE OF A 3D SYSTEM', phone ? .32 : .315, phone ? 7.5 : 10, phone ? .22 : .375, phone ? .43 : .50);
 
   switch (motion.scene) {
     case 'zero':
@@ -57,7 +57,7 @@ export function drawTiltedWavesPanels(ctx: CanvasRenderingContext2D, w: number, 
       if (motion.bloch > 0) formula('bloch-power', phone ? .92 : .97);
       break;
     case 'ideal':
-      formula('bloch-coefficient', phone ? .705 : .12, phone ? .5 : .825);
+      formula('bloch-coefficient', phone ? .68 : .12, phone ? .5 : .825);
       note(`NEAREST-NEIGHBOUR COEFFICIENT: ${model.coefficient.toFixed(4)}`, phone ? .75 : .23, phone ? 8 : 9, phone ? .5 : .825, phone ? .94 : .27);
       if (phone) {
         note(`T/S=1/2 · IDEAL/BLOCH ${hot.ratio.toFixed(4)}`, .80, 9, .5, .94, true);
