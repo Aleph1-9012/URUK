@@ -61,6 +61,10 @@ const NAMED = [
 
 const TYPING_STEP = 16;
 
+function fullInk(alpha: number): number {
+  return Number(alpha === 1);
+}
+
 function keepInside(left: number, size: number, anchor: number, extent: number, margin: number): number {
   const highest = Math.max(extent - margin, anchor);
   const lowest = Math.min(margin, anchor);
@@ -480,10 +484,11 @@ export class FractionNetsFilm {
     this.line([this.at(placed, [reach.left, 0]), this.at(placed, [reach.right, 0])], muted, 0.9, alpha * 0.7);
     this.line([this.at(placed, [0, reach.bottom]), this.at(placed, [0, reach.top])], muted, 0.9, alpha * 0.7);
     const numbers = alpha * Math.min(1, Math.max(0, (size - 4) / 1.2)) * (1 - span(time, 38500, 39200));
+    const axisText = time > 8500 && time < 10000 ? fullInk(numbers) : numbers;
 
     for (const value of [-2, -1, 1, 2]) {
       this.line([this.at(placed, [value, 0]), [this.px(placed, value), this.py(placed, 0) + 4]], muted, 1, numbers);
-      this.text(String(value).replace('-', '−'), this.px(placed, value), this.py(placed, 0) + 13, { size: this.small(11), color: muted, alpha: numbers });
+      this.text(String(value).replace('-', '−'), this.px(placed, value), this.py(placed, 0) + 13, { size: this.small(11), color: muted, alpha: axisText });
     }
 
     this.drawNets(placed, reach, alpha);
@@ -658,7 +663,10 @@ export class FractionNetsFilm {
     const time = this.time;
     const { blue, ink } = this.colors;
     const size = placed.view.right - placed.view.left;
-    this.label('cubic', this.px(placed, -1.55) + 8, this.py(placed, cubicY(-1.55)) - 16, alpha * fade(time, 1200, 1800, 6800, 7600));
+    const narrowPhone = this.layout === 'tall' && this.width < 300;
+    const openingCubic = alpha * fade(time, 1200, 1800, 6800, 7600);
+    const cubicOverInk = (narrowPhone && time < 1800) || (this.width < 700 && time > 6800);
+    this.label('cubic', this.px(placed, -1.55) + 8, this.py(placed, cubicY(-1.55)) - 16, cubicOverInk ? fullInk(openingCubic) : openingCubic);
     const lowArm = Math.cbrt(6 + 2.15 ** 3);
     const cubicName = alpha * fade(time, 33300, 34000, 38500, 39200);
     this.label('cubic', this.px(placed, lowArm) - this.labelWidth('cubic') - 10, this.py(placed, -2.15), cubicName);
@@ -667,16 +675,18 @@ export class FractionNetsFilm {
     const upperY = this.py(placed, upper.b / upper.c);
     const window = NET_RUNS[0].reach[this.layout] / CUBIC_NET;
     const corner = NET_RUNS[0].centre[0] - window / 2;
-    this.label('found', this.px(placed, corner + 0.05 * window), this.py(placed, corner + 0.3 * window), alpha * fade(time, 13300, 13900, 16300, 17000));
+    const found = alpha * fade(time, 13300, 13900, 16300, 17000);
+    const foundInk = narrowPhone || time < 13900 ? fullInk(found) : found;
+    this.label('found', this.px(placed, corner + 0.05 * window), this.py(placed, corner + 0.3 * window), foundInk);
     const close = alpha * fade(time, 19000, 19600, 31500, 32200);
     const far = alpha * fade(time, 33300, 34000, 38500, 39200);
     const middleX = (placed.view.left + placed.view.right) / 2;
     const middleY = (placed.view.bottom + placed.view.top) / 2;
 
     if (close > 0) {
-      this.label('circle', this.px(placed, middleX - 0.4 * size), this.py(placed, middleY + 0.32 * size), close);
+      this.label('circle', this.px(placed, middleX - 0.4 * size), this.py(placed, middleY + 0.32 * size), narrowPhone && time < 19600 ? fullInk(close) : close);
     } else if (far > 0) {
-      this.label('circle', this.px(placed, -0.62), this.py(placed, -1.05), far);
+      this.label('circle', this.px(placed, -0.62), this.py(placed, -1.05), fullInk(far));
     }
 
     const net = netAt(time);
@@ -684,16 +694,18 @@ export class FractionNetsFilm {
 
     if (net && missNote > 0) {
       const miss = this.nearestMiss(placed, net.c);
-      this.tag('close, not on it', this.px(placed, miss.a / miss.c), this.py(placed, miss.b / miss.c) + 18, missNote);
+      this.tag('close, not on it', this.px(placed, miss.a / miss.c), this.py(placed, miss.b / miss.c) + 18, fullInk(missNote));
     }
 
     const onCircle = this.at(placed, CIRCLE_MARK);
-    this.stamp('none, ever', onCircle[0], onCircle[1], alpha * fade(time, 27000, 27400, 38500, 39200), ink);
-    this.tag('only an argument can say this', onCircle[0], onCircle[1] + 24, alpha * fade(time, 34600, 35200, 38500, 39200));
-    this.tag('a search can say this', upperX, upperY - 18, alpha * fade(time, 34000, 34600, 38500, 39200), 'center', blue);
+    this.stamp('none, ever', onCircle[0], onCircle[1], fullInk(alpha * fade(time, 27000, 27400, 38500, 39200)), ink);
+    this.tag('only an argument can say this', onCircle[0], onCircle[1] + 24, fullInk(alpha * fade(time, 34600, 35200, 38500, 39200)));
+    const search = alpha * fade(time, 34000, 34600, 38500, 39200);
+    this.tag('a search can say this', upperX, upperY - 18, this.width < 700 ? fullInk(search) : search, 'center', blue);
     const wanted = alpha * fade(time, 51000, 51800, 86500, 87500);
     const [first, second, third] = [this.note(0), this.note(1), this.note(2)];
-    this.struckTag('wanted: an equation with this shadow', first, wanted, span(time, 65000, 65600));
+    const wantedCrossesInk = this.layout === 'wide' || time > 86500;
+    this.struckTag('wanted: an equation with this shadow', first, wantedCrossesInk ? fullInk(wanted) : wanted, span(time, 65000, 65600));
     this.tag('if Mazur is right, there is none', second.x, second.y, alpha * fade(time, 65400, 66000, 86500, 87500), second.align);
     this.tag('claimed: no for fractions too', third.x, third.y, alpha * fade(time, 69500, 70100, 86500, 87500), third.align, blue);
     this.drawCurveNotes(placed, alpha);
@@ -709,9 +721,11 @@ export class FractionNetsFilm {
     const time = this.time;
     const curve = alpha * (this.layout === 'wide' ? fade(time, 59800, 60400) : fade(time, 59800, 60400, 92500, 93300));
     // Above the oval's top (y ≈ 6.94), ending just short of the branch, which crosses y = 7.6 at x ≈ 5.9.
-    this.label('curve', this.px(placed, 5.9) - 10 - this.labelWidth('curve'), this.py(placed, 7.6), curve);
+    const narrowPhone = this.layout === 'tall' && this.width < 300;
+    const curveHandoff = this.layout === 'tall' && (time > 92500 || (narrowPhone && time < 60400));
+    this.label('curve', this.px(placed, 5.9) - 10 - this.labelWidth('curve'), this.py(placed, 7.6), curveHandoff ? fullInk(curve) : curve);
     const pieces = alpha * fade(time, 61000, 61600, 69000, 69800);
-    this.tag('piece 1', this.px(placed, -2.5), this.py(placed, 3.9), pieces);
+    this.tag('piece 1', this.px(placed, -2.5), this.py(placed, 3.9), narrowPhone ? fullInk(pieces) : pieces);
     this.tag('piece 2', this.px(placed, 5.17) + 8, this.py(placed, -3), pieces, 'left');
     const first = MULTIPLES[0];
 
@@ -720,7 +734,11 @@ export class FractionNetsFilm {
     for (const named of NAMED) {
       const multiple = MULTIPLES[named.n - 1];
 
-      if (multiple) this.label(named.id, this.px(placed, multiple.x) + 9, this.py(placed, multiple.y) - 10, alpha * fade(time, named.at, named.at + 400));
+      if (!multiple) continue;
+
+      const arrival = fade(time, named.at, named.at + 400);
+      const contact = (named.n === 3 && this.width >= 700) || (named.n === 5 && this.layout === 'wide');
+      this.label(named.id, this.px(placed, multiple.x) + 9, this.py(placed, multiple.y) - 10, alpha * (contact ? fullInk(arrival) : arrival));
     }
 
     const example = alpha * fade(time, 96000, 96600);
@@ -729,7 +747,8 @@ export class FractionNetsFilm {
       this.tag('points: a small example', placed.left + 4, placed.top + placed.height - 8, example, 'left');
     } else {
       const tests = this.frame('tests');
-      this.tag('points: a small example', tests.left + tests.width, this.testsFoot(), example * (1 - span(time, 102800, 103300)), 'right');
+      const remaining = 1 - span(time, 102800, 103300);
+      this.tag('points: a small example', tests.left + tests.width, this.testsFoot(), example * (narrowPhone ? fullInk(remaining) : remaining), 'right');
     }
   }
 
@@ -773,8 +792,11 @@ export class FractionNetsFilm {
     }
 
     const ends = fade(time, 49500, 50200);
-    this.typed('…', left - 2, y - 1, ends, blue, 'right');
-    this.typed('…', cut + 4, y - 1, ends * (1 - span(time, STRETCH.start, STRETCH.start + 400)), blue);
+    const compactStage = this.width < 700;
+    const endInk = compactStage ? fullInk(ends) : ends;
+    const rightEnd = ends * (1 - span(time, STRETCH.start, STRETCH.start + 400));
+    this.typed('…', left - 2, y - 1, endInk, blue, 'right');
+    this.typed('…', cut + 4, y - 1, compactStage ? fullInk(rightEnd) : rightEnd, blue);
     this.drawShadows(y, right, toX);
     this.drawFalling(y);
     this.drawSearchOnLine(y, right, toX, fromX);
@@ -865,7 +887,7 @@ export class FractionNetsFilm {
       this.dot(x, y, 2.2, ink, shown);
     }
 
-    this.label('zstar', start + 2, y + 15, shown);
+    this.label('zstar', start + 2, y + 15, fullInk(shown));
 
     if (this.layout === 'wide') this.tag('schematic', right, y + 28, shown * (1 - span(time, 103000, 103600)), 'right');
 
@@ -917,7 +939,8 @@ export class FractionNetsFilm {
       if (ticked) {
         this.line([[x + 2.5, top + size * 0.55], [x + size * 0.42, top + size - 2.5], [x + size - 2, top + 2.5]], blue, 1.4, shown);
       } else {
-        this.text('?', x + size / 2, top + size / 2 + 0.5, { size: size - 2, color: muted, alpha: shown, typewriter: true });
+        const testEntering = this.layout === 'wide' && (this.width < 665 || this.width >= 700) && time < TESTS.drawn + 2200;
+        this.text('?', x + size / 2, top + size / 2 + 0.5, { size: size - 2, color: muted, alpha: testEntering ? fullInk(shown) : shown, typewriter: true });
       }
 
       if (index === stepping && time >= TESTS.searchStart && time <= TESTS.searchEnd + 300) {
@@ -926,14 +949,18 @@ export class FractionNetsFilm {
     }
 
     const end = left + count * (size + gap);
-    this.typed('…', end, top + size / 2, drawn, muted);
+    const testsReturning = this.layout === 'tall' && this.width >= 300 && time > 104200 && time < 104600;
+    this.typed('…', end, top + size / 2, testsReturning ? fullInk(drawn) : drawn, muted);
     const below = this.testsFoot();
     const stamped = fade(time, 83500, 83900, 86500, 87000);
     const named = away * fade(time, TESTS.drawn + 1200, TESTS.drawn + 1800, 112500, 113000) * (this.layout === 'tall' ? 1 - stamped : 1);
-    this.tag('tests (schematic)', left, below, named, 'left');
-    this.tag('one of them would finish', left + width, below, fade(time, 78000, 78600, 83300, 83800), 'right');
+    const stampTransition = this.layout === 'tall' && stamped > 0;
+    const writtenHandoff = this.layout === 'tall' && (time > 103000 && time < 103300 || this.width < 300 && time > 104200 && time < 104600);
+    this.tag('tests (schematic)', left, below, stampTransition || writtenHandoff ? fullInk(named) : named, 'left');
+    const finish = fade(time, 78000, 78600, 83300, 83800);
+    this.tag('one of them would finish', left + width, below, this.layout === 'tall' && time > 83300 ? fullInk(finish) : finish, 'right');
     this.tag('suppose every test passes', left + width, below, fade(time, 87500, 88100, 95000, 95600), 'right');
-    this.stamp('impossible (1970)', left + width / 2, top + size / 2, stamped, ink);
+    this.stamp('impossible (1970)', left + width / 2, top + size / 2, fullInk(stamped), ink);
   }
 
 
@@ -951,14 +978,14 @@ export class FractionNetsFilm {
       if (found) name = `${name} · found`;
       else if (nothing) name = `${name} · nothing yet`;
 
-      this.tag(name, left, top + 6, net.alpha, 'left', found ? blue : this.colors.muted);
+      this.tag(name, left, top + 6, nothing ? fullInk(net.alpha) : net.alpha, 'left', found ? blue : this.colors.muted);
     }
 
     const table = fade(time, 25200, 25700, 31500, 32300);
 
     if (table > 0) {
       const height = this.typedSize() * 1.5;
-      this.tag('remainders on division by 3', left, top + 6, table, 'left');
+      this.tag('remainders on division by 3', left, top + 6, time < 25700 ? fullInk(table) : table, 'left');
       const names = ['n', 'n² leaves'];
       this.context.font = `${this.typedSize()}px ${TYPEWRITER}`;
       const digits = left + Math.max(...names.map((name) => this.context.measureText(name).width)) + 12;
@@ -1008,17 +1035,19 @@ export class FractionNetsFilm {
 
     const step = this.writtenSize() * 1.45;
     const first = top + this.writtenFirst();
-    this.tag('the multiples of P, written out', left, top + 6, header, 'left');
+    this.tag('the multiples of P, written out', left, top + 6, time > 103300 ? fullInk(header) : header, 'left');
 
     for (const block of this.writtenRows(width, height)) {
       const typed = this.typing(block.text, block.at, TYPING_STEP);
       const leaving = 103300 + block.n * 120;
       const shown = fade(time, block.at, block.at + 100, leaving - 100, leaving + 200);
+      const sharesChartSpace = block.n >= 5 || (block.n >= 3 && this.layout === 'wide');
+      const rowInk = sharesChartSpace && time > leaving - 100 ? fullInk(shown) : shown;
 
       for (const [index, row] of block.rows.entries()) {
         const done = typed.length >= row.start + row.part.length;
         const part = row.cut && done ? row.part : typed.slice(row.start, row.start + row.part.length);
-        this.typed(part, left, first + (block.top + index) * step, shown, ink, 'left', this.writtenSize());
+        this.typed(part, left, first + (block.top + index) * step, rowInk, ink, 'left', this.writtenSize());
       }
     }
   }
@@ -1042,11 +1071,11 @@ export class FractionNetsFilm {
     this.line([[origin[0], this.py(placed, view.top)], origin, [this.px(placed, view.right), origin[1]]], ink, 1, alpha);
 
     for (const n of [4, 8, 12]) {
-      this.text(String(n), this.px(placed, n), origin[1] + 12, { size: this.small(11), color: muted, alpha });
+      this.text(String(n), this.px(placed, n), origin[1] + 12, { size: this.small(11), color: muted, alpha: this.layout === 'tall' && n === 4 ? fullInk(alpha) : alpha });
     }
 
     this.tag('index B', this.px(placed, view.right), origin[1] + 26, alpha, 'right');
-    this.tag('size h: digits of each point', placed.left, placed.top - 10, alpha, 'left');
+    this.tag('size h: digits of each point', placed.left, placed.top - 10, this.layout === 'wide' ? fullInk(alpha) : alpha, 'left');
     this.drawMorph(placed);
     // Where both hold: above the points' growth, below the bound. It ends at a finite B.
     const region = alpha * fade(time, 108300, 109300);
@@ -1125,11 +1154,11 @@ export class FractionNetsFilm {
     const size = this.layout === 'wide' ? 12 : 10;
     this.tag('parity step: pointwise 2-converse · unchecked', tests.left, tests.top + size + 11, shown, 'left');
     const chart = this.chartPlaced();
-    this.tag('the bound: Fontaine–Mazur\nat 2 · unchecked', this.px(chart, 0.3), this.py(chart, 105), shown, 'left');
+    this.tag('the bound: Fontaine–Mazur\nat 2 · unchecked', this.px(chart, 0.3), this.py(chart, 105), fullInk(shown), 'left');
     const stamp = fade(time, 114300, 114800);
 
     if (this.layout === 'wide') {
-      this.stamp('claimed · unreviewed', chart.left + chart.width / 2, this.frame('line').top - 32, stamp, blue);
+      this.stamp('claimed · unreviewed', chart.left + chart.width / 2, this.frame('line').top - 32, this.width < 700 ? fullInk(stamp) : stamp, blue);
     } else {
       this.stamp('claimed · unreviewed', this.width / 2, chart.top + chart.height + 44, stamp, blue);
     }
