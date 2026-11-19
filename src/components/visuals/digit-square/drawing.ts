@@ -38,7 +38,7 @@ export function leafDestination(box: Box, time: number, tall: boolean): Point {
   const record = recordPoint(box, 1962, tall);
   const amount = smooth(time, 55500, 58000);
 
-  return { x: mix(record.x, box.x + (tall ? 34 : 51), amount), y: mix(record.y, box.y + (tall ? 71 : 86), amount) };
+  return { x: mix(record.x, box.x + (tall ? 34 : 51), amount), y: mix(record.y, box.y + (tall ? 54 : 86), amount) };
 }
 
 export function leafClusterSize(time: number, tall: boolean): number {
@@ -55,7 +55,7 @@ export function leafClusterPoint(index: number, box: Box, time: number, tall: bo
 export function runtimeChartBox(box: Box, tall: boolean): Box {
   const compact = !tall && box.h < 460;
 
-  return { x: box.x + (tall ? 34 : 52), y: box.y + (tall ? 111 : compact ? 135 : 155), w: box.w - (tall ? 50 : 78), h: tall ? 76 : compact ? Math.max(54, Math.min(70, box.h - 290)) : 110 };
+  return { x: box.x + (tall ? 34 : 52), y: box.y + (tall ? 125 : compact ? 135 : 155), w: box.w - (tall ? 50 : 78), h: tall ? 100 : compact ? Math.max(54, Math.min(70, box.h - 290)) : 110 };
 }
 
 export function runtimePoint(log2n: number, ratio: number, plot: Box): Point {
@@ -65,7 +65,7 @@ export function runtimePoint(log2n: number, ratio: number, plot: Box): Point {
 export function butterflyBox(box: Box, tall: boolean): Box {
   const height = Math.max(36, Math.min(100, (box.h - 300) * .7));
 
-  return { x: box.x + (tall ? 10 : 22), y: box.y + (tall ? 250 : box.h - height - 31), w: box.w - (tall ? 20 : 44), h: tall ? 64 : height };
+  return { x: box.x + (tall ? 10 : 22), y: box.y + (tall ? Math.min(222, box.h - 86) : box.h - height - 31), w: box.w - (tall ? 20 : 44), h: tall ? 64 : height };
 }
 
 export function line(pen: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, amount = 1): void {

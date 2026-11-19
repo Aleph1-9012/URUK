@@ -51,10 +51,15 @@ export function claimProgress(time: number): number { return progress(time, 5800
 
 export function tapeProgress(time: number): number { return progress(time, 63500, 66000); }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number, time: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
-  if (tall) return { stage: { x: width * .03, y: height * .018, w: width * .94, h: height * .45 }, panel: { x: width * .05, y: height * .49, w: width * .90, h: height * .49 }, tall };
+  if (tall) {
+    const arithmetic = time < 32250;
+    const panelY = arithmetic ? .68 : .245 - .227 * modernProgress(time);
+
+    return { stage: { x: width * .03, y: height * .018, w: width * .94, h: height * (arithmetic ? .64 : .964) }, panel: { x: width * .05, y: height * panelY, w: width * .90, h: height * (arithmetic ? .30 : .964) }, tall };
+  }
 
   return { stage: { x: width * .025, y: height * .03, w: width * .40, h: height * .94 }, panel: { x: width * .46, y: height * .04, w: width * .515, h: height * .92 }, tall };
 }

@@ -45,14 +45,14 @@ export class DigitSquareFilm {
     if (time < 22500) this.school(boxes.stage, time, boxes.tall);
     else if (time < 32250) this.recursion(boxes.stage, time, boxes.tall);
     else {
-      this.summary(boxes.stage, boxes.tall);
+      if (!boxes.tall || time < 42750) this.summary(boxes.stage, boxes.tall);
 
       if (time < 37500) this.leaves(boxes.stage, boxes.panel, time, boxes.tall);
     }
 
     drawPanels(pen, boxes.panel, time, colors, this.labels.place, this.model, boxes.tall, boxes.stage);
 
-    if (time >= 37500) this.leaves(boxes.stage, boxes.panel, time, boxes.tall);
+    if (time >= 37500 && (!boxes.tall || time < 63500)) this.leaves(boxes.stage, boxes.panel, time, boxes.tall);
 
     this.labels.endFrame();
   }
@@ -169,13 +169,13 @@ export class DigitSquareFilm {
 
     if (node.depth === 1) {
       const x = node.path === 'H' ? .24 : node.path === 'L' ? .76 : .5;
-      const y = node.path === 'M' ? tall ? 194 : 270 : tall ? 91 : 126;
+      const y = node.path === 'M' ? tall ? 120 : 270 : tall ? 72 : 126;
 
-      return { x: box.x + box.w * x, y: box.y + y, w: box.w * .29, h: tall ? 58 : 80 };
+      return { x: box.x + box.w * x, y: box.y + y, w: box.w * .29, h: tall ? 40 : 80 };
     }
 
-    if (node.depth === 2) return { x: box.x + box.w * (.18 + index % 3 * .32), y: box.y + (tall ? 88 : 114) + Math.floor(index / 3) * (tall ? 63 : 88), w: box.w * .20, h: tall ? 34 : 46 };
-    if (node.depth === 3) return { x: box.x + box.w * (.10 + (index % 9 + .5) * .8 / 9), y: box.y + 105 + Math.floor(index / 9) * (tall ? 44 : 65), w: tall ? 13 : 18, h: tall ? 13 : 18 };
+    if (node.depth === 2) return { x: box.x + box.w * (.18 + index % 3 * .32), y: box.y + (tall ? 55 : 114) + Math.floor(index / 3) * (tall ? 36 : 88), w: box.w * .20, h: tall ? 28 : 46 };
+    if (node.depth === 3) return { x: box.x + box.w * (.10 + (index % 9 + .5) * .8 / 9), y: box.y + (tall ? 70 : 105) + Math.floor(index / 9) * (tall ? 30 : 65), w: tall ? 13 : 18, h: tall ? 13 : 18 };
 
     throw new RangeError('The visual tree shows the three splits below the eight-position root.');
   }
@@ -235,8 +235,8 @@ export class DigitSquareFilm {
 
   private summary(box: Box, tall: boolean): void {
     this.heading(box, tall);
-    text(this.pen, `= ${this.productLabel}`, box.x + box.w / 2, box.y + (tall ? 44 : 50), tall ? 15 : 23, box.w - 4, this.colors);
-    text(this.pen, `${this.model.leaves.length} SMALL PRODUCTS · EXACT DECIMAL TOY`, box.x + box.w / 2, box.y + 84, tall ? 9.5 : 14, box.w - 4, this.colors);
+    text(this.pen, `= ${this.productLabel}`, box.x + box.w / 2, box.y + (tall ? 31 : 50), tall ? 15 : 23, box.w - 4, this.colors);
+    text(this.pen, `${this.model.leaves.length} SMALL PRODUCTS · EXACT DECIMAL TOY`, box.x + box.w / 2, box.y + (tall ? 52 : 84), tall ? 9.5 : 14, box.w - 4, this.colors);
   }
 
   private leaves(stage: Box, panel: Box, time: number, tall: boolean): void {

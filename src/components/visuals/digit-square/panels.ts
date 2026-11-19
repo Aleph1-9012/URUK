@@ -31,12 +31,14 @@ function recordLabel(pen: CanvasRenderingContext2D, box: Box, year: number, colo
   const point = recordPoint(box, year, tall);
   const plot = historyChartBox(box, tall);
   const size = tall ? 9 : 12;
-  const yearX = point.x + (year >= 2007 ? -34 : 24);
+  const leftYear = year >= 2007 || tall && (year === 1963 || year === 1971);
+  const yearX = point.x + (year >= 2007 ? -34 : leftYear ? -24 : 24);
+  const yearY = point.y;
   const boundX = point.x + (year >= 2007 ? -80 : tall ? 85 : 125);
   pen.strokeStyle = colors.ink;
   pen.lineWidth = .5;
-  line(pen, point.x + (year >= 2007 ? -3 : 3), point.y, yearX + (year >= 2007 ? 17 : -17), point.y);
-  text(pen, `${year}`, yearX, point.y, size, 36, colors);
+  line(pen, point.x + (leftYear ? -3 : 3), point.y, yearX + (leftYear ? 17 : -17), yearY);
+  text(pen, `${year}`, yearX, yearY, size, 36, colors);
 
   if (year === 1960) place('school-bound', boundX, point.y);
   if (year === 1962) place('karatsuba-bound', boundX, point.y);
@@ -78,16 +80,16 @@ function history(pen: CanvasRenderingContext2D, box: Box, time: number, colors: 
       pen.arc(point.x, point.y, tall ? 1.4 : 2, 0, Math.PI * 2);
       pen.fill();
 
-      if (zoom === 0) recordLabel(pen, box, record.year, colors, place, tall);
+      if (zoom === 0 && (!tall || time >= 37500)) recordLabel(pen, box, record.year, colors, place, tall);
     }
   }
 
-  if (zoom === 0) text(pen, 'STEP HEIGHTS SCHEMATIC · YEARS TO SCALE', plot.x + plot.w / 2, plot.y + plot.h + (tall ? 16 : 24), tall ? 8 : 11, box.w - 6, colors);
+  if (zoom === 0 && (!tall || time < 42750)) text(pen, 'STEP HEIGHTS SCHEMATIC · YEARS TO SCALE', plot.x + plot.w / 2, plot.y + plot.h + (tall ? 16 : 24), tall ? 8 : 11, box.w - 6, colors);
 
   if (zoom > 0) {
     const destination = leafDestination(box, time, tall);
-    text(pen, '1962', destination.x, destination.y - (tall ? 17 : 23), tall ? 9 : 12, 42, colors);
-    text(pen, '27 PRODUCTS', destination.x, destination.y + (tall ? 10 : 25), tall ? 8 : 11, tall ? 80 : 110, colors);
+    text(pen, '1962', destination.x, destination.y - (tall ? 11 : 23), tall ? 9 : 12, 42, colors);
+    text(pen, '27 PRODUCTS', destination.x, destination.y + (tall ? 26 : 25), tall ? 8 : 11, tall ? 80 : 110, colors);
   }
 }
 
@@ -141,7 +143,7 @@ function runtime(pen: CanvasRenderingContext2D, box: Box, time: number, colors: 
     place('ratio-axis', plot.x + plot.w - (tall ? 22 : 30), plot.y + plot.h - (tall ? 14 : 15));
   } else place('ratio-axis', plot.x + plot.w + 8, plot.y + plot.h + 35);
 
-  const legendY = plot.y + plot.h + (tall ? 24 : box.h < 460 ? 38 : 42);
+  const legendY = plot.y + plot.h + (tall ? 28 : box.h < 460 ? 38 : 42);
   place('hv-bound', box.x + box.w * .20, legendY);
   place('claim-bound', box.x + box.w * .68, legendY);
 }
@@ -149,11 +151,14 @@ function runtime(pen: CanvasRenderingContext2D, box: Box, time: number, colors: 
 function butterfly(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, place: Place, model: DigitModel, tall: boolean): void {
   if (time < 42750) return;
 
-  const plot = butterflyBox(box, tall);
+  const source = butterflyBox(box, tall);
+  const folding = tall ? zoomProgress(time) : 0;
+  const destination = runtimeChartBox(box, tall);
+  const plot = { x: mix(source.x, destination.x + destination.w / 2, folding), y: mix(source.y, destination.y + destination.h / 2, folding), w: source.w * (1 - folding), h: source.h * (1 - folding) };
   const maximum = butterflyProgress(time) * model.fftLevels.length;
   const current = Math.min(model.fftLevels.length - 1, Math.floor(maximum));
   const point = (column: number, entry: number): Point => ({ x: plot.x + column / model.fftLevels.length * plot.w, y: plot.y + entry / (model.fftSize - 1) * plot.h });
-  text(pen, 'A 16-POINT FOURIER TRANSFORM', plot.x + plot.w / 2, plot.y - (tall ? 14 : 23), tall ? 9 : 14, box.w - 6, colors);
+  if (!tall || time >= 45000 && time < 55500) text(pen, 'A 16-POINT FOURIER TRANSFORM', plot.x + plot.w / 2, plot.y - (tall ? 14 : 23), tall ? 9 : 14, box.w - 6, colors);
   pen.strokeStyle = colors.ink;
 
   for (let level = 0; level < model.fftLevels.length; level++) {
@@ -188,6 +193,8 @@ function butterfly(pen: CanvasRenderingContext2D, box: Box, time: number, colors
 
   const y = plot.y + plot.h + (tall ? 14 : 23);
 
+  if (tall && time >= 55500) return;
+
   if (maximum < model.fftLevels.length) text(pen, `LEVEL ${current + 1} OF ${model.fftLevels.length} · ALL ${model.fftSize} ENTRIES`, plot.x + plot.w / 2, y, tall ? 8.5 : 12, box.w - 6, colors);
   else {
     text(pen, 'WORK ON EVERY LEVEL:', plot.x + plot.w * .39, y, tall ? 8.5 : 12, plot.w * .75, colors);
@@ -203,7 +210,7 @@ function tape(pen: CanvasRenderingContext2D, stage: Box, time: number, colors: C
   const cell = Math.min(tall ? 18 : 27, stage.w / 11);
   const count = 9;
   const left = stage.x + (stage.w - count * cell) / 2;
-  const y = stage.y + mix(tall ? 132 : 228, stage.h - (tall ? 14 : 25), compact);
+  const y = stage.y + mix(tall ? 132 : 228, tall ? 60 : stage.h - 25, compact);
   const sequence = '101101001';
   const visible = reveal * count;
   pen.strokeStyle = colors.ink;
@@ -263,27 +270,31 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
 
   if (time < 32250) {
     const words = earlyStatus(model, time);
-    text(pen, words.title, x, box.y + (tall ? 43 : 105), tall ? 21 : 28, box.w - 6, colors);
-    text(pen, words.caption, x, box.y + (tall ? 93 : 165), tall ? 11 : 16, box.w - 6, colors);
+    text(pen, words.title, x, box.y + (tall ? 15 : 105), tall ? 21 : 28, box.w - 6, colors);
+    text(pen, words.caption, x, box.y + (tall ? 48 : 165), tall ? 11 : 16, box.w - 6, colors);
 
-    if (words.note) text(pen, words.note, x, box.y + (tall ? 129 : 216), tall ? 10 : 14, box.w - 6, colors);
+    if (words.note) text(pen, words.note, x, box.y + (tall ? 75 : 216), tall ? 10 : 14, box.w - 6, colors);
 
     return;
   }
 
   const zoom = zoomProgress(time);
-  text(pen, time >= 83500 ? 'UNREVIEWED · NO LEAN' : 'STEPS TO MULTIPLY', x, box.y + (tall ? 6 : 15), tall ? 12 : 19, box.w - 6, colors);
-  text(pen, zoom > 0 ? 'MULTITAPE TURING MACHINE · CONSTANTS 1' : 'MULTITAPE TURING MACHINE', x, box.y + (tall ? 27 : 45), tall ? 8.5 : 12, box.w - 6, colors);
-  history(pen, box, time, colors, place, tall);
+  if (!tall || time >= 37500) {
+    text(pen, time >= 83500 ? 'UNREVIEWED · NO LEAN' : 'STEPS TO MULTIPLY', x, box.y + (tall ? 6 : 15), tall ? 12 : 19, box.w - 6, colors);
+    text(pen, zoom > 0 ? 'MULTITAPE TURING MACHINE · CONSTANTS 1' : 'MULTITAPE TURING MACHINE', x, box.y + (tall ? 27 : 45), tall ? 8.5 : 12, box.w - 6, colors);
+  }
+  if (!tall || time < 63500) history(pen, box, time, colors, place, tall);
 
-  if (zoom > 0) {
+  if (zoom > 0 && (!tall || time < 63500)) {
     const compact = !tall && box.h < 460;
     text(pen, 'CLAIMED', box.x + box.w * .67, box.y + (tall ? 54 : compact ? 63 : 78), tall ? 9 : 13, box.w * .5, colors);
     place('kappa-bound', box.x + box.w * .67, box.y + (tall ? 75 : compact ? 85 : 105));
     runtime(pen, box, time, colors, place, tall);
   }
 
-  butterfly(pen, box, time, colors, place, model, tall);
+  const butterflyPanel = tall ? { ...box, y: stage.y } : box;
+
+  if (!tall || time < 58000) butterfly(pen, butterflyPanel, time, colors, place, model, tall);
   tape(pen, stage, time, colors, tall);
   gapReadouts(pen, stage, time, colors, place, tall);
 }

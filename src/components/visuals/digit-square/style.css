@@ -1,7 +1,7 @@
 uruk-digit-square:not([data-ready]) .film-subtitles { display: none; }
 
 @container plate (max-width: 599px) {
-  uruk-digit-square .film-stage { aspect-ratio: 4 / 11; }
-  uruk-digit-square:not([data-ready]) .film-stage { aspect-ratio: 4 / 8; }
+  uruk-digit-square .film-stage { aspect-ratio: 4 / 5; }
+  uruk-digit-square:not([data-ready]) .film-stage { aspect-ratio: 4 / 5; }
   uruk-digit-square .film-label { font-size: .75rem; }
 }
