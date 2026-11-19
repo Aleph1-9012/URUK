@@ -19,7 +19,7 @@ export function lineLayout(box: Box, tall: boolean, count = 64): LineLayout {
   const pitch = Math.min(count > 32 ? 15 : 27, available / columns);
   const x = box.x + (tall ? box.w / 2 : available / 2) - (columns - 1) * pitch / 2;
 
-  return { x, y: box.y + box.h * (tall ? .23 : .34), pitch, rowGap: box.h * .24, columns, rows, count, cellSize: Math.min(tall ? 6 : 9, pitch * .66), arcHeight: tall ? 25 : 38 };
+  return { x, y: box.y + box.h * (tall ? .23 : .34), pitch, rowGap: box.h * .24, columns, rows, count, cellSize: Math.min(tall ? 6 : 9, pitch * .66), arcHeight: tall ? Math.min(25, box.h * .075) : 38 };
 }
 
 export function cellPoint(value: number, geometry: LineLayout): Point {

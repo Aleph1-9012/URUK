@@ -63,7 +63,7 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
     if (time >= 46500) label(`+${completion.added} MAKES ${completion.progression.join(', ')}`, .43);
 
     label(tall ? `ALL ${model.nineSetCheck.count.toLocaleString('en-US')} NINE-SETS CHECKED\nEVERY ONE CONTAINS A PROGRESSION` : `ALL ${model.nineSetCheck.count.toLocaleString('en-US')} NINE-SETS: ${model.nineSetCheck.withProgression.toLocaleString('en-US')} CONTAIN A PROGRESSION`, .65);
-    label(tall ? 'SEPARATE CHECK:\nMAXIMUM 8 IS CERTIFIED' : 'THE SEPARATE EXHAUSTIVE CHECK CERTIFIES MAXIMUM 8', .89);
+    label(tall ? 'SEPARATE CHECK:\nMAXIMUM 8 IS CERTIFIED' : 'THE SEPARATE EXHAUSTIVE CHECK CERTIFIES MAXIMUM 8', tall ? .875 : .89);
 
     return;
   }
@@ -81,7 +81,7 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
     const settled = stackProgress(time) === 1;
     heading(settled ? `${model.partialBound.toFixed(2)} SO FAR` : 'STACKING THE UPPER CAPACITIES');
     label('1 + 1 + 0.75 + 0.5 + 0.5', .44, tall ? 15 : 20);
-    label(tall ? 'FOUR INDEPENDENT BLOCK CAPS\nPLUS THE SINGLETON {1}' : 'FOUR INDEPENDENT BLOCK CAPS PLUS THE SINGLETON {1}', .70);
+    label(tall ? 'FOUR INDEPENDENT BLOCK CAPS\nPLUS THE SINGLETON {1}' : 'FOUR INDEPENDENT BLOCK CAPS PLUS THE SINGLETON {1}', tall ? .68 : .70);
     label('A FINITE PARTIAL BOUND · NOT THE LIMIT', .94);
 
     return;
@@ -100,7 +100,7 @@ export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number
     heading('CLAIMED FOR EVERY FIXED k ≥ 3');
     place('claimed-bound', x, at(.37));
     place('claimed-decay', x, at(.62));
-    label(tall ? 'POSITIVE CONSTANTS UNSPECIFIED\nCURVE SCHEMATIC' : 'POSITIVE CONSTANTS UNSPECIFIED · CURVE SCHEMATIC', .88);
+    label(tall ? 'POSITIVE CONSTANTS UNSPECIFIED\nCURVE SCHEMATIC' : 'POSITIVE CONSTANTS UNSPECIFIED · CURVE SCHEMATIC', tall ? .87 : .88);
 
     return;
   }

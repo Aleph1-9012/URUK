@@ -229,7 +229,7 @@ export class ThickEnoughFilm {
     const powerCount = Math.min(model.powers20.length, 7 + Math.floor(powersProgress(time) * 13));
     const powerSum = model.powerSumAt(powerCount);
     const withdrawal = 1 - smooth(time, 36500, 37000);
-    const start = tall ? { x: bounds.x, y: bounds.y + bounds.h * .40 } : { x: bounds.x + bounds.w * .20, y: bounds.y + bounds.h };
+    const start = tall ? { x: bounds.x, y: bounds.y + bounds.h * .40 - 12 } : { x: bounds.x + bounds.w * .20, y: bounds.y + bounds.h };
     const length = tall ? bounds.w : bounds.h;
     const point = (value: number): Point => tall ? { x: start.x + value / maximum * length, y: start.y } : { x: start.x, y: start.y - value / maximum * length };
     const end = point(maximum * withdrawal);
@@ -252,12 +252,12 @@ export class ThickEnoughFilm {
     const markers = [{ key: 'P', value: primeSum, label: `${primeSum.toFixed(3)}`, row: tall ? -22 : .32 }];
 
     if (time >= 22000 && harmonicSum <= maximum) markers.push({ key: 'H', value: harmonicSum, label: `${harmonicSum.toFixed(3)}`, row: tall ? -22 : .12 });
-    if (time >= 29000) markers.push({ key: 'POW', value: powerSum, label: `${powerSum.toFixed(6)}`, row: tall ? -42 : .62 });
+    if (time >= 29000) markers.push({ key: 'POW', value: powerSum, label: `${powerSum.toFixed(6)}`, row: tall ? -34 : .62 });
 
     for (const marker of markers) {
       const at = point(marker.value);
       const x = tall ? bounds.x + bounds.w * (marker.key === 'H' ? .84 : marker.key === 'P' ? .45 : .22) : bounds.x + bounds.w * .66;
-      const y = tall ? start.y + marker.row : bounds.y + bounds.h * marker.row;
+      const y = tall ? start.y + marker.row + 12 : bounds.y + bounds.h * marker.row;
       pen.strokeStyle = colors.ink;
       pen.lineWidth = .55;
       line(pen, at.x, at.y, x, y + (tall ? 6 : 5));
@@ -269,9 +269,9 @@ export class ThickEnoughFilm {
       text(pen, `${marker.key}: ${marker.label}`, x, y, tall ? 8.5 : 12, tall ? bounds.w * .44 : bounds.w * .95, colors);
     }
 
-    text(pen, `FINITE LIMIT: ${limit.toLocaleString('en-US')}`, bounds.x + bounds.w / 2, tall ? start.y + 33 : bounds.y + bounds.h + 23, tall ? 8 : 10, tall ? bounds.w : bounds.w * 1.2, colors);
+    text(pen, `FINITE LIMIT: ${limit.toLocaleString('en-US')}`, bounds.x + bounds.w / 2, tall ? start.y + 27 : bounds.y + bounds.h + 23, tall ? 8 : 10, tall ? bounds.w : bounds.w * 1.2, colors);
 
-    if (time >= 29000) text(pen, `POW: FIRST ${powerCount} TERMS · BELOW 2`, box.x + box.w * (tall ? .5 : .90), tall ? bounds.y - 37 : bounds.y - 17, tall ? 8 : 10, tall ? bounds.w : bounds.w * 1.4, colors);
+    if (time >= 29000) text(pen, `POW: FIRST ${powerCount} TERMS · BELOW 2`, box.x + box.w * (tall ? .5 : .90), tall ? start.y + 40 : bounds.y - 17, tall ? 8 : 10, tall ? bounds.w : bounds.w * 1.4, colors);
   }
 
   private completions(box: Box, time: number, tall: boolean): void {
@@ -283,13 +283,19 @@ export class ThickEnoughFilm {
       const y = area.y + (index + .5) * row;
       const gap = completion.progression[1] - completion.progression[0];
 
-      if (index === current) {
+      if (index === current && !tall) {
         this.pen.strokeStyle = this.colors.ink;
         this.pen.lineWidth = .7;
         this.pen.strokeRect(area.x, y - row * .35, area.w, row * .7);
       }
 
       text(this.pen, `ADD ${completion.added}: ${completion.progression.join(', ')} · GAP ${gap}`, area.x + area.w / 2, y, tall ? 10 : 14, area.w - 8, this.colors);
+
+      if (index === current && tall) {
+        this.pen.strokeStyle = this.colors.ink;
+        this.pen.lineWidth = .7;
+        this.pen.strokeRect(area.x, y - row * .45, area.w, row * .9);
+      }
     }
   }
 
@@ -318,8 +324,15 @@ export class ThickEnoughFilm {
       pen.lineWidth = tall ? .75 : 1;
       if (height > 0) pen.strokeRect(transit.x, transit.y + transit.h - height, transit.w, height);
 
-      if (blockProgress(time) === 1 && stacking === 0 && entry.m > 0) text(pen, `${entry.ratio}`, transit.x + transit.w / 2, transit.y - 10, tall ? 9 : 12, Math.max(15, transit.w + 4), colors);
-      if (stacking === 1 && unfolding === 0) text(pen, `${entry.ratio}`, transit.x + transit.w / 2, transit.y + transit.h / 2, tall ? 10 : 13, transit.w - 4, colors);
+      if (blockProgress(time) === 1 && stacking === 0 && entry.m > 0) text(pen, `${entry.ratio}`, transit.x + transit.w / 2, transit.y - (tall ? 8 : 10), tall ? 9 : 12, Math.max(15, transit.w + 4), colors);
+      if (stacking === 1 && unfolding === 0) {
+        const centerY = transit.y + transit.h / 2;
+        const labelY = centerY - (tall && entry.m === 4 ? 2 : 0);
+
+        if (tall) line(pen, transit.x - 1, centerY, transit.x - 5, labelY);
+
+        text(pen, `${entry.ratio}`, tall ? transit.x - 8 : transit.x + transit.w / 2, labelY, tall ? 10 : 13, transit.w - 4, colors, tall ? 'right' : 'center');
+      }
 
       cumulative += entry.ratio;
     }

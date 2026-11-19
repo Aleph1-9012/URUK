@@ -54,7 +54,7 @@ export function envelopeProgress(time: number): number { return progress(time, 7
 export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
-  if (tall) return { stage: { x: width * .03, y: height * .02, w: width * .94, h: height * .60 }, panel: { x: width * .04, y: height * .65, w: width * .92, h: height * .32 }, tall };
+  if (tall) return { stage: { x: width * .03, y: height * .02, w: width * .94, h: height * 176 / 310 }, panel: { x: width * .04, y: height * 180 / 310, w: width * .92, h: height * 126 / 310 }, tall };
 
   return { stage: { x: width * .03, y: height * .025, w: width * .94, h: height * .62 }, panel: { x: width * .04, y: height * .67, w: width * .92, h: height * .29 }, tall };
 }
