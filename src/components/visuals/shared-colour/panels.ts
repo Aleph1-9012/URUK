@@ -32,15 +32,15 @@ function history(ctx: CanvasRenderingContext2D, width: number, height: number, t
       note(ctx, 'FOUND IN THIS ONE COLOURING', width, height, .84, tones);
       break;
     case 'finiteSums':
-      note(ctx, `${model.folkman.inputs.length} GENERATORS · ${model.folkman.sums.length} SUBSET SUMS`, width, height, first, tones);
-      labels.place('subset-example', width * .5, height * .76);
-      note(ctx, 'THE ADDITIVE STATEMENT ONLY', width, height, .84, tones);
+      note(ctx, `${model.folkman.inputs.length} GENERATORS · ${model.folkman.sums.length} SUBSET SUMS`, width, height, phone ? .735 : first, tones);
+      labels.place('subset-example', width * .5, height * (phone ? .84 : .76));
+      note(ctx, 'THE ADDITIVE STATEMENT ONLY', width, height, phone ? .93 : .84, tones);
       break;
     case 'exponents':
       note(ctx, "CARRY THE POWERS' COLOURS TO THEIR EXPONENTS", width, height, first, tones, phone ? 8.5 : 12);
-      labels.place('exponent-colour', width * .5, height * .74);
-      labels.place('power-product', width * .5, height * .83);
-      note(ctx, 'SUM OF EXPONENTS · PRODUCT OF POWERS', width, height, .90, tones, phone ? 8.5 : 11);
+      labels.place('exponent-colour', width * .5, height * (phone ? .78 : .74));
+      labels.place('power-product', width * .5, height * (phone ? .86 : .83));
+      note(ctx, 'SUM OF EXPONENTS · PRODUCT OF POWERS', width, height, phone ? .95 : .90, tones, phone ? 8.5 : 11);
       break;
     case 'both':
       note(ctx, 'ASK FOR BOTH OPERATIONS IN ONE COLOUR', width, height, first, tones);
@@ -84,13 +84,13 @@ function claimScope(ctx: CanvasRenderingContext2D, width: number, height: number
 
   const phone = width < PHONE_STAGE_WIDTH;
   const late = time >= SCENE_TIMES.review;
-  note(ctx, late ? 'CLAIMED: EVERY FINITE COLOURING · EVERY m' : 'CLAIMED: EVERY FINITE COLOURING\nEVERY PRESCRIBED FINITE SIZE', width, height, phone ? .68 : .66, tones, late ? (phone ? 8.5 : 11) : (phone ? 9 : 12));
+  note(ctx, late ? 'CLAIMED: EVERY FINITE COLOURING · EVERY m' : 'CLAIMED: EVERY FINITE COLOURING\nEVERY PRESCRIBED FINITE SIZE', width, height, phone ? late ? mix(.68, .61, motion.review) : .68 : .66, tones, late ? (phone ? 8.5 : 11) : (phone ? 9 : 12));
 
   if (late) return;
 
   if (motion.scene === 'paperClaim') {
     note(ctx, `THESE MARKS: ONE COLOURING, ${model.m3.inputs.length} GENERATORS`, width, height, .76, tones, phone ? 8.5 : 11);
-    labels.place('separation', width * .5, height * .86);
+    labels.place('separation', width * .5, phone ? height - 31 : height * .86);
   } else {
     labels.place('union-count', width * .5, height * .79);
 
@@ -110,7 +110,7 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
   const phone = width < PHONE_STAGE_WIDTH;
   const left = width * .055;
   const right = width * .945;
-  const top = height * .73;
+  const top = height * (phone ? mix(.76, .67, motion.review) : .73);
   drawLine(ctx, left, top - 8, mix(left, right, motion.review), top - 8, tones.ink, .8);
   drawText(ctx, 'UNREVIEWED · 20 OCT 2026', width * .5, top, { size: phone ? 9 : 12, color: tones.ink });
 
@@ -126,7 +126,7 @@ function ledger(ctx: CanvasRenderingContext2D, width: number, height: number, ti
     'MACHINE EVIDENCE · NOT HUMAN APPROVAL',
   ];
   const size = phone ? 8.5 : 11;
-  let topOfRow = height * .77;
+  let topOfRow = height * (phone ? .71 : .77);
 
   for (const [index, value] of rows.entries()) {
     if (motion.ledger < index / rows.length) continue;

@@ -6,6 +6,6 @@ uruk-shared-colour .film-label { font-size: .875rem; }
 }
 
 @container hsfilm (width < 600px) {
-  uruk-shared-colour .film-stage { aspect-ratio: 4 / 9; }
+  uruk-shared-colour .film-stage { aspect-ratio: 4 / 5; }
   uruk-shared-colour .film-label { font-size: .75rem; }
 }

@@ -133,7 +133,7 @@ class SharedColourFilm implements FilmDrawing {
     const { width: w, height: h } = this;
     const position = Math.log(n) / Math.log(this.extent(motion));
 
-    return this.phone ? { x: w * .13, y: h * (.105 + .495 * position) } : { x: w * (.065 + .87 * position), y: h * .36 };
+    return this.phone ? { x: w * .13, y: h * (.105 + mix(.495, .415, motion.review) * position) } : { x: w * (.065 + .87 * position), y: h * .36 };
   }
 
   private strip(time: number, motion: Motion): void {
@@ -280,7 +280,7 @@ class SharedColourFilm implements FilmDrawing {
       const originalWidth = Math.min(this.phone ? 14 : 19, w * .90 / columns - 2);
       this.cell(position, item.power, item.colour, mix(originalWidth, this.phone ? 23 : 34, lift), mix(this.phone ? 15 : 18, 18, lift), lift === 1);
 
-      if (lift > .95) this.text(String(item.k), to.x, to.y + 25, this.phone ? 12 : 17, true);
+      if (lift > .95) this.text(String(item.k), to.x, to.y + (this.phone ? 19 : 25), this.phone ? 12 : 17, true);
     }
 
     if (lift > .95) {
@@ -337,7 +337,7 @@ class SharedColourFilm implements FilmDrawing {
       const targetRank = index / Math.max(1, marks.length - 1);
       const oldIndex = model.m2.union.indexOf(mark.original);
       const rank = triple && oldIndex >= 0 ? mix(oldIndex / (model.m2.union.length - 1), targetRank, motion.tripleReveal) : targetRank;
-      const label = this.phone ? { x: w * .66, y: h * (.105 + .495 * rank) } : { x: w * (.07 + .86 * rank), y: h * (index % 2 ? .50 : .16) };
+      const label = this.phone ? { x: w * .66, y: h * (.105 + mix(.495, .415, motion.review) * rank) } : { x: w * (.07 + .86 * rank), y: h * (index % 2 ? .50 : .16) };
       const amount = triple && oldIndex < 0 ? motion.tripleReveal : motion.ribbon;
       const grid = triple && oldIndex < 0 ? this.axisPoint(computedValue(model.m2.union, -1), motion) : this.gridPoint(Math.min(mark.original, 64));
       const moving = { x: mix(grid.x, point.x, amount), y: mix(grid.y, point.y, amount) };
@@ -345,13 +345,18 @@ class SharedColourFilm implements FilmDrawing {
 
       if (amount > .97) {
         const corner = this.phone ? { x: w * .31, y: label.y } : { x: label.x, y: label.y + (index % 2 ? -15 : 15) };
-        drawLine(pen, point.x + (this.phone ? 6 : 0), point.y, corner.x, corner.y, tones.ink, .55);
+        if (!this.phone && w >= 760 && mark.value === 105 && !triple) {
+          const right = Math.min(w - 12, point.x + 24);
+          drawLine(pen, point.x, point.y, right, point.y, tones.ink, .55);
+          drawLine(pen, right, point.y, right, corner.y, tones.ink, .55);
+          drawLine(pen, right, corner.y, corner.x, corner.y, tones.ink, .55);
+        } else drawLine(pen, point.x + (this.phone ? 6 : 0), point.y, corner.x, corner.y, tones.ink, .55);
         drawLine(pen, corner.x, corner.y, label.x - (this.phone ? 25 : 0), label.y, tones.ink, .55);
         this.cell({ x: label.x - (this.phone ? 29 : 28), y: label.y }, Math.round(mark.value), mark.ink, 8, 8, false, !movingScale);
         const readout = movingScale ? 'MOVING' : String(Math.round(mark.value));
-        this.text(readout, label.x, label.y, calloutSize, true, true);
+        this.text(readout, label.x, label.y, calloutSize, true, !this.phone);
 
-        if (mark.input && !movingScale) this.text('A', label.x + (this.phone ? 40 : 34), label.y, this.phone ? 9 : 12, true, true);
+        if (mark.input && !movingScale) this.text('A', label.x + (this.phone ? 40 : 34), label.y, this.phone ? 9 : 12, true, !this.phone);
       }
     }
 
@@ -378,7 +383,7 @@ class SharedColourFilm implements FilmDrawing {
 
     if (motion.claim > 0) this.claim(motion);
 
-    if (motion.unionCount > 0) this.text(`${model.m3.counts.sums} + ${model.m3.counts.products} − ${model.m3.counts.shared} = ${model.m3.counts.union}`, w * .5, h * .64, this.phone ? 16 : 25, true, true);
+    if (motion.unionCount > 0) this.text(`${model.m3.counts.sums} + ${model.m3.counts.products} − ${model.m3.counts.shared} = ${model.m3.counts.union}`, w * .5, h * (this.phone ? mix(.64, .56, motion.review) : .64), this.phone ? 16 : 25, true, true);
 
     this.axisLabels(motion);
   }
@@ -411,7 +416,7 @@ class SharedColourFilm implements FilmDrawing {
     const x1 = w * (this.phone ? .91 : .05);
     const y1 = h * (this.phone ? .085 : .565);
     const x2 = this.phone ? x1 : w * .95;
-    const y2 = this.phone ? h * .615 : y1;
+    const y2 = this.phone ? h * mix(.615, .535, motion.review) : y1;
     drawLine(pen, x1, y1, mix(x1, x2, motion.claim), mix(y1, y2, motion.claim), tones.blue, 2, [5, 4]);
 
     if (this.phone) {
