@@ -71,11 +71,11 @@ class ClusterCurvesFilm implements FilmDrawing {
 
   private square(sample: Sample, motion: Motion): Square {
     const { width: w, height: h } = this;
-    const bigSide = Math.min(w * (this.phone ? .88 : .43), h * (this.phone ? .43 : .69));
-    const big = { x: w * (this.phone ? .5 : .26), y: h * (this.phone ? .35 : .43), side: bigSide };
+    const bigSide = Math.min(w * (this.phone ? .88 : .43), h * (this.phone ? .35 : .69));
+    const big = { x: w * (this.phone ? .5 : .26), y: h * (this.phone ? .405 : .43), side: bigSide };
     const smallSide = Math.min(w * (this.phone ? .15 : .12), h * .16);
-    const left = { x: w * (this.phone ? .22 : .66), y: h * (this.phone ? .065 : .20), side: smallSide };
-    const right = { x: w * (this.phone ? .78 : .84), y: h * (this.phone ? .065 : .20), side: smallSide };
+    const left = { x: w * (this.phone ? .22 : .66), y: h * (this.phone ? .11 : .20), side: smallSide };
+    const right = { x: w * (this.phone ? .78 : .84), y: h * (this.phone ? .11 : .20), side: smallSide };
     let current: Square;
 
     if (this.phone) {
@@ -243,7 +243,7 @@ class ClusterCurvesFilm implements FilmDrawing {
     }
 
     if (!opening || motion.edges === 1) {
-      const font = square.side < 100 ? (this.phone ? 8 : 10) : (this.phone ? 10 : 14);
+      const font = this.phone ? motion.thumbnails === 1 ? 8 : 10 : square.side < 100 ? 10 : 14;
       drawText(pen, `q = ${sample.q}`, square.x, motion.thumbnails === 1 ? square.y - square.side / 2 - 9 : square.y + square.side / 2 + (this.phone ? 9 : 12), { size: font, family: 'math', color: tones.ink, paper: tones.paper });
     }
 

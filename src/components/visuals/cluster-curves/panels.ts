@@ -29,23 +29,23 @@ export function drawClusterCurvesPanels(ctx: CanvasRenderingContext2D, w: number
 
   switch (motion.scene) {
     case 'grid':
-      note(motion.edges < 1 ? 'BUILDING THE q = 1 SAMPLE' : '545 OPEN EDGES · 83 CLUSTERS', center, phone ? .61 : .23, undefined, false, phone ? 9 : 13);
-      formula('cluster-weight', center, phone ? .72 : .39);
-      note('CLUSTER SIZE SETS THE DOT SIZE', center, phone ? .79 : .54);
-      formula('edge-probability', center, phone ? .89 : .72);
+      note(motion.edges < 1 ? 'BUILDING THE q = 1 SAMPLE' : '545 OPEN EDGES · 83 CLUSTERS', center, phone ? .645 : .23, undefined, false, phone ? 9 : 13);
+      formula('cluster-weight', center, phone ? .735 : .39);
+      note('CLUSTER SIZE SETS THE DOT SIZE', center, phone ? .81 : .54);
+      formula('edge-probability', center, phone ? .92 : .72);
       break;
     case 'models':
       if (phone) {
-        note('RETAINED SAMPLES', .5, .61, .91, false, 9);
+        note('RETAINED SAMPLES', .5, .635, .91, false, 9);
         for (const [index, sample] of model.samples.entries()) {
           if (sample.q === 2 && motion.q2Enter < 1) continue;
           if (sample.q === 3 && motion.q3Enter < 1) continue;
 
-          note(`q=${sample.q} · ${sample.clusterCount} CLUSTERS · ${sample.openEdgeCount} OPEN`, .5, .66 + index * .045, .94, false, 8.5);
+          note(`q=${sample.q} · ${sample.clusterCount} CLUSTERS · ${sample.openEdgeCount} OPEN`, .5, .678 + index * .039, .94, false, 8.5);
         }
-        note('INDEPENDENT SAMPLES · ONE EACH', .5, .84);
-        note('SAME SELF-DUAL FORMULA FOR p', .5, .89);
-        formula('edge-probability', .5, .95);
+        note('INDEPENDENT SAMPLES · ONE EACH', .25, .806, .46);
+        note('SAME SELF-DUAL FORMULA FOR p', .75, .806, .46);
+        formula('edge-probability', .5, .94);
       } else {
         for (const sample of model.samples) {
           if (sample.q === 1 && motion.q1Retreat < 1) continue;
@@ -65,9 +65,9 @@ export function drawClusterCurvesPanels(ctx: CanvasRenderingContext2D, w: number
         break;
       }
 
-      note('LOOPS: 135 · 151 · 187', center, phone ? .61 : .32, undefined, false, phone ? 9 : 13);
-      note('LONGEST: 892 · 336 · 228 STEPS', center, phone ? .65 : .38, undefined, false, phone ? 8 : 11);
-      note('RIBBON BOUNDARIES · LONGEST THICK', center, phone ? .69 : .44);
+      note('LOOPS: 135 · 151 · 187', center, phone ? .635 : .32, undefined, false, phone ? 9 : 13);
+      note('LONGEST: 892 · 336 · 228 STEPS', center, phone ? .68 : .38, undefined, false, phone ? 8 : 11);
+      note('RIBBON BOUNDARIES · LONGEST THICK', center, phone ? .72 : .44);
       note('NOT A DOBRUSHIN INTERFACE', center, phone ? .96 : .83, undefined, false, phone ? 8 : 11);
       if (motion.loopZoom === 0 || motion.loopReturn === 1) {
         note('SAME LOOK AT EVERY SCALE:\nPREDICTED, NOT SHOWN BY ONE SAMPLE', center, phone ? .79 : .59);
@@ -109,16 +109,16 @@ export function drawClusterCurvesPanels(ctx: CanvasRenderingContext2D, w: number
       note('△ TRIANGULAR SITE · ○ FK-ISING', .56, .19, .79, true, phone ? 9 : 12);
       if (motion.claimScope > 0) {
         note('CLAIMED · SQUARE-LATTICE LIMITS', .52, .73, .94, false, phone ? 9 : 12);
-        formula('sle-scope', phone ? .50 : .29, phone ? .80 : .81);
-        formula('cle-scope', phone ? .50 : .75, phone ? .86 : .81);
-        note('q < 1: SMOOTH DOMAINS', .52, phone ? .90 : .86, .94, true, phone ? 9 : 12);
+        formula('sle-scope', phone ? .25 : .29, .81);
+        formula('cle-scope', .75, .81);
+        note('q < 1: SMOOTH DOMAINS', .52, phone ? .87 : .86, .94, true, phone ? 9 : 12);
       }
       if (motion.scene === 'claim' && motion.qRings > 0) {
-        note('RINGS MARK q, NOT THESE SAMPLES\nq = 0 IS A LIMIT · NOTHING FOR q > 4', .52, phone ? .94 : .90, .95, true, phone ? 9 : 12);
+        note('RINGS MARK q, NOT THESE SAMPLES\nq = 0 IS A LIMIT · NOTHING FOR q > 4', .52, phone ? .91 : .90, .95, true, phone ? 9 : 12);
       }
       if (motion.scene === 'review' && motion.ledger > 0) {
-        note('UNREVIEWED · 20 OCTOBER 2026', .52, phone ? .94 : .92, .95, false, phone ? 9 : 13);
-        note('MACHINE CHECK: NONE', .52, phone ? .98 : .97, .95, false, phone ? 8 : 11);
+        note('UNREVIEWED · 20 OCTOBER 2026', .52, phone ? .91 : .92, .95, false, phone ? 9 : 13);
+        note('MACHINE CHECK: NONE', .52, phone ? .96 : .97, .95, false, phone ? 8 : 11);
       }
       break;
   }
