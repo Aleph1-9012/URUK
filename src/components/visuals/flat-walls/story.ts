@@ -7,9 +7,9 @@ export const CUES = [
   { at: 25750, title: 'Why dimension eight?', text: 'In 1978 Ennio De Giorgi conjectured that in dimensions up to eight, any solution that rises monotonically in one direction must be a flat wall, and he chose eight because of the Bernstein problem for minimal surfaces, where flat is forced through dimension eight and fails from nine.', sources: [1] },
   { at: 43250, title: 'The earlier frontier', text: 'The conjecture was proved in two dimensions in 1998, in three in 2000, and through eight by Ovidiu Savin in 2009 under an extra assumption that the solution really reaches $\\pm1$ far away; del Pino, Kowalczyk and Wei built non-flat monotone solutions in dimension nine and above in 2011.', sources: [1, 3, 4] },
   { at: 61000, title: 'A claim at the endpoint', text: 'On 26 September 2026 OpenAI posted a paper claiming dimension eight, the sharp endpoint.', sources: [1] },
-  { at: 68000, title: 'The monotone claim', text: 'Let $u\\in C^{2}(\\mathbb R^{8},(-1,1))$ satisfy $\\Delta u=u^{3}-u$ and $\\partial_8u>0$.', sources: [1] },
+  { at: 68000, title: 'The monotone claim', text: 'Theorem 1.1, monotone rigidity in dimension eight: a solution of $\\Delta u=u^{3}-u$ on $\\mathbb R^{8}$ with $|u|\\le1$ and $\\partial_8u>0$ is a one-dimensional profile $g(a\\cdot x-b)$.', sources: [1] },
   { at: 78000, title: 'No extra assumption', text: 'Neither energy growth nor minimization is assumed; both, and the limits at infinity, are consequences.', sources: [1] },
-  { at: 88000, title: 'The stable claim in seven', text: 'Then $v\\equiv1$, $v\\equiv-1$, or $v(x)=\\tanh((a\\cdot x-b)/\\sqrt2)$ for some $a\\in\\mathbb S^{6}$, $b\\in\\mathbb R$. No energy-growth assumption is required.', sources: [1] },
+  { at: 88000, title: 'The stable claim in seven', text: 'Let $v\\in C^{2}(\\mathbb R^{7},[-1,1])$ be a stable solution of $\\Delta v=v^{3}-v$. Then $v\\equiv1$, $v\\equiv-1$, or $v(x)=\\tanh((a\\cdot x-b)/\\sqrt2)$ for some $a\\in\\mathbb S^{6}$, $b\\in\\mathbb R$. No energy-growth assumption is required.', sources: [1] },
   { at: 98000, title: 'Where the proof stands', text: 'As of 20 October 2026 no mathematician has said publicly that they have read or checked the proof.', sources: [1, 6] },
 ] as const;
 
