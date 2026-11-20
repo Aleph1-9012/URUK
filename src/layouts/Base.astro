@@ -27,6 +27,7 @@ const { title, math = false } = Astro.props;
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{title}</title>
+    <slot name="head" />
   </head>
   <body>
     <slot />

@@ -1,0 +1,51 @@
+---
+import impression from '../../assets/roll/seal-impression.png';
+import roller from '../../assets/roll/roller-desktop.png';
+
+// One turn of the 110-unit cylinder prints the 346-unit band.
+const bandWidth = 346;
+const sceneWidth = 500;
+const rollerWidth = 120;
+const start = (sceneWidth - bandWidth) / 2;
+const face = 'M-54 40 Q0 57 54 40 L54 146 Q0 167 -54 146 Z';
+const geometry = {
+  '--seal-roller-left': `${(100 * (start - rollerWidth / 2)) / sceneWidth}%`,
+  '--seal-roller-width': `${(100 * rollerWidth) / sceneWidth}%`,
+  '--seal-roller-distance': `${(100 * bandWidth) / rollerWidth}%`,
+  '--seal-carving-distance': `-${bandWidth}px`,
+  '--seal-print-start': `${100 * (1 - start / sceneWidth)}%`,
+  '--seal-print-end': `${100 * (1 - (start + bandWidth) / sceneWidth)}%`,
+};
+---
+
+<div class="seal-transition__scene" style={geometry}>
+  <svg viewBox="0 0 500 180">
+    <path class="seal-transition__rules" d="M9 38H491 M21 43H479 M9 155H491 M21 160H479 M22 33V48 M478 33V48 M22 150V165 M478 150V165" />
+  </svg>
+
+  <div class="seal-transition__print">
+    <svg viewBox="0 0 500 180">
+      <path class="seal-transition__rules" d={`M${start} 48H${start + bandWidth} M${start} 150H${start + bandWidth}`} />
+      <image href={impression.src} x={start} y="51" width={bandWidth} height="97" />
+    </svg>
+  </div>
+
+  <div class="seal-transition__roller">
+    <svg viewBox="-60 0 120 180">
+      <defs>
+        <clipPath id="seal-cylinder-face"><path d={face} /></clipPath>
+        <clipPath id="seal-cylinder-cap"><path d="M-65 0H65V35H55C55 49 -55 49 -55 35H-65Z" /></clipPath>
+      </defs>
+      <path class="seal-transition__stone" d="M-55 35 H55 V148 C55 171 -55 171 -55 148 Z" />
+      <g clip-path="url(#seal-cylinder-face)">
+        <g class="seal-transition__carving">
+          {[0, bandWidth].map((x) => (
+            <image href={impression.src} x={x - bandWidth + 128} y="48" width={bandWidth} height="98" />
+          ))}
+        </g>
+        <path class="seal-transition__hatching" d="M-51 39V151 M-48 39V154 M-44 39V156 M-39 39V157 M-34 39V159 M-28 39V160" />
+      </g>
+      <image href={roller.src} x="-88" y="-9" width="178" height="626" clip-path="url(#seal-cylinder-cap)" />
+    </svg>
+  </div>
+</div>

@@ -609,6 +609,85 @@ async function checkNumerics(browser: Browser, origin: string): Promise<void> {
   }
 }
 
+async function checkSealTransition(page: Page, origin: string): Promise<void> {
+  await page.addInitScript(() => {
+    new MutationObserver(() => {
+      const root = document.documentElement;
+      if (root.dataset.sealStage === 'arriving' || root.dataset.sealStage === 'opening') {
+        root.dataset.sealPlayed = 'true';
+      }
+    }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-seal-stage'] });
+    window.addEventListener('pagehide', () => { delete document.documentElement.dataset.sealPlayed; });
+  });
+
+  const cover = page.locator('.seal-transition');
+  const html = page.locator('html');
+
+  async function checkArrival(path: string, plays: boolean): Promise<void> {
+    await page.waitForURL(`${origin}${path}`);
+    if (plays) await page.waitForFunction(() => document.documentElement.dataset.sealPlayed === 'true');
+    await cover.waitFor({ state: 'hidden' });
+    assert.equal(await html.getAttribute('data-seal-played'), plays ? 'true' : null);
+  }
+
+  await page.goto(`${origin}/results/248/`);
+  await checkArrival('/results/248/', false);
+
+  await page.goto(`${origin}/results/`);
+  await page.getByRole('searchbox').fill('248');
+  await page.locator('.roll-card[href="/results/248/"]').click();
+  await checkArrival('/results/248/', true);
+
+  const release = Promise.withResolvers<void>();
+  const scripts = Promise.withResolvers<void>();
+  const nextResult = `${origin}/results/261/`;
+  const scriptPattern = '**/_astro/*.js';
+  let delayedScripts = 0;
+  await page.route(nextResult, async (route) => {
+    if (route.request().isNavigationRequest()) await release.promise;
+    await route.continue();
+  });
+
+  try {
+    await page.locator('.result-neighbors [rel="next"]').click();
+    await page.waitForFunction(() => {
+      if (location.pathname !== '/results/248/' || document.documentElement.dataset.sealStage !== 'covered') return false;
+
+      const paper = document.querySelector('.seal-transition__paper')?.getBoundingClientRect();
+      return paper?.x === 0 && paper.y === 0 && paper.width === innerWidth && paper.height === innerHeight;
+    });
+    await page.route(scriptPattern, async (route) => {
+      delayedScripts += 1;
+      await scripts.promise;
+      await route.continue();
+    });
+    release.resolve();
+    await page.waitForURL(nextResult, { waitUntil: 'commit' });
+    await page.locator('.result-introduction h1').waitFor({ state: 'visible' });
+    await cover.waitFor({ state: 'hidden' });
+    assert.ok(delayedScripts > 0, 'The result opens while its deferred scripts are loading.');
+    assert.notEqual(await page.evaluate(() => document.readyState), 'complete');
+  } finally {
+    release.resolve();
+    scripts.resolve();
+  }
+
+  await checkArrival('/results/261/', true);
+  await page.unroute(scriptPattern);
+  await page.unroute(nextResult);
+  await page.locator('.result-neighbors [rel="prev"]').click();
+  await checkArrival('/results/248/', true);
+  await page.goBack();
+  await checkArrival('/results/261/', false);
+  await page.reload();
+  await checkArrival('/results/261/', false);
+
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('.result-neighbors [rel="prev"]').click();
+  await checkArrival('/results/248/', false);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+}
+
 async function checkBackToTopMotion(page: Page, origin: string): Promise<void> {
   await page.goto(origin);
   const floating = page.locator('.back-to-top__floating');
@@ -749,6 +828,7 @@ await withSiteBrowser(async (browser, origin) => {
 
   try {
     const page = await playback.newPage();
+    await checkSealTransition(page, origin);
     await checkBackToTopMotion(page, origin);
     await checkPlayback(page, origin);
     await checkStandardMap(page, origin);
@@ -756,5 +836,5 @@ await withSiteBrowser(async (browser, origin) => {
     await playback.close();
   }
 
-  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, and back-to-top navigation and wheel rotation.`);
+  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, the seal transition, and back-to-top navigation and wheel rotation.`);
 });

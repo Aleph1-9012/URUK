@@ -75,6 +75,8 @@ const content = renderResult(entry.body, data.link);
       </div>
     </div>
 
+    <script is:inline>document.dispatchEvent(new Event('uruk:result-opening-ready'));</script>
+
     <div class="folio-row result-standfirst">
       <div class="folio-row__text result-prose" set:html={content.introduction} />
     </div>
