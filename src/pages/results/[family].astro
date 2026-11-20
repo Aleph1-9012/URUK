@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/icon/Icon.astro';
 import Section from '../../components/result/Section.astro';
 import Roll from '../../components/roll/Roll.astro';
 import Sources from '../../components/sources/Sources.astro';
@@ -23,6 +24,9 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 
 const { entry, results } = Astro.props;
 const { data } = entry;
+const resultIndex = results.findIndex(({ data: result }) => result.family === data.family);
+const previous = results[resultIndex - 1]?.data;
+const next = results[resultIndex + 1]?.data;
 
 if (!entry.body) {
   throw new Error(`Result ${data.family} has no text.`);
@@ -33,7 +37,21 @@ const content = renderResult(entry.body, data.link);
 
 <PageLayout title={`${data.family} · ${data.topic} · Uruk`} active="results" math>
   <article class="folio-page result-page">
-    <a class="result-breadcrumb case-link" href="/results/">All results / {data.family}</a>
+    <div class="result-top-links">
+      <a class="result-breadcrumb case-link" href="/results/">All results / {data.family}</a>
+      {(previous || next) && <nav class="result-neighbors" aria-label="Adjacent results">
+        {previous && <a class="result-neighbor case-link case-link--framed" href={`/results/${previous.family}/`} rel="prev">
+          <Icon name="left" />
+          <span>Previous result</span>
+          <span class="visually-hidden">, {previous.family} · {previous.title}</span>
+        </a>}
+        {next && <a class="result-neighbor result-neighbor--next case-link case-link--framed" href={`/results/${next.family}/`} rel="next">
+          <span>Next result</span>
+          <span class="visually-hidden">, {next.family} · {next.title}</span>
+          <Icon name="right" />
+        </a>}
+      </nav>}
+    </div>
     <div class="result-opening">
       {data.visual ? (
         <ResultVisual visual={data.visual} />
