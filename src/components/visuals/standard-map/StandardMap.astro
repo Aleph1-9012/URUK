@@ -7,7 +7,7 @@ import { K_MAX, K_MIN, K_START } from './orbits';
 import { describeK, formatK } from './labels';
 ---
 
-<Plate caption="The standard map. Closed curves are orderly orbits; the dust around them is the chaotic sea. Drag the line to change the kick k." leftOut="the theorem’s k, which is larger than this line reaches and which the paper never computes; and whether the dust covers any area, which no picture can show.">
+<Plate caption="The standard map. Closed curves are orderly orbits; the dust around them is the chaotic sea. Drag the line to change the kick k.">
   <uruk-standard-map>
     <div class="plate__figure" data-map-figure>
       <canvas role="img" aria-label={`Orbits of the standard map at k = ${formatK(K_START)}.`} data-map-canvas></canvas>

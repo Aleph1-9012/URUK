@@ -17,7 +17,6 @@ const dualLabel = renderFormula(String.raw`T:\ \text{one vertex per face}`, fals
   step={50}
   description="A walker traces Hamiltonian tours on planar drawings of a cube, a hexagonal prism and a truncated octahedron. Filled and open corners alternate along every edge. Faces on each side of a tour form two dual trees, including the outer face, and further tours avoid selected edges. A blue ring identifies the unreviewed general claim. A full text transcript follows."
   caption="A walker visits every corner of a cube, a hexagonal prism and a truncated octahedron exactly once and comes home. Each tour splits the faces into two trees. The paper claims every polyhedron with three edges at each corner and even faces has such a tour."
-  leftOut="the triangulation drawing itself, with the dual shown instead as face trees; the weighted sum and its states; Euler's count; induction on separating triangles; the Pfaffian strengthening; Feder–Subi and Kardoš. The drawings test the displayed finite graphs and do not verify the claimed general proof."
 >
   <Fragment slot="labels">
     <span class="film-label" data-label="dual-t"><span set:html={dualLabel} /></span>

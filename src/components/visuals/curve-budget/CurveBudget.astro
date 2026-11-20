@@ -24,7 +24,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film about curves through fixed points, the coefficients each point requires, and the degree threshold in Nagata's conjecture. It illustrates the approved proof with a pinched cubic and interpolation. A complete text transcript follows."
   caption="Curves through ten scattered points: why counting coefficients suggests the line d = m√r, why nine points sit on it and ten points must stay above it, and how the approved proof turns that into interpolation one row at a time."
-  leftOut="Seshadri constants and the nef class; Hilbert's fourteenth problem; the earlier bounds and cone constructions; the cyclic product, normal polynomial and ruled surface; the interpolation matrix and row-count conditions; the common power of the curve; the SHGH conjecture; the Lean comparator. The proof drawings are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

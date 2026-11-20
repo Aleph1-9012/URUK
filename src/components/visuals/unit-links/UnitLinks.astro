@@ -25,7 +25,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film counting equal-length links among points, then comparing possible growth with upper caps on one exponent line. The September claim moves the cap in an unspecified direction. Its proof drawings are schematic, and its status is unreviewed. A full text transcript follows."
   caption="Points linked at exactly one unit: small sets and grids counted, Erdős's rescaled grid, the caps from two circles and from 1984, Valtr's non-round circles, and the claimed proof that lowers the cap by an unnamed amount using the jump d and its reciprocal 1/d."
-  leftOut="the constant sharpening of Ágoston and Pálvölgyi; Katz and Silier's structure and the rigidity approach of Pach, Raz and Solymosi; the May construction's number-field tower; the crossing number inequality; algebraic specialisation and random cuttings; the prediction lemma, histories and conditional copies; the scale S, the bounded case and its determinant; common and rare levels; the subfield, differentiated equations and valuations; the pinned-distance companion paper; Lean. The proof drawings are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

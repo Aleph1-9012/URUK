@@ -58,15 +58,6 @@
   text-align: center;
 }
 
-.plate .plate__caption p {
-  font: inherit;
-  letter-spacing: inherit;
-}
-
-.plate__left-out {
-  color: var(--muted);
-}
-
 .plate-controls {
   align-items: start;
   column-gap: 26px;

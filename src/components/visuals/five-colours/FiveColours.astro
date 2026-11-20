@@ -20,7 +20,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film about colouring the plane. A unit ruler builds a triangle and a Moser spindle, seven colours tile the plane, and a ledger follows the known bounds before the claimed proof turns wild colourings into tame ones. A complete text transcript follows."
   caption="Colouring the plane so that points one unit apart differ: why four colours are needed and seven suffice, the 2018 step to five, and how the claimed proof rules out five by taming any colouring and trapping the Moser spindle."
-  leftOut="de Bruijn–Erdős compactness; earlier measurable and map-type results; the spectral theorem, dual group and Haar measure; the Furstenberg–Zimmer tower and number-field lemma; the easy direction through density points; transition graphs and cyclic centres; the angular and parity arguments for four- and five-cycles; the uncomputed constant; the follow-up work and Lean development. The proof drawings are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

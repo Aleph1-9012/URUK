@@ -26,7 +26,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film of Thompson's interval maps, the share of a finite set changed by a move, and the approved nonamenability proof using averages and fixed points. A complete text transcript follows."
   caption="Thompson's maps as graphs, what a fair average would mean, why the question stayed open for fifty years, and how the approved proof shows that every finite set of F is moved by a definite share."
-  leftOut="the Banach–Tarski construction; the appendix's curve, tube and Lipschitz constants; admissible levels; the detailed correlation and variance calculations; Kim and Lodha's extensive amenability argument and Theorem 2.7; the groups T and V; the related work of Olshanskii–Sapir and Haagerup–Olesen; Moore's Ramsey reformulation; the Lean statement. The proof drawings are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

@@ -30,7 +30,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film showing how matrices stretch vectors, how their numerical ranges record more than their eigenvalues, and why the factor two is sharp. Separate scalar and complete lanes distinguish the checked scalar theorem from OpenAI's unreviewed complete claim. A complete text transcript follows."
   caption="A matrix whose eigenvalues are zero doubles a length, and the region swept out by x*Ax sees it: the factor two, its history from 11.08, and the claimed complete version, with the direct proof's positivity drawn on a 2 × 2 example."
-  leftOut="the Faber-type polynomials and coefficient estimate; the three functionals and their dual norms; the resolvent's coefficient arrays; the structural route's minimizing metric, extremal vectors and density systems; the density Λ and representation formula; holomorphic and rational functions; the passage to bounded operators; degenerate ranges; Delyon and Delyon; applications in GMRES and rational Krylov methods; Lean. The FG/GF step is schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', { 'film-label--matrix': label.matrix, 'film-label--wide': label.wide }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

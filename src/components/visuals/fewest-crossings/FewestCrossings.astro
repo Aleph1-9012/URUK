@@ -26,7 +26,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film counting crossings in graph drawings. Turán's brickyard moves into Zarankiewicz's drawing; two-page drawings match the Harary–Hill formula. Separate proof gauges compare known lower bounds with OpenAI's unreviewed claims. Signed closed curves illustrate the proof idea. A complete text transcript follows."
   caption="Turán's brickyard and the complete graph: drawings counted crossing by crossing, the two-page drawing that hits the Harary–Hill formula, eighty years of partial proofs, and the claimed proofs' idea, signed crossings of closed curves adding to zero."
-  leftOut="Hill's cylindrical drawing; Guy's 1960 bound; semidefinite programming; the 2018 claimed proof; the normalization appendix; the full cycle pairing and its half-order terms; the Lagrange weights and polynomial cycle tests; the even-node detector and injectivity descent; the diagonal form and isotropy; the bipartite subspace intersection bound, rank detector and block relation; crossing-number variants and the rectilinear crossing number. The proof's spoke correction and dimension pairing are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class="film-label film-label--formula" data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

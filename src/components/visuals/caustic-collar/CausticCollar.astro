@@ -18,7 +18,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film of reflected billiard paths in an ellipse and a one-percent nonelliptical deformation, alongside their computed phase portraits. Nested caustics, earlier results and periodic polygon families explain the unreviewed claim that a continuous gap-free band near the rim forces an ellipse. A complete text transcript follows."
   caption="Billiards in an ellipse and in the same table changed by one percent: caustics and the phase cylinder, what earlier theorems assumed, the claim that a gap-free band of caustics by the rim forces an ellipse, and the broken three-bounce curve of periodic orbits."
-  leftOut="Marvizi and Melrose's grazing integral; Bialy and Mironov's symmetric case; the continuous caustic collar's homeomorphism definition; the area-recurrence argument and analytic Newton step; the finite-chain determination and no-patch property; the growth classes, quiet profiles, angle budget, Brownian-path transfer and row sign test; the companion's construction of smooth caustics from continuous invariant curves; whispering-gallery optics. The complex-continuation picture and ledger icons are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class="film-label film-label--equation" data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

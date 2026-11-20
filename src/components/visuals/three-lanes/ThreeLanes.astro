@@ -15,7 +15,6 @@ const model = createSchedulingModel();
   step={50}
   description="Nine one-hour jobs have nine directed precedence constraints. Their Coffman–Graham priorities and exact schedules are computed from the graph. The rule is optimal at five hours on two machines, but takes four hours on three machines where an exact search finds three. The rule and optimum remain visible as separate plans for the same jobs. A blue bracket marks the paper's claimed polynomial-time algorithm for nonempty precedence DAGs of unit jobs on three identical machines. A full text transcript follows."
   caption="Nine one-hour jobs, some waiting for others. The Coffman–Graham rule schedules them as fast as possible on two lanes, but takes 4 hours on three lanes where 3 will do. The paper claims an exact polynomial-time method for three lanes, open since 1979, with an exponent of 150,020 and no practical claim."
-  leftOut="the algorithm, which the visual note says cannot be shown; the approximation schemes and special cases; the multitape Turing-machine model; the Lean statement's encoding."
 >
   <Fragment slot="labels">
     <span class="film-label" data-label="runtime-exponent"><span set:html={renderFormula('150{,}020', false)} /></span>

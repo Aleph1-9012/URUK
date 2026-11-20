@@ -19,7 +19,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film about groups as networks, their directions to infinity, Cannon's sphere-boundary question, and the approved proof's bound on the cost of blocking paths. A complete text transcript follows."
   caption="A group drawn as a network of moves, the sphere at infinity where its paths end, why topology alone is not roundness, and how the approved proof keeps the cost of blocking paths bounded, as on a square grid."
-  leftOut="the hyperbolicity constant; visual metrics, quasisymmetry and conformal dimension; the earlier alternative routes; crossing duality, path envelopes and Hölder continuity; the sweep and puncture count; Sullivan–Tukia and the measurable Riemann mapping theorem; the finite kernel and orientation reversal; the fibering corollaries and Lean ledger. The proof drawings are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

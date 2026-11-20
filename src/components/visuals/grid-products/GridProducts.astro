@@ -28,7 +28,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film counting the work of multiplying grids, showing Strassen's seven products and the history of the exponent, then illustrating the claimed proof with polynomial products and two bounds. A full text transcript follows."
   caption="Why two grids take n³ multiplications the school way, how Strassen's seven products and fifty-seven years of records brought the exponent to 2.371177, and how the claimed proof squeezes it to 9/4."
-  leftOut="the 2.3725 barrier; border rank, the asymptotic sum inequality and laser method; why a bound on ν bounds ω; Fourier separation and determinant filtration; the proof of Lemma 4.1; Strassen's spectrum theorem and appendix; the practical crossover; the rectangular and all-fields follow-ups. The character meters and test value t = 0.9 are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

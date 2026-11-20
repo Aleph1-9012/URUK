@@ -16,7 +16,6 @@ const mu = renderFormula(String.raw`\mu_1 = ${model.mu1.toFixed(2)}`, false);
   step={50}
   description="Ink contours and stippled warmth evolve on an insulated plate. A plus ring marks the hottest grid cell and a minus ring the coldest. The field settles towards the computed first Neumann mode. Gradient arrows show its nonzero sampled interior slopes. A schematic plate with holes recalls the known counterexamples, and a blue boundary band marks the unreviewed general claim. A full text transcript follows."
   caption="A plate warmed in one place and cooled in another evens out behind an insulated edge. Its hottest and coldest points drift to the edge and stay there, at the ends of the shape that is left as the heat fades. The paper claims this for every smooth plate without holes, with no flat point inside at all."
-  leftOut="the proof's machinery; multiple eigenvalues; the three-dimensional counterexample of Atar and Burdzy; the exact Burdzy–Werner domain. The finite-grid calculation illustrates one plate and does not verify the theorem for all smooth plates without holes."
 >
   <Fragment slot="labels">
     <span class="film-label" data-label="mode-mu"><span set:html={mu} /></span>

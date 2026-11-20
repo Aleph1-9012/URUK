@@ -17,7 +17,6 @@ interface Props {
   /** What the canvas shows, for readers who cannot see it. */
   description: string;
   caption: string;
-  leftOut: string;
   /** Formulas the film places over the canvas by `id`. */
   labels?: readonly { id: string; tex: string }[];
   /** Transcript headings. Each cue's own title is used when omitted. */
@@ -27,11 +26,11 @@ interface Props {
   layout?: 'classic' | 'grid';
 }
 
-const { tag: Tag, cues, timeline, description, caption, leftOut, labels = [], scenes = cues.map((cue, first) => ({ title: cue.title ?? '', first })), step = 100, layout } = Astro.props;
+const { tag: Tag, cues, timeline, description, caption, labels = [], scenes = cues.map((cue, first) => ({ title: cue.title ?? '', first })), step = 100, layout } = Astro.props;
 const hasLabels = labels.length > 0 || Astro.slots.has('labels');
 ---
 
-<Plate caption={caption} leftOut={leftOut}>
+<Plate caption={caption}>
   <Tag class:list={['film-host', layout && `film-host--${layout}`]}>
     <div class="film-frame">
       <div class="film-stage" data-film-viewport>

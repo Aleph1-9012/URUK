@@ -21,7 +21,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film of computed electron waves on a grid, comparing strong, medium and weak random disorder. A two-panel map distinguishes the claimed two-dimensional pure point result from the small absolutely continuous band in three dimensions. A complete text transcript follows."
   caption="An electron's wave on a grid, free without impurities and trapped by strong ones; the long-predicted map of trapped and spreading states; and the two claimed proofs: pure point spectrum in two dimensions, and a band of spreading states in three and up."
-  leftOut="one dimension and diffusion; multiscale analysis, fractional moments and spectral averaging; the earlier partial results; the forms of the unknown disorder thresholds; Fourier and packing bounds; scattering-matrix clearing; resonant cells and the acceptance likelihood; the port hierarchy, screening and analytic test; other disorder laws and the Lean statement. The proof drawings are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}

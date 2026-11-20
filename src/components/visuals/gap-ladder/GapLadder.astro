@@ -30,7 +30,6 @@ const labels = [
   timeline={TIMELINE}
   description="A film of a ring of quantum magnets and its energy ladder. Computed gaps for small rings are compared with three claimed lower bounds. The proof is illustrated through two probability distributions and repeated doubling. A complete text transcript follows."
   caption="A ring of quantum magnets and its ladder of energies; the gap, computed for small rings, closing for spin one half and levelling off for spin one; and the claimed proof that it never closes for spin one, which squares two distributions hidden in one number."
-  leftOut="the earlier extensions and perturbation results; how White and Huse computed; the ordered bond expansion, symmetry sectors and energy shift; the coupled update's constants and interpolation exponent; the conditioned Poisson polynomial and interval enclosures; matrix-product energies and thermodynamic limits; the open-chain boundary update and topological index; odd rings, free ends, other fields and higher spins. The proof drawings are schematic."
 >
   <Fragment slot="labels">
     {labels.map((label) => <span class:list={['film-label', 'film-label--small', { 'film-label--blue': label.blue }]} data-label={label.id}><span set:html={formula(label.tex)} /></span>)}
