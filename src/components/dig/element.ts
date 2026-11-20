@@ -33,7 +33,9 @@ class UrukDig extends HTMLElement {
   }
 
   private reveal(next: number): void {
-    const hadFocus = this.controls?.contains(document.activeElement) ?? false;
+    const active = document.activeElement;
+    const hadFocus = this.controls?.contains(active) ?? false;
+    const keyboardFocus = active?.matches(':focus-visible') ?? false;
 
     for (const layer of this.layers.slice(this.open, next)) {
       layer.toggleAttribute('data-just-dug', true);
@@ -48,37 +50,29 @@ class UrukDig extends HTMLElement {
         : `Layer ${NUMERALS[this.open - 1]} open.`;
     }
 
-    this.controls?.scrollIntoView({ block: 'nearest' });
-
     if (!hadFocus) {
       return;
     }
 
     // Moving the controls drops focus, and once every layer is open they are gone, so it goes to the last heading.
     if (this.open === this.layers.length) {
-      this.layers.at(-1)?.querySelector('h3')?.focus({ preventScroll: true });
+      this.layers.at(-1)?.querySelector('h3')?.focus({ preventScroll: !keyboardFocus });
     } else {
-      this.ring?.focus({ preventScroll: true });
+      this.ring?.focus({ preventScroll: !keyboardFocus });
     }
   }
 
   private render(): void {
     this.layers.forEach((layer, index) => {
-      const closed = index >= this.open;
-
-      for (const part of layer.querySelectorAll<HTMLElement>('[data-dig-buried]')) {
-        part.hidden = closed;
-      }
+      layer.toggleAttribute('data-dig-closed', index >= this.open);
     });
 
-    const last = this.layers[this.open - 1];
+    if (!this.controls) return;
 
-    if (!this.controls || !last) {
-      return;
-    }
+    const next = this.layers[this.open];
+    this.controls.hidden = next === undefined;
 
-    this.controls.hidden = this.open === this.layers.length;
-    last.after(this.controls);
+    if (next && this.controls.parentElement !== next) next.append(this.controls);
   }
 }
 

@@ -132,6 +132,49 @@ async function waitFrames(page: Page): Promise<void> {
   }));
 }
 
+async function checkDig(page: Page, origin: string): Promise<void> {
+  await page.goto(origin);
+  const dig = page.locator('uruk-dig');
+  const ring = dig.getByRole('button', { name: 'Dig one layer' });
+  const openAll = dig.getByRole('button', { name: 'Open every layer' });
+  const wholeResult = dig.getByRole('link', { name: 'Read the whole result' });
+  await ring.scrollIntoViewIfNeeded();
+  await page.evaluate(() => document.fonts.ready);
+  await waitFrames(page);
+
+  function measure() {
+    return dig.evaluate((section) => {
+      const bounds = section.getBoundingClientRect();
+
+      return {
+        height: bounds.height,
+        layers: Array.from(section.querySelectorAll('[data-dig-layer]'), (layer) => {
+          const row = layer.getBoundingClientRect();
+
+          return { top: row.top - bounds.top, height: row.height };
+        }),
+        open: Array.from(section.querySelectorAll('.dig__answer')).filter((answer) => getComputedStyle(answer).visibility === 'visible').length,
+      };
+    });
+  }
+
+  const initial = await measure();
+  assert.equal(initial.open, 1);
+  assert.equal(await wholeResult.count(), 0);
+
+  for (const action of [ring, openAll]) {
+    await action.click();
+    await waitFrames(page);
+    const current = await measure();
+    assert.equal(current.open, action === ring ? 2 : initial.layers.length);
+    assert.ok(Math.abs(current.height - initial.height) <= 0.5, 'Opening a layer must preserve the Dig section height.');
+    assert.deepEqual(current.layers, initial.layers, 'Dig layer positions must stay fixed.');
+  }
+
+  assert.equal(await ring.count(), 0);
+  assert.equal(await wholeResult.count(), 1);
+}
+
 async function checkInitialLayout(browser: Browser, origin: string): Promise<void> {
   type Bounds = { selector: string; left: number; top: number; width: number; height: number };
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
@@ -666,6 +709,7 @@ await withSiteBrowser(async (browser, origin) => {
         filmCount += 1;
       }
 
+      await checkDig(page, origin);
       await checkMenu(page, origin);
       assert.deepEqual(errors, [], `Browser errors at width ${width}`);
     } finally {
@@ -684,5 +728,5 @@ await withSiteBrowser(async (browser, origin) => {
     await playback.close();
   }
 
-  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, and search/filter/back-to-top interactions.`);
+  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, and back-to-top navigation.`);
 });
