@@ -160,6 +160,10 @@ class UrukRoll extends HTMLElement {
     }
   }
 
+  get verticalScrollOffset(): number {
+    return Math.max(0, this.viewport?.scrollTop ?? 0);
+  }
+
   get scrolledBeyondPage(): boolean {
     const viewport = this.viewport;
 

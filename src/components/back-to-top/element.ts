@@ -1,16 +1,29 @@
+// One turn per roughly 1,250 pixels keeps the rosette readable as it rolls.
+const PIXELS_PER_RADIAN = 200;
+
 class UrukBackToTop extends HTMLElement {
   private controller: AbortController | undefined;
   private observer: IntersectionObserver | undefined;
+  private frame: number | undefined;
   private footer: HTMLElement | null = null;
   private roll: HTMLElementTagNameMap['uruk-roll'] | null = null;
 
   private readonly update = () => {
+    this.frame ??= requestAnimationFrame(this.render);
+  };
+
+  private readonly render = () => {
+    this.frame = undefined;
+    const pageY = Math.max(0, window.scrollY);
     // The phone menu has no footer box; read current bounds when switching layouts.
     const footerBounds = this.footer?.getBoundingClientRect();
     const footerAtEnd = footerBounds !== undefined && footerBounds.height > 0 && footerBounds.bottom <= window.innerHeight + 1;
     const rollScrolled = this.roll?.scrolledBeyondPage ?? false;
-    const shouldFloat = (window.scrollY > window.innerHeight || rollScrolled) && !footerAtEnd;
+    const canFloat = this.getAttribute('data-floating-enabled') !== 'false';
+    const shouldFloat = canFloat && (pageY > window.innerHeight || rollScrolled) && !footerAtEnd;
+    const distance = pageY + (this.roll?.verticalScrollOffset ?? 0);
 
+    this.style.setProperty('--rosette-angle', `${distance / PIXELS_PER_RADIAN}rad`);
     this.toggleAttribute('data-floating', shouldFloat);
   };
 
@@ -36,13 +49,7 @@ class UrukBackToTop extends HTMLElement {
       }
     }, { signal });
 
-    if (this.getAttribute('data-floating-enabled') === 'false') {
-      this.removeAttribute('data-floating');
-
-      return;
-    }
-
-    this.footer = document.querySelector<HTMLElement>('[data-page-footer]');
+    this.footer = this.closest('[data-page-footer]');
 
     if (this.footer) {
       this.observer = new IntersectionObserver(this.update, { threshold: 0 });
@@ -51,7 +58,7 @@ class UrukBackToTop extends HTMLElement {
 
     window.addEventListener('scroll', this.update, { passive: true, signal });
     window.addEventListener('resize', this.update, { signal });
-    this.update();
+    this.render();
   }
 
   disconnectedCallback(): void {
@@ -59,6 +66,12 @@ class UrukBackToTop extends HTMLElement {
     this.controller = undefined;
     this.observer?.disconnect();
     this.observer = undefined;
+
+    if (this.frame !== undefined) {
+      cancelAnimationFrame(this.frame);
+      this.frame = undefined;
+    }
+
     this.footer = null;
     this.roll = null;
   }

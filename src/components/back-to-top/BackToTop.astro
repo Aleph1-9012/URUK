@@ -91,6 +91,13 @@ const { floating = true } = Astro.props;
     width: 32px;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    .back-to-top__rosette {
+      transform: rotate(var(--rosette-angle, 0rad));
+      transition: transform 120ms ease-out;
+    }
+  }
+
   .back-to-top__up {
     display: block;
     height: 16px;

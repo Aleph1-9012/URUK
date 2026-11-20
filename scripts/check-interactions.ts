@@ -609,6 +609,33 @@ async function checkNumerics(browser: Browser, origin: string): Promise<void> {
   }
 }
 
+async function checkBackToTopMotion(page: Page, origin: string): Promise<void> {
+  await page.goto(origin);
+  const floating = page.locator('.back-to-top__floating');
+
+  async function turnAt(y: number): Promise<void> {
+    await page.evaluate((top) => window.scrollTo({ top, behavior: 'instant' }), y);
+    await floating.waitFor({ state: 'visible' });
+    await page.waitForFunction(() => {
+      const wheels = document.querySelectorAll('.back-to-top__rosette');
+      const angle = scrollY / 200;
+
+      return wheels.length === 2 && Array.from(wheels).every((wheel) => {
+        const matrix = new DOMMatrix(getComputedStyle(wheel).transform);
+
+        return Math.abs(matrix.b - Math.sin(angle)) < 0.01 && Math.abs(matrix.a - Math.cos(angle)) < 0.01;
+      });
+    });
+  }
+
+  await turnAt(1200);
+  await turnAt(1440);
+  await turnAt(1200);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  assert.deepEqual(await page.locator('.back-to-top__rosette').evaluateAll((wheels) => wheels.map((wheel) => getComputedStyle(wheel).transform)), ['none', 'none']);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+}
+
 async function checkPlayback(page: Page, origin: string): Promise<void> {
   await page.goto(`${origin}/results/165/`);
   await page.waitForFunction(() => document.querySelector('[data-ready] [data-film-range]') !== null);
@@ -722,11 +749,12 @@ await withSiteBrowser(async (browser, origin) => {
 
   try {
     const page = await playback.newPage();
+    await checkBackToTopMotion(page, origin);
     await checkPlayback(page, origin);
     await checkStandardMap(page, origin);
   } finally {
     await playback.close();
   }
 
-  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, and back-to-top navigation.`);
+  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, and back-to-top navigation and wheel rotation.`);
 });
