@@ -7,7 +7,6 @@ import { ROSETTE_CREDIT, SEAL_CREDIT, TEXTURE_CREDIT, TYPE_CREDIT, type Credit }
 
 interface Props {
   credits?: Credit[];
-  floatingBackToTop?: boolean;
   hideOnPhone?: boolean;
 }
 
@@ -18,7 +17,7 @@ const DEFAULT_CREDITS: Credit[] = [
   TYPE_CREDIT,
 ];
 
-const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false } = Astro.props;
+const { credits = DEFAULT_CREDITS, hideOnPhone = false } = Astro.props;
 ---
 
 <footer
@@ -57,7 +56,7 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
   </div>
   <div class="site-footer__bottom">
     <img draggable="false" src={logoUrl} alt="" width="104" height="35" />
-    <BackToTop floating={floatingBackToTop} />
+    <BackToTop />
   </div>
 </footer>
 

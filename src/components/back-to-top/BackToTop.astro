@@ -2,15 +2,9 @@
 import rosetteUrl from '../../assets/rosette/loftus-32.png?url';
 import ringUrl from '../../assets/icons/ring-open.svg?url';
 import upUrl from '../../assets/icons/up-16.svg?url';
-
-interface Props {
-  floating?: boolean;
-}
-
-const { floating = true } = Astro.props;
 ---
 
-<uruk-back-to-top data-floating-enabled={floating ? 'true' : 'false'}>
+<uruk-back-to-top>
   <a class="back-to-top__rest case-link" href="#top">
     <span>Back to top</span>
     <span class="back-to-top__rest-roundel" aria-hidden="true">

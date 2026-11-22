@@ -10,14 +10,12 @@ export type TrackOptions = {
 };
 
 export type Track = {
-  set: (value: number) => void;
   glide: (position: number) => void;
   destroy: () => void;
 };
 
 export function bindTrack(track: HTMLElement, options: TrackOptions): Track {
   const line = track.querySelector<HTMLElement>('[data-track-line]') ?? track;
-  const stops = Array.from(track.querySelectorAll<HTMLElement>('[data-track-stop]'));
   let value = options.value;
   let pointer: number | undefined;
 
@@ -31,10 +29,6 @@ export function bindTrack(track: HTMLElement, options: TrackOptions): Track {
     track.style.setProperty('--value-at', String((position - options.min) / (options.max - options.min)));
     track.setAttribute('aria-valuenow', String(value));
     track.setAttribute('aria-valuetext', options.describe(value));
-
-    stops.forEach((stop, index) => {
-      stop.toggleAttribute('data-passed', options.min + index * options.step < position);
-    });
   }
 
   function change(next: number, settled: boolean): void {
@@ -113,10 +107,6 @@ export function bindTrack(track: HTMLElement, options: TrackOptions): Track {
   render(value);
 
   return {
-    set(next: number) {
-      value = snap(next);
-      render(value);
-    },
     glide(position: number) {
       const clamped = Math.min(options.max, Math.max(options.min, position));
       value = snap(clamped);

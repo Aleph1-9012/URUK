@@ -14,7 +14,7 @@ import { describeK, formatK } from './labels';
       <PlateLoader />
       <noscript><p class="plate__no-script">This plate is drawn by JavaScript, which is turned off in this browser.</p></noscript>
     </div>
-    <SliderControl min={K_MIN} max={K_MAX} step={0.01} value={K_START} label="Kick strength k" valueText={describeK(K_START)}>
+    <SliderControl min={K_MIN} max={K_MAX} value={K_START} label="Kick strength k" valueText={describeK(K_START)}>
       <Fragment slot="readout">k = {formatK(K_START)}</Fragment>
       <Fragment slot="start">0</Fragment>
       <Fragment slot="end">1</Fragment>

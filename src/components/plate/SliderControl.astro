@@ -6,13 +6,12 @@ import PlateButtons from './PlateButtons.astro';
 interface Props {
   min: number;
   max: number;
-  step: number;
   value: number;
   label: string;
   valueText: string;
 }
 
-const { min, max, step, value, label, valueText } = Astro.props;
+const { min, max, value, label, valueText } = Astro.props;
 ---
 
 <div class="plate-controls" data-plate-controls data-waiting inert data-script-only>
@@ -28,7 +27,6 @@ const { min, max, step, value, label, valueText } = Astro.props;
     aria-valuetext={valueText}
     style={`--value-at: ${(value - min) / (max - min)}`}
     data-track
-    data-step={step}
   >
     <span class="plate-track__line" data-track-line></span>
     <span class="plate-track__end plate-track__end--start" aria-hidden="true"><slot name="start" /></span>

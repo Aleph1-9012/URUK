@@ -19,8 +19,7 @@ class UrukBackToTop extends HTMLElement {
     const footerBounds = this.footer?.getBoundingClientRect();
     const footerAtEnd = footerBounds !== undefined && footerBounds.height > 0 && footerBounds.bottom <= window.innerHeight + 1;
     const rollScrolled = this.roll?.scrolledBeyondPage ?? false;
-    const canFloat = this.getAttribute('data-floating-enabled') !== 'false';
-    const shouldFloat = canFloat && (pageY > window.innerHeight || rollScrolled) && !footerAtEnd;
+    const shouldFloat = (pageY > window.innerHeight || rollScrolled) && !footerAtEnd;
     const distance = pageY + (this.roll?.verticalScrollOffset ?? 0);
 
     this.style.setProperty('--rosette-angle', `${distance / PIXELS_PER_RADIAN}rad`);

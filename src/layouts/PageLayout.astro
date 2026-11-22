@@ -12,7 +12,6 @@ interface Props {
   active: 'results' | 'how-we-check' | 'about' | 'none';
   showFooter?: boolean;
   showFooterOnPhone?: boolean;
-  floatingBackToTop?: boolean;
   showSearch?: boolean;
 }
 
@@ -22,7 +21,6 @@ const {
   active,
   showFooter = true,
   showFooterOnPhone = true,
-  floatingBackToTop = true,
   showSearch = false,
 } = Astro.props;
 const PageTag = showSearch ? 'uruk-menu' : 'div';
@@ -37,12 +35,7 @@ const PageTag = showSearch ? 'uruk-menu' : 'div';
     <main class="page-layout__main">
       <slot />
     </main>
-    {showFooter && (
-      <Footer
-        floatingBackToTop={floatingBackToTop}
-        hideOnPhone={!showFooterOnPhone}
-      />
-    )}
+    {showFooter && <Footer hideOnPhone={!showFooterOnPhone} />}
   </PageTag>
 </Base>
 
