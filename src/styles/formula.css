@@ -26,5 +26,5 @@
 uruk-formula { display: block; min-width: 0; margin-block: 24px; }
 .formula-viewport { overflow-x: auto; padding-block: 12px; }
 .formula-single, .formula-broken { width: max-content; min-width: 100%; }
-.formula-hint { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font: .6875rem/1.4 var(--font-special-elite); }
+.formula-hint { display: flex; align-items: center; justify-content: flex-end; gap: 8px; font: var(--label-font-size)/1.4 var(--font-special-elite); }
 .formula-hint span { width: 16px; height: 16px; flex: none; background: url('../assets/icons/roll-forward.svg') center / contain no-repeat; }

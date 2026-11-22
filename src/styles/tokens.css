@@ -45,17 +45,22 @@
   --folio-step-font-size: clamp(1.1875rem, calc(1.141071rem + 0.190476vw), 1.3125rem);
   --folio-step-line-height: clamp(1.6875rem, calc(1.617857rem + 0.285714vw), 1.875rem);
 
-  --folio-source-font-size: 0.9375rem;
-  --folio-source-line-height: 1.4375rem;
+  --folio-source-font-size: 1rem;
+  --folio-source-line-height: 1.5rem;
+
+  /* The smallest type keeps to the hero's sizes: typed labels at 14 px, typed links and buttons at 15 px, and small
+     serif lines such as dates and notes at 16 px. */
+  --label-font-size: 0.875rem;
+  --control-font-size: 0.9375rem;
+  --note-font-size: 1rem;
+  --note-line-height: 1.5rem;
 
   --folio-nav-font-family: var(--font-special-elite);
   --folio-nav-font-weight: 400;
   --folio-nav-font-style: normal;
-  --folio-nav-font-size: 0.75rem;
   --folio-nav-line-height: 1;
   --folio-nav-letter-spacing: 0.04em;
 
   --folio-label-font-weight: 400;
-  --folio-label-font-size: 0.6875rem;
   --folio-label-letter-spacing: 0.04em;
 }

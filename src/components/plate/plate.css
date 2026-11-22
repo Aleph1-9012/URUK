@@ -15,7 +15,7 @@
 }
 
 .plate .plate__label {
-  font: 0.6875rem/15px var(--font-special-elite);
+  font: var(--label-font-size)/18px var(--font-special-elite);
   letter-spacing: 0.04em;
   margin: 2px 0 15px;
   text-align: center;
@@ -72,7 +72,7 @@
 }
 
 .plate .plate-readout {
-  font: 0.6875rem/14px var(--font-special-elite);
+  font: var(--label-font-size)/18px var(--font-special-elite);
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
@@ -125,7 +125,7 @@
 
 .plate-track__end {
   color: var(--muted);
-  font: 0.625rem/1 var(--font-special-elite);
+  font: var(--label-font-size)/1 var(--font-special-elite);
   position: absolute;
   top: 22px;
   white-space: nowrap;
@@ -154,7 +154,7 @@
   color: var(--ink);
   cursor: pointer;
   display: inline-flex;
-  font: 0.6875rem/14px var(--font-special-elite);
+  font: var(--control-font-size)/18px var(--font-special-elite);
   gap: 7px;
   letter-spacing: 0.04em;
   margin-block: -5px;

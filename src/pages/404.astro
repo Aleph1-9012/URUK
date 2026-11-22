@@ -19,16 +19,22 @@ import PageLayout from '../layouts/PageLayout.astro';
       <p class="not-found__address">The address may be mistyped, or the page may have moved.</p>
       <div class="not-found__hairline"></div>
       <div class="not-found__key">
-        <NumberSign unit="60" mode="key" />
-        <span>60 × 6</span>
-        <span class="not-found__operator">+</span>
-        <NumberSign unit="10" mode="key" />
-        <span>10 × 4</span>
-        <span class="not-found__operator">+</span>
-        <NumberSign unit="1" mode="key" />
-        <span>1 × 4</span>
-        <span class="not-found__operator">=</span>
-        <span>404</span>
+        <span class="not-found__term">
+          <NumberSign unit="60" mode="key" />
+          <span>60 × 6</span>
+          <span class="not-found__operator">+</span>
+        </span>
+        <span class="not-found__term">
+          <NumberSign unit="10" mode="key" />
+          <span>10 × 4</span>
+          <span class="not-found__operator">+</span>
+        </span>
+        <span class="not-found__term">
+          <NumberSign unit="1" mode="key" />
+          <span>1 × 4</span>
+          <span class="not-found__operator">=</span>
+          <span>404</span>
+        </span>
       </div>
       <p class="not-found__note">
         Uruk's scribes wrote numbers by pressing a round stylus into wet clay: six sixties, four tens and four ones. The empty case on this tablet now holds 404, counted their way.
@@ -88,9 +94,9 @@ import PageLayout from '../layouts/PageLayout.astro';
   .not-found__eyebrow {
     color: var(--muted);
     font-family: var(--font-special-elite);
-    font-size: 0.6875rem;
+    font-size: var(--label-font-size);
     letter-spacing: 0.04em;
-    line-height: 0.9375rem;
+    line-height: 1.125rem;
     text-transform: uppercase;
   }
 
@@ -114,7 +120,9 @@ import PageLayout from '../layouts/PageLayout.astro';
     width: 100%;
   }
 
-  .not-found__key {
+  /* A narrow screen breaks the sum between whole terms, so the total stays with the last one. */
+  .not-found__key,
+  .not-found__term {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
@@ -122,9 +130,13 @@ import PageLayout from '../layouts/PageLayout.astro';
     white-space: nowrap;
   }
 
-  .not-found__key > span {
+  .not-found__term {
+    flex-wrap: nowrap;
+  }
+
+  .not-found__term > span {
     font-family: var(--font-special-elite);
-    font-size: 0.875rem;
+    font-size: var(--label-font-size);
     letter-spacing: 0.04em;
     line-height: 1;
   }
@@ -148,7 +160,7 @@ import PageLayout from '../layouts/PageLayout.astro';
     color: var(--ink);
     display: inline-flex;
     font-family: var(--font-special-elite);
-    font-size: 0.75rem;
+    font-size: var(--control-font-size);
     gap: 6px;
     letter-spacing: 0.04em;
     line-height: 1;
@@ -168,9 +180,9 @@ import PageLayout from '../layouts/PageLayout.astro';
   .not-found__credit {
     color: var(--muted);
     font-family: var(--font-special-elite);
-    font-size: 0.625rem;
+    font-size: var(--label-font-size);
     letter-spacing: 0.04em;
-    line-height: 0.9375rem;
+    line-height: 1.25rem;
     grid-column: 2;
     grid-row: 2;
     width: 100%;
@@ -218,22 +230,14 @@ import PageLayout from '../layouts/PageLayout.astro';
       margin: 0;
     }
 
-    .not-found__eyebrow {
-      font-size: 0.75rem;
-      line-height: 1.125rem;
-    }
-
     .not-found__address {
       font-size: 1.0625rem;
       line-height: 1.6875rem;
     }
 
-    .not-found__key {
+    .not-found__key,
+    .not-found__term {
       gap: 8px;
-    }
-
-    .not-found__key > span {
-      font-size: 0.75rem;
     }
 
     .not-found__credit {

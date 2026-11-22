@@ -99,7 +99,7 @@ const { active, showSearch = false } = Astro.props;
     color: var(--ink-logo);
     display: inline-flex;
     font-family: var(--font-special-elite);
-    font-size: 0.75rem;
+    font-size: var(--control-font-size);
     letter-spacing: 0.04em;
     line-height: 1;
     text-decoration: none;
@@ -119,7 +119,8 @@ const { active, showSearch = false } = Astro.props;
 
   @media (min-width: 48rem) {
     .site-header--search .site-header__inner { position: relative; }
-    .site-header--search .site-header__search { position: absolute; left: 144px; top: 37px; width: min(300px, calc(100% - 455px)); }
+    /* The field gives way to the logo's 144 px, the 338 px of links set at 15 px and a 32 px gap before them. */
+    .site-header--search .site-header__search { position: absolute; left: 144px; top: 37px; width: min(300px, calc(100% - 514px)); }
   }
 
   @media (max-width: 47.999rem) {
