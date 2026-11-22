@@ -609,34 +609,39 @@ async function checkNumerics(browser: Browser, origin: string): Promise<void> {
   }
 }
 
-async function checkSealTransition(page: Page, origin: string): Promise<void> {
+async function checkCountTransition(page: Page, origin: string): Promise<void> {
+  // Record how many signs the arriving case shows as the sheet starts to slide off.
   await page.addInitScript(() => {
     new MutationObserver(() => {
       const root = document.documentElement;
-      if (root.dataset.sealStage === 'arriving' || root.dataset.sealStage === 'opening') {
-        root.dataset.sealPlayed = 'true';
+      if (root.dataset.countStage !== 'opening') return;
+
+      const face = document.querySelector('.count-transition__face');
+      if (face && getComputedStyle(face).visibility === 'visible') {
+        root.dataset.countPlayed = String(getComputedStyle(face).backgroundImage.match(/url\(/g)?.length ?? 0);
       }
-    }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-seal-stage'] });
-    window.addEventListener('pagehide', () => { delete document.documentElement.dataset.sealPlayed; });
+    }).observe(document, { attributes: true, subtree: true, attributeFilter: ['data-count-stage'] });
+    window.addEventListener('pagehide', () => { delete document.documentElement.dataset.countPlayed; });
   });
 
-  const cover = page.locator('.seal-transition');
+  const cover = page.locator('.count-transition');
   const html = page.locator('html');
 
-  async function checkArrival(path: string, plays: boolean): Promise<void> {
+  // 248 is four sixties and eight ones; 261 is four sixties, two tens and a one.
+  async function checkArrival(path: string, signs: number | null): Promise<void> {
     await page.waitForURL(`${origin}${path}`);
-    if (plays) await page.waitForFunction(() => document.documentElement.dataset.sealPlayed === 'true');
+    if (signs !== null) await page.waitForFunction(() => document.documentElement.dataset.countPlayed !== undefined);
     await cover.waitFor({ state: 'hidden' });
-    assert.equal(await html.getAttribute('data-seal-played'), plays ? 'true' : null);
+    assert.equal(await html.getAttribute('data-count-played'), signs === null ? null : String(signs));
   }
 
   await page.goto(`${origin}/results/248/`);
-  await checkArrival('/results/248/', false);
+  await checkArrival('/results/248/', null);
 
   await page.goto(`${origin}/results/`);
   await page.getByRole('searchbox').fill('248');
   await page.locator('.roll-card[href="/results/248/"]').click();
-  await checkArrival('/results/248/', true);
+  await checkArrival('/results/248/', 12);
 
   const release = Promise.withResolvers<void>();
   const scripts = Promise.withResolvers<void>();
@@ -651,10 +656,23 @@ async function checkSealTransition(page: Page, origin: string): Promise<void> {
   try {
     await page.locator('.result-neighbors [rel="next"]').click();
     await page.waitForFunction(() => {
-      if (location.pathname !== '/results/248/' || document.documentElement.dataset.sealStage !== 'covered') return false;
+      if (location.pathname !== '/results/248/' || document.documentElement.dataset.countStage !== 'covered') return false;
 
-      const paper = document.querySelector('.seal-transition__paper')?.getBoundingClientRect();
-      return paper?.x === 0 && paper.y === 0 && paper.width === innerWidth && paper.height === innerHeight;
+      const sheet = document.querySelector('.count-transition__sheet')?.getBoundingClientRect();
+      // Runs of the same pressed sign, in reading order.
+      const runs: number[] = [];
+      let previous = '';
+
+      for (const sign of document.querySelectorAll('.count-transition__sign')) {
+        const style = getComputedStyle(sign);
+        if (style.visibility !== 'visible') continue;
+
+        runs.push(style.backgroundImage === previous ? (runs.pop() ?? 0) + 1 : 1);
+        previous = style.backgroundImage;
+      }
+
+      return sheet !== undefined && sheet.x === 0 && sheet.y === 0 && sheet.width === innerWidth && sheet.height === innerHeight
+        && runs.join() === '4,2,1';
     });
     await page.route(scriptPattern, async (route) => {
       delayedScripts += 1;
@@ -672,19 +690,19 @@ async function checkSealTransition(page: Page, origin: string): Promise<void> {
     scripts.resolve();
   }
 
-  await checkArrival('/results/261/', true);
+  await checkArrival('/results/261/', 7);
   await page.unroute(scriptPattern);
   await page.unroute(nextResult);
   await page.locator('.result-neighbors [rel="prev"]').click();
-  await checkArrival('/results/248/', true);
+  await checkArrival('/results/248/', 12);
   await page.goBack();
-  await checkArrival('/results/261/', false);
+  await checkArrival('/results/261/', null);
   await page.reload();
-  await checkArrival('/results/261/', false);
+  await checkArrival('/results/261/', null);
 
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.locator('.result-neighbors [rel="prev"]').click();
-  await checkArrival('/results/248/', false);
+  await checkArrival('/results/248/', null);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 }
 
@@ -955,7 +973,7 @@ await withSiteBrowser(async (browser, origin) => {
 
   try {
     const page = await playback.newPage();
-    await checkSealTransition(page, origin);
+    await checkCountTransition(page, origin);
     await checkBackToTopMotion(page, origin);
     await checkPlayback(page, origin);
     await checkStandardMap(page, origin);
@@ -963,5 +981,5 @@ await withSiteBrowser(async (browser, origin) => {
     await playback.close();
   }
 
-  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, the home voyage's boat pass, engraving and typed text, first-visit-only play and early exits, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, the seal transition, and back-to-top navigation and wheel rotation.`);
+  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, the home voyage's boat pass, engraving and typed text, first-visit-only play and early exits, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, the counted results transition, and back-to-top navigation and wheel rotation.`);
 });

@@ -1,0 +1,20 @@
+---
+import desktopGrain from '../../assets/count-transition/grain-desktop-1440.webp?url';
+import phoneGrain from '../../assets/count-transition/grain-phone-780.webp?url';
+---
+
+<div class="count-transition" aria-hidden="true">
+  <div class="count-transition__sheet">
+    <!-- An image, unlike a background, loads while the cover is hidden, so the grain is ready for the first close. -->
+    <picture class="count-transition__grain">
+      <source media="(max-width: 47.999rem)" srcset={phoneGrain} />
+      <img src={desktopGrain} width="1440" height="535" alt="" />
+    </picture>
+    <div class="count-transition__face"></div>
+    <div class="count-transition__case"></div>
+  </div>
+</div>
+
+<script>
+  import './cover';
+</script>

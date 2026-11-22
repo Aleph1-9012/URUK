@@ -1,9 +1,9 @@
 ---
 import Base from './Base.astro';
+import CountTransitionCover from '../components/count-transition/Cover.astro';
+import CountTransitionHead from '../components/count-transition/Head.astro';
 import Footer from '../components/footer/Footer.astro';
 import Header from '../components/header/Header.astro';
-import SealTransitionCover from '../components/seal-transition/Cover.astro';
-import SealTransitionHead from '../components/seal-transition/Head.astro';
 import TextureField from '../components/texture-field/TextureField.astro';
 
 interface Props {
@@ -29,8 +29,8 @@ const PageTag = showSearch ? 'uruk-menu' : 'div';
 ---
 
 <Base title={title} math={math}>
-  <Fragment slot="head">{active === 'results' && <SealTransitionHead />}</Fragment>
-  {active === 'results' && <SealTransitionCover />}
+  <Fragment slot="head">{active === 'results' && <CountTransitionHead />}</Fragment>
+  {active === 'results' && <CountTransitionCover />}
   <PageTag class="page-layout" id="top">
     <TextureField />
     <Header active={active} showSearch={showSearch}><slot name="search" slot="search" /></Header>

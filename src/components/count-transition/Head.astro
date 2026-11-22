@@ -1,0 +1,296 @@
+---
+import desktopGrain from '../../assets/count-transition/grain-desktop-1440.webp?url';
+import phoneGrain from '../../assets/count-transition/grain-phone-780.webp?url';
+import sign1 from '../../assets/count-transition/sign-1.webp?inline';
+import sign10 from '../../assets/count-transition/sign-10.webp?inline';
+import sign60 from '../../assets/count-transition/sign-60.webp?inline';
+import { countLayout } from './layout';
+import { arrivalLayers, RULE_OVERSHOOT } from './paint';
+
+// A result page paints its own count for the reader arriving from another result.
+const family = /^\/results\/(\d{3})\/?$/.exec(Astro.url.pathname)?.[1];
+const arrival = family === undefined ? undefined : countLayout(Number(family));
+const arrivalVariables = arrival === undefined
+  ? ''
+  : `--count-width: ${arrival.width}; --count-height: ${arrival.height}; --count-arrival: ${arrivalLayers(arrival)};`;
+---
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const intentKey = 'uruk:count-destination';
+    const resultsPath = /^\/results(?:\/(\d{3}))?\/?$/;
+    const current = resultsPath.exec(location.pathname);
+    let navigationTimeout;
+
+    function clearCount() {
+      delete root.dataset.countStage;
+    }
+
+    function takeArrivalIntent() {
+      try {
+        const intent = sessionStorage.getItem(intentKey);
+        if (!intent) return false;
+
+        sessionStorage.removeItem(intentKey);
+        const [from, to, expires] = intent.split('\n');
+        return from === document.referrer && to === location.href && Number(expires) > Date.now();
+      } catch {
+        return false;
+      }
+    }
+
+    /** @param {() => void} next */
+    function afterCountMotion(next) {
+      const cover = document.querySelector('.count-transition');
+      const animations = cover?.getAnimations({ subtree: true }) ?? [];
+      void Promise.allSettled(animations.map((animation) => animation.finished)).then(next);
+    }
+
+    function open() {
+      if (root.dataset.countStage !== 'arriving') return;
+
+      // Paint the closed case once before the sheet slides off the article's opening.
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        root.dataset.countStage = 'opening';
+        afterCountMotion(clearCount);
+      }));
+    }
+
+    // Close the case before the destination body can paint. Its first frame matches the source's last.
+    if (takeArrivalIntent() && !reducedMotion.matches) {
+      root.dataset.countStage = 'arriving';
+      document.addEventListener('uruk:result-opening-ready', open, { once: true });
+      document.addEventListener('DOMContentLoaded', open, { once: true });
+    }
+
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) {
+        window.clearTimeout(navigationTimeout);
+        clearCount();
+      }
+    });
+
+    window.addEventListener('click', (event) => {
+      if (!current || reducedMotion.matches || event.defaultPrevented || event.button !== 0
+        || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+      const link = event.target instanceof Element ? event.target.closest('a') : null;
+      if (!(link instanceof HTMLAnchorElement) || !link.href || (link.target && link.target !== '_self')
+        || link.hasAttribute('download') || link.relList.contains('noreferrer')) return;
+
+      const destination = new URL(link.href);
+      const result = resultsPath.exec(destination.pathname)?.[1];
+      if (destination.origin !== location.origin || !result || result === current[1]) return;
+
+      if (root.dataset.countStage) {
+        event.preventDefault();
+        return;
+      }
+
+      // The cover's script presses the destination's count. Until it has loaded, the link navigates as usual.
+      const request = new CustomEvent('uruk:count-destination', { cancelable: true, detail: Number(result) });
+      if (document.dispatchEvent(request)) return;
+
+      try {
+        // Keep native navigation when the tab cannot carry the cover to the next document.
+        const source = new URL(location.href);
+        source.hash = '';
+        sessionStorage.setItem(intentKey, [source.href, destination.href, Date.now() + 15000].join('\n'));
+      } catch {
+        return;
+      }
+
+      event.preventDefault();
+      root.dataset.countStage = 'closing';
+      afterCountMotion(() => {
+        if (root.dataset.countStage !== 'closing') return;
+
+        root.dataset.countStage = 'covered';
+        location.assign(destination.href);
+        // A cancelled or stalled navigation must give the current page back to the reader.
+        navigationTimeout = window.setTimeout(clearCount, 15000);
+      });
+    });
+  })();
+</script>
+
+<style is:inline set:html={`:root {
+  --count-sign-60: url("${sign60}");
+  --count-sign-10: url("${sign10}");
+  --count-sign-1: url("${sign1}");
+  --count-grain: url("${desktopGrain}");
+  --count-overshoot: ${RULE_OVERSHOOT};
+  ${arrivalVariables}
+}
+
+@media (max-width: 47.999rem) {
+  :root { --count-grain: url("${phoneGrain}"); }
+}`}></style>
+
+<style is:inline>
+  .count-transition { display: none; }
+
+  /* The case grows to 1.2 px a unit, keeping the ends of its rules 16 px inside the screen. */
+  :root,
+  .count-transition {
+    --count-unit: min(
+      1.2px,
+      calc((100vw - 32px) / (var(--count-width) + 2 * var(--count-overshoot))),
+      calc((100svh - 32px) / (var(--count-height) + 2 * var(--count-overshoot)))
+    );
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    a[href^="/results/"]:not([href="/results/"], [target], [download]) { -webkit-tap-highlight-color: transparent; }
+
+    /* Paint the closed case even if the incoming body is still being parsed. */
+    :root[data-count-stage="arriving"] { background: var(--paper, #e7e5e0); }
+
+    :root[data-count-stage="arriving"]::before {
+      background: var(--count-arrival, none), var(--count-grain) center / cover no-repeat, var(--paper, #e7e5e0);
+      content: "";
+      inset: 0;
+      pointer-events: none;
+      position: fixed;
+      z-index: 100;
+    }
+
+    :root[data-count-stage] .count-transition {
+      --count-cover-time: 320ms;
+      --count-cover-easing: cubic-bezier(.25, .7, .25, 1);
+      --count-rule-time: 160ms;
+      --count-rule-easing: cubic-bezier(.2, .7, .2, 1);
+      --count-across-at: 240ms;
+      --count-down-at: 320ms;
+      --count-press-start: 460ms;
+      --count-open-time: 450ms;
+      --count-open-easing: cubic-bezier(.55, 0, .45, 1);
+      display: block;
+      inset: 0;
+      overflow: clip;
+      pointer-events: none;
+      position: fixed;
+      z-index: 100;
+    }
+
+    /* Each sign is its own layer over the whole sheet, painted as in the destination's first frame. */
+    .count-transition__sign {
+      --count-beat: var(--count-at);
+      background: var(--count-sign);
+    }
+
+    @media (max-width: 47.999rem), (max-height: 34rem) and (pointer: coarse) {
+      :root[data-count-stage] .count-transition {
+        --count-cover-time: 180ms;
+        --count-rule-time: 110ms;
+        --count-across-at: 130ms;
+        --count-down-at: 180ms;
+        --count-press-start: 300ms;
+        --count-open-time: 300ms;
+      }
+
+      .count-transition__sign { --count-beat: var(--count-at-phone); }
+    }
+
+    :root:is([data-count-stage="covered"], [data-count-stage="arriving"]) .count-transition {
+      pointer-events: auto;
+    }
+
+    .count-transition__sheet {
+      background: var(--paper);
+      inset: 0;
+      position: absolute;
+    }
+
+    .count-transition__grain,
+    .count-transition__grain img {
+      display: block;
+      height: 100%;
+      inset: 0;
+      object-fit: cover;
+      position: absolute;
+      width: 100%;
+    }
+
+    .count-transition__face,
+    .count-transition__face::before,
+    .count-transition__face::after,
+    .count-transition__case,
+    .count-transition__sign {
+      inset: 0;
+      position: absolute;
+    }
+
+    /* The site's crossed case: each pair of rules runs past the other, drawn from its first end. */
+    .count-transition__face::before,
+    .count-transition__face::after {
+      content: "";
+    }
+
+    .count-transition__face::before {
+      background: var(--count-across, none);
+      transform-origin: calc(50vw - (var(--count-width) / 2 + var(--count-overshoot)) * var(--count-unit)) 0;
+    }
+
+    .count-transition__face::after {
+      background: var(--count-down, none);
+      transform-origin: 0 calc(50% - (var(--count-height) / 2 + var(--count-overshoot)) * var(--count-unit));
+    }
+
+    :root:is([data-count-stage="arriving"], [data-count-stage="opening"]) .count-transition__face {
+      background: var(--count-arrival, none);
+    }
+
+    :root:is([data-count-stage="arriving"], [data-count-stage="opening"]) .count-transition__case {
+      display: none;
+    }
+
+    :root[data-count-stage="closing"] .count-transition__sheet {
+      animation: count-cover var(--count-cover-time) var(--count-cover-easing) both;
+    }
+
+    :root[data-count-stage="closing"] .count-transition__face::before {
+      animation: count-rule-across var(--count-rule-time) var(--count-across-at) var(--count-rule-easing) both;
+    }
+
+    :root[data-count-stage="closing"] .count-transition__face::after {
+      animation: count-rule-down var(--count-rule-time) var(--count-down-at) var(--count-rule-easing) both;
+    }
+
+    /* Each sign lands in one beat, like the plate's pressed-signs loader. */
+    :root[data-count-stage="closing"] .count-transition__sign {
+      animation: count-press calc(var(--count-press-start) + var(--count-beat)) step-end both;
+    }
+
+    :root[data-count-stage="opening"] .count-transition__sheet {
+      animation: count-uncover var(--count-open-time) var(--count-open-easing) both;
+    }
+
+    @keyframes count-cover {
+      from { transform: translateY(-100%); }
+      to { transform: none; }
+    }
+
+    @keyframes count-uncover {
+      from { transform: none; }
+      to { transform: translateY(100%); }
+    }
+
+    @keyframes count-rule-across {
+      from { transform: scaleX(0); }
+      to { transform: none; }
+    }
+
+    @keyframes count-rule-down {
+      from { transform: scaleY(0); }
+      to { transform: none; }
+    }
+
+    @keyframes count-press {
+      from { visibility: hidden; }
+      to { visibility: visible; }
+    }
+  }
+</style>
