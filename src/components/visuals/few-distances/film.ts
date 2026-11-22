@@ -39,7 +39,7 @@ export class FewDistancesFilm {
 
   draw(time: number): void {
     const { pen } = this;
-    const boxes = layout(this.width, this.height, time);
+    const boxes = layout(this.width, this.height);
     const phase = phaseAt(time);
     const amount = randomProgress(time);
     const comparison = comparisonBoxes(boxes.stage, amount);

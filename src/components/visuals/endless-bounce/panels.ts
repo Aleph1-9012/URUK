@@ -1,6 +1,6 @@
 import { smooth } from '../../../lib/animation';
 import { line } from '../../plate/canvas/strokes';
-import { type Box, type Colors, type Place, text } from './drawing';
+import { type Box, type Colors, text } from './drawing';
 import { type BounceModel, type TableKey, directionStats, samplePackedRunByDistance } from './math';
 import { checkpointAt, playbackDistance, tableAt } from './story';
 
@@ -197,7 +197,7 @@ function opening(pen: CanvasRenderingContext2D, box: Box, colors: Colors, model:
   line(pen, endX - length / 2, endY, endX - length / 2 - 4, endY + 6);
 }
 
-export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, _place: Place, model: BounceModel, tall: boolean): void {
+export function drawPanels(pen: CanvasRenderingContext2D, box: Box, time: number, colors: Colors, model: BounceModel, tall: boolean): void {
   pen.setLineDash([]);
 
   if (time < 8000) {

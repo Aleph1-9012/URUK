@@ -79,7 +79,7 @@ export function checkpointAt(time: number): number {
   return 100000;
 }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {

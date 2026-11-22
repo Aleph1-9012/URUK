@@ -39,7 +39,7 @@ export class MoatWalkFilm {
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawField(this.pen, this.width, this.height, this.density, time, this.colors, this.labels.place, this.data);
+    drawField(this.pen, this.width, this.height, time, this.colors, this.labels.place, this.data);
     drawSieve(this.pen, this.width, this.height, this.density, time, this.colors, this.labels.place, this.data);
     drawDial(this.pen, this.width, this.height, time, this.colors, this.labels.place);
     drawLedger(this.pen, this.width, this.height, time, this.colors, this.labels.place, this.data);

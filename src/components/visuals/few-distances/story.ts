@@ -35,7 +35,7 @@ export function ratioProgress(time: number): number { return progress(time, 7400
 
 export function cameraAngle(time: number): number { return .41 + time / 1000 * .018; }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) return { stage: { x: 4, y: 4, w: width * .42 - 6, h: height - 8 }, panel: { x: width * .45, y: 4, w: width * .55 - 5, h: height - 8 }, tall };

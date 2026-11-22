@@ -5,8 +5,6 @@ import { layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
 
-type Label = (id: string, x: number, y: number, opacity?: number) => void;
-
 type Raster = { canvas: HTMLCanvasElement; pen: CanvasRenderingContext2D; key: string; count: number };
 
 const rasters = new WeakMap<PhasePortrait, Raster>();
@@ -90,7 +88,7 @@ function portraitKind(time: number): TableKind {
   return 'ellipse';
 }
 
-export function drawPhase(pen: CanvasRenderingContext2D, width: number, height: number, density: number, time: number, colors: Colors, _label: Label, data: CausticData): void {
+export function drawPhase(pen: CanvasRenderingContext2D, width: number, height: number, density: number, time: number, colors: Colors, data: CausticData): void {
   const { phase: box, tall } = layout(width, height);
   const plot = { x: box.x + (tall ? 24 : 35), y: box.y + (tall ? 18 : 37), w: box.w - (tall ? 28 : 43), h: box.h - (tall ? 39 : 73) };
   const kind = portraitKind(time);

@@ -50,7 +50,7 @@ export function chartView(time: number): ChartView {
   return { minN: mix(0, 150, amount), maxN: 200, minLog: mix(0, 70, amount), maxLog: mix(200, 100, amount) };
 }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {

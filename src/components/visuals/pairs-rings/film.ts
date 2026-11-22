@@ -43,7 +43,7 @@ export class PairsRingsFilm {
 
   draw(time: number): void {
     const { pen, colors } = this;
-    const boxes = layout(this.width, this.height, time);
+    const boxes = layout(this.width, this.height);
     this.labels.beginFrame();
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     pen.clearRect(0, 0, this.width, this.height);

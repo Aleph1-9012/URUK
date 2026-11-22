@@ -92,7 +92,7 @@ export class PolarProductFilm {
     if (time >= 32750) this.spatialReadout(time, tucked, spatial);
 
     drawDimensions(pen, w, h, time, tones.ink, tones.paper, tones.blue, this.model.dimensionTable);
-    drawLedger(pen, w, h, time, tones.ink, tones.paper, tones.blue);
+    drawLedger(pen, w, h, time, tones.ink, tones.paper);
     this.labels.endFrame();
   }
 

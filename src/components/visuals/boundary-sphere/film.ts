@@ -51,7 +51,7 @@ export class BoundarySphereFilm {
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawBoundaryDisk(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
+    drawBoundaryDisk(this.pen, this.width, this.height, time, this.colors);
     this.squareGrid(fade(time, 1000, 3500, 19000, 23000), true);
     this.globe(Math.max(fade(time, 25000, 28000, 51500, 55000), smooth(time, 101500, 104000)));
     const exchange = smooth(time, 93500, 94500);

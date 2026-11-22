@@ -55,7 +55,7 @@ export function schedulePhase(time: number): 'empty' | 'two' | 'return' | 'three
   return 'comparison';
 }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) return { stage: { x: 4, y: 70, w: width * .43 - 4, h: height - 122 }, panel: { x: width * .46, y: 70, w: width * .52, h: height - 112 }, tall };

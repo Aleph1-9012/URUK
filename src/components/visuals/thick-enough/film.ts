@@ -38,7 +38,7 @@ export class ThickEnoughFilm {
   }
 
   draw(time: number): void {
-    const boxes = layout(this.width, this.height, time);
+    const boxes = layout(this.width, this.height);
     this.labels.beginFrame();
     this.pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     this.pen.clearRect(0, 0, this.width, this.height);
@@ -275,7 +275,7 @@ export class ThickEnoughFilm {
   }
 
   private completions(box: Box, time: number, tall: boolean): void {
-    const area = completionBox(box, tall);
+    const area = completionBox(box);
     const current = completionFrame(time).index;
 
     for (const [index, completion] of this.model.completions.entries()) {

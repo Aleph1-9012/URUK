@@ -6,8 +6,6 @@ import { CONTACT_ARRIVALS, relaxationStepAt } from './story';
 
 type Plot = { left: number; right: number; top: number; bottom: number };
 
-export { relaxationStepAt } from './story';
-
 function dot(pen: CanvasRenderingContext2D, point: Point, radius: number, filled = true): void {
   pen.beginPath();
   pen.arc(point.x, point.y, radius, 0, 2 * Math.PI);

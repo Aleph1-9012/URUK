@@ -54,7 +54,7 @@ export class ThreeLanesFilm {
 
   draw(time: number): void {
     const { pen, colors } = this;
-    const boxes = layout(this.width, this.height, time);
+    const boxes = layout(this.width, this.height);
     const phase = schedulePhase(time);
     const geometry = graphLayout(boxes.stage, boxes.tall);
     const single = laneGrid(boxes.panel, boxes.tall, 'single', laneCount(time));
@@ -76,7 +76,7 @@ export class ThreeLanesFilm {
 
     if (phase === 'comparison') {
       this.grid(rule, 1, boxes.tall, `THE RULE · ${this.model.cg3.makespan} HOURS`, this.model.cg3.makespan, this.model.cg3);
-      this.recorded(this.model.cg3, rule, time, boxes.tall);
+      this.recorded(this.model.cg3, rule, boxes.tall);
       this.grid(best, comparisonProgress(time), boxes.tall, `THE BEST · ${this.model.opt3.makespan} HOURS`, optimumProgress(time) === 1 ? this.model.opt3.makespan : null, this.model.opt3, optimumProgress(time) === 1);
     }
 
@@ -336,13 +336,13 @@ export class ThreeLanesFilm {
     }
   }
 
-  private recorded(schedule: Schedule, grid: LaneGrid, time: number, tall: boolean): void {
+  private recorded(schedule: Schedule, grid: LaneGrid, tall: boolean): void {
     for (const slot of schedule.jobSlots) {
       const label = this.model.labels[slot.job];
 
       if (label === undefined) throw new Error("The retained rule keeps each job's actual priority.");
 
-      this.card({ job: slot.job, point: slotPoint(grid, slot.hour, slot.lane), size: this.slotSize(grid, graphLayout(layout(this.width, this.height, time).stage, tall).tile), moving: false, reveal: 1 }, label, true, false, tall);
+      this.card({ job: slot.job, point: slotPoint(grid, slot.hour, slot.lane), size: this.slotSize(grid, graphLayout(layout(this.width, this.height).stage, tall).tile), moving: false, reveal: 1 }, label, true, false, tall);
     }
   }
 

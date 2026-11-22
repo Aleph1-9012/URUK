@@ -3,8 +3,6 @@ import { CURVES, CURVE_SEGMENTS, PINS, PLANE_BOUND, curveRun, evaluate, gradient
 
 export type PlaneColors = { ink: string; blue: string; muted: string; paper: string };
 
-export type PlaneLabel = (id: string, x: number, y: number, opacity?: number) => void;
-
 const paths = new Map<keyof typeof CURVE_SEGMENTS, Path2D>();
 
 function curvePath(name: keyof typeof CURVE_SEGMENTS): Path2D {
@@ -100,7 +98,6 @@ export function drawCurvePlane(
   height: number,
   time: number,
   colors: PlaneColors,
-  _labelCallback: PlaneLabel,
 ): void {
   const tall = height > width;
   const size = Math.min(width * (tall ? .8 : .41), height * (tall ? .30 : .68));

@@ -1,5 +1,3 @@
-import { line } from '../../plate/canvas/strokes';
-
 export type Box = { x: number; y: number; w: number; h: number };
 
 export type Point = { x: number; y: number };
@@ -26,21 +24,6 @@ export function text(pen: CanvasRenderingContext2D, words: string, x: number, y:
     pen.fillRect(left - 3, baseline - bounds.actualBoundingBoxAscent - 3, bounds.width + 6, bounds.actualBoundingBoxAscent + bounds.actualBoundingBoxDescent + 6);
     pen.fillStyle = tone;
     pen.fillText(row, x, baseline);
-  }
-
-  pen.restore();
-}
-
-export function hatch(pen: CanvasRenderingContext2D, box: Box, colors: Colors, spacing = 6): void {
-  pen.save();
-  pen.beginPath();
-  pen.rect(box.x, box.y, box.w, box.h);
-  pen.clip();
-  pen.strokeStyle = colors.muted;
-  pen.lineWidth = .55;
-
-  for (let x = box.x - box.h; x < box.x + box.w; x += spacing) {
-    line(pen, x, box.y + box.h, x + box.h, box.y);
   }
 
   pen.restore();

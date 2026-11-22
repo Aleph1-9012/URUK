@@ -7,8 +7,6 @@ import {
 
 export type DiskColors = { ink: string; blue: string; muted: string; paper: string };
 
-export type DiskLabel = (id: string, x: number, y: number, opacity?: number) => void;
-
 type CachedDisk = { radius: number; distance: number; path: Path2D };
 
 let cachedDisk: CachedDisk | undefined;
@@ -86,7 +84,6 @@ export function drawBoundaryDisk(
   height: number,
   time: number,
   colors: DiskColors,
-  _labelCallback: DiskLabel,
 ): void {
   const tall = height > width;
   const center = { x: width * (tall ? .5 : .255), y: height * (tall ? .24 : .46) };

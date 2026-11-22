@@ -46,7 +46,7 @@ export function solidAt(time: number): { key: SolidKey; from: SolidKey; to: Soli
   return { key, from: key, to: key, amount: 1, transition: false, localTime: time - started };
 }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (!tall) {

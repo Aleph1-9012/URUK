@@ -7,7 +7,7 @@ import { TIMELINE } from './story';
 
 defineFilm('uruk-endless-bounce', TIMELINE, (film) => {
   const model = createBounceModel();
-  const drawing = new EndlessBounceFilm(film.root, film.context, model);
+  const drawing = new EndlessBounceFilm(film.context, model);
   const worker = runNumerics<BounceResult>(film, {
     start: () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' }),
     onMessage(result, numerics) {

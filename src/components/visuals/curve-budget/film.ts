@@ -55,7 +55,7 @@ export class CurveBudgetFilm {
     this.pen.clearRect(0, 0, this.width, this.height);
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
-    drawCurvePlane(this.pen, this.width, this.height, time, this.colors, (id, x, y, alpha) => this.labels.place(id, x, y, alpha));
+    drawCurvePlane(this.pen, this.width, this.height, time, this.colors);
     this.plot();
     this.triangle();
     this.lens();

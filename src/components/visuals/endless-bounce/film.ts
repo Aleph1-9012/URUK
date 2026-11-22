@@ -1,7 +1,6 @@
 import { mix, smooth } from '../../../lib/animation';
 import { line } from '../../plate/canvas/strokes';
 import { PAGE_TONES, type FilmFrame } from '../../plate/frame';
-import { FilmLabels } from '../../plate/labels';
 import { type Box, type Colors, text } from './drawing';
 import { apply, barycentric, collisionSide, compose, fromBarycentric, IDENTITY, packedPoint, reflection, samplePackedRunByDistance, type BounceModel, type Isometry, type PackedBilliardRun, type Point, type TableKey, type Triangle } from './math';
 import { drawPanels } from './panels';
@@ -51,35 +50,28 @@ export class EndlessBounceFilm {
   private width = 1;
   private height = 1;
   private density = 1;
-  private readonly labels: FilmLabels;
   private colors: Colors = PAGE_TONES;
   private readonly maps: Record<TableKey, Isometry[]> = { irrational: [IDENTITY], equilateral: [IDENTITY], right_isosceles: [IDENTITY] };
 
-  constructor(root: HTMLElement, private readonly pen: CanvasRenderingContext2D, private readonly model: BounceModel) {
-    this.labels = new FilmLabels(root, { horizontal: 5, vertical: 4 });
-  }
+  constructor(private readonly pen: CanvasRenderingContext2D, private readonly model: BounceModel) {}
 
   resize({ width, height, density, tones }: FilmFrame): void {
     this.width = width;
     this.height = height;
     this.density = density;
     this.colors = tones;
-
-    this.labels.resize(width, height);
   }
 
   draw(time: number): void {
     const { pen, colors } = this;
-    const boxes = layout(this.width, this.height, time);
-    this.labels.beginFrame();
+    const boxes = layout(this.width, this.height);
     pen.setTransform(this.density, 0, 0, this.density, 0, 0);
     pen.clearRect(0, 0, this.width, this.height);
     pen.lineCap = 'round';
     pen.lineJoin = 'round';
     pen.setLineDash([]);
     this.table(boxes.stage, time, boxes.tall);
-    drawPanels(pen, boxes.panel, time, colors, this.labels.place, this.model, boxes.tall);
-    this.labels.endFrame();
+    drawPanels(pen, boxes.panel, time, colors, this.model, boxes.tall);
   }
 
   private run(key: TableKey): PackedBilliardRun {

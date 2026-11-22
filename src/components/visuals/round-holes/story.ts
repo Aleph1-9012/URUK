@@ -18,7 +18,7 @@ export const FILM_DURATION = 88750;
 
 export const TIMELINE = createTimeline(CUES, FILM_DURATION, 180);
 
-export function layout(width: number, height: number, _time: number) {
+export function layout(width: number, height: number) {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {

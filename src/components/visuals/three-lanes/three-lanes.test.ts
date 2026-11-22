@@ -286,7 +286,7 @@ test('124: job positions use true longest-path layers and reported straight-edge
 
   for (const width of [1440, 390, 320]) {
     const height = width * (width < 600 ? 11 / 4 : 10 / 16);
-    const boxes = layout(width, height, 0);
+    const boxes = layout(width, height);
     const geometry = graphLayout(boxes.stage, boxes.tall);
     const positions = model.positions.map(position => jobPoint(position, geometry));
     let skipped = 0;

@@ -46,7 +46,7 @@ export function blockCellPoint(value: number, geometry: BlockLayout): Point {
   return { x: geometry.x + (value - .5) * geometry.pitch, y: geometry.cellY };
 }
 
-export function completionBox(box: Box, _tall: boolean): Box {
+export function completionBox(box: Box): Box {
   return { x: box.x + box.w * .03, y: box.y + box.h * .43, w: box.w * .94, h: box.h * .53 };
 }
 

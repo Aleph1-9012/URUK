@@ -45,7 +45,7 @@ export function isolatePhase(time: number): 'none' | 'arriving' | 'extended' | '
   return 'leaving';
 }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) return { stage: { x: 4, y: 4, w: width * .5 - 8, h: height - 65 }, panel: { x: width * .5 + 4, y: 4, w: width * .5 - 8, h: height - 65 }, tall };

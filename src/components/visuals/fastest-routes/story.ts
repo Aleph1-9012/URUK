@@ -91,7 +91,7 @@ export function strikeProgress(time: number): number {
   return smooth(time, 65000, 68000);
 }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {

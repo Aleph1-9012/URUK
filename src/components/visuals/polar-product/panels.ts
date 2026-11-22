@@ -50,7 +50,7 @@ export function drawDimensions(ctx: CanvasRenderingContext2D, width: number, hei
   drawWrappedText(ctx, 'EQUALITY: LINEAR IMAGES OF HANNER POLYTOPES', centre, scope.y + scope.height + (tall ? 5 : 8), available, { size, color: ink, paper });
 }
 
-export function drawLedger(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, ink: string, paper: string, _blue: string): void {
+export function drawLedger(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, ink: string, paper: string): void {
   if (time < 44750) return;
 
   const tall = width < PHONE_STAGE_WIDTH;

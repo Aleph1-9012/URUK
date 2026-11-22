@@ -300,7 +300,7 @@ function islands(pen: CanvasRenderingContext2D, data: MoatData, view: ReturnType
   pen.fill();
 }
 
-export function drawField(pen: CanvasRenderingContext2D, width: number, height: number, _density: number, time: number, colors: FieldColors, label: FieldLabel, data: MoatData): void {
+export function drawField(pen: CanvasRenderingContext2D, width: number, height: number, time: number, colors: FieldColors, label: FieldLabel, data: MoatData): void {
   if (time >= 85000 && time < 106000) return;
 
   const view = fieldView(width, height, time);

@@ -52,7 +52,7 @@ export function insetProgress(time: number): number {
   return smooth(time, 29000, 29750) * (1 - smooth(time, 35250, 36000));
 }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) {

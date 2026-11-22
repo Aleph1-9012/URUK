@@ -48,7 +48,7 @@ export class RoundHolesFilm {
   }
 
   draw(time: number): void {
-    const boxes = layout(this.width, this.height, time);
+    const boxes = layout(this.width, this.height);
     const { pen, colors } = this;
     const compact = compactTime(time);
     const cards = smooth(time, 46000, 48000) * (1 - smooth(time, 59000, 60500));

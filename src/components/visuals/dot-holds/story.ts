@@ -70,7 +70,7 @@ export function ruleProgress(time: number): number { return progress(time, 52000
 
 export function claimProgress(time: number): number { return progress(time, 63500, 66500); }
 
-export function layout(width: number, height: number, _time: number): { stage: Box; panel: Box; tall: boolean } {
+export function layout(width: number, height: number): { stage: Box; panel: Box; tall: boolean } {
   const tall = width < PHONE_STAGE_WIDTH;
 
   if (tall) return { stage: { x: width * .03, y: height * .015, w: width * .94, h: height * .38 }, panel: { x: width * .05, y: height * .40, w: width * .90, h: height * .59 }, tall };

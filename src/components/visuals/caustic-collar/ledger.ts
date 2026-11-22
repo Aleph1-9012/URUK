@@ -1,10 +1,7 @@
 import { smooth } from '../../../lib/animation';
-import type { CausticData } from './data';
 import { layout } from './story';
 
 type Colors = { ink: string; blue: string; muted: string; paper: string };
-
-type Label = (id: string, x: number, y: number, opacity?: number) => void;
 
 function words(pen: CanvasRenderingContext2D, text: string, x: number, y: number, width: number, colors: Colors, size: number, claimed = false): void {
   pen.font = `${size}px "Special Elite", monospace`;
@@ -44,7 +41,7 @@ function arrow(pen: CanvasRenderingContext2D, fromX: number, toX: number, y: num
   pen.stroke();
 }
 
-export function drawLedger(pen: CanvasRenderingContext2D, width: number, height: number, time: number, colors: Colors, _label: Label, _data: CausticData): void {
+export function drawLedger(pen: CanvasRenderingContext2D, width: number, height: number, time: number, colors: Colors): void {
   if (time < 30000) return;
 
   const { ledger: box, tall } = layout(width, height);

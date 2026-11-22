@@ -39,8 +39,8 @@ export class CausticCollarFilm {
     this.pen.lineCap = 'round';
     this.pen.lineJoin = 'round';
     drawTable(this.pen, this.width, this.height, this.density, time, this.colors, this.labels.place, this.data);
-    drawPhase(this.pen, this.width, this.height, this.density, time, this.colors, this.labels.place, this.data);
-    drawLedger(this.pen, this.width, this.height, time, this.colors, this.labels.place, this.data);
+    drawPhase(this.pen, this.width, this.height, this.density, time, this.colors, this.data);
+    drawLedger(this.pen, this.width, this.height, time, this.colors);
 
     this.labels.endFrame();
   }
