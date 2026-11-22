@@ -1,75 +1,69 @@
-/* 60b: a link inside a sentence has no case. A stroke cut from Text 180 replaces its underline, and because
-   the images are backgrounds of a cloned box, a line break gives each fragment its own stroke. */
+/* Text 179's seal impression is the same strip that rolls across result pages. */
 .text-link,
 .folio-page a:not(.case-link) {
-  --stroke-head: 25px;
-  --stroke-tail: 21px;
-  --stroke-mid: calc(100% - var(--stroke-head) - var(--stroke-tail));
+  --seal-height: 0.72em;
+  --seal-art: url('../assets/roll/seal-impression.png');
+  --seal-x: calc((var(--seal-press, 0) - 1) * 0.42em);
+  --seal-y: calc((var(--seal-press, 0) - 1) * var(--seal-height));
+  /* Offset a second impression by a fraction of a pixel to thicken the carving. */
+  background-image: var(--seal-art), var(--seal-art);
+  background-position:
+    left var(--seal-x) bottom var(--seal-y),
+    left calc(var(--seal-x) + 0.65px) bottom var(--seal-y);
+  background-repeat: repeat-x;
+  background-size:
+    calc(var(--seal-height) * 456 / 128)
+    calc(var(--seal-height) * (0.7 + 0.3 * var(--seal-press, 0)));
+}
+
+.text-link,
+.folio-page a:not(.case-link) {
   -webkit-box-decoration-break: clone;
-  background-image:
-    url("../assets/link-stroke/head.png"),
-    url("../assets/link-stroke/mid.png"),
-    url("../assets/link-stroke/tail.png");
-  background-position: left bottom, var(--stroke-head) bottom, right bottom;
-  background-repeat: no-repeat;
-  background-size: 0 14px;
   box-decoration-break: clone;
   color: var(--blue);
   margin-inline: -4px;
   padding-block-end: 0.35em;
   padding-inline: 4px;
   text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor calc((1 - var(--seal-press, 0)) * 100%), transparent);
   text-underline-offset: 3px;
 }
 
 @media (hover: hover) {
   .text-link:hover,
   .folio-page a:not(.case-link):hover {
-    animation: stroke-rule 240ms linear;
-    background-size:
-      var(--stroke-head) 14px,
-      var(--stroke-mid) 14px,
-      var(--stroke-tail) 14px;
-    text-decoration: none;
+    --seal-press: 1;
   }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .text-link,
+  .folio-page a:not(.case-link) {
+    transition:
+      background-position 180ms ease-out,
+      background-size 180ms ease-out,
+      text-decoration-color 150ms ease-out;
+  }
+
+  .text-link:hover,
+  .folio-page a:not(.case-link):hover {
+    transition:
+      background-position 380ms cubic-bezier(0.35, 0.05, 0.24, 1),
+      background-size 380ms cubic-bezier(0.35, 0.05, 0.24, 1),
+      text-decoration-color 180ms ease-out 75ms;
+  }
+}
+
+.text-link:active,
+.folio-page a:not(.case-link):active {
+  --seal-press: 1;
 }
 
 .text-link:focus-visible,
 .folio-page a:not(.case-link):focus-visible {
-  animation: none;
-  background-image:
-    url("../assets/link-stroke/head-focus.png"),
-    url("../assets/link-stroke/mid-focus.png"),
-    url("../assets/link-stroke/tail-focus.png");
-  background-size:
-    var(--stroke-head) 18px,
-    var(--stroke-mid) 18px,
-    var(--stroke-tail) 18px;
+  --seal-press: 0;
   outline: none;
-  text-decoration: none;
-}
-
-@keyframes stroke-rule {
-  0% {
-    background-size: 0 14px, 0 14px, 0 14px;
-  }
-
-  20% {
-    background-size: var(--stroke-head) 14px, 0 14px, 0 14px;
-  }
-
-  85% {
-    background-size: var(--stroke-head) 14px, var(--stroke-mid) 14px, 0 14px;
-  }
-
-  100% {
-    background-size: var(--stroke-head) 14px, var(--stroke-mid) 14px, var(--stroke-tail) 14px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .text-link:hover,
-  .folio-page a:not(.case-link):hover {
-    animation: none;
-  }
+  text-decoration-style: double;
+  text-decoration-thickness: 1px;
+  transition: none;
 }
