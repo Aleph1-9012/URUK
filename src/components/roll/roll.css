@@ -68,18 +68,22 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 @container (min-width: 1888px) { .roll-track { --slots: 8; } }
 
 .roll-card { border-left: 1px solid var(--ink); color: var(--ink); display: flex; flex-direction: column; min-height: 286px; min-width: 0; padding: 28px 20px 24px; scroll-snap-align: start; text-decoration: none; }
-.roll-card__topic { color: var(--muted); font: .6875rem/1.2 var(--font-special-elite); letter-spacing: .04em; min-height: 34px; text-transform: uppercase; }
+/* Room for three lines of topic, so every title on the roll starts on one line. */
+.roll-card__topic { color: var(--muted); font: var(--label-font-size)/1.2 var(--font-special-elite); letter-spacing: .04em; min-height: 3.6em; text-transform: uppercase; }
 .roll-card__number { display: none; }
 .roll-card__title { font: italic 1.375rem/1.75rem var(--font-alegreya); margin-bottom: 16px; overflow-wrap: anywhere; }
-.roll-card__status, .roll-card__read { align-items: center; display: flex; font: .75rem/1.2 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
-.roll-card__status { gap: 8px; margin-top: auto; }
+.roll-card__status, .roll-card__read { align-items: center; display: flex; font: var(--label-font-size)/1.2 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
+.roll-card__read { font-size: var(--control-font-size); }
+.roll-card__status { margin-top: auto; }
 .roll-card__read { gap: 6px; margin-top: 14px; }
 .roll-icon { align-items: center; display: inline-flex; flex: none; height: 12px; justify-content: center; width: 12px; }
 .roll-icon svg { max-height: 12px; max-width: 12px; }
 .roll-card:hover { z-index: 1; }
 .roll-card.is-current { background: var(--ink); color: var(--paper); }
 .roll-card.is-current .roll-card__topic { color: var(--paper); }
-.roll-card.is-current .status-sign, .roll-card.is-current .roll-icon { filter: invert(1); }
+.roll-card.is-current .status-sign,
+.roll-card.is-current .review-tag::before,
+.roll-card.is-current .roll-icon { filter: invert(1); }
 
 .roll-slot { border-left: 1px solid var(--ink); display: flex; min-height: 286px; min-width: 0; padding: 28px 20px; scroll-snap-align: start; }
 .roll-slot p { align-items: center; border: 1.5px dashed rgb(31 31 27 / 35%); color: var(--muted); display: flex; flex: 1; font: italic 1.125rem/1.5rem var(--font-alegreya); justify-content: center; min-width: 0; overflow-wrap: anywhere; padding: 12px 20px; text-align: center; }
@@ -87,7 +91,7 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 .roll-controls { align-items: center; display: flex; flex-wrap: wrap; gap: 12px 32px; margin-top: 36px; padding-inline: calc(var(--roll-inset) + 20px) var(--content-left); }
 .roll-wind { align-items: center; display: flex; flex: 1 1 320px; min-width: 0; }
 .roll-arrows { display: flex; flex: none; gap: 16px; }
-.roll-wind p { color: var(--muted); font: .8125rem/1.3 var(--font-special-elite); letter-spacing: .04em; margin-left: max(12px, calc(var(--roll-lead) - 40px)); min-width: 0; }
+.roll-wind p { color: var(--muted); font: var(--label-font-size)/1.3 var(--font-special-elite); letter-spacing: .04em; margin-left: max(12px, calc(var(--roll-lead) - 40px)); min-width: 0; }
 .roll-arrow { background: var(--paper); border: 1px solid var(--ink); border-radius: 50%; color: var(--ink); cursor: pointer; display: grid; flex: none; height: 32px; padding: 0; place-items: center; width: 32px; }
 .roll-arrow:disabled { cursor: default; opacity: .35; }
 .roll-arrow:disabled::before, .roll-arrow:disabled::after { display: none; }
@@ -127,7 +131,7 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 
   .roll-frame { margin-left: 0; padding-top: 24px; }
   uruk-roll[data-closed] .roll-frame { margin-right: 0; padding-block: 0 24px; }
-  uruk-roll[data-closed] .roll-heading { color: var(--ink); display: block; font: .6875rem/1.2 var(--font-special-elite); letter-spacing: .04em; padding: 28px 16px 8px; text-transform: uppercase; }
+  uruk-roll[data-closed] .roll-heading { color: var(--ink); display: block; font: var(--label-font-size)/1.2 var(--font-special-elite); letter-spacing: .04em; padding: 28px 16px 8px; text-transform: uppercase; }
   uruk-roll[data-empty] .roll-heading { display: none; }
   uruk-roll[data-empty] .roll-frame { padding-top: 24px; }
 
@@ -141,10 +145,10 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 
   .roll-slot { border-left: 0; border-top: 1px solid var(--ink); min-height: 228px; padding: 24px 16px; }
 
-  uruk-roll[data-closed] .roll-card { align-content: start; align-items: center; border-bottom: 1px solid var(--ink); border-top: 0; flex-flow: row wrap; gap: 6px 10px; min-height: 0; padding: 12px 16px; }
+  uruk-roll[data-closed] .roll-card { align-content: start; align-items: baseline; border-bottom: 1px solid var(--ink); border-top: 0; flex-flow: row wrap; gap: 6px; min-height: 0; padding: 12px 16px; }
   uruk-roll[data-closed] .roll-card__topic { display: none; }
-  uruk-roll[data-closed] .roll-card__number { color: var(--muted); display: block; font: .75rem/1.2 var(--font-special-elite); order: 1; width: 40px; }
-  uruk-roll[data-closed] .roll-card__status { gap: 6px; letter-spacing: 0; margin: 0 auto 0 0; order: 2; }
+  uruk-roll[data-closed] .roll-card__number { color: var(--muted); display: block; font: var(--label-font-size)/1.2 var(--font-special-elite); order: 1; width: 40px; }
+  uruk-roll[data-closed] .roll-card__status { letter-spacing: 0; margin: 0 auto 0 0; order: 2; }
   uruk-roll[data-closed] .roll-card__read { letter-spacing: 0; margin: 0; order: 3; }
   uruk-roll[data-closed] .roll-card__title { flex-basis: 100%; font-size: 1rem; line-height: 1.25rem; margin: 0; order: 4; }
   uruk-roll[data-closed] .roll-slot { border-bottom: 0; border-top: 1px solid var(--ink); }

@@ -1,0 +1,54 @@
+---
+import { statusKind, type ReviewStatus } from '../../content/review-status';
+import StatusSign from './StatusSign.astro';
+
+interface Props {
+  status: ReviewStatus;
+}
+
+const { status } = Astro.props;
+---
+
+<span class="review-tag">
+  <StatusSign kind={statusKind(status)} />
+  <span class="review-tag__label">{status}</span>
+</span>
+
+<style>
+  .review-tag {
+    align-items: baseline;
+    display: inline-flex;
+    gap: 0.5em;
+    justify-content: center;
+    line-height: 1.2;
+    max-inline-size: 100%;
+    /* Special Elite's capitals sit 0.15em above the middle of its line (ascent 0.7em, descent 0.3em, capitals 0.7em
+       tall), so the case gives them 0.15em more room above than below to centre them. */
+    padding: 0.7em 0.55em 0.4em;
+    position: relative;
+    text-align: center;
+  }
+
+  /* A case ruled with the stylus stroke cut from Text 180, each rule running a little past its corner. The image is
+     drawn at three device pixels to the CSS pixel, so its 24 px corners are 8 px wide. */
+  .review-tag::before {
+    /* WebKit paints no border image on a box whose border widths are all zero. */
+    border: 8px solid transparent;
+    border-image: url('../../assets/status/stylus-case.png') 24 / 8px / 3px stretch;
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  .review-tag :global(.status-sign) {
+    /* The sign hangs from the baseline; taking its 12 px height back from its top keeps it from raising the line. */
+    margin-block-start: -12px;
+    /* Special Elite's visible capitals are centered about 0.36em above the baseline. */
+    transform: translateY(calc(50% - 0.36em));
+  }
+
+  .review-tag__label {
+    overflow-wrap: anywhere;
+  }
+</style>

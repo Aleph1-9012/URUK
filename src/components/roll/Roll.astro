@@ -4,7 +4,7 @@ import phoneRoller from '../../assets/roll/roller-phone.png';
 import seal from '../../assets/roll/seal-impression.png';
 import type { ResultEntry } from '../../content/results';
 import { statusKind } from '../../content/review-status';
-import StatusSign from '../status-sign/StatusSign.astro';
+import ReviewTag from '../status-sign/ReviewTag.astro';
 import Icon from '../icon/Icon.astro';
 import './roll.css';
 
@@ -46,7 +46,7 @@ const images = `--seal: url('${seal.src}'); --roller-desktop: url('${desktopRoll
                   <span class="roll-card__topic" data-highlight>{data.family} · {data.topic}</span>
                   <span class="roll-card__number" aria-hidden="true">{data.family}</span>
                   <span class="roll-card__title" data-highlight>{data.paperTitle}</span>
-                  <span class="roll-card__status"><StatusSign kind={statusKind(data.status)} />{data.status}</span>
+                  <span class="roll-card__status"><ReviewTag status={data.status} /></span>
                   <span class="roll-card__read">
                     {current && index === currentIndex - 1 && <span class="roll-icon"><Icon name="left" /></span>}
                     {data.family === current ? 'You are here' : current && index === currentIndex - 1 ? 'Previous' : current && index === currentIndex + 1 ? 'Next' : 'Read'}

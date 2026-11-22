@@ -3,7 +3,7 @@ uruk-menu { display: block; }
 .menu-page { display: flex; flex-direction: column; min-height: calc(100svh - 112px); padding-block: 72px 30px; position: relative; }
 
 .menu-search { align-items: center; border: 1px solid var(--ink); display: flex; gap: 11px; min-height: 38px; padding: 0 13px 0 12px; }
-.menu-search input { background: transparent; border: 0; color: var(--ink); font: .75rem/1.3 var(--font-special-elite); min-width: 0; padding: 0; width: 100%; }
+.menu-search input { background: transparent; border: 0; color: var(--ink); font: var(--control-font-size)/1.3 var(--font-special-elite); min-width: 0; padding: 0; width: 100%; }
 .menu-search input::placeholder { color: var(--muted); opacity: 1; }
 .menu-search input:focus { outline: none; }
 .menu-search:focus-within { outline: 2px solid var(--blue); outline-offset: 3px; }
@@ -13,7 +13,7 @@ uruk-menu { display: block; }
 .menu-icon--search { height: 16px; width: 16px; }
 .menu-icon svg { max-height: 12px; max-width: 12px; }
 
-.menu-filters { align-items: center; display: flex; flex-wrap: wrap; font: .6875rem/1.2 var(--font-special-elite); gap: 0 22px; letter-spacing: .04em; margin-left: auto; min-height: 28px; padding-top: 4px; text-transform: uppercase; }
+.menu-filters { align-items: center; display: flex; flex-wrap: wrap; font: var(--control-font-size)/1.2 var(--font-special-elite); gap: 0 22px; letter-spacing: .04em; margin-left: auto; min-height: 28px; padding-top: 4px; text-transform: uppercase; }
 .menu-filters > span { color: var(--muted); }
 .menu-filters button { align-items: center; background: transparent; border: 0; color: var(--ink); cursor: pointer; display: flex; font: inherit; gap: 8px; letter-spacing: inherit; padding: 4px 0; text-transform: inherit; }
 .menu-filters button[aria-pressed="true"] > :last-child { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
@@ -21,17 +21,20 @@ uruk-menu { display: block; }
 .menu-filters button:disabled::before, .menu-filters button:disabled::after { display: none; }
 
 .menu-index, .menu-empty { padding: 56px var(--content-left) 18px calc(var(--roll-inset) + 60px + var(--roll-lead)); }
-.menu-index { padding-right: max(var(--content-left), 120px); }
-.menu-index h2, .menu-empty h2 { color: var(--muted); font: .6875rem/1.2 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
-.menu-index h2 { margin-bottom: 8px; }
-.menu-index__row { align-items: center; color: var(--ink); display: flex; flex-wrap: wrap; font: .75rem/1.2 var(--font-special-elite); gap: 4px 16px; padding: 9px 0; }
-.menu-index__label { align-items: center; display: flex; flex: 1 1 320px; gap: 16px; min-width: 0; }
+/* Every row lays its cells on the index's own columns, so the review tags share one width and every leader ends at one place. */
+.menu-index { column-gap: 16px; display: grid; grid-template-columns: minmax(0, 1fr) max-content max-content; padding-right: max(var(--content-left), 120px); }
+.menu-index h2, .menu-empty h2 { color: var(--muted); font: var(--label-font-size)/1.2 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
+.menu-index h2 { grid-column: 1 / -1; margin-bottom: 8px; }
+.menu-index__row { align-items: baseline; color: var(--ink); display: grid; font: var(--label-font-size)/1.2 var(--font-special-elite); grid-column: 1 / -1; grid-template-columns: subgrid; padding: 9px 0; }
+.menu-index__label { align-items: baseline; display: flex; gap: 16px; min-width: 0; }
 .menu-index__number { color: var(--muted); flex: none; width: 40px; }
 .menu-index__title { font: italic 1.25rem/1.35 var(--font-alegreya); min-width: 0; overflow-wrap: anywhere; }
-.menu-index__leader { align-self: flex-end; border-bottom: 1px dashed var(--muted); flex: 1 1 8px; margin-bottom: 6px; min-width: 8px; }
-.menu-index__status, .menu-index__read { align-items: center; color: var(--ink); display: inline-flex; flex: none; text-decoration: none; text-transform: uppercase; }
-.menu-index__status { gap: 8px; margin-left: auto; }
-.menu-index__read { gap: 6px; }
+/* An empty box sits on the baseline by its bottom edge, so the leader runs along the foot of the title. It takes only
+   the room a title leaves, so a title that wraps has no stub after its first line. */
+.menu-index__leader { border-bottom: 1px dashed var(--muted); flex: 1 1 0; min-width: 0; }
+.menu-index__status, .menu-index__read { align-items: center; color: var(--ink); display: inline-flex; text-decoration: none; text-transform: uppercase; }
+.menu-index__status .review-tag { flex: 1; }
+.menu-index__read { font-size: var(--control-font-size); gap: 6px; }
 .menu-index__row:focus-visible .menu-index__read { text-decoration: underline; text-underline-offset: 3px; }
 
 .menu-empty h2 { margin-bottom: 8px; }
@@ -47,5 +50,5 @@ mark { background: transparent; color: var(--blue); text-decoration: underline; 
   .menu-index { display: none; }
   .menu-empty { padding: 28px 24px 24px; }
   .menu-empty p { font-size: 1.125rem; line-height: 1.4375rem; }
-  .menu-phone-credit { color: var(--muted); display: block; font: .6875rem/1.4 var(--font-special-elite); margin-top: auto; padding: 16px 84px 7px 24px; }
+  .menu-phone-credit { color: var(--muted); display: block; font: var(--label-font-size)/1.4 var(--font-special-elite); margin-top: auto; padding: 16px 84px 7px 24px; }
 }

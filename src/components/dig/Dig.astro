@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Icon from '../icon/Icon.astro';
+import ReviewTag from '../status-sign/ReviewTag.astro';
 import StatusSign from '../status-sign/StatusSign.astro';
 import moundSmall from '../../assets/home/mound-716.webp?url';
 import moundMedium from '../../assets/home/mound-1100.webp?url';
@@ -59,7 +60,7 @@ const moundSrcset = `${moundSmall} 716w, ${moundMedium} 1100w, ${moundLarge} 220
             <p>{layer.answer}</p>
             {layer.review && digStatus !== undefined && (
               <div class="dig__status">
-                <p class="dig__label dig__sign"><StatusSign kind={statusKind(digStatus)} /><span>{digStatus}</span></p>
+                <p class="dig__label dig__tag"><ReviewTag status={digStatus} /></p>
                 {hasPage(digResult.family) && (
                   <a class="dig__label dig__read case-link" href={`/results/${digResult.family}/`}>
                     <span>Read the whole result</span>
@@ -172,7 +173,7 @@ const moundSrcset = `${moundSmall} 716w, ${moundMedium} 1100w, ${moundLarge} 220
 
   .dig__label {
     font-family: var(--font-special-elite);
-    font-size: clamp(0.6875rem, calc(0.664286rem + 0.095238vw), 0.75rem);
+    font-size: var(--label-font-size);
     font-weight: 400;
     letter-spacing: 0.04em;
     line-height: 1;
@@ -228,10 +229,9 @@ const moundSrcset = `${moundSmall} 716w, ${moundMedium} 1100w, ${moundLarge} 220
     justify-items: start;
   }
 
-  .dig__sign,
   .dig__read,
   .dig__word {
-    font-size: 0.75rem;
+    font-size: var(--control-font-size);
   }
 
   .dig__sign {

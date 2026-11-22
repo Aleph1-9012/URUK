@@ -99,10 +99,10 @@
 .folio-page .folio-contents__title {
   color: var(--ink);
   font-family: var(--font-special-elite);
-  font-size: 0.6875rem;
+  font-size: var(--label-font-size);
   font-weight: 400;
   letter-spacing: 0.04em;
-  line-height: 0.9375rem;
+  line-height: 1.125rem;
   text-transform: uppercase;
 }
 
@@ -111,7 +111,7 @@
   color: var(--ink);
   display: flex;
   font-family: var(--font-special-elite);
-  font-size: 0.875rem;
+  font-size: var(--label-font-size);
   font-weight: 400;
   gap: 10px;
   letter-spacing: 0.04em;
@@ -123,7 +123,7 @@
 .folio-page .folio-side-label {
   color: var(--ink);
   font-family: var(--font-special-elite);
-  font-size: 0.8125rem;
+  font-size: var(--label-font-size);
   font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1.875rem;
@@ -132,15 +132,16 @@
 
 .folio-contents__title {
   color: var(--muted);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
+/* Rows sit on one baseline with the leader's rule, and their padding is even so each title is centred in its case. */
 .folio-contents__row {
-  align-items: end;
+  align-items: baseline;
   color: var(--ink);
   display: flex;
-  gap: 8px;
-  padding-bottom: 6px;
+  gap: 12px;
+  padding-block: 3px;
   text-decoration: none;
 }
 
@@ -154,15 +155,17 @@
   line-height: var(--folio-contents-line-height);
 }
 
+/* Wide enough for VIII. and set flush right, so every title starts the same distance after its numeral's stop. */
 .folio-contents__number {
   flex: none;
-  width: 40px;
+  text-align: end;
+  width: 2em;
 }
 
+/* An empty box's baseline is its bottom edge, so the dashed rule rests on the titles' baseline. */
 .folio-contents__leader {
   border-bottom: 1px dashed var(--ink);
   flex: 1 1 0;
-  height: 8px;
   min-width: 1px;
 }
 
@@ -224,22 +227,6 @@
 
 .folio-row__aside {
   grid-column: 3;
-}
-
-.folio-status-line {
-  align-items: center;
-  color: var(--ink);
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.folio-status-line span:last-child {
-  font-family: var(--font-special-elite);
-  font-size: 0.75rem;
-  letter-spacing: 0.04em;
-  line-height: 0.9375rem;
-  text-transform: uppercase;
 }
 
 .folio-list {
@@ -328,7 +315,6 @@
   }
 
   .folio-page .folio-side-label {
-    font-size: 0.75rem;
     line-height: 1.125rem;
   }
 

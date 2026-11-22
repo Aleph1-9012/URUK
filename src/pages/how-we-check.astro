@@ -1,7 +1,7 @@
 ---
 import ornamentUrl from '../assets/ornaments/ornament.svg?url';
 import diamondUrl from '../assets/ornaments/diamond.svg?url';
-import StatusSign from '../components/status-sign/StatusSign.astro';
+import ReviewTag from '../components/status-sign/ReviewTag.astro';
 import PageLayout from '../layouts/PageLayout.astro';
 ---
 
@@ -49,36 +49,37 @@ import PageLayout from '../layouts/PageLayout.astro';
         <h2 class="folio-section__title">The four labels</h2>
       </div>
       <div class="folio-row folio-row--status">
-        <div class="folio-row__margin folio-label"><StatusSign kind="approved" /> Approved.</div>
+        <div class="folio-row__margin folio-label"><ReviewTag status="approved" /></div>
         <div class="folio-row__text">
           <p>A named mathematician who works in the field says in public that they checked the proof and it holds. A peer-reviewed journal accepting the paper also counts. The page links to what they said.</p>
         </div>
       </div>
       <div class="folio-row folio-row--status">
-        <div class="folio-row__margin folio-label"><StatusSign kind="disputed" /> Disputed.</div>
+        <div class="folio-row__margin folio-label"><ReviewTag status="disputed" /></div>
         <div class="folio-row__text">
           <p>A named mathematician who works in the field reports an error or a gap in the proof. The page links to the report.</p>
         </div>
       </div>
       <div class="folio-row folio-row--status">
-        <div class="folio-row__margin folio-label"><StatusSign kind="under-review" /> Under review.</div>
+        <div class="folio-row__margin folio-label"><ReviewTag status="under review" /></div>
         <div class="folio-row__text">
           <p>A named mathematician who works in the field says in public that they are reading or working through the proof, and has not given a verdict yet.</p>
         </div>
       </div>
       <div class="folio-row folio-row--status">
-        <div class="folio-row__margin folio-label"><StatusSign kind="unreviewed" /> Unreviewed.</div>
+        <div class="folio-row__margin folio-label"><ReviewTag status="unreviewed" /></div>
         <div class="folio-row__text">
           <p>We found no public review by a mathematician in the field.</p>
         </div>
       </div>
-      <div class="folio-row how-we-check__row--section-end">
+      <div class="folio-row how-we-check__row--section-end how-we-check__row--example">
         <div class="folio-row__margin"></div>
         <div class="folio-row__text">
           <p>Every label shows the date of our last search. Labels change as mathematicians respond, so the date tells you how fresh the label is.</p>
         </div>
-        <aside class="folio-row__aside">
-          <div class="folio-status-line"><StatusSign kind="under-review" /><span>Under review · checked 17 Oct 2026</span></div>
+        <aside class="folio-row__aside how-we-check__example">
+          <div class="folio-label"><ReviewTag status="under review" /></div>
+          <p class="how-we-check__example-date">Checked 17 October 2026.</p>
         </aside>
       </div>
     </section>
@@ -187,6 +188,24 @@ import PageLayout from '../layouts/PageLayout.astro';
 
   .how-page .how-we-check__row--page-end {
     padding-bottom: 120px;
+  }
+
+  /* Each label and the example beside the closing paragraph sit on the first line's baseline; the case gives the
+     tags their room above. */
+  .how-page .folio-row--status,
+  .how-page .how-we-check__row--example {
+    align-items: baseline;
+  }
+
+  .how-page .folio-row--status .folio-label,
+  .how-page .how-we-check__example .folio-label {
+    padding-top: 0;
+  }
+
+  /* The example is set like the label and date at the top of a result page. */
+  .how-page .how-we-check__example-date {
+    font: var(--note-font-size)/var(--note-line-height) var(--font-alegreya);
+    margin-top: 6px;
   }
 
   @media (max-width: 47.999rem) {
