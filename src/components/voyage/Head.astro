@@ -1,0 +1,39 @@
+---
+// The voyage plays only on a reader's first visit to the home page in this browser, the dev server included.
+---
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const seenKey = 'uruk:voyage-seen';
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (performance.getEntriesByType('navigation')[0]?.type === 'back_forward') return;
+    if (location.hash) return;
+
+    try {
+      if (localStorage.getItem(seenKey)) return;
+
+      // Marked before it plays, so a voyage cut short by input still counts as the one time.
+      localStorage.setItem(seenKey, '1');
+    } catch {
+      return;
+    }
+
+    // Establish the river scene before the hero can paint.
+    root.dataset.voyageStage = 'waiting';
+
+    // Until the voyage script takes over, any input or a slow script gives the page back at once.
+    function giveBack() {
+      if (root.dataset.voyageStage === 'waiting') delete root.dataset.voyageStage;
+    }
+
+    window.setTimeout(giveBack, 4000);
+    for (const type of ['pointerdown', 'keydown', 'wheel', 'touchstart']) {
+      window.addEventListener(type, giveBack, { capture: true, passive: true });
+    }
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) giveBack();
+    });
+  })();
+</script>

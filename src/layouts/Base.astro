@@ -9,10 +9,11 @@ import '../styles/text-link.css';
 
 interface Props {
   title: string;
+  description?: string;
   math?: boolean;
 }
 
-const { title, math = false } = Astro.props;
+const { title, description, math = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -20,6 +21,7 @@ const { title, math = false } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <slot name="head" />
     <link rel="stylesheet" href={fontStyles} />
     {math && <link rel="stylesheet" href={mathFontStyles} />}
     <noscript><style is:inline>[data-script-only] { display: none !important; }</style></noscript>
@@ -27,7 +29,7 @@ const { title, math = false } = Astro.props;
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{title}</title>
-    <slot name="head" />
+    {description !== undefined && <meta name="description" content={description} />}
   </head>
   <body>
     <slot />

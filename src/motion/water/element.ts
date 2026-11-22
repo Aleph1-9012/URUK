@@ -339,6 +339,13 @@ class UrukWaterElement extends HTMLElement {
       return;
     }
 
+    // Hold the breeze's clock while the arrival scene owns the river, so the river starts calm when it hands back.
+    if (document.documentElement.dataset.voyageStage) {
+      this.startedAt = time;
+      this.scheduleFrame();
+      return;
+    }
+
     if (time - this.lastDrawAt >= 1000 / 30 || !this.previousOffsets) {
       const offsets = breezeOffsets({
         rows: this.rowCount,

@@ -7,6 +7,8 @@ import desktopTextureTwoX from '../../assets/hero/texture-desktop-2880.webp?url'
 import phoneTextureOneX from '../../assets/hero/texture-phone-390.webp?url';
 import phoneTextureTwoX from '../../assets/hero/texture-phone-780.webp?url';
 import logoUrl from '../../assets/logo/uruk.svg?url';
+import SupportLinks from '../support-links/SupportLinks.astro';
+import Voyage from '../voyage/Voyage.astro';
 import Water from './Water.astro';
 
 // No copy in between: the full-size file is pure ink and very small, but a resized one gains grey edges and grows.
@@ -80,14 +82,9 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
       />
     </picture>
   </div>
-  <header class="hero__header">
+  <header class="hero__header" data-voyage-text>
     <nav aria-label="Site">
       <ul class="hero__nav-list">
-        <li>
-          <a class="hero__nav-link hero__nav-link--muted case-link" href="/results/">
-            Results
-          </a>
-        </li>
         <li>
           <a
             class="hero__nav-link hero__nav-link--muted case-link"
@@ -101,47 +98,43 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
             About
           </a>
         </li>
-        <li class="hero__nav-start">
-          <a
-            class="hero__nav-link hero__nav-link--ink case-link"
-            href="/results/"
-          >
-            <span>Start reading</span>
-            <Icon name="right" />
-          </a>
-        </li>
       </ul>
     </nav>
+    <SupportLinks />
+    <a class="hero__nav-link hero__nav-link--ink hero__nav-start case-link" href="/results/">
+      <span>Read the results</span>
+      <Icon name="right" />
+    </a>
   </header>
   <Water />
+  <Voyage />
   <div class="hero__main">
-    <div class="hero__art" data-bleed>
-      <h1 class="hero__logo">
-        <img src={logoUrl} alt="URUK" width="290" height="98" draggable="false" />
-      </h1>
-      <img
-        id="hero-plate"
-        class="hero__plate"
-        draggable="false"
-        data-bleed
-        src={plateSmall}
-        srcset={plateSrcset}
-        sizes="min(calc(197.166667px + 39.085714vw), 84.444444svh)"
-        alt=""
-        width="760"
-        height="382"
-      />
-    </div>
-    <a class="hero__button case-link case-link--framed" href="/results/">
-      <span>Start reading</span>
+    <h1 class="hero__logo">
+      <img src={logoUrl} alt="URUK" width="290" height="98" draggable="false" />
+    </h1>
+    <p class="hero__intro" data-voyage-text>OpenAI's new mathematics results in plain words, and what mathematicians have checked.</p>
+    <img
+      id="hero-plate"
+      class="hero__plate"
+      draggable="false"
+      data-bleed
+      src={plateSmall}
+      srcset={plateSrcset}
+      sizes="min(calc(197.166667px + 39.085714vw), 84.444444svh)"
+      alt=""
+      width="760"
+      height="382"
+    />
+    <a class="hero__button case-link case-link--framed" href="/results/" data-voyage-text>
+      <span>Read the results</span>
       <Icon name="right" />
     </a>
     <footer class="hero__foot">
-      <a class="hero__scroll case-link" href="#dig">
+      <span class="hero__scroll" aria-hidden="true" data-voyage-text>
         <span>Scroll</span>
         <Icon name="down" />
-      </a>
-      <p class="hero__credit">
+      </span>
+      <p class="hero__credit" data-voyage-text>
         Plate: ornaments found at Warka (Uruk). W. K. Loftus, 1857. Public
         domain.
       </p>
@@ -159,17 +152,16 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
       var(--logo-left) + var(--logo-w) + var(--art-gap) + var(--plate)
     );
     --shift: max(0px, calc((100vw - 1.263158 * var(--right-edge)) / 2));
+    --logo-start: calc(var(--shift) + var(--logo-left));
+    --plate-start: calc(var(--logo-start) + var(--logo-w) + var(--art-gap));
     --art-h: calc(0.490926 * var(--plate));
     --water-h: calc(0.427632 * var(--plate));
     --water-w: calc(1.894737 * var(--plate));
-    --water-left: calc(
-      var(--shift) + var(--logo-left) + var(--logo-w) + var(--art-gap) -
-        0.5 * var(--plate)
-    );
+    --water-left: calc(var(--plate-start) - 0.5 * var(--plate));
     --margin: clamp(16px, calc(1.142857px + 3.809524vw), 56px);
     --nav-top: clamp(32px, calc(25.314286px + 1.714286vw), 50px);
     --foot-pad: clamp(20.5px, calc(10.285714px + 2.619048vw), 48px);
-    --nav-gap: clamp(14px, calc(5.828571px + 2.095238vw), 36px);
+    --nav-gap: clamp(14px, 1.6vw, 22px);
     --hero-nav-font-size: 0.9375rem;
     --hero-foot-font-size: 0.875rem;
     background: var(--paper);
@@ -179,7 +171,7 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
     grid-template-rows:
       [nav-start] auto
       [nav-end rise-start] minmax(1.5rem, 6.25rem)
-      [rise-end air-start] minmax(0, 2fr)
+      [rise-end air-start] minmax(min-content, 2fr)
       [air-end art-start] var(--art-h)
       [art-end water-start] calc(var(--water-h) - 20.5px)
       [water-end sink-start] minmax(0, 1fr)
@@ -223,16 +215,16 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
   }
 
   .hero__header {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px var(--nav-gap);
     grid-column: 1;
     grid-row: nav-start / nav-end;
+    justify-content: flex-end;
     padding: var(--nav-top) var(--margin) 0;
     position: relative;
     z-index: 3;
-  }
-
-  .hero__header nav {
-    margin-inline-start: auto;
-    width: fit-content;
   }
 
   .hero__nav-list {
@@ -247,6 +239,14 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
   .hero__nav-list > li {
     align-items: center;
     display: flex;
+  }
+
+  .hero__header :global(.support-links) {
+    gap: var(--nav-gap);
+  }
+
+  .hero__header :global(.support-links a) {
+    padding-inline: 0;
   }
 
   .hero__nav-link,
@@ -297,22 +297,19 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
     z-index: 2;
   }
 
-  .hero__art {
-    align-items: flex-end;
-    display: flex;
-    gap: var(--art-gap);
+  .hero__logo,
+  .hero__plate {
+    align-self: end;
     grid-column: 1;
-    grid-row: 3;
-    min-width: max-content;
-    padding-inline-start: calc(var(--shift) + var(--logo-left));
-    position: relative;
+    grid-row: art-start / water-start;
+    justify-self: start;
     z-index: 2;
   }
 
   .hero__logo {
-    flex: none;
     line-height: 0;
     margin: 0 0 calc(0.010345 * var(--logo-w));
+    margin-inline-start: var(--logo-start);
     width: var(--logo-w);
   }
 
@@ -324,10 +321,37 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
 
   .hero__plate {
     display: block;
-    flex: none;
     height: auto;
     margin: 0 0 calc(-0.011842 * var(--plate));
+    margin-inline-start: var(--plate-start);
     width: var(--plate);
+  }
+
+  .hero__intro {
+    align-self: end;
+    color: var(--ink);
+    font-family: var(--folio-nav-font-family);
+    font-size: var(--hero-nav-font-size);
+    font-style: normal;
+    font-weight: var(--folio-nav-font-weight);
+    grid-column: 1;
+    grid-row: air-start / art-start;
+    justify-self: start;
+    letter-spacing: var(--folio-nav-letter-spacing);
+    line-height: 1.45;
+    margin: 12px var(--margin) clamp(2rem, 4svh, 3rem) var(--logo-start);
+    max-inline-size: 24rem;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+
+  @media (min-width: 48rem) {
+    .hero__intro {
+      align-self: start;
+      grid-row: rise-start / art-start;
+      margin: 0.75rem var(--margin) 1.5rem;
+      max-inline-size: 28rem;
+    }
   }
 
   .hero__button {
@@ -340,10 +364,10 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
     font-weight: var(--folio-nav-font-weight);
     grid-column: 1;
     grid-row: button-start / button-end;
-    justify-self: start;
+    justify-self: end;
     letter-spacing: var(--folio-nav-letter-spacing);
     line-height: var(--folio-nav-line-height);
-    margin-inline-start: var(--margin);
+    margin-inline-end: var(--margin);
     padding: 15px 22px;
     position: relative;
     text-transform: uppercase;
@@ -368,7 +392,6 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
     font-weight: var(--folio-label-font-weight);
     letter-spacing: var(--folio-label-letter-spacing);
     line-height: 1.3;
-    position: relative;
     text-transform: uppercase;
   }
 
@@ -389,15 +412,55 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
     text-align: right;
   }
 
+  /* At 59rem the intro has 16rem beside the widest navigation row and its gap. */
+  @media (min-width: 59rem) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr) max-content;
+    }
+
+    .hero__header {
+      grid-column: 2;
+      padding-inline-start: 0;
+    }
+
+    .hero__main,
+    .hero__texture--desktop,
+    .hero > :global(.hero__water),
+    .hero__logo,
+    .hero__plate,
+    .hero__foot {
+      grid-column: 1 / -1;
+    }
+
+    .hero__main {
+      grid-row: nav-start / foot-end;
+      grid-template-columns: subgrid;
+    }
+
+    .hero__intro {
+      grid-column: 1 / 2;
+      grid-row: nav-start / nav-end;
+      /* Center the first line box within the links' row, below its top padding. */
+      inset-block-start: calc(var(--nav-top) + (100% - var(--nav-top) - 1lh) / 2);
+      inset-inline: var(--margin) 3rem;
+      margin: 0;
+      position: absolute;
+    }
+
+    .hero__foot {
+      grid-row: foot-start / foot-end;
+    }
+  }
+
   @media (max-width: 47.999rem) {
     .hero {
-      --nav-gap: 14px;
       grid-template-rows:
         [nav-start] auto
-        [nav-end air-start] minmax(1.5rem, 1fr)
+        [nav-end air-start] minmax(1rem, 1fr)
         [air-end art-start] var(--art-h)
-        [art-end water-start] calc(var(--water-h) + 56.5px)
-        [water-end button-start] auto
+        [art-end water-start] calc(var(--water-h) + 0.75rem)
+        [water-end intro-start] auto
+        [intro-end button-start] auto
         [button-end sink-start] minmax(1.5rem, 1fr)
         [sink-end foot-start] auto
         [foot-end];
@@ -443,17 +506,25 @@ const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAA
       margin-inline-end: 4px;
     }
 
-    .hero__art {
-      grid-row: 2;
+    .hero__intro {
+      align-self: start;
+      grid-row: intro-start / intro-end;
+      justify-self: end;
+      margin: 0 var(--margin) 24px;
+      max-inline-size: 17rem;
+      text-align: right;
     }
 
-    .hero__nav-list > li.hero__nav-start {
+    .hero__nav-start {
       display: none;
     }
 
     .hero__button {
       display: inline-flex;
-      grid-row: 4;
+    }
+
+    .hero__foot {
+      grid-row: foot-start / foot-end;
     }
 
     .hero__credit {

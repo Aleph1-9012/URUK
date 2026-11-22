@@ -688,6 +688,132 @@ async function checkSealTransition(page: Page, origin: string): Promise<void> {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 }
 
+async function checkVoyage(browser: Browser, origin: string): Promise<void> {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'no-preference' });
+
+  // Capture the two marks while the boat is on the river.
+  await context.addInitScript(() => {
+    new MutationObserver((records) => {
+      const root = document.documentElement;
+      const plate = document.querySelector('#hero-plate');
+      const logo = document.querySelector('.hero__logo');
+
+      for (const record of records) root.dataset.voyageLog = `${root.dataset.voyageLog ?? ''} ${record.oldValue ?? 'none'}`.trim();
+
+      if (root.dataset.voyageStage === 'sailing' && plate && logo && !root.dataset.voyagePlate) {
+        root.dataset.voyagePlate = getComputedStyle(plate).visibility;
+        root.dataset.voyageLogo = getComputedStyle(logo).visibility;
+      }
+
+      // The intro is shown with the engraving, so it must already be hidden until it is typed.
+      const intro = document.querySelector('.hero__intro');
+
+      if (root.dataset.voyageStage === 'rising' && intro && !root.dataset.voyageIntro) {
+        root.dataset.voyageIntro = getComputedStyle(intro).clipPath;
+      }
+    }).observe(document, { attributes: true, attributeOldValue: true, subtree: true, attributeFilter: ['data-voyage-stage'] });
+  });
+
+  async function textInPlace(page: Page): Promise<boolean> {
+    const pieces = await page.locator('[data-voyage-text], [data-voyage-text] a').evaluateAll((elements) => elements.map((element) => {
+      const style = getComputedStyle(element);
+
+      return { visibility: style.visibility, transform: style.transform, clip: style.clipPath };
+    }));
+
+    return pieces.length > 0
+      && pieces.every((piece) => piece.visibility === 'visible' && piece.transform === 'none' && piece.clip === 'none');
+  }
+
+  try {
+    const page = await context.newPage();
+    const html = page.locator('html');
+
+    await page.goto(origin);
+    await page.waitForFunction(() => document.documentElement.dataset.voyageStage === 'rising');
+    // The river canvas reaches above the horizon only for the boat's masts, so dark ink there means the boat is still in view.
+    const inkAboveHorizon = await page.locator('.voyage__surface').evaluate((element) => {
+      if (!(element instanceof HTMLCanvasElement)) throw new Error('The river must be a canvas.');
+
+      const box = element.getBoundingClientRect();
+      const lift = box.height - (element.parentElement?.getBoundingClientRect().height ?? box.height);
+      const rows = Math.floor((lift - 4) * element.height / box.height);
+      const pixels = element.getContext('2d')?.getImageData(0, 0, element.width, Math.max(1, rows)).data ?? new Uint8ClampedArray();
+      let ink = 0;
+
+      for (let index = 0; index < pixels.length; index += 4) {
+        const luminance = 0.3 * (pixels[index] ?? 0) + 0.59 * (pixels[index + 1] ?? 0) + 0.11 * (pixels[index + 2] ?? 0);
+
+        if ((pixels[index + 3] ?? 0) > 230 && luminance < 60) ink += 1;
+      }
+
+      return rows > 0 ? ink : -1;
+    });
+    assert.equal(inkAboveHorizon, 0, 'The boat clears the viewport before the engraving rises.');
+    const logo = page.locator('.hero__logo');
+    const emergingTop = await logo.evaluate((element) => element.getBoundingClientRect().top);
+    await page.waitForFunction(() => !document.documentElement.dataset.voyageStage, null, { timeout: 15000 });
+    assert.equal(await html.getAttribute('data-voyage-log'), 'none waiting loading sailing rising');
+    assert.equal(await html.getAttribute('data-voyage-plate'), 'hidden');
+    assert.equal(await html.getAttribute('data-voyage-logo'), 'hidden');
+    assert.equal(await html.getAttribute('data-voyage-intro'), 'inset(50%)', 'The intro is hidden until it is typed.');
+    assert.equal(await page.locator('#hero-plate').isVisible(), true);
+    assert.equal(await logo.isVisible(), true);
+    assert.ok(await logo.evaluate((element) => element.getBoundingClientRect().top) < emergingTop, 'The wordmark rises from the river.');
+    assert.equal(await textInPlace(page), true);
+    assert.equal(await page.locator('uruk-voyage').isVisible(), false);
+
+    // Only on the first visit: not on a reload, not in another tab, and never when coming back.
+    await page.reload();
+    assert.equal(await html.getAttribute('data-voyage-log'), null);
+    const second = await context.newPage();
+
+    await second.goto(origin);
+    assert.equal(await second.locator('html').getAttribute('data-voyage-log'), null);
+    assert.equal(await textInPlace(second), true);
+    await page.goto(`${origin}/about/`);
+    await page.evaluate(() => localStorage.clear());
+    await page.goBack();
+    assert.equal(await html.getAttribute('data-voyage-log'), null);
+    assert.equal(await textInPlace(page), true);
+
+    // A browser that has never seen the voyage plays it again, so each case below starts without the mark.
+    const forget = () => page.evaluate(() => localStorage.clear());
+
+    // Any input gives the page back at once.
+    const tab = await context.newPage();
+
+    await forget();
+    await tab.goto(origin);
+    await tab.waitForFunction(() => document.documentElement.dataset.voyageStage === 'sailing');
+    await tab.keyboard.press('Shift');
+    assert.equal(await tab.locator('html').getAttribute('data-voyage-stage'), null);
+    assert.equal(await textInPlace(tab), true);
+
+    // Also while the intro is half typed, with no later frame clipping it again.
+    const typing = await context.newPage();
+
+    await forget();
+    await typing.goto(origin);
+    await typing.waitForFunction(() => document.documentElement.dataset.voyageStage === 'rising'
+      && getComputedStyle(document.querySelector('.hero__intro') ?? document.body).clipPath.startsWith('polygon('));
+    await typing.keyboard.press('Shift');
+    await typing.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    assert.equal(await typing.locator('html').getAttribute('data-voyage-stage'), null);
+    assert.equal(await textInPlace(typing), true);
+
+    const still = await context.newPage();
+
+    await still.emulateMedia({ reducedMotion: 'reduce' });
+    await forget();
+    await still.goto(origin);
+    assert.equal(await still.locator('html').getAttribute('data-voyage-log'), null);
+    assert.equal(await textInPlace(still), true);
+  } finally {
+    await context.close();
+  }
+}
+
 async function checkBackToTopMotion(page: Page, origin: string): Promise<void> {
   await page.goto(origin);
   const floating = page.locator('.back-to-top__floating');
@@ -797,6 +923,7 @@ await withSiteBrowser(async (browser, origin) => {
   await checkFilmFirstPaint(browser, origin);
   await checkRollOpening(browser, origin);
   await checkNumerics(browser, origin);
+  await checkVoyage(browser, origin);
   let filmCount = 0;
 
   for (const width of [390, 1280]) {
@@ -836,5 +963,5 @@ await withSiteBrowser(async (browser, origin) => {
     await playback.close();
   }
 
-  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, the seal transition, and back-to-top navigation and wheel rotation.`);
+  console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, the home voyage's boat pass, engraving and typed text, first-visit-only play and early exits, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, the seal transition, and back-to-top navigation and wheel rotation.`);
 });

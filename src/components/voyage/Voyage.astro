@@ -1,0 +1,108 @@
+---
+import boat168 from '../../assets/voyage/boat-168.webp?url';
+import boat336 from '../../assets/voyage/boat-336.webp?url';
+import boat504 from '../../assets/voyage/boat-504.webp?url';
+import boat672 from '../../assets/voyage/boat-672.webp?url';
+import boat840 from '../../assets/voyage/boat-840.webp?url';
+import ruins460 from '../../assets/voyage/ruins-reflection-460.webp?url';
+import ruins920 from '../../assets/voyage/ruins-reflection-920.webp?url';
+import ruins1531 from '../../assets/voyage/ruins-reflection-1531.webp?url';
+import riverUrl from '../../assets/voyage/river.webp?url';
+import { waterTintCss } from '../../motion/water/tint';
+import { BOAT_SCALE } from './swell';
+
+const plateSize = 'min(calc(197.166667px + 39.085714vw), 84.444444svh)';
+const boatSizes = `calc(${BOAT_SCALE} * ${plateSize})`;
+const ruinsSizes = `calc(1531 / 2880 * 1.894737 * ${plateSize})`;
+const river = `--voyage-tint: ${waterTintCss()}; --voyage-water: url("${riverUrl}");`;
+const boatSrcset = `${boat168} 168w, ${boat336} 336w, ${boat504} 504w, ${boat672} 672w, ${boat840} 840w`;
+const ruinsSrcset = `${ruins460} 460w, ${ruins920} 920w, ${ruins1531} 1531w`;
+---
+
+<uruk-voyage aria-hidden="true" style={river}>
+  <div class="voyage__river"></div>
+  <canvas class="voyage__surface"></canvas>
+  <canvas class="voyage__runoff"></canvas>
+  <img
+    class="voyage__hull"
+    src={boat168}
+    srcset={boatSrcset}
+    sizes={boatSizes}
+    loading="lazy"
+    decoding="async"
+    alt=""
+    width="840"
+    height="592"
+  />
+  <img
+    class="voyage__ruins-reflection"
+    src={ruins460}
+    srcset={ruinsSrcset}
+    sizes={ruinsSizes}
+    loading="lazy"
+    decoding="async"
+    alt=""
+    width="1531"
+    height="650"
+  />
+</uruk-voyage>
+
+<script>
+  import './element';
+</script>
+
+<style>
+  /* The voyage lies on the hero's river: its top is the horizon, under the name and the ruins. */
+  uruk-voyage {
+    --voyage-lift: calc(0.12 * var(--plate));
+    align-self: start;
+    display: none;
+    grid-column: 1 / -1;
+    grid-row: water-start / water-end;
+    height: var(--water-h);
+    pointer-events: none;
+    position: relative;
+  }
+
+  :global(html[data-voyage-stage]) uruk-voyage {
+    display: block;
+  }
+
+  :global(html[data-voyage-stage]:not([data-voyage-stage='rising']) :is([data-voyage-text], #hero-plate, .hero__logo)) {
+    visibility: hidden;
+  }
+
+  .voyage__river {
+    background:
+      var(--voyage-water) var(--water-left) 0 / var(--water-w) 100% no-repeat,
+      var(--voyage-tint) var(--paper);
+    inset: 0;
+    position: absolute;
+    z-index: 1;
+  }
+
+  /* The boat's mast stands above the horizon, so the river's canvas reaches up past it. */
+  .voyage__surface {
+    display: block;
+    height: calc(100% + var(--voyage-lift));
+    inset-block-start: calc(-1 * var(--voyage-lift));
+    inset-inline-start: 0;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+  }
+
+  /* Water running off the plate and the name lies over them; the script sets its box. */
+  .voyage__runoff {
+    display: block;
+    height: 0;
+    position: absolute;
+    width: 0;
+    z-index: 3;
+  }
+
+  .voyage__hull,
+  .voyage__ruins-reflection {
+    display: none;
+  }
+</style>

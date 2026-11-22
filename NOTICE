@@ -26,9 +26,15 @@ not the source of the papers, which remain under their own terms.
 Images
 
 Engraving and rosette (src/assets/hero/engraving*, src/assets/hero/water*,
-src/assets/rosette/ and the favicons in public/)
+src/assets/voyage/river.webp, src/assets/voyage/ruins-reflection*, src/assets/rosette/
+and the favicons in public/)
   From the plate of ornaments found at Warka (Uruk). W. K. Loftus, 1857.
   Public domain.
+
+Sailing boat (src/assets/voyage/boat-*)
+  Original engraving-style illustration based on the rig in “Arab Batelle”
+  in H. Coleman Folkard, The Sailing Boat, 1906. The reference is public domain.
+  https://commons.wikimedia.org/wiki/File:An_Arab_Batelle.jpg
 
 Woodcuts (src/assets/home/)
   The Buwariyya Ruin and the patterns of the cone wall at Warka. W. K. Loftus,

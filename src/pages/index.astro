@@ -5,11 +5,16 @@ import Footer from '../components/footer/Footer.astro';
 import { ROSETTE_CREDIT, TEXTURE_CREDIT, TYPE_CREDIT } from '../components/footer/credits';
 import Hero from '../components/hero/Hero.astro';
 import TextureField from '../components/texture-field/TextureField.astro';
+import VoyageHead from '../components/voyage/Head.astro';
 
 const CREDITS = [
   {
     label: 'Woodcuts',
     text: 'The Buwáriyya Ruin and the patterns of the cone wall at Warka. W. K. Loftus, 1857, pp. 167 and 188. Public domain.',
+  },
+  {
+    label: 'Boat',
+    text: 'Drawn after the Arab Batelle in H. Coleman Folkard, The Sailing Boat, 1906. Public domain.',
   },
   ROSETTE_CREDIT,
   TEXTURE_CREDIT,
@@ -17,7 +22,11 @@ const CREDITS = [
 ];
 ---
 
-<Base title="URUK">
+<Base
+  title="Uruk · OpenAI's mathematics results in plain words"
+  description="OpenAI's October 2026 mathematics results, explained in plain words, one page per result, with what mathematicians have checked so far."
+>
+  <Fragment slot="head"><VoyageHead /></Fragment>
   <div class="home" id="top">
     <TextureField />
     <main>

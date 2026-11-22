@@ -2,6 +2,7 @@
 import rosetteUrl from '../../assets/rosette/loftus-64.png?url';
 import logoUrl from '../../assets/logo/footer.svg?url';
 import BackToTop from '../back-to-top/BackToTop.astro';
+import SupportLinks from '../support-links/SupportLinks.astro';
 import { ROSETTE_CREDIT, SEAL_CREDIT, TEXTURE_CREDIT, TYPE_CREDIT, type Credit } from './credits';
 
 interface Props {
@@ -36,6 +37,9 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
     <span aria-hidden="true">·</span>
     <a class="case-link" href="/about/">About</a>
   </nav>
+  <div class="site-footer__support">
+    <SupportLinks />
+  </div>
   <div class="site-footer__credits">
     {credits.map((credit) => (
       <div class="site-footer__credit">
@@ -116,9 +120,15 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
     line-height: 1.8125rem;
   }
 
+  .site-footer__support {
+    margin-top: 20px;
+  }
+
+  /* Credits share one row while each column keeps at least 180 px; a longer list wraps, centred, onto a second row. */
   .site-footer__credits {
     display: flex;
-    gap: 48px;
+    flex-wrap: wrap;
+    gap: 32px 48px;
     justify-content: center;
     margin-top: 44px;
     max-width: 1168px;
@@ -128,34 +138,46 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
   .site-footer__credit {
     align-items: center;
     display: flex;
-    flex: 0 1 256px;
+    flex: 1 1 180px;
     flex-direction: column;
     gap: 8px;
+    max-width: 256px;
     text-align: center;
   }
 
   .site-footer__credit-label {
     color: var(--muted);
     font-family: var(--font-special-elite);
-    font-size: 0.6875rem;
+    font-size: var(--label-font-size);
     font-weight: 400;
     letter-spacing: 0.04em;
-    line-height: 0.9375rem;
+    line-height: 1.125rem;
     text-transform: uppercase;
     white-space: nowrap;
   }
 
+  /* Set at the body text's smallest size, so the credits read as easily as the page above them. */
   .site-footer__credit p:not(.site-footer__credit-label) {
     color: var(--ink);
     font-family: var(--font-alegreya);
-    font-size: 0.875rem;
+    font-size: 1.0625rem;
     font-style: italic;
-    line-height: 1.3125rem;
+    line-height: 1.625rem;
     max-width: 256px;
   }
 
+  /* On a tablet the credits pair up in two columns rather than squeezing four or five across. */
+  @media (min-width: 48rem) and (max-width: 63.999rem) {
+    .site-footer__credit {
+      flex: 0 0 calc(50% - 24px);
+      max-width: none;
+    }
+  }
+
+  /* Kept whole, so a narrow phone never splits Garamond-Math at its hyphen. */
   .site-footer__type-second {
     display: block;
+    white-space: nowrap;
   }
 
   .site-footer__bottom {
@@ -214,6 +236,7 @@ const { credits = DEFAULT_CREDITS, floatingBackToTop = true, hideOnPhone = false
 
     .site-footer__credit {
       flex-basis: auto;
+      max-width: none;
       width: 100%;
     }
 
