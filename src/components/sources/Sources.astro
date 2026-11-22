@@ -21,26 +21,28 @@ const key = units.flatMap(({ unit, count }) => count > 0 ? [`${unit} × ${count}
 ---
 
 <uruk-sources data-total={total} data-open={!canCollapse ? '' : undefined}>
-  {canCollapse && <div class="sources-preview" data-script-only>
-    {sources.slice(0, 6).map(({ number, html }) => <div class="source-preview"><span>{number}.</span><div set:html={html} /></div>)}
-  </div>}
-  <div class="sources-table" id="source-table">
-    <ol class="sources-list">
-      {sources.map(({ number, html }) => (
-        <li
-          id={`source-${number}`}
-          tabindex="-1"
-          class:list={{ 'source-left': number <= leftCount, 'source-left-last': number === leftCount }}
-          style={`grid-column:${number <= leftCount ? 1 : 2};grid-row:${number <= leftCount ? number : number - leftCount}`}
-        ><span>{number}.</span><div set:html={html} /></li>
-      ))}
-    </ol>
-    <div class="sources-total" style={`grid-row:${total - leftCount + 1} / ${leftCount + 1}`}>
-      <p class="sources-label">Total</p>
-      <div class="sources-numerals" role="img" aria-label={`${total} in Uruk number signs`}>
-        {units.map(({ unit, count }) => count > 0 && <div>{Array.from({ length: count }, () => <NumberSign unit={unit} mode="tally" />)}</div>)}
+  <div class="sources-panel">
+    {canCollapse && <div class="sources-preview" data-script-only>
+      {sources.slice(0, 6).map(({ number, html }) => <div class="source-preview"><span>{number}.</span><div set:html={html} /></div>)}
+    </div>}
+    <div class="sources-table" id="source-table">
+      <ol class="sources-list">
+        {sources.map(({ number, html }) => (
+          <li
+            id={`source-${number}`}
+            tabindex="-1"
+            class:list={{ 'source-left': number <= leftCount, 'source-left-last': number === leftCount }}
+            style={`grid-column:${number <= leftCount ? 1 : 2};grid-row:${number <= leftCount ? number : number - leftCount}`}
+          ><span>{number}.</span><div set:html={html} /></li>
+        ))}
+      </ol>
+      <div class="sources-total" style={`grid-row:${total - leftCount + 1} / ${leftCount + 1}`}>
+        <p class="sources-label">Total</p>
+        <div class="sources-numerals" role="img" aria-label={`${total} in Uruk number signs`}>
+          {units.map(({ unit, count }) => count > 0 && <div>{Array.from({ length: count }, () => <NumberSign unit={unit} mode="tally" />)}</div>)}
+        </div>
+        <p class="sources-key">{key} = {total} {total === 1 ? 'source' : 'sources'}</p>
       </div>
-      <p class="sources-key">{key} = {total} {total === 1 ? 'source' : 'sources'}</p>
     </div>
   </div>
   {canCollapse && <button type="button" class="sources-toggle case-link" aria-expanded="false" aria-controls="source-table" data-script-only>
@@ -51,31 +53,57 @@ const key = units.flatMap(({ unit, count }) => count > 0 ? [`${unit} × ${count}
 <script>
   class UrukSources extends HTMLElement {
     private events: AbortController | undefined;
+    private opening: Animation | undefined;
 
     connectedCallback(): void {
       this.events = new AbortController();
-      const button = this.querySelector<HTMLButtonElement>('button');
+      const button = this.querySelector<HTMLButtonElement>('.sources-toggle');
+      const panel = this.querySelector<HTMLElement>('.sources-panel');
 
-      if (!button) {
+      if (!button || !panel) {
         return;
       }
 
       const update = (open: boolean) => {
+        this.opening?.cancel();
+        this.opening = undefined;
         this.toggleAttribute('data-open', open);
         button.setAttribute('aria-expanded', String(open));
         this.querySelector('[data-sources-label]')?.replaceChildren(open ? 'Show fewer' : `Show all ${this.dataset.total} sources`);
       };
+
       const followHash = () => {
         if (/^#source-\d+$/.test(location.hash)) {
           update(true);
           requestAnimationFrame(() => document.getElementById(location.hash.slice(1))?.scrollIntoView());
         }
       };
+
+      const toggle = () => {
+        const open = !this.hasAttribute('data-open');
+
+        if (!open || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          update(open);
+          return;
+        }
+
+        const start = panel.getBoundingClientRect().height;
+        update(true);
+        const end = panel.getBoundingClientRect().height;
+
+        if (end > start) {
+          this.opening = panel.animate([
+            { height: `${start}px`, overflow: 'clip' },
+            { height: `${end}px`, overflow: 'clip' },
+          ], { duration: 280, easing: 'cubic-bezier(.35, 0, .25, 1)' });
+        }
+      };
+
       const { signal } = this.events;
 
       update(new URLSearchParams(location.search).get('sources') === 'open');
       followHash();
-      button.addEventListener('click', () => update(button.getAttribute('aria-expanded') !== 'true'), { signal });
+      button.addEventListener('click', toggle, { signal });
       window.addEventListener('hashchange', followHash, { signal });
       document.addEventListener('click', (event) => {
         const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a.citation') : null;
@@ -88,6 +116,8 @@ const key = units.flatMap(({ unit, count }) => count > 0 ? [`${unit} × ${count}
 
     disconnectedCallback(): void {
       this.events?.abort();
+      this.opening?.cancel();
+      this.opening = undefined;
     }
   }
 
@@ -98,34 +128,36 @@ const key = units.flatMap(({ unit, count }) => count > 0 ? [`${unit} × ${count}
 
 <style>
   uruk-sources { display: block; grid-column: 2 / -1; min-width: 0; }
-  .sources-preview { display: grid; grid-auto-flow: column; grid-template-rows: repeat(3, auto); grid-template-columns: 640px minmax(0, 1fr); column-gap: 40px; row-gap: 16px; }
-  .source-preview, .sources-list li { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+  .sources-preview, .sources-table { border: 1px solid var(--muted); display: grid; grid-template-columns: 3fr 2fr; }
+  .sources-preview { grid-auto-flow: column; grid-template-rows: repeat(3, auto); }
+  .source-preview, .sources-list li { display: flex; align-items: baseline; gap: 6px; min-width: 0; padding: 12px 20px; border-bottom: 1px solid var(--muted); }
+  .source-preview:last-child { border-bottom: 0; }
   .source-preview > span, .sources-list li > span { flex: none; }
   .source-preview > div, .sources-list li > div { min-width: 0; }
   .sources-preview, .sources-list { overflow-wrap: anywhere; }
   .sources-preview :global(p), .sources-list :global(p), .source-preview > span, .sources-list li > span { font: var(--folio-source-font-size)/var(--folio-source-line-height) var(--font-alegreya); }
   .sources-preview :global(p + p), .sources-list :global(p + p) { margin-top: 8px; }
-  .sources-table { border: 1px solid var(--muted); display: grid; grid-template-columns: 3fr 2fr; }
   .sources-list { display: contents; margin: 0; padding: 0; list-style: none; }
-  .sources-list li { padding: 12px 20px; border-bottom: 1px solid var(--muted); scroll-margin-top: 24px; }
+  .sources-list li { scroll-margin-top: 24px; }
   .sources-list li:target { background: rgb(33 38 42 / .06); }
   .sources-list .source-left { border-right: 1px solid var(--muted); }
   .sources-list .source-left-last { border-bottom: 0; }
   .sources-total { grid-column: 2; padding: 18px 20px; border-top: 3px double var(--muted); min-width: 0; }
-  .sources-total .sources-label, .sources-total .sources-key { font: .6875rem/1.6 var(--font-special-elite); margin-bottom: 12px; }
+  .sources-total .sources-label, .sources-total .sources-key { font: var(--label-font-size)/1.6 var(--font-special-elite); margin-bottom: 12px; }
   .sources-label { text-transform: uppercase; }
   .sources-numerals { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-block: 10px 20px; }
   .sources-numerals > div { display: grid; grid-template-columns: repeat(3, auto); align-items: center; gap: 3px; }
-  .sources-toggle { display: inline-flex; gap: 10px; align-items: center; border: 0; background: transparent; color: var(--ink); cursor: pointer; margin-top: 24px; padding: 0; font: .6875rem/1.4 var(--font-special-elite); text-transform: uppercase; }
+  .sources-toggle { display: inline-flex; gap: 10px; align-items: center; border: 0; background: transparent; color: var(--ink); cursor: pointer; margin-top: 24px; padding: 0; font: var(--control-font-size)/1.4 var(--font-special-elite); text-transform: uppercase; }
   .sources-icon { display: inline-flex; width: 12px; height: 12px; }
   .sources-icon :global(svg) { max-width: 12px; max-height: 12px; }
   uruk-sources[data-open] [data-sources-open], uruk-sources:not([data-open]) [data-sources-close], uruk-sources[data-open] .sources-preview { display: none; }
   @media (scripting: enabled) { uruk-sources:not([data-open]) .sources-table { display: none; } }
-  @media (max-width: 74.999rem) { .sources-preview { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 48rem) {
+    .source-preview:nth-child(-n + 3) { border-right: 1px solid var(--muted); }
+    .source-preview:nth-child(3) { border-bottom: 0; }
+  }
   @media (max-width: 47.999rem) {
-    .sources-preview { display: flex; flex-direction: column; gap: 14px; }
-    .sources-table { display: block; }
-    .sources-list { display: block; }
+    .sources-preview, .sources-table, .sources-list { display: block; }
     .sources-list .source-left { border-right: 0; }
     .sources-list .source-left-last { border-bottom: 1px solid var(--muted); }
     .sources-total { padding: 20px 16px; }
