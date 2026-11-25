@@ -1,6 +1,31 @@
 import { highlight, matches, readSearch } from './matching';
 import { readStatusKind, statusLabel } from '../../content/review-status';
 
+function markKeyboardFocus(input: HTMLInputElement, signal: AbortSignal): void {
+  const box = input.closest('.menu-search');
+
+  if (!box) return;
+
+  let tabPressed = false;
+  const hideRing = () => box.removeAttribute('data-keyboard-focus');
+
+  document.addEventListener('keydown', (event) => {
+    tabPressed = event.key === 'Tab' && !event.altKey && !event.ctrlKey && !event.metaKey;
+  }, { capture: true, signal });
+  window.addEventListener('keyup', () => { tabPressed = false; }, { capture: true, signal });
+  window.addEventListener('blur', () => { tabPressed = false; }, { signal });
+  document.addEventListener('focusin', (event) => {
+    if (event.target === input) box.toggleAttribute('data-keyboard-focus', tabPressed);
+    tabPressed = false;
+  }, { capture: true, signal });
+  document.addEventListener('pointerdown', () => {
+    tabPressed = false;
+    hideRing();
+  }, { capture: true, signal });
+  input.addEventListener('blur', hideRing, { signal });
+  signal.addEventListener('abort', hideRing, { once: true });
+}
+
 class UrukMenu extends HTMLElement {
   private events: AbortController | undefined;
 
@@ -24,6 +49,8 @@ class UrukMenu extends HTMLElement {
 
     this.events = new AbortController();
     const { signal } = this.events;
+    markKeyboardFocus(input, signal);
+
     const buttons = this.querySelectorAll<HTMLButtonElement>('[data-filter]');
     const cards = roll.cards.map((node) => ({
       node,
