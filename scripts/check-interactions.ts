@@ -114,7 +114,14 @@ async function checkMenu(page: Page, origin: string): Promise<void> {
     const back = page.locator('uruk-back-to-top[data-floating] a[aria-label="Back to top"]');
     await back.waitFor({ state: 'visible' });
     await back.click();
-    assert.equal(await roll.evaluate((element) => element.scrollTop), 0);
+    await roll.evaluate((element) => new Promise<void>((resolve) => {
+      function settled(): void {
+        if (element.scrollTop === 0) resolve();
+        else requestAnimationFrame(settled);
+      }
+
+      settled();
+    }));
   }
 }
 
@@ -855,8 +862,44 @@ async function checkBackToTopMotion(page: Page, origin: string): Promise<void> {
   await turnAt(1200);
   await turnAt(1440);
   await turnAt(1200);
+
+  // The page glides up through intermediate positions, and the address keeps no #top.
+  const glide = floating.evaluate((link) => new Promise<number[]>((resolve) => {
+    const positions: number[] = [];
+
+    function sample(): void {
+      positions.push(scrollY);
+      if (scrollY === 0) resolve(positions);
+      else requestAnimationFrame(sample);
+    }
+
+    link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    requestAnimationFrame(sample);
+  }));
+  assert.ok((await glide).some((y) => y > 0 && y < 1200), 'Back to top should glide rather than jump.');
+  assert.equal(new URL(page.url()).hash, '');
+
+  // The reader's own wheel stops the glide where it is.
+  const start = await page.evaluate(() => {
+    window.scrollTo({ top: document.documentElement.scrollHeight - innerHeight, behavior: 'instant' });
+
+    return scrollY;
+  });
+  const viewport = page.viewportSize();
+  await page.mouse.move((viewport?.width ?? 800) / 2, (viewport?.height ?? 600) / 2);
+  await floating.dispatchEvent('click');
+  await page.waitForFunction((from) => scrollY < from - 100, start);
+  // Wheel upwards, so only a stopped glide can leave the page above zero.
+  await page.mouse.wheel(0, -40);
+  await page.waitForTimeout(1500);
+  assert.ok(await page.evaluate(() => scrollY) > 0, 'A wheel during the glide should stop it before the top.');
+
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.deepEqual(await page.locator('.back-to-top__rosette').evaluateAll((wheels) => wheels.map((wheel) => getComputedStyle(wheel).transform)), ['none', 'none']);
+  await page.evaluate(() => window.scrollTo({ top: 1200, behavior: 'instant' }));
+  await floating.waitFor({ state: 'visible' });
+  await floating.click();
+  assert.equal(await page.evaluate(() => scrollY), 0, 'Reduced motion should return to the top at once.');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
 }
 

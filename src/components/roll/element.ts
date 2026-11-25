@@ -174,9 +174,16 @@ class UrukRoll extends HTMLElement {
     return viewport !== null && viewport.scrollTop > viewport.clientHeight;
   }
 
-  scrollToStart(): void {
+  scrollToStart(behavior: ScrollBehavior = 'instant'): void {
     if (this.resultsReady) this.finishArrival();
-    this.viewport?.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    this.viewport?.scrollTo({ top: 0, left: 0, behavior });
+  }
+
+  /** Ends a smooth scroll where it is, so the reader's own scroll takes over. */
+  stopScroll(): void {
+    const viewport = this.viewport;
+
+    viewport?.scrollTo({ top: viewport.scrollTop, left: viewport.scrollLeft, behavior: 'instant' });
   }
 
   filterResults(families: ReadonlySet<string>, filter: ResultFilter): void {
