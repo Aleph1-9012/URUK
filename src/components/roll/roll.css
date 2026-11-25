@@ -123,6 +123,8 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 
   .roll-roller { bottom: auto; container-type: inline-size; height: 120px; left: -20px; right: -36px; top: -60px; width: auto; }
   .roll-roller span { border-image-source: var(--roller-phone); height: 100cqw; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(90deg); width: 120px; }
+  /* Slice the same 120px and 32px ends of the 386px artwork at either source density. */
+  .roll-roller span { border-image-slice: calc(120 / 386 * 100%) 0 calc(32 / 386 * 100%) 0 fill; }
   .roll-roller--end { bottom: -60px; left: -20px; right: -36px; top: auto; transform: scaleY(-1); }
 
   .roll-paper::after { display: none; }

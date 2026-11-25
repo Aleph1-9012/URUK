@@ -1,7 +1,11 @@
 ---
 import rosetteUrl from '../../assets/rosette/loftus-32.png?url';
+import rosette2x from '../../assets/rosette/loftus-64.png?url';
+import rosette4x from '../../assets/rosette/loftus-128.webp?url';
 import ringUrl from '../../assets/icons/ring-open.svg?url';
 import upUrl from '../../assets/icons/up-16.svg?url';
+
+const rosetteSrcset = `${rosetteUrl} 1x, ${rosette2x} 2x, ${rosette4x} 4x`;
 ---
 
 <uruk-back-to-top>
@@ -10,7 +14,7 @@ import upUrl from '../../assets/icons/up-16.svg?url';
     <span class="back-to-top__rest-roundel" aria-hidden="true">
       <span class="back-to-top__roundel">
         <img draggable="false" class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
-        <img draggable="false" class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
+        <img draggable="false" class="back-to-top__rosette" src={rosetteUrl} srcset={rosetteSrcset} alt="" width="32" height="32" />
         <img draggable="false" class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
       </span>
     </span>
@@ -22,7 +26,7 @@ import upUrl from '../../assets/icons/up-16.svg?url';
   >
     <span class="back-to-top__roundel" aria-hidden="true">
       <img draggable="false" class="back-to-top__ring" src={ringUrl} alt="" width="44" height="42" />
-      <img draggable="false" class="back-to-top__rosette" src={rosetteUrl} alt="" width="32" height="32" />
+      <img draggable="false" class="back-to-top__rosette" src={rosetteUrl} srcset={rosetteSrcset} alt="" width="32" height="32" />
       <img draggable="false" class="back-to-top__up" src={upUrl} alt="" width="16" height="16" />
     </span>
   </a>

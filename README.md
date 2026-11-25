@@ -188,9 +188,10 @@ to the top of the phone roll. They use
 Chromium at `/usr/bin/chromium` and a preview server on port 4322.
 
 For layout changes, the existing screen checker builds with drafts enabled and
-checks eleven viewport configurations. Both browser check commands use temporary
-previews on port 4322, so run them one at a time. The development server can stay
-on 4321. Pass routes to narrow the screen check:
+checks thirteen viewport configurations, including two phone sizes at 3×.
+Both browser check commands use temporary previews on port 4322, so run them one
+at a time. The development server can stay on 4321. Pass routes to narrow the
+screen check:
 
 ```sh
 bun run check:screens / /results/ /results/003/

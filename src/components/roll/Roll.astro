@@ -1,7 +1,9 @@
 ---
 import desktopRoller from '../../assets/roll/roller-desktop.png';
 import phoneRoller from '../../assets/roll/roller-phone.png';
+import phoneRoller4x from '../../assets/roll/roller-phone-4x.webp?url&no-inline';
 import seal from '../../assets/roll/seal-impression.png';
+import seal5x from '../../assets/roll/seal-impression-5x.webp?url&no-inline';
 import type { ResultEntry } from '../../content/results';
 import { statusKind } from '../../content/review-status';
 import ReviewTag from '../status-sign/ReviewTag.astro';
@@ -15,10 +17,14 @@ interface Props {
 
 const { results, current } = Astro.props;
 const currentIndex = results.findIndex(({ data }) => data.family === current);
-const images = `--seal: url('${seal.src}'); --roller-desktop: url('${desktopRoller.src}'); --roller-phone: url('${phoneRoller.src}')`;
+const images = [
+  `--seal: image-set(url('${seal.src}') 2x, url('${seal5x}') 5x)`,
+  `--roller-desktop: url('${desktopRoller.src}')`,
+  `--roller-phone: image-set(url('${phoneRoller.src}') 2x, url('${phoneRoller4x}') 4x)`,
+].join('; ');
 ---
 
-<uruk-roll data-current={current} data-arrival={current ? undefined : 'pending'} class:list={{ 'roll-neighbors': current !== undefined }} style={images} data-seal={seal.src}>
+<uruk-roll data-current={current} data-arrival={current ? undefined : 'pending'} class:list={{ 'roll-neighbors': current !== undefined }} style={images} data-seal={seal.src} data-seal-sharp={seal5x}>
   {!current && <span class="roll-viewport-height" aria-hidden="true"></span>}
   <div class="roll-stage">
     <div class="roll-sheet">

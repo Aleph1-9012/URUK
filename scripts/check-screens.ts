@@ -8,6 +8,8 @@ const REPO_ROOT = process.cwd();
 const VIEWPORTS = [
   { name: '320x900', width: 320, height: 900, deviceScaleFactor: 1 },
   { name: '390x900', width: 390, height: 900, deviceScaleFactor: 1 },
+  { name: '320x568-dsf3', width: 320, height: 568, deviceScaleFactor: 3 },
+  { name: '390x844-dsf3', width: 390, height: 844, deviceScaleFactor: 3 },
   { name: '768x900', width: 768, height: 900, deviceScaleFactor: 1 },
   { name: '1024x900', width: 1024, height: 900, deviceScaleFactor: 1 },
   { name: '1280x900', width: 1280, height: 900, deviceScaleFactor: 1 },

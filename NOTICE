@@ -29,7 +29,8 @@ Engraving and rosette (src/assets/hero/engraving*, src/assets/hero/water*,
 src/assets/voyage/river.webp, src/assets/voyage/ruins-reflection*, src/assets/rosette/
 and the favicons in public/)
   From the plate of ornaments found at Warka (Uruk). W. K. Loftus, 1857.
-  Public domain.
+  Public domain. The 128 px roundel rosette is a downsample of the approved
+  180 px apple-touch-icon export, not an enlargement of the smaller rosettes.
 
 Sailing boat (src/assets/voyage/boat-*)
   Original engraving-style illustration based on the rig in “Arab Batelle”
@@ -45,6 +46,9 @@ Seal impression (src/assets/roll/)
   A male figure, hunting dogs and boars, rolled on Text 179. Jemdet Nasr,
   ca. 3100-2900 BCE. The Metropolitan Museum of Art, 1988.433.1, Open Access.
   https://www.metmuseum.org/art/collection/search/329081
+  The higher-density strip uses the same archival 2411 × 678 rollout crop.
+  The phone roller was rendered again from the original engraving geometry
+  and wrapped rollout, with the same crop, winding phase and ink colours.
 
 Tablet (src/assets/tablet/)
   Text 180, an account of barley and emmer, about 3100-2900 BCE, probably from

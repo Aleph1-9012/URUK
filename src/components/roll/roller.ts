@@ -4,8 +4,6 @@ import { CAP_RINGS } from './roller-cap';
 // The turning part of the cylinder, in CSS pixels. Everything else stays the approved drawing underneath.
 const FACE_LEFT = 24.5;
 const FACE_RIGHT = 93.25;
-const SEAL_WIDTH = 456;
-const SEAL_HEIGHT = 128;
 const FRIEZE_HEIGHT = 64;
 
 // As in the drawing, a paper outline keeps the figures readable over the rulings.
@@ -75,8 +73,8 @@ function paperSeal(seal: HTMLImageElement, paper: string): HTMLCanvasElement | u
   }
 
   const canvas = document.createElement('canvas');
-  canvas.width = SEAL_WIDTH;
-  canvas.height = SEAL_HEIGHT;
+  canvas.width = seal.naturalWidth;
+  canvas.height = seal.naturalHeight;
   const context = canvas.getContext('2d');
 
   if (!context) {
@@ -86,7 +84,7 @@ function paperSeal(seal: HTMLImageElement, paper: string): HTMLCanvasElement | u
   context.drawImage(seal, 0, 0);
   context.globalCompositeOperation = 'source-in';
   context.fillStyle = paper;
-  context.fillRect(0, 0, SEAL_WIDTH, SEAL_HEIGHT);
+  context.fillRect(0, 0, canvas.width, canvas.height);
   paperSeals.set(seal, canvas);
 
   return canvas;
@@ -142,30 +140,30 @@ function drawCap(context: CanvasRenderingContext2D, turns: number, height: numbe
 }
 
 export function drawRoller(canvas: HTMLCanvasElement, frame: RollerFrame): void {
-  const span = canvas.parentElement;
   const context = canvas.getContext('2d');
+  const style = getComputedStyle(canvas);
+  const cssWidth = parseFloat(style.width);
+  const cssHeight = parseFloat(style.height);
 
-  if (!span || !context || span.offsetHeight === 0 || frame.tile <= 0) {
+  if (!context || !cssWidth || !cssHeight || frame.tile <= 0) {
     return;
   }
 
-  const height = span.offsetHeight;
-  const ratio = window.devicePixelRatio;
-  const width = Math.round(canvas.clientWidth * ratio);
-  const rows = Math.round(height * ratio);
+  const width = Math.round(cssWidth * devicePixelRatio);
+  const rows = Math.round(cssHeight * devicePixelRatio);
+  const ratio = width / cssWidth;
 
   if (canvas.width !== width || canvas.height !== rows) {
     canvas.width = width;
     canvas.height = rows;
   }
 
-  const style = getComputedStyle(canvas);
   const paper = style.getPropertyValue('--paper');
   const ink = style.getPropertyValue('--ink-logo');
-  const floor = (x: number) => floorTop(x, height);
+  const floor = (x: number) => floorTop(x, cssHeight);
 
-  context.setTransform(ratio, 0, 0, ratio, 0, 0);
-  context.clearRect(0, 0, canvas.clientWidth, height);
+  context.setTransform(ratio, 0, 0, rows / cssHeight, 0, 0);
+  context.clearRect(0, 0, cssWidth, cssHeight);
   context.fillStyle = paper;
   context.fill(band((x) => rimBottom(x) + 0.5, (x) => ridgeTop(x) - 0.25));
   context.fill(band((x) => ridgeBottom(x) + 0.75, (x) => floor(x) - 0.25));
@@ -190,25 +188,26 @@ export function drawRoller(canvas: HTMLCanvasElement, frame: RollerFrame): void 
   context.globalAlpha = 1;
 
   const outline = paperSeal(frame.seal, paper);
+  const { naturalWidth: sealWidth, naturalHeight: sealHeight } = frame.seal;
   const columns: { x: number; source: number; top: number }[] = [];
 
   for (let column = Math.ceil(FACE_LEFT * ratio); column < FACE_RIGHT * ratio; column += 1) {
     const x = column / ratio;
     const { source, top } = friezeColumn(x, frame.offset, frame.tile, frame.direction);
-    columns.push({ x, source: Math.floor(source * SEAL_WIDTH), top });
+    columns.push({ x, source: Math.floor(source * sealWidth), top });
   }
 
   if (outline) {
     for (const [right, down] of OUTLINE_OFFSETS) {
       for (const { x, source, top } of columns) {
-        context.drawImage(outline, source, 0, 1, SEAL_HEIGHT, x + right, top + down, 1 / ratio, FRIEZE_HEIGHT);
+        context.drawImage(outline, source, 0, 1, sealHeight, x + right, top + down, 1 / ratio, FRIEZE_HEIGHT);
       }
     }
   }
 
   for (const { x, source, top } of columns) {
-    context.drawImage(frame.seal, source, 0, 1, SEAL_HEIGHT, x, top, 1 / ratio, FRIEZE_HEIGHT);
+    context.drawImage(frame.seal, source, 0, 1, sealHeight, x, top, 1 / ratio, FRIEZE_HEIGHT);
   }
 
-  drawCap(context, capTurns(frame.offset, frame.tile, frame.direction), height, paper, ink);
+  drawCap(context, capTurns(frame.offset, frame.tile, frame.direction), cssHeight, paper, ink);
 }

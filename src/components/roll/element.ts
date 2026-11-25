@@ -311,13 +311,23 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
-    const seal = new Image();
-    seal.addEventListener('load', () => {
-      this.seal = seal;
-      this.drawnOffset = undefined;
-      this.scheduleTurn();
-    }, { signal });
-    seal.src = source;
+    const density = matchMedia('(resolution > 2dppx)');
+    let pending: HTMLImageElement | undefined;
+    const load = () => {
+      const seal = new Image();
+      pending = seal;
+      seal.addEventListener('load', () => {
+        if (pending !== seal) return;
+
+        this.seal = seal;
+        this.drawnOffset = undefined;
+        this.scheduleTurn();
+      }, { signal, once: true });
+      seal.src = density.matches ? this.dataset.sealSharp ?? source : source;
+    };
+
+    density.addEventListener('change', load, { signal });
+    load();
   }
 
   private scheduleTurn(): void {
