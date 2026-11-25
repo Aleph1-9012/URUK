@@ -47,6 +47,15 @@ test('result text renders math, citations, escaped dollars and real sources', ()
   expect(rendered.sections.find((section) => section.key === 'claim')?.html).toContain('<uruk-formula>');
 });
 
+test('the claim section keeps the anchor of the heading an article uses', () => {
+  const lab = renderResult(body).sections.find(({ key }) => key === 'claim');
+  const paper = renderResult(body.replace('## What OpenAI claims', '## What the paper claims')).sections.find(({ key }) => key === 'claim');
+
+  expect(lab?.id).toBe('what-openai-claims');
+  expect(paper?.title).toBe('What the paper claims');
+  expect(paper?.id).toBe('what-the-paper-claims');
+});
+
 test('visual planning notes stay in Markdown without appearing in the article', () => {
   const withNote = body.replace('Earlier work.', 'Earlier work.\n\n<!-- uruk:visual-note\nA visual for this page can show a future diagram.\n-->');
   const rendered = renderResult(withNote);

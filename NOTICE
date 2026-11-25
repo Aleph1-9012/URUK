@@ -15,7 +15,7 @@ right to use them, except as needed to describe where this work comes from.
 
 Source material
 
-The results come from OpenAI's math release, licensed under Apache-2.0:
+The current results come from OpenAI's math release, licensed under Apache-2.0:
 https://github.com/openai/math/tree/4eaee87548250b2682affda7d05d947c05554bae
 
 At that commit the repository has no NOTICE file and its LICENSE names no

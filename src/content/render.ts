@@ -136,10 +136,11 @@ export function renderResult(body: string, reviewLink?: string) {
 
     if (node.type === 'heading' && node.depth === 2) {
       const title = node.children.map((child) => child.type === 'text' ? child.value : '').join('');
-      const index = resultSections.findIndex((section) => section.titles.some((allowed) => allowed === title));
+      const index = resultSections.findIndex((section) => section.headings.some((heading) => heading.title === title));
       const definition = resultSections[index];
+      const heading = definition?.headings.find((candidate) => candidate.title === title);
 
-      if (!definition || index <= previousIndex) {
+      if (!definition || !heading || index <= previousIndex) {
         throw new Error(`Unknown, repeated or misplaced section: ${title}`);
       }
 
@@ -149,7 +150,7 @@ export function renderResult(body: string, reviewLink?: string) {
         throw new Error('Too many result sections.');
       }
 
-      current = { key: definition.key, id: definition.id, title, numeral, nodes: [] };
+      current = { key: definition.key, id: heading.id, title, numeral, nodes: [] };
       sections.push(current);
       previousIndex = index;
     } else {
@@ -159,7 +160,7 @@ export function renderResult(body: string, reviewLink?: string) {
 
   for (const definition of resultSections) {
     if (definition.required && !sections.some((section) => section.key === definition.key && section.nodes.length > 0)) {
-      throw new Error(`Missing section: ${definition.titles[0]}`);
+      throw new Error(`Missing section: ${definition.headings[0].title}`);
     }
   }
 

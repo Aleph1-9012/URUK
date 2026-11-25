@@ -1,7 +1,8 @@
 # URUK
 
-Uruk is an open-source visual guide to selected papers from
-[OpenAI's mathematics release](https://github.com/openai/math/tree/4eaee87548250b2682affda7d05d947c05554bae).
+Uruk is an open-source visual guide to selected mathematics papers produced by
+AI models. The current set comes from
+[OpenAI's October 2026 mathematics release](https://github.com/openai/math/tree/4eaee87548250b2682affda7d05d947c05554bae).
 It gives readers a way into the problems without assuming a mathematics
 background, with exact statements and proof maps for those who want to go deeper.
 

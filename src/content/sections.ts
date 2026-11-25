@@ -1,12 +1,27 @@
+// Each heading keeps its own anchor, so links to an older heading still land.
 export const resultSections = [
-  { key: 'problem', id: 'the-problem', titles: ['The problem'], required: true },
-  { key: 'history', id: 'why-it-stayed-open', titles: ['Why it stayed open'], required: true },
-  { key: 'claim', id: 'what-openai-claims', titles: ['What OpenAI claims'], required: true },
-  { key: 'proof', id: 'how-the-claimed-proof-goes', titles: ['How the claimed proof goes', 'How the claimed proofs go'], required: true },
-  { key: 'consequences', id: 'consequences-inside-mathematics', titles: ['Consequences inside mathematics'], required: false },
-  { key: 'uses', id: 'uses-outside-mathematics', titles: ['Uses outside mathematics'], required: true },
-  { key: 'review', id: 'has-anyone-checked-it', titles: ['Has anyone checked it?'], required: true },
-  { key: 'sources', id: 'sources', titles: ['Sources'], required: true },
+  { key: 'problem', headings: [{ title: 'The problem', id: 'the-problem' }], required: true },
+  { key: 'history', headings: [{ title: 'Why it stayed open', id: 'why-it-stayed-open' }], required: true },
+  {
+    key: 'claim',
+    headings: [
+      { title: 'What the paper claims', id: 'what-the-paper-claims' },
+      { title: 'What OpenAI claims', id: 'what-openai-claims' },
+    ],
+    required: true,
+  },
+  {
+    key: 'proof',
+    headings: [
+      { title: 'How the claimed proof goes', id: 'how-the-claimed-proof-goes' },
+      { title: 'How the claimed proofs go', id: 'how-the-claimed-proof-goes' },
+    ],
+    required: true,
+  },
+  { key: 'consequences', headings: [{ title: 'Consequences inside mathematics', id: 'consequences-inside-mathematics' }], required: false },
+  { key: 'uses', headings: [{ title: 'Uses outside mathematics', id: 'uses-outside-mathematics' }], required: true },
+  { key: 'review', headings: [{ title: 'Has anyone checked it?', id: 'has-anyone-checked-it' }], required: true },
+  { key: 'sources', headings: [{ title: 'Sources', id: 'sources' }], required: true },
 ] as const;
 
 export type SectionKey = typeof resultSections[number]['key'];
