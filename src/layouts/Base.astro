@@ -1,4 +1,8 @@
 ---
+import ConeMarker from '../components/cone-wall/Marker.astro';
+import ConeHead from '../components/cone-wall/Head.astro';
+import ConeCover from '../components/cone-wall/Cover.astro';
+import ConeStaged from '../components/cone-wall/Staged.astro';
 import '../styles/tokens.css';
 import fontStyles from '../styles/fonts.css?url';
 import mathFontStyles from '../styles/math-fonts.css?url';
@@ -21,6 +25,9 @@ const { title, description, math = false } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <ConeMarker />
+    <ConeStaged />
+    <ConeHead />
     <slot name="head" />
     <link rel="stylesheet" href={fontStyles} />
     {math && <link rel="stylesheet" href={mathFontStyles} />}
@@ -32,6 +39,7 @@ const { title, description, math = false } = Astro.props;
     {description !== undefined && <meta name="description" content={description} />}
   </head>
   <body>
+    <ConeCover />
     <slot />
   </body>
 </html>

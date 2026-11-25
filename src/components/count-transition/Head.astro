@@ -72,22 +72,11 @@ const arrivalVariables = arrival === undefined
       }
     });
 
-    window.addEventListener('click', (event) => {
-      if (!current || reducedMotion.matches || event.defaultPrevented || event.button !== 0
-        || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
-      const link = event.target instanceof Element ? event.target.closest('a') : null;
-      if (!(link instanceof HTMLAnchorElement) || !link.href || (link.target && link.target !== '_self')
-        || link.hasAttribute('download') || link.relList.contains('noreferrer')) return;
-
-      const destination = new URL(link.href);
+    document.addEventListener('uruk:count-link', (event) => {
+      if (!current || reducedMotion.matches || !(event instanceof CustomEvent) || !(event.detail instanceof URL)) return;
+      const destination = event.detail;
       const result = resultsPath.exec(destination.pathname)?.[1];
-      if (destination.origin !== location.origin || !result || result === current[1]) return;
-
-      if (root.dataset.countStage) {
-        event.preventDefault();
-        return;
-      }
+      if (!result) return;
 
       // The cover's script presses the destination's count. Until it has loaded, the link navigates as usual.
       const request = new CustomEvent('uruk:count-destination', { cancelable: true, detail: Number(result) });

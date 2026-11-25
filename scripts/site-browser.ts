@@ -17,12 +17,12 @@ export async function waitForNumerics(page: Page): Promise<void> {
 }
 
 /** Serves the built site, opens Chromium, and closes both once `run` settles. */
-export async function withSiteBrowser<Result>(run: (browser: Browser, origin: string) => Promise<Result>): Promise<Result> {
+export async function withSiteBrowser<Result>(run: (browser: Browser, origin: string) => Promise<Result>, backForwardCache = false): Promise<Result> {
   const server = await preview({ root: process.cwd(), server: { host: '127.0.0.1', port: PREVIEW_PORT }, logLevel: 'error' });
   let browser: Browser | undefined;
 
   try {
-    browser = await chromium.launch({ executablePath: CHROMIUM_PATH, headless: true });
+    browser = await chromium.launch({ executablePath: CHROMIUM_PATH, headless: true, ignoreDefaultArgs: backForwardCache ? ['--disable-back-forward-cache'] : [] });
 
     return await run(browser, `http://127.0.0.1:${server.port}`);
   } finally {

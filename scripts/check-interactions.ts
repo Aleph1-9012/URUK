@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { checkPageNavigation } from './check-navigation';
 import type { Browser, Page } from 'playwright-core';
 import { filmRoutes, waitForNumerics, withSiteBrowser } from './site-browser';
 
@@ -695,7 +696,7 @@ async function checkCountTransition(page: Page, origin: string): Promise<void> {
   await page.unroute(nextResult);
   await page.locator('.result-neighbors [rel="prev"]').click();
   await checkArrival('/results/248/', 12);
-  await page.goBack();
+  await page.goBack({ waitUntil: 'commit' });
   await checkArrival('/results/261/', null);
   await page.reload();
   await checkArrival('/results/261/', null);
@@ -791,7 +792,7 @@ async function checkVoyage(browser: Browser, origin: string): Promise<void> {
     assert.equal(await textInPlace(second), true);
     await page.goto(`${origin}/about/`);
     await page.evaluate(() => localStorage.clear());
-    await page.goBack();
+    await page.goBack({ waitUntil: 'commit' });
     assert.equal(await html.getAttribute('data-voyage-log'), null);
     assert.equal(await textInPlace(page), true);
 
@@ -983,3 +984,5 @@ await withSiteBrowser(async (browser, origin) => {
 
   console.log(`Checked initial font/film layout stability, each motion mode's first visible frame and the script-free transcript, the phone roll's downward opening, delayed and failed film calculations, the home voyage's boat pass, engraving and typed text, first-visit-only play and early exits, all ${routes.length} narrated films in ${filmCount} sessions, playback pauses, standard-map worker/reconnect behavior, stable Dig rows, search/filter, the counted results transition, and back-to-top navigation and wheel rotation.`);
 });
+
+await withSiteBrowser(checkPageNavigation, true);

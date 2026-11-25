@@ -1,0 +1,32 @@
+---
+import { visibleResults } from '../../content/results';
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const family = /^\/results\/(\d{3})$/.exec(path)?.[1];
+const names = new Map([['/', 'URUK'], ['/about', 'ABOUT'], ['/how-we-check', 'HOW WE CHECK'], ['/results', 'ALL RESULTS'], ['/404', 'ERROR 404'], ['/404.html', 'ERROR 404']]);
+const name = family && (await visibleResults()).some(result => result.data.family === family)
+  ? 'ALL RESULTS / ' + family : names.get(path);
+---
+<script is:inline data-name={name}>
+  (() => {
+    const key = '__uruk_cone';
+    if (!location.search.includes(key)) return;
+    const fields = location.search.slice(1).split('&');
+    const matches = fields.filter(field => field.split('=', 1)[0] === key);
+    if (!matches.length) return;
+    const rest = fields.filter(field => field.split('=', 1)[0] !== key).join('&');
+    const destination = location.pathname + (rest ? '?' + rest : '') + location.hash;
+    history.replaceState(history.state, '', destination);
+    try {
+      if (matches.length !== 1 || !document.currentScript.dataset.name || !document.referrer) return;
+      const ref = new URL(document.referrer);
+      const marker = JSON.parse(decodeURIComponent(matches[0].slice(key.length + 1)));
+      if (!Array.isArray(marker) || marker.length !== 6 || ref.origin !== location.origin
+        || marker[0] !== ref.pathname + ref.search || marker[1] !== destination
+        || marker[2] !== document.documentElement.clientWidth || marker[3] !== innerHeight
+        || marker[4] !== devicePixelRatio || !Number.isSafeInteger(marker[5]) || marker[5] < 1 || marker[5] > 32768 || ref.pathname === location.pathname
+        || performance.getEntriesByType('navigation')[0]?.type !== 'navigate') return;
+      window.urukConePixels = { width: marker[2], pixels: marker[5] };
+      window.urukConeName = document.currentScript.dataset.name;
+    } catch {}
+  })();
+</script>

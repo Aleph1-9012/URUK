@@ -150,6 +150,20 @@ The standard map is the one interactive plate. It uses the lower-level player
 and track directly because its controls differ from narrated films.
 Prime-wave number-theory code lives under `prime-waves/zeta/`.
 
+## Regenerate the cone wall artwork
+
+Ordinary builds use the checked-in packs under `src/components/cone-wall/data/packs/`.
+From the repository root, run `bun src/components/cone-wall/data/build-packs.mjs`
+to regenerate them from the atlas, its head coordinates and the Special Elite font.
+The generator uses the project dependencies and Chromium at `/usr/bin/chromium`.
+
+When the Dig plates or their seams change, run
+`python src/components/cone-wall/data/extract.py` first. It uses Pillow, NumPy
+and OpenCV to regenerate `heads.webp` and `heads.json`. The separate
+`data/decode.c` is the source for the WebAssembly LZ4 decoder embedded in
+`head.js`. Changing that decoder requires Clang's wasm32 target and a WebAssembly
+linker. Its compiler flags are listed at the top of the C file.
+
 ## Check a change
 
 ```sh

@@ -51,7 +51,8 @@ uruk-roll[data-closed] .roll-frame { margin-right: 40px; }
 
 /* Room for a hovered card's case to cross past its corners, which the scroller would otherwise clip. Only while it shows, so a neighbouring card never shows a strip at rest. */
 @media (min-width: 48rem) {
-  uruk-roll[data-arrival="open"] .roll-paper { animation: none; }
+  uruk-roll[data-arrival="open"] .roll-paper,
+  uruk-roll[data-arrival="open"] .roll-paper::after { animation: none; }
   .roll-window:has(.roll-card:is(:hover, :focus-visible)) { margin: -4px; padding: 4px; scroll-padding-inline: 4px; }
 }
 

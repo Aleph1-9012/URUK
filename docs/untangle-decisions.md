@@ -372,3 +372,24 @@ worker handling lands in one file under `components/plate/`.
 - Comment and test review of the films added since 9 November was not done.
 - The workspace folder `Uruk-assets` has its own housekeeping list; the plan
   and its evidence are kept in `../uruk-untangle-audit/round2/`.
+
+## Cone wall navigation
+
+- The source and destination compose the same native-resolution pixels from the
+  checked-in head and glyph packs. This single compositor (T2) keeps the wall
+  identical across navigation in browsers that randomize canvas readback.
+- The release checks the reported maximum texture size before uploading the face.
+  Protected Zen can report a 2,048-pixel limit. A face exceeding the device limit
+  opens in Canvas 2D using the same cone positions, word backings and gravity.
+- A tab normally stages the wall in session storage. If storage fails, a short
+  query parameter carries the route and viewport geometry. The destination
+  removes the parameter immediately and validates the referrer, route and
+  dimensions before rebuilding from the static packs.
+- On 2026-11-25 the user chose to play Cone on its routes for readers with
+  reduced motion enabled. Count and the home voyage retain their own preferences.
+- Astro prerenders the stable `/cone-data/` URLs. Vite's Rolldown bundler builds
+  the two classic scripts in-process so the destination head can execute its
+  rebuild synchronously. The other endpoints wrap the checked-in packs.
+- In the emulated 390×844 Zen RFP viewport, a plain navigation with no head
+  scripts and a Cone navigation each showed two grey compositor samples on one
+  trip out of 30. Real-window checks are recorded separately.

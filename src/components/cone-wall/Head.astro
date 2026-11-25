@@ -1,0 +1,54 @@
+---
+import atlas from './data/heads.webp?url';
+import workerUrl from './opening-worker?worker&url';
+import headUrl from './head.js?url&no-inline';
+---
+<style is:inline>
+  /* The native scroll thumb otherwise paints over the closed wall in Gecko. */
+  :root:is([data-cone-loading], [data-cone-stage]) { scrollbar-color: transparent transparent; }
+  /* The head canvas covers the body until the first release frame. */
+  @supports (-moz-appearance: none) {
+    :root[data-cone-stage="arriving"]:not([data-cone-layout-ready]) > body {
+      content-visibility: hidden;
+      contain-intrinsic-size: auto 100vh;
+    }
+  }
+  /* Some WebKit scroll thumbs are drawn above fixed content. Keep classic gutters in place. */
+  :root[data-cone-overlay-scrollbar]:is([data-cone-loading], [data-cone-stage]) { scrollbar-width: none; }
+  .cone-wall { display: none; }
+  :root:is([data-cone-stage="pressing"], [data-cone-stage="covered"]) .cone-wall,
+  #cone-head-face {
+    display: block;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: fixed;
+    z-index: 100;
+  }
+  #cone-head-face, .cone-wall > canvas { height: 100%; width: 100%; }
+  .cone-wall > canvas { inset: 0; pointer-events: none; position: absolute; }
+</style>
+<script is:inline id="cone-config" data-atlas={atlas} data-worker={workerUrl} data-head={headUrl}>
+  (() => {
+    const script = document.currentScript;
+    const include = url => document.write('<script blocking="render" src="' + url + '"><' + '/script>');
+    if (window.urukConeName) {
+      const width = document.documentElement.clientWidth;
+      const px = window.urukConePixels.pixels;
+      const density = px <= Math.round(width*devicePixelRatio) ? devicePixelRatio : px/width;
+      const target = Math.min(38, Math.max(24, document.documentElement.clientWidth * .037)) * density;
+      const size = [24,28,32,36,38,42,48,56,64,72,76,84,96,108,114,128,144,152,192,228]
+        .reduce((best,n) => Math.abs(n-target)<Math.abs(best-target)?n:best);
+      window.urukConeParts = [];
+      include('/cone-data/' + ([1,2,3].includes(density) ? 'print-' + density : 'heads') + '.js');
+      include('/cone-data/type-' + size + '.js');
+      include('/cone-data/rebuild.js');
+      include(script.dataset.head);
+      return;
+    }
+    try {
+      const saved = sessionStorage.getItem('uruk:cone-destination');
+      if (saved) { window.urukConeIntent = saved; include(script.dataset.head); }
+    } catch {}
+  })();
+</script>

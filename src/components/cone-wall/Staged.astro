@@ -1,0 +1,26 @@
+<script is:inline>
+  (() => {
+    const stage = 'uruk:cone-staged';
+    const intent = 'uruk:cone-destination';
+    function discard() {
+      try {
+        if (!sessionStorage.getItem(stage) && !sessionStorage.getItem(intent)) return;
+        sessionStorage.removeItem(intent);
+        sessionStorage.removeItem(stage);
+        for (let i = 0; i < 8; i++) {
+          sessionStorage.removeItem('uruk:cone-face-' + i);
+          sessionStorage.removeItem('uruk:cone-mesh-' + i);
+        }
+      } catch {}
+    }
+    document.addEventListener('uruk:cone-discard', discard);
+    try {
+      const token = sessionStorage.getItem(stage);
+      if (!token) return;
+      const saved = sessionStorage.getItem(intent);
+      const route = saved && JSON.parse(saved);
+      if (!route || route.token !== token || route.to !== location.href
+        || route.expires <= Date.now() || performance.getEntriesByType('navigation')[0]?.type !== 'navigate') discard();
+    } catch { discard(); }
+  })();
+</script>

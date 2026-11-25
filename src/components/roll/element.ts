@@ -58,8 +58,12 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
-    if (this.hasAttribute('data-arrival') && !this.phone && !this.phoneArrivalStarted) {
-      this.dataset.arrival = 'desktop';
+    if (this.hasAttribute('data-arrival') && !this.phoneArrivalStarted) {
+      if (document.documentElement.hasAttribute('data-cone-stage')) {
+        this.finishArrival();
+      } else if (!this.phone) {
+        this.dataset.arrival = 'desktop';
+      }
     }
 
     this.loadSeal(signal);
@@ -213,6 +217,21 @@ class UrukRoll extends HTMLElement {
     return matchMedia(REDUCED_MOTION).matches ? 'instant' : 'smooth';
   }
 
+  whenArrivalSettles(): Promise<void> {
+    const moving = () => this.dataset.arrival === 'pending' || this.dataset.arrival === 'opening';
+    if (!moving()) {
+      const paper = this.querySelector('.roll-paper');
+      const animations = paper?.getAnimations({ subtree: true }) ?? [];
+      return Promise.allSettled(animations.map(animation => animation.finished)).then(() => undefined);
+    }
+    return new Promise(resolve => {
+      const observer = new MutationObserver(() => {
+        if (!moving()) { observer.disconnect(); resolve(); }
+      });
+      observer.observe(this, { attributes: true, attributeFilter: ['data-arrival'] });
+    });
+  }
+
   private finishArrival(): void {
     if (this.dataset.arrival === 'pending' || this.dataset.arrival === 'opening') {
       this.phoneArrivalStarted = true;
@@ -240,6 +259,10 @@ class UrukRoll extends HTMLElement {
     }
 
     if (this.phoneArrivalStarted) return;
+    if (document.documentElement.dataset.coneStage || document.documentElement.hasAttribute('data-cone-loading')) {
+      this.finishArrival();
+      return;
+    }
 
     this.dataset.arrival = 'pending';
 
