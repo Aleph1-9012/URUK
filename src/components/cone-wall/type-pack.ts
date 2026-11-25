@@ -1,6 +1,5 @@
 import type { BlankLayout, Letter } from './material';
 import type { Band } from './raster';
-import { packPixels, shades } from './pack';
 
 interface Glyph { vertical: [number, number][]; letter: string; advance: number; x: number; y: number; w: number; h: number; offset: number; ascent: number; descent: number }
 export function typePack(metadata: string, alpha: Uint8Array, size: number) {
@@ -19,7 +18,7 @@ export function inscription(name: string, layout: BlankLayout, band: { x: number
     const glyph = type.glyphs.get(value);
     if (!glyph) throw new Error('Missing band glyph');
     const w = glyph.advance * fontSize;
-    letters.push({ value, x: advance, width: w, beat: 0 });
+    letters.push({ value, x: advance, width: w });
     advance += w + spacing;
     const vertical = glyph.vertical[density - 1];
     ascent = Math.max(ascent, vertical ? vertical[0] * density : glyph.ascent);
@@ -39,7 +38,7 @@ export function inscription(name: string, layout: BlankLayout, band: { x: number
   let beat = 0;
   for (const seat of band) if (seat.x >= left - 8 && seat.x < left + advance + 8) beat = Math.max(beat, Math.min(47, seat.beat + 1));
   for (const letter of letters) {
-    letter.x += left; letter.beat = beat;
+    letter.x += left;
     const glyph = type.glyphs.get(letter.value)!;
     const quarter = Math.round(letter.x * density * 4);
     const gx = Math.floor(quarter / 4) + glyph.x - x;
@@ -55,9 +54,10 @@ export function inscription(name: string, layout: BlankLayout, band: { x: number
       }
     }
   }
-  const pixels = new Uint32Array(alpha.length);
-  for (let i = 0; i < alpha.length; i++) pixels[i] = shades[alpha[i]!]!;
-  return { layout: { ...layout, letters, baseline: baseline / density },
-    patch: { x, y, width: w, height: h, text: packPixels(new Uint8Array(pixels.buffer)).toBase64() },
-    strike: { x, y, width: w, height: h, alpha }, beat };
+
+  return {
+    layout: { ...layout, letters, baseline: baseline / density },
+    strike: { x, y, width: w, height: h, alpha },
+    beat,
+  };
 }

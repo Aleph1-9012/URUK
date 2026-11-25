@@ -90,7 +90,7 @@ export function installSource(face: HTMLCanvasElement, atlas: HTMLImageElement, 
 
   async function prepare(signal: AbortSignal) {
     const layout = blankLayout();
-    const { prepareType, inscription } = await import('./label');
+    const { prepareType, inscription, encodeLabelPatch } = await import('./label');
     signal.throwIfAborted();
     const work = preparation(signal);
     const painter = new Worker(pressUrl, { type: 'module' });
@@ -148,7 +148,7 @@ export function installSource(face: HTMLCanvasElement, atlas: HTMLImageElement, 
       }
     };
     const { band, strip } = artwork;
-    return { layout, band, inscription, type, painter, strip, token, cached };
+    return { layout, band, inscription, encodeLabelPatch, type, painter, strip, token, cached };
   }
 
   function start(directed = false) {
@@ -210,7 +210,7 @@ export function installSource(face: HTMLCanvasElement, atlas: HTMLImageElement, 
         try {
           if (!warm.cached || sessionStorage.getItem(stageKey) !== warm.token) throw new Error('No stored wall');
           sessionStorage.setItem(key, JSON.stringify({ from: from.href, to: url.href, expires: Date.now()+15000,
-            token: warm.token, layout: label.layout, label: label.patch, stripes: 8 }));
+            token: warm.token, layout: label.layout, label: warm.encodeLabelPatch(label.strike), stripes: 8 }));
         } catch {
           discard();
           const clean = url.pathname + url.search + url.hash;

@@ -27,7 +27,7 @@ function journey(event: Event) {
 
   const family = /^\/results\/(\d{3})$/.exec(path)?.[1];
   if (family && families.has(family)) {
-    if (from === '/results' || /^\/results\/\d{3}$/.test(from)) return { owner: 'count' as const, url, family };
+    if (from === '/results' || /^\/results\/\d{3}$/.test(from)) return { owner: 'count' as const, url };
     return { owner: 'cone' as const, url, name: 'ALL RESULTS / ' + family };
   }
 

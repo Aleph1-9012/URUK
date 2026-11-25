@@ -4,7 +4,7 @@ import { destinationSeed, noise, type Head } from './layout';
 export const PAPER = '#e7e5e0';
 
 export interface Disc { x: number; y: number; rx: number; ry: number }
-export interface Letter { value: string; x: number; width: number; beat: number }
+export interface Letter { value: string; x: number; width: number }
 
 /** Canvas artwork uses the pixel box supplied by layout, including browser zoom. */
 export function blankLayout() {
