@@ -12,7 +12,6 @@ export type FilmSetup = {
   root: HTMLElement;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
-  labels: ReadonlyMap<string, HTMLElement>;
   signal: AbortSignal;
   redraw: () => void;
 };
@@ -42,18 +41,13 @@ export function defineFilm(name: string, timeline: FilmTimeline, setup: (film: F
       const next = this.querySelector<HTMLButtonElement>('[data-film-next]');
       const subtitles = Array.from(this.querySelectorAll<HTMLElement>('[data-cue]'));
       const motion = matchMedia('(prefers-reduced-motion: reduce)');
-      const labels = new Map<string, HTMLElement>();
       let time = 0;
       let cue = -1;
       let rangeTick = -1;
       let second = -1;
       let player: Player | undefined;
 
-      for (const label of this.querySelectorAll<HTMLElement>('[data-label]')) {
-        if (label.dataset.label) labels.set(label.dataset.label, label);
-      }
-
-      const drawing = setup({ root, canvas, context, labels, signal, redraw: present });
+      const drawing = setup({ root, canvas, context, signal, redraw: present });
 
       function present(): void {
         if (signal.aborted || root.hasAttribute('data-numerics-pending')) return;

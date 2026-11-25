@@ -1,11 +1,12 @@
 import { defineFilm } from '../../plate/controller';
+import { collectFilmLabels } from '../../plate/labels';
 import { runNumerics } from '../../plate/numerics';
 import { FractionRulersFilm } from './film';
 import { TIMELINE } from './story';
 import type { SeriesMessage } from './worker';
 
 defineFilm('uruk-fraction-rulers', TIMELINE, (film) => {
-  const drawing = new FractionRulersFilm(film.canvas, film.labels);
+  const drawing = new FractionRulersFilm(film.canvas, collectFilmLabels(film.root));
 
   runNumerics<SeriesMessage>(film, {
     start: () => new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' }),

@@ -2,17 +2,25 @@ type LabelSize = { width: number; height: number };
 
 type LabelMargin = { horizontal: number; vertical: number };
 
+export function collectFilmLabels(root: HTMLElement): ReadonlyMap<string, HTMLElement> {
+  const labels = new Map<string, HTMLElement>();
+
+  for (const element of root.querySelectorAll<HTMLElement>('[data-label]')) {
+    if (element.dataset.label) labels.set(element.dataset.label, element);
+  }
+
+  return labels;
+}
+
 export class FilmLabels {
-  private readonly elements = new Map<string, HTMLElement>();
+  private readonly elements: ReadonlyMap<string, HTMLElement>;
   private readonly sizes = new Map<string, LabelSize>();
   private readonly visible = new Set<string>();
   private width = 1;
   private height = 1;
 
   constructor(root: HTMLElement, private readonly margin: LabelMargin) {
-    for (const element of root.querySelectorAll<HTMLElement>('[data-label]')) {
-      if (element.dataset.label) this.elements.set(element.dataset.label, element);
-    }
+    this.elements = collectFilmLabels(root);
   }
 
   resize(width: number, height: number): void {
