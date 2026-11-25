@@ -85,12 +85,15 @@
 }
 
 @media (hover: none) {
+  /* A quick tap can end before a transition draws either stroke. */
   .case-link:active::before {
     transform: scaleX(1);
+    transition: none;
   }
 
   .case-link:active::after {
     transform: scaleY(1);
+    transition: none;
   }
 }
 

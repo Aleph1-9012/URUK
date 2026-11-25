@@ -57,7 +57,11 @@ export function bindTrack(track: HTMLElement, options: TrackOptions): Track {
 
     pointer = event.pointerId;
     track.setPointerCapture(event.pointerId);
-    track.focus({ preventScroll: true });
+
+    if (event.pointerType !== 'touch') {
+      track.focus({ preventScroll: true });
+    }
+
     event.preventDefault();
     change(fromPointer(event), false);
   };
