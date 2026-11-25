@@ -53,7 +53,6 @@ class UrukMenu extends HTMLElement {
 
     const buttons = this.querySelectorAll<HTMLButtonElement>('[data-filter]');
     const cards = roll.cards.map((node) => ({
-      node,
       indexRow: this.querySelector<HTMLElement>(`[data-index-family="${node.dataset.family}"]`),
       family: node.dataset.family ?? '',
       topic: node.dataset.topic ?? '',
