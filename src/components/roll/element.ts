@@ -7,8 +7,8 @@ const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 // How far the roller turns while the sheet opens, in seal rollings. About one full turn keeps its lines readable.
 const OPENING_TURNS = 1;
 
-// The closing roller needs room below the sheet; it may use the 16px above the credit line.
-const CLOSING_ROLLER = 44;
+// The closed phone roll reserves 60px below the sheet for its closing roller.
+const CLOSING_ROLLER = 60;
 
 type ResultFilter = {
   active: boolean;
@@ -406,7 +406,6 @@ class UrukRoll extends HTMLElement {
     }
 
     const closed = this.hasAttribute('data-closed');
-    const footnote = document.querySelector('[data-roll-footnote]')?.getBoundingClientRect().height ?? 0;
     const sheet = this.querySelector<HTMLElement>('.roll-sheet')?.getBoundingClientRect();
     const paper = this.querySelector<HTMLElement>('.roll-paper')?.getBoundingClientRect();
     const frame = viewport.getBoundingClientRect();
@@ -419,11 +418,14 @@ class UrukRoll extends HTMLElement {
     // Measured against the paper, because the paper is still sliding out while the page opens.
     const below = paper.bottom - frame.bottom;
     const start = sheet.top + frame.top - paper.top + window.scrollY;
-    const available = viewportHeight - start - below - footnote - (closed ? CLOSING_ROLLER : 0);
-    const { rows, rowHeight } = sheetRows(available, first.getBoundingClientRect().height, items.length, !closed);
+    const available = viewportHeight - start - below - (closed ? CLOSING_ROLLER : 0);
+    // Whole pixels keep the last snap point at the scroll boundary.
+    const minimum = Math.ceil(first.getBoundingClientRect().height);
+    const fitted = sheetRows(available, minimum, items.length, !closed);
+    const rowHeight = Math.floor(fitted.rowHeight);
 
     viewport.style.setProperty('--row-height', `${rowHeight}px`);
-    viewport.style.setProperty('--window-height', `${rows * rowHeight}px`);
+    viewport.style.setProperty('--window-height', `${fitted.rows * rowHeight}px`);
     viewport.scrollTop = top;
   }
 

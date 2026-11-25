@@ -136,7 +136,8 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
   uruk-roll[data-empty] .roll-heading { display: none; }
   uruk-roll[data-empty] .roll-frame { padding-top: 24px; }
 
-  .roll-window { height: var(--window-height, auto); overflow: hidden auto; overscroll-behavior: contain; scroll-snap-type: y mandatory; }
+  /* A vertical swipe past the last roll card continues into the page. */
+  .roll-window { height: var(--window-height, auto); overflow: hidden auto; scroll-snap-type: y mandatory; }
   .roll-track { grid-auto-columns: auto; grid-auto-flow: row; grid-auto-rows: var(--row-height, 1fr); width: auto; }
   .roll-track::after { display: none; }
 

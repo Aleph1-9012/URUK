@@ -25,7 +25,6 @@ class UrukBackToTop extends HTMLElement {
   private readonly render = () => {
     this.frame = undefined;
     const pageY = Math.max(0, window.scrollY);
-    // The phone menu has no footer box; read current bounds when switching layouts.
     const footerBounds = this.footer?.getBoundingClientRect();
     const footerAtEnd = footerBounds !== undefined && footerBounds.height > 0 && footerBounds.bottom <= window.innerHeight + 1;
     const rollScrolled = this.roll?.scrolledBeyondPage ?? false;

@@ -11,7 +11,6 @@ interface Props {
   math?: boolean;
   active: 'results' | 'how-we-check' | 'about' | 'none';
   showFooter?: boolean;
-  showFooterOnPhone?: boolean;
   showSearch?: boolean;
 }
 
@@ -20,7 +19,6 @@ const {
   math = false,
   active,
   showFooter = true,
-  showFooterOnPhone = true,
   showSearch = false,
 } = Astro.props;
 const PageTag = showSearch ? 'uruk-menu' : 'div';
@@ -35,7 +33,7 @@ const PageTag = showSearch ? 'uruk-menu' : 'div';
     <main class="page-layout__main">
       <slot />
     </main>
-    {showFooter && <Footer hideOnPhone={!showFooterOnPhone} />}
+    {showFooter && <Footer />}
   </PageTag>
 </Base>
 

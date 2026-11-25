@@ -7,7 +7,6 @@ import { ROSETTE_CREDIT, SEAL_CREDIT, TEXTURE_CREDIT, TYPE_CREDIT, type Credit }
 
 interface Props {
   credits?: Credit[];
-  hideOnPhone?: boolean;
 }
 
 const DEFAULT_CREDITS: Credit[] = [
@@ -17,13 +16,10 @@ const DEFAULT_CREDITS: Credit[] = [
   TYPE_CREDIT,
 ];
 
-const { credits = DEFAULT_CREDITS, hideOnPhone = false } = Astro.props;
+const { credits = DEFAULT_CREDITS } = Astro.props;
 ---
 
-<footer
-  class:list={['site-footer', { 'site-footer--hidden-on-phone': hideOnPhone }]}
-  data-page-footer
->
+<footer class="site-footer" data-page-footer>
   <div class="site-footer__ornament">
     <span class="site-footer__rule"></span>
     <img draggable="false" src={rosetteUrl} alt="" width="64" height="64" />
@@ -196,18 +192,6 @@ const { credits = DEFAULT_CREDITS, hideOnPhone = false } = Astro.props;
   }
 
   @media (max-width: 47.999rem) {
-    /* Keep the floating control available when the menu's footer content is hidden. */
-    .site-footer--hidden-on-phone,
-    .site-footer--hidden-on-phone .site-footer__bottom {
-      display: contents;
-    }
-
-    .site-footer--hidden-on-phone > :not(.site-footer__bottom),
-    .site-footer--hidden-on-phone .site-footer__bottom > img,
-    .site-footer--hidden-on-phone :global(.back-to-top__rest) {
-      display: none;
-    }
-
     .site-footer {
       padding-block: 40px;
     }
