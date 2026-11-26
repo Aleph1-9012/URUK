@@ -39,7 +39,7 @@ if (!customElements.get('uruk-formula')) {
   customElements.define('uruk-formula', UrukFormula);
 }
 
-const inlineFormulas = document.querySelectorAll<MathMLElement>('.formula-inline math');
+const inlineFormulas = document.querySelectorAll<MathMLElement>('.formula-inline:not(.formula-inline--article) math');
 
 function fitInlineFormula(math: Element): void {
   const overflowing = math.scrollWidth > math.clientWidth + 1;
@@ -70,3 +70,34 @@ void document.fonts.ready.then(() => {
     fitInlineFormula(math);
   }
 });
+
+const articleObserver = new ResizeObserver((entries) => {
+  const formulas = new Set<Element>();
+
+  for (const { target } of entries) {
+    const formula = target.closest('.formula-inline--article');
+    if (formula) formulas.add(formula);
+  }
+
+  for (const formula of formulas) {
+    const viewport = formula.querySelector('[data-formula-viewport]');
+    if (!viewport) continue;
+
+    const width = formula.getBoundingClientRect().width;
+    const overflowing = Array.from(viewport.children).some(piece => piece.getBoundingClientRect().width > width + 1);
+    formula.toggleAttribute('data-overflow', overflowing);
+    viewport.toggleAttribute('data-scroller', overflowing);
+
+    if (overflowing) {
+      viewport.setAttribute('tabindex', '0');
+      viewport.setAttribute('aria-description', 'Scroll horizontally to read the full formula.');
+    } else {
+      viewport.removeAttribute('tabindex');
+      viewport.removeAttribute('aria-description');
+    }
+  }
+});
+
+for (const part of document.querySelectorAll('.formula-inline--article, .formula-inline__piece')) {
+  articleObserver.observe(part);
+}

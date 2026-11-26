@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { checkArticleFormulas } from './check-article-formulas';
 import { checkPageNavigation } from './check-navigation';
 import { checkSources } from './check-sources';
 import type { Browser, Page } from 'playwright-core';
@@ -988,6 +989,7 @@ await withSiteBrowser(async (browser, origin) => {
   await checkNumerics(browser, origin);
   await checkVoyage(browser, origin);
   await checkSources(browser, origin);
+  await checkArticleFormulas(browser, origin);
   let filmCount = 0;
 
   for (const width of [390, 1280]) {

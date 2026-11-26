@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { toHast } from 'mdast-util-to-hast';
 import { toHtml } from 'hast-util-to-html';
 import type { Definition, Parent, PhrasingContent, Root, RootContent } from 'mdast';
-import { renderFormula } from '../lib/formulas/render';
+import { renderFormula, renderInlineArticleFormula } from '../lib/formulas/render';
 import { resultSections, type SectionKey } from './sections';
 
 const parser = unified().use(remarkParse).use(remarkMath).use(remarkGfm);
@@ -49,7 +49,11 @@ function citationLinks(value: string, total: number, cited: Set<number>): Phrasi
 function prepare(parent: Parent, total: number, cited: Set<number>, citations = true): void {
   const children: RootContent[] = [];
 
-  for (const node of parent.children) {
+  for (let index = 0; index < parent.children.length; index++) {
+    const node = parent.children[index];
+
+    if (!node) continue;
+
     if (node.type === 'html') {
       if (/^<!-- uruk:visual-note\n(?:(?!-->)[\s\S])*\n-->$/u.test(node.value)) {
         continue;
@@ -58,8 +62,44 @@ function prepare(parent: Parent, total: number, cited: Set<number>, citations = 
       throw new Error('Result documents must use Markdown rather than raw HTML.');
     }
 
-    if (node.type === 'math' || node.type === 'inlineMath') {
-      children.push({ type: 'html', value: renderFormula(node.value, node.type === 'math') });
+    if (node.type === 'math') {
+      children.push({ type: 'html', value: renderFormula(node.value, true) });
+      continue;
+    }
+
+    if (node.type === 'inlineMath') {
+      const parts: Extract<PhrasingContent, { type: 'text' | 'inlineMath' }>[] = [];
+      const preceding = children.at(-1);
+      const prefix = preceding?.type === 'text' ? /\S+$/.exec(preceding.value)?.[0] : undefined;
+
+      if (prefix && preceding?.type === 'text') {
+        preceding.value = preceding.value.slice(0, -prefix.length);
+        parts.push({ type: 'text', value: prefix });
+      }
+
+      parts.push(node);
+
+      for (let next = parent.children[index + 1]; next; next = parent.children[index + 1]) {
+        if (next.type === 'inlineMath') {
+          parts.push(next);
+          index++;
+          continue;
+        }
+
+        if (next.type !== 'text') break;
+
+        const attached = /^\S+/.exec(next.value)?.[0];
+        const suffix = citations ? attached?.split(/\[\d+\]/, 1)[0] : attached;
+
+        if (!suffix) break;
+
+        parts.push({ type: 'text', value: suffix });
+        next.value = next.value.slice(suffix.length);
+        if (next.value) break;
+        index++;
+      }
+
+      children.push({ type: 'html', value: renderInlineArticleFormula(parts) });
       continue;
     }
 

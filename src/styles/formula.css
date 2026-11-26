@@ -3,7 +3,7 @@
   font-size: 1.07em;
 }
 
-.formula-inline math {
+.formula-inline:where(:not(.formula-inline--article)) math {
   align-items: baseline;
   display: inline-flex;
   flex-wrap: wrap;
@@ -12,7 +12,37 @@
   vertical-align: baseline;
 }
 
-.formula-inline math > mrow { flex: none; padding-block: .15em; }
+.formula-inline:where(:not(.formula-inline--article)) math > mrow { flex: none; padding-block: .15em; }
+
+.formula-inline--article {
+  display: inline-block;
+  max-width: 100%;
+  position: relative;
+}
+
+.formula-inline__viewport { align-items: baseline; display: flex; flex-wrap: wrap; }
+.formula-inline__piece { flex: none; white-space: nowrap; }
+.formula-inline__piece math { display: inline-flex; vertical-align: baseline; }
+.formula-inline__piece math > mrow { padding-block: .15em; }
+
+@media (max-width: 47.999rem) {
+  .result-prose table:has(.formula-inline--article) { table-layout: fixed; width: 100%; }
+  /* Keep room for a fraction and its scientific notation before the short exponent column. */
+  .result-prose table:has(.formula-inline--article) th:first-child:nth-last-child(3) { width: 50%; }
+  .result-prose table:has(.formula-inline--article) th:nth-child(2):nth-last-child(2) { width: 32%; }
+}
+
+/* Garamond Math leaves extra advance after its radical. Keep the following token's spacing. */
+.formula-inline--article msqrt, .result-prose uruk-formula msqrt { margin-inline-end: -.43em; }
+.result-prose .formula-inline--article mfrac > * { font-size: .80em; }
+
+.formula-inline--article[data-overflow] .formula-inline__viewport {
+  margin-inline-end: .95em;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.formula-inline--article[data-overflow]::after { inset-inline-end: 0; position: absolute; top: .55em; }
 
 .formula-inline[data-overflow]::after {
   background: url('../assets/icons/roll-forward.svg') center / contain no-repeat;
