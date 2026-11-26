@@ -387,9 +387,12 @@ worker handling lands in one file under `components/plate/`.
   dimensions before rebuilding from the static packs.
 - On 2026-11-25 the user chose to play Cone on its routes for readers with
   reduced motion enabled. Count and the home voyage retain their own preferences.
-- Astro prerenders the stable `/cone-data/` URLs. Vite's Rolldown bundler builds
-  the two classic scripts in-process so the destination head can execute its
-  rebuild synchronously. The other endpoints wrap the checked-in packs.
+- Astro prerenders each `/cone-data/` file under a hash of its own emitted
+  bytes, so Vercel can cache it as immutable without invalidating the packs when
+  an entry script changes. Rolldown builds the two classic scripts in-process.
+  The same manifest supplies the arrival boot, accepted cone clicks, and
+  low-priority warming after the page and its entry motion settle. Warming skips
+  Save-Data and does not delay a click.
 - In the emulated 390×844 Zen RFP viewport, a plain navigation with no head
   scripts and a Cone navigation each showed two grey compositor samples on one
   trip out of 30. Real-window checks are recorded separately.

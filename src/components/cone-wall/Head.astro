@@ -2,6 +2,14 @@
 import atlas from './data/heads.webp?url';
 import workerUrl from './opening-worker?worker&url';
 import headUrl from './head.js?url&no-inline';
+import { coneArrivalScripts } from './arrival-assets';
+import { startConeArrival } from './arrival-bootstrap';
+import { conePacks } from './arrival-packs';
+import { getConeData } from './asset-build';
+
+const { manifest } = await getConeData();
+const assets = JSON.stringify({ ...manifest, head: headUrl });
+const boot = `(${startConeArrival.toString()})(${conePacks.toString()},${coneArrivalScripts.toString()});`;
 ---
 <style is:inline>
   /* The native scroll thumb otherwise paints over the closed wall in Gecko. */
@@ -28,27 +36,4 @@ import headUrl from './head.js?url&no-inline';
   #cone-head-face, .cone-wall > canvas { height: 100%; width: 100%; }
   .cone-wall > canvas { inset: 0; pointer-events: none; position: absolute; }
 </style>
-<script is:inline id="cone-config" data-atlas={atlas} data-worker={workerUrl} data-head={headUrl}>
-  (() => {
-    const script = document.currentScript;
-    const include = url => document.write('<script blocking="render" src="' + url + '"><' + '/script>');
-    if (window.urukConeName) {
-      const width = document.documentElement.clientWidth;
-      const px = window.urukConePixels.pixels;
-      const density = px <= Math.round(width*devicePixelRatio) ? devicePixelRatio : px/width;
-      const target = Math.min(38, Math.max(24, document.documentElement.clientWidth * .037)) * density;
-      const size = [24,28,32,36,38,42,48,56,64,72,76,84,96,108,114,128,144,152,192,228]
-        .reduce((best,n) => Math.abs(n-target)<Math.abs(best-target)?n:best);
-      window.urukConeParts = [];
-      include('/cone-data/' + ([1,2,3].includes(density) ? 'print-' + density : 'heads') + '.js');
-      include('/cone-data/type-' + size + '.js');
-      include('/cone-data/rebuild.js');
-      include(script.dataset.head);
-      return;
-    }
-    try {
-      const saved = sessionStorage.getItem('uruk:cone-destination');
-      if (saved) { window.urukConeIntent = saved; include(script.dataset.head); }
-    } catch {}
-  })();
-</script>
+<script is:inline id="cone-config" data-atlas={atlas} data-worker={workerUrl} data-cone-assets={assets} set:html={boot}></script>

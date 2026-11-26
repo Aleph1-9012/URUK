@@ -10,9 +10,9 @@ const key = 'uruk:cone-destination';
 const stageKey = 'uruk:cone-staged';
 const root = document.documentElement;
 const phone = matchMedia('(max-width: 47.999rem), (max-height: 34rem) and (pointer: coarse)');
+const betweenPages = () => Boolean(root.dataset.voyageStage || root.dataset.countStage || root.dataset.coneStage);
 
 async function afterEntry(): Promise<void> {
-  const betweenPages = () => Boolean(root.dataset.voyageStage || root.dataset.countStage || root.dataset.coneStage);
   const settled = !betweenPages() ? Promise.resolve() : new Promise<void>(resolve => {
     const observer = new MutationObserver(() => {
       if (!betweenPages()) { observer.disconnect(); resolve(); }
@@ -22,6 +22,12 @@ async function afterEntry(): Promise<void> {
   const roll = document.querySelector('uruk-roll');
   const arrival = roll ? customElements.whenDefined('uruk-roll').then(() => roll.whenArrivalSettles()) : Promise.resolve();
   await Promise.all([settled, arrival]);
+}
+
+function whenIdle(run: () => void) {
+  const timeout = 1500;
+  if (window.requestIdleCallback) window.requestIdleCallback(run, { timeout });
+  else window.setTimeout(run, timeout);
 }
 
 function workerReply(worker: Worker, signal: AbortSignal) {
@@ -248,6 +254,17 @@ export function installSource(face: HTMLCanvasElement, atlas: HTMLImageElement, 
   function invalidate() {
     if (view && dimensions() !== view && !active) restart();
   }
+
+  function warmArrival() {
+    const network: Navigator & { connection?: { saveData?: boolean } } = navigator;
+    if (!visible || active || betweenPages() || network.connection?.saveData) return;
+
+    for (const url of entry.arrivalScripts()) {
+      // A fetch consumed to completion fills the script cache in WebKit too.
+      void fetch(url, { priority: 'low' }).then(response => response.arrayBuffer()).catch(() => {});
+    }
+  }
+
   window.addEventListener('resize', invalidate);
   window.visualViewport?.addEventListener('resize', invalidate);
   screen.orientation?.addEventListener('change', invalidate);
@@ -266,6 +283,11 @@ export function installSource(face: HTMLCanvasElement, atlas: HTMLImageElement, 
     if (event.persisted) {reset();start();}
   });
   const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise<void>(resolve => window.addEventListener('load', () => resolve(), {once:true}));
-  void loaded.then(afterEntry).then(() => {entryDone=true;start();});
+  void loaded.then(afterEntry).then(() => {
+    entryDone = true;
+    start();
+    // The press worker and its assets are needed before the arrival scripts.
+    void pending?.then(() => whenIdle(warmArrival));
+  });
   return { close, invalidate, interest: () => start(true), releaseForCount: () => reset(), ready: () => Boolean(warm) };
 }

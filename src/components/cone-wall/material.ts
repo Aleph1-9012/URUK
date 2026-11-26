@@ -1,5 +1,6 @@
 import type {} from './entry-types';
 import { destinationSeed, noise, type Head } from './layout';
+import { conePacks } from './arrival-packs';
 
 export const PAPER = '#e7e5e0';
 
@@ -11,12 +12,7 @@ export function blankLayout() {
   const width = document.documentElement.clientWidth;
   const height = innerHeight;
   const dpr = devicePixelRatio;
-  const measured = window.urukConePixels;
-  const nativeWidth = measured?.width === width ? measured.pixels : Math.round(width*dpr);
-  const density = nativeWidth <= Math.round(width*dpr) ? dpr : nativeWidth/width;
-  const target = Math.min(38, Math.max(24, width * 0.037)) * density;
-  const pack = [24, 28, 32, 36, 38, 42, 48, 56, 64, 72, 76, 84, 96, 108, 114, 128, 144, 152, 192, 228]
-    .reduce((best, px) => Math.abs(px - target) < Math.abs(best - target) ? px : best);
+  const { density, pack } = conePacks(width, dpr, window.urukConePixels);
   const fontSize = pack / density;
   // Use the approved wall's layout for every label. Only the central inscription varies.
   return { width, height, density, dpr, seed: destinationSeed('/how-we-check/'),

@@ -1,6 +1,7 @@
 import atlasUrl from './data/packs/heads.lz4?url&no-inline';
 import { putPatches, raster, type Band, type Batch, type Print } from './raster';
-import { loadPack, packPixels, shades } from './pack';
+import { loadPack, packPixels } from './pack-lz4';
+import { shades } from './pack';
 import { instances } from './instances';
 import { preparation } from './preparation';
 import type { BlankLayout } from './material';

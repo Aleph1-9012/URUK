@@ -197,7 +197,8 @@
         worker.postMessage({ type: 'face' });
     }
     if (rebuild) {
-      sendPixels(rebuild.pixels, 0, 0);
+      paper.putImageData(rebuild.pixels, 0, 0);
+      worker.postMessage({ type: 'pixels', x: 0, y: 0, image: rebuild.pixels }, [rebuild.pixels.data.buffer]);
       attach();
     } else scheduleStripe();
   } catch { clear(); }

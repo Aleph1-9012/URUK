@@ -1,5 +1,6 @@
 import type { BlankLayout } from './material';
-import { loadPack, packPixels, shades } from './pack';
+import { loadPack, packPixels } from './pack-lz4';
+import { shades } from './pack';
 import type { Band } from './raster';
 import { typePack } from './type-pack';
 export { inscription } from './type-pack';

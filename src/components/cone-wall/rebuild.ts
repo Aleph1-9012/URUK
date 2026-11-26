@@ -1,7 +1,7 @@
 import { blankLayout } from './material';
 import { printedHeads } from './layout';
 import { printHeads } from './print';
-import { shades, unpack } from './pack';
+import { readPack, shades } from './pack';
 import type { Print } from './raster';
 import { typePack, inscription } from './type-pack';
 
@@ -14,7 +14,7 @@ interface RebuildWindow extends Window {
 declare const window: RebuildWindow;
 
 const layout = blankLayout();
-const [heads, glyphs] = window.urukConeParts.map(text => unpack(Uint8Array.fromBase64(text).buffer));
+const [heads, glyphs] = window.urukConeParts.map(text => readPack(Uint8Array.fromBase64(text)));
 if (!heads || !glyphs) throw new Error('The cone artwork is incomplete');
 const metadata: ArtPack = JSON.parse(heads.metadata);
 const width = Math.round(layout.width * layout.density);

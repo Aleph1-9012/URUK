@@ -1,0 +1,13 @@
+{
+  "headers": [
+    {
+      "source": "/cone-data/:version([0-9a-f]{20})/:asset",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

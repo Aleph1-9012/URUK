@@ -1,10 +1,12 @@
 ---
 import atlas from './data/heads.webp?url';
 import { visibleResults } from '../../content/results';
+import { getConeData } from './asset-build';
 const families = (await visibleResults()).map(({ data }) => data.family).join(' ');
+const { entryUrl } = await getConeData();
 ---
 <div class="cone-wall" aria-hidden="true" data-cone-debug={import.meta.env.DEV} data-cone-routes={families}><img src={atlas} data-cone-atlas alt="" hidden /><canvas data-cone-paper></canvas></div>
-<script is:inline src="/cone-data/entry.js"></script>
+<script is:inline src={entryUrl}></script>
 <script>
   import './navigation';
 </script>

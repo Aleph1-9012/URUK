@@ -1,6 +1,8 @@
 import type { installSource } from './source';
 import { firstStrike } from './cold';
 import { blankLayout } from './material';
+import { coneArrivalScripts } from './arrival-assets';
+import { conePacks } from './arrival-packs';
 const cover = document.querySelector<HTMLElement>('[data-cone-routes]');
 const families = new Set(cover?.dataset.coneRoutes?.split(' '));
 const root = document.documentElement;
@@ -63,7 +65,7 @@ if (window.ResizeObserver) {
 function show() { if (corner) corner.style.visibility = 'visible'; }
 function hide() { if (corner) corner.style.visibility = 'hidden'; }
 window.urukConeEntry={
-  show,hide,
+  show,hide,arrivalScripts,
   install(controller) {
     source=controller;
     if (pending) {
@@ -75,6 +77,22 @@ window.addEventListener('pageshow',event=>{if(event.persisted){pressing=false;pe
 function decision(owner: string, reason: string) {
   if (cover?.dataset.coneDebug==='true') console.info('[cone] ' + owner + ': ' + reason);
 }
+
+function arrivalScripts(): string[] {
+  const assets = document.getElementById('cone-config')?.dataset.coneAssets;
+  return assets ? coneArrivalScripts(assets, conePacks, true) : [];
+}
+
+function preloadArrivalScripts(): void {
+  for (const url of arrivalScripts()) {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'script';
+    link.href = url;
+    document.head.append(link);
+  }
+}
+
 window.addEventListener('click', event => {
   if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.altKey || event.shiftKey || event.metaKey) {
     if (event.target instanceof Element && event.target.closest('a[href]')) decision('native','modified or already handled');
@@ -96,6 +114,7 @@ window.addEventListener('click', event => {
     decision('wall',source?.ready()?'warm':'cold');
     if (pressing) return;
     pressing=true;show();
+    preloadArrivalScripts();
     if (source) source.close(route.url,route.name);
     else pending={url:route.url,name:route.name};
   }
