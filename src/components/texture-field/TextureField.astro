@@ -70,13 +70,7 @@ const phoneImages = [
   class UrukTextureField extends HTMLElement {
     private observer: ResizeObserver | undefined;
     private readonly update = () => {
-      const page = this.parentElement;
-
-      if (!page) {
-        return;
-      }
-
-      const pageHeight = page.getBoundingClientRect().height;
+      const pageHeight = this.getBoundingClientRect().height;
 
       for (const stack of this.querySelectorAll<HTMLElement>('[data-texture-stack]')) {
         if (window.getComputedStyle(stack).display === 'none') {
@@ -89,9 +83,7 @@ const phoneImages = [
 
     connectedCallback(): void {
       this.observer = new ResizeObserver(this.update);
-      if (this.parentElement) {
-        this.observer.observe(this.parentElement);
-      }
+      this.observer.observe(this);
       for (const image of this.querySelectorAll<HTMLImageElement>(
         '[data-texture-stack] > img:not([data-repeat])',
       )) {
