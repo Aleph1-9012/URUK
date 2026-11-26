@@ -44,8 +44,7 @@ mark { background: transparent; color: var(--blue); text-decoration: underline; 
 
 @media (max-width: 47.999rem) {
   .menu-search input { font-size: 1rem; }
-  /* The 76px header row and 38px search field fill the rest of the first screen. */
-  .menu-page { min-height: calc(100svh - 114px); padding-block: 12px 0; }
+  .menu-page { min-height: 0; padding-block: 12px 0; }
   .menu-filters { margin-left: 0; padding-top: 0; }
   .menu-index { display: none; }
   .menu-empty { padding: 28px 24px 24px; }

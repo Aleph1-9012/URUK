@@ -125,16 +125,34 @@ const { active, showSearch = false } = Astro.props;
 
   @media (max-width: 47.999rem) {
     .site-header {
-      min-height: 84px;
+      --header-gap: 14px;
+      min-height: 0;
     }
 
     .site-header__inner {
-      align-content: center;
-      min-height: 84px;
+      align-items: stretch;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: var(--header-gap);
+      min-height: 0;
+      padding-block: var(--header-gap);
+    }
+
+    .site-header--search .site-header__inner {
+      padding-bottom: 0;
     }
 
     .site-header__row {
-      min-height: 84px;
+      align-items: stretch;
+      flex: none;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: var(--header-gap);
+      min-height: 0;
+    }
+
+    .site-header__logo {
+      align-self: flex-start;
     }
 
     .site-header__logo img {
@@ -142,20 +160,17 @@ const { active, showSearch = false } = Astro.props;
     }
 
     .site-header__links {
-      gap: 14px;
+      gap: 0;
+      justify-content: space-between;
+      transform: none;
+    }
+
+    .site-header__link {
+      display: flex;
     }
 
     .site-header__search {
-      width: 100%;
-    }
-
-    .site-header--search,
-    .site-header--search .site-header__inner {
-      min-height: 0;
-    }
-
-    .site-header--search .site-header__row {
-      min-height: 76px;
+      flex: none;
     }
   }
 </style>

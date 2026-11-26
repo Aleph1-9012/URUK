@@ -29,10 +29,12 @@ const PageTag = showSearch ? 'uruk-menu' : 'div';
   {active === 'results' && <CountTransitionCover />}
   <PageTag class="page-layout" id="top">
     <TextureField />
-    <Header active={active} showSearch={showSearch}><slot name="search" slot="search" /></Header>
-    <main class="page-layout__main">
-      <slot />
-    </main>
+    <div class:list={['page-layout__opening', { 'page-layout__opening--menu': showSearch }]}>
+      <Header active={active} showSearch={showSearch}><slot name="search" slot="search" /></Header>
+      <main class="page-layout__main">
+        <slot />
+      </main>
+    </div>
     {showFooter && <Footer />}
   </PageTag>
 </Base>
@@ -42,6 +44,18 @@ const PageTag = showSearch ? 'uruk-menu' : 'div';
     min-height: 100svh;
     overflow-x: clip;
     position: relative;
+  }
+
+  .page-layout__opening {
+    display: contents;
+  }
+
+  @media (max-width: 47.999rem) {
+    /* The phone Menu and its header share the first screen, before the footer. */
+    .page-layout__opening--menu {
+      display: block;
+      min-height: 100svh;
+    }
   }
 
   .page-layout__main {
