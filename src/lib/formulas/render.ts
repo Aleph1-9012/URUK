@@ -53,7 +53,7 @@ export function renderInlineArticleFormula(parts: readonly ArticlePart[]): strin
   pieces.push(joined);
   const content = pieces.map(piece => `<span class="formula-inline__piece">${piece}</span>`).join('');
 
-  return `<span class="formula-inline formula-inline--article"><span class="formula-inline__viewport" data-formula-viewport>${content}</span></span>`;
+  return `<span class="formula-inline formula-inline--article"><span class="formula-inline__viewport">${content}</span></span>`;
 }
 
 export function renderFormula(tex: string, display: boolean): string {

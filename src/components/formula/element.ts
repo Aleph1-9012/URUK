@@ -41,17 +41,20 @@ if (!customElements.get('uruk-formula')) {
 
 const inlineFormulas = document.querySelectorAll<MathMLElement>('.formula-inline:not(.formula-inline--article) math');
 
-function fitInlineFormula(math: Element): void {
-  const overflowing = math.scrollWidth > math.clientWidth + 1;
-  math.parentElement?.toggleAttribute('data-overflow', overflowing);
+function setInlineOverflow(viewport: Element, overflowing: boolean): void {
+  viewport.parentElement?.toggleAttribute('data-overflow', overflowing);
 
   if (overflowing) {
-    math.setAttribute('tabindex', '0');
-    math.setAttribute('aria-description', 'Scroll horizontally to read the full formula.');
+    viewport.setAttribute('tabindex', '0');
+    viewport.setAttribute('aria-description', 'Scroll horizontally to read the full formula.');
   } else {
-    math.removeAttribute('tabindex');
-    math.removeAttribute('aria-description');
+    viewport.removeAttribute('tabindex');
+    viewport.removeAttribute('aria-description');
   }
+}
+
+function fitInlineFormula(math: Element): void {
+  setInlineOverflow(math, math.scrollWidth > math.clientWidth + 1);
 }
 
 const inlineObserver = new ResizeObserver((entries) => {
@@ -80,21 +83,13 @@ const articleObserver = new ResizeObserver((entries) => {
   }
 
   for (const formula of formulas) {
-    const viewport = formula.querySelector('[data-formula-viewport]');
+    const viewport = formula.querySelector('.formula-inline__viewport');
     if (!viewport) continue;
 
     const width = formula.getBoundingClientRect().width;
     const overflowing = Array.from(viewport.children).some(piece => piece.getBoundingClientRect().width > width + 1);
-    formula.toggleAttribute('data-overflow', overflowing);
     viewport.toggleAttribute('data-scroller', overflowing);
-
-    if (overflowing) {
-      viewport.setAttribute('tabindex', '0');
-      viewport.setAttribute('aria-description', 'Scroll horizontally to read the full formula.');
-    } else {
-      viewport.removeAttribute('tabindex');
-      viewport.removeAttribute('aria-description');
-    }
+    setInlineOverflow(viewport, overflowing);
   }
 });
 

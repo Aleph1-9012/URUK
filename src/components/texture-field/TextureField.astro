@@ -102,21 +102,9 @@ const phoneImages = [
     }
 
     private extendStack(stack: HTMLElement, pageHeight: number): void {
-      const sources: HTMLImageElement[] = [];
+      const sources = stack.querySelectorAll<HTMLImageElement>(':scope > img:not([data-repeat])');
       const sourceHeights: number[] = [];
       const clones = stack.querySelectorAll<HTMLImageElement>('img[data-repeat]');
-
-      for (const image of stack.querySelectorAll<HTMLImageElement>(':scope > img:not([data-repeat])')) {
-        sources.push(image);
-      }
-
-      if (sources.length === 0) {
-        for (const clone of clones) {
-          clone.remove();
-        }
-
-        return;
-      }
 
       let stackHeight = 0;
 

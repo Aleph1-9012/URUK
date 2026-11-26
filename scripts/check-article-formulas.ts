@@ -14,7 +14,7 @@ export async function checkArticleFormulas(browser: Browser, origin: string) {
       const formula = page.locator('.result-prose .formula-inline').filter({ hasText: text }).first();
       const state = await formula.evaluate(node => {
         const lefts = Array.from(node.querySelectorAll('.formula-inline__piece'), piece => piece.getBoundingClientRect().left);
-        const viewport = node.querySelector('[data-formula-viewport]');
+        const viewport = node.querySelector('.formula-inline__viewport');
 
         return {
           wraps: lefts.some((left, i) => i > 0 && left <= lefts[i - 1]!),
