@@ -1,4 +1,4 @@
-import { highlight, matches, readSearch } from './matching';
+import { highlight, matches, queryWords, readSearch, searchText } from './matching';
 import { readStatusKind, statusLabel } from '../../content/review-status';
 
 function markKeyboardFocus(input: HTMLInputElement, signal: AbortSignal): void {
@@ -52,26 +52,26 @@ class UrukMenu extends HTMLElement {
     markKeyboardFocus(input, signal);
 
     const buttons = this.querySelectorAll<HTMLButtonElement>('[data-filter]');
-    const cards = roll.cards.map((node) => ({
-      indexRow: this.querySelector<HTMLElement>(`[data-index-family="${node.dataset.family}"]`),
-      family: node.dataset.family ?? '',
-      topic: node.dataset.topic ?? '',
-      title: node.dataset.title ?? '',
-      paperTitle: node.dataset.paperTitle ?? '',
-      status: node.dataset.status ?? '',
+    const cards = roll.cards.map(({ dataset: { family, topic, title, paperTitle, status } }) => ({
+      indexRow: this.querySelector<HTMLElement>(`[data-index-family="${family}"]`),
+      family: family ?? '',
+      text: searchText(family, topic, title, paperTitle),
+      status: status ?? '',
     }));
     const highlights = Array.from(this.querySelectorAll<HTMLElement>('[data-highlight]'), (node) => ({ node, text: node.textContent ?? '' }));
+    let highlightedQuery = this.querySelector('[data-highlight] mark') ? undefined : '';
     let state = readSearch(location.search);
 
     const render = () => {
       input.value = state.query;
       const query = state.query.trim();
+      const words = queryWords(query);
       const status = statusLabel(state.status);
       const active = query !== '' || status !== '';
       const families = new Set<string>();
 
       for (const item of cards) {
-        const visible = matches(item, state.query, state.status);
+        const visible = matches(item, words, state.status);
 
         if (item.indexRow) {
           item.indexRow.hidden = !visible;
@@ -82,8 +82,12 @@ class UrukMenu extends HTMLElement {
         }
       }
 
-      for (const { node, text } of highlights) {
-        node.replaceChildren(highlight(text, state.query));
+      if (highlightedQuery !== query) {
+        for (const { node, text } of highlights) {
+          node.replaceChildren(highlight(text, words));
+        }
+
+        highlightedQuery = query;
       }
 
       for (const button of buttons) {

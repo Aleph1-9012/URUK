@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { capPoint, capTurns, closedCardWidth, friezeColumn, initialCardIndex, knobRuling, rollerRulings, rollerTurn, sheetRows, wholeSealTile } from '../src/components/roll/model';
-import { matches, readSearch } from '../src/components/menu/matching';
+import { matches, queryWords, readSearch, searchText } from '../src/components/menu/matching';
 
 test('the current result is centred where possible and clamped at both ends', () => {
   expect(initialCardIndex(5, 5, 14)).toBe(3);
@@ -10,24 +10,22 @@ test('the current result is centred where possible and clamped at both ends', ()
 });
 
 test('search matches paper titles, questions, topics and numbers while retaining review filters', () => {
+  const paperTitle = 'The Euclidean plane is not five-colorable';
   const item = {
-    family: '158',
-    topic: 'Chromatic number of the plane',
-    title: 'How many colours?',
-    paperTitle: 'The Euclidean plane is not five-colorable',
+    text: searchText('158', 'Chromatic number of the plane', 'How many colours?', paperTitle),
     status: 'under-review',
   };
 
   expect(readSearch('?q=158+COLOUR&status=under-review')).toEqual({ query: '158 COLOUR', status: 'under-review' });
   expect(readSearch('?q=Euclidean+plane&status=under-review')).toEqual({ query: 'Euclidean plane', status: 'under-review' });
-  expect(matches(item, item.paperTitle, '')).toBe(true);
-  expect(matches(item, 'EUCLIDEAN 158', 'under-review')).toBe(true);
-  expect(matches(item, 'chromatic', '')).toBe(true);
-  expect(matches(item, '158 COLOUR', 'under-review')).toBe(true);
-  expect(matches(item, 'Euclidean collatz', '')).toBe(false);
-  expect(matches(item, 'Euclidean', 'approved')).toBe(false);
-  expect(matches(item, 'colour collatz', '')).toBe(false);
-  expect(matches(item, 'colour', 'approved')).toBe(false);
+  expect(matches(item, queryWords(paperTitle), '')).toBe(true);
+  expect(matches(item, queryWords('EUCLIDEAN 158'), 'under-review')).toBe(true);
+  expect(matches(item, queryWords('chromatic'), '')).toBe(true);
+  expect(matches(item, queryWords('158 COLOUR'), 'under-review')).toBe(true);
+  expect(matches(item, queryWords('Euclidean collatz'), '')).toBe(false);
+  expect(matches(item, queryWords('Euclidean'), 'approved')).toBe(false);
+  expect(matches(item, queryWords('colour collatz'), '')).toBe(false);
+  expect(matches(item, queryWords('colour'), 'approved')).toBe(false);
   expect(readSearch('?status=made-up').status).toBe('');
 });
 

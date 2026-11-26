@@ -1,15 +1,15 @@
 import { readStatusKind } from '../../content/review-status';
 
-type SearchItem = { family: string; topic: string; title: string; paperTitle: string; status: string };
+export function searchText(family: string | undefined, topic: string | undefined, title: string | undefined, paperTitle: string | undefined): string {
+  return [family, topic, title, paperTitle].join(' ').toLocaleLowerCase('en');
+}
 
-function queryWords(query: string): string[] {
+export function queryWords(query: string): string[] {
   return query.toLocaleLowerCase('en').trim().split(/\s+/u).filter(Boolean);
 }
 
-export function matches(item: SearchItem, query: string, status: string): boolean {
-  const text = `${item.family} ${item.topic} ${item.title} ${item.paperTitle}`.toLocaleLowerCase('en');
-
-  return (status === '' || status === item.status) && queryWords(query).every((word) => text.includes(word));
+export function matches(item: { text: string; status: string }, words: readonly string[], status: string): boolean {
+  return (status === '' || status === item.status) && words.every(word => item.text.includes(word));
 }
 
 export function readSearch(search: string) {
@@ -22,9 +22,8 @@ export function readSearch(search: string) {
   };
 }
 
-export function highlight(text: string, query: string): DocumentFragment {
+export function highlight(text: string, words: readonly string[]): DocumentFragment {
   const fragment = document.createDocumentFragment();
-  const words = queryWords(query);
   const lower = text.toLocaleLowerCase('en');
   let position = 0;
 
