@@ -18,6 +18,7 @@ interface Props {
 }
 
 const { title, description, math = false } = Astro.props;
+const vercelAnalytics = process.env.VERCEL === '1';
 ---
 
 <!doctype html>
@@ -37,6 +38,12 @@ const { title, description, math = false } = Astro.props;
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <title>{title}</title>
     {description !== undefined && <meta name="description" content={description} />}
+    {vercelAnalytics && (
+      <>
+        <script is:inline>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+        <script is:inline defer src="/_vercel/insights/script.js"></script>
+      </>
+    )}
   </head>
   <body>
     <ConeCover />
