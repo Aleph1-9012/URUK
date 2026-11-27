@@ -32,8 +32,8 @@ const images = [
       <div class="roll-roller roll-roller--end" aria-hidden="true"><span><canvas></canvas></span></div>
       <div class="roll-paper">
         <div class="roll-seal" aria-hidden="true" data-bleed></div>
-        {!current && <p class="roll-heading" data-roll-heading></p>}
         <div class="roll-frame">
+          {!current && <p class="roll-heading" data-roll-heading>All {results.length} {results.length === 1 ? 'result' : 'results'}</p>}
           <div class="roll-window" data-scroller tabindex="0" role="group" aria-label="Results roll">
             <div class="roll-track">
               {results.map(({ data }, index) => (
@@ -50,7 +50,6 @@ const images = [
                   aria-current={data.family === current ? 'page' : undefined}
                 >
                   <span class="roll-card__topic" data-highlight={current ? undefined : ''}>{data.family} · {data.topic}</span>
-                  <span class="roll-card__number" aria-hidden="true">{data.family}</span>
                   <span class="roll-card__title" data-highlight={current ? undefined : ''}>{data.paperTitle}</span>
                   <span class="roll-card__status"><ReviewTag status={data.status} /></span>
                   <span class="roll-card__read">

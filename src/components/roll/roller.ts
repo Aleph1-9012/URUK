@@ -10,6 +10,7 @@ const FRIEZE_HEIGHT = 64;
 const OUTLINE = 0.75;
 const OUTLINE_OFFSETS = [[-OUTLINE, 0], [OUTLINE, 0], [0, -OUTLINE], [0, OUTLINE]] as const;
 const paperSeals = new WeakMap<HTMLImageElement, HTMLCanvasElement>();
+const phoneOutlines = new WeakMap<HTMLCanvasElement, CanvasRenderingContext2D>();
 
 // Close to a whole turn the cap is left to the drawing itself, so it rests on the exact approved pixels.
 const CAP_AT_REST = 0.002;
@@ -37,6 +38,7 @@ type RollerFrame = {
   moved: number;
   tile: number;
   direction: number;
+  paperEdge: number | undefined;
 };
 
 function bulge(x: number): number {
@@ -88,6 +90,29 @@ function paperSeal(seal: HTMLImageElement, paper: string): HTMLCanvasElement | u
   paperSeals.set(seal, canvas);
 
   return canvas;
+}
+
+function phoneOutline(canvas: HTMLCanvasElement, ratio: number, edge: number) {
+  let layer = phoneOutlines.get(canvas);
+
+  if (!layer) {
+    layer = document.createElement('canvas').getContext('2d') ?? undefined;
+    if (!layer) return;
+    phoneOutlines.set(canvas, layer);
+  }
+
+  const width = Math.ceil(FACE_RIGHT * ratio);
+  const height = Math.ceil((edge + FRIEZE_HEIGHT + 1) * ratio);
+
+  if (layer.canvas.width !== width || layer.canvas.height !== height) {
+    layer.canvas.width = width;
+    layer.canvas.height = height;
+  }
+
+  layer.setTransform(ratio, 0, 0, ratio, 0, 0);
+  layer.clearRect(0, 0, width / ratio, height / ratio);
+
+  return layer;
 }
 
 function drawCap(context: CanvasRenderingContext2D, turns: number, height: number, paper: string, ink: string): void {
@@ -164,6 +189,12 @@ export function drawRoller(canvas: HTMLCanvasElement, frame: RollerFrame): void 
 
   context.setTransform(ratio, 0, 0, rows / cssHeight, 0, 0);
   context.clearRect(0, 0, cssWidth, cssHeight);
+
+  if (frame.paperEdge !== undefined && frame.moved === 0 && Number.isInteger(frame.offset / frame.tile)) {
+    // At each snap point the approved phone drawing is already underneath.
+    return;
+  }
+
   context.fillStyle = paper;
   context.fill(band((x) => rimBottom(x) + 0.5, (x) => ridgeTop(x) - 0.25));
   context.fill(band((x) => ridgeBottom(x) + 0.75, (x) => floor(x) - 0.25));
@@ -193,14 +224,29 @@ export function drawRoller(canvas: HTMLCanvasElement, frame: RollerFrame): void 
 
   for (let column = Math.ceil(FACE_LEFT * ratio); column < FACE_RIGHT * ratio; column += 1) {
     const x = column / ratio;
-    const { source, top } = friezeColumn(x, frame.offset, frame.tile, frame.direction);
+    const { source, top } = friezeColumn(x, frame.offset, frame.tile, frame.direction, frame.paperEdge);
     columns.push({ x, source: Math.floor(source * sealWidth), top });
   }
 
   if (outline) {
-    for (const [right, down] of OUTLINE_OFFSETS) {
+    const layer = frame.paperEdge === undefined ? undefined : phoneOutline(canvas, ratio, frame.paperEdge);
+
+    if (layer) {
+      // Project once, then stamp the four shifted outlines as a single image.
+      const { width, height } = layer.canvas;
+
       for (const { x, source, top } of columns) {
-        context.drawImage(outline, source, 0, 1, sealHeight, x + right, top + down, 1 / ratio, FRIEZE_HEIGHT);
+        layer.drawImage(outline, source, 0, 1, sealHeight, x, top, 1 / ratio, FRIEZE_HEIGHT);
+      }
+
+      for (const [right, down] of OUTLINE_OFFSETS) {
+        context.drawImage(layer.canvas, right, down, width / ratio, height / ratio);
+      }
+    } else {
+      for (const [right, down] of OUTLINE_OFFSETS) {
+        for (const { x, source, top } of columns) {
+          context.drawImage(outline, source, 0, 1, sealHeight, x + right, top + down, 1 / ratio, FRIEZE_HEIGHT);
+        }
       }
     }
   }

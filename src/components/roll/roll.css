@@ -71,7 +71,6 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 .roll-card { border-left: 1px solid var(--ink); color: var(--ink); display: flex; flex-direction: column; min-height: 286px; min-width: 0; padding: 28px 20px 24px; scroll-snap-align: start; text-decoration: none; }
 /* Room for three lines of topic, so every title on the roll starts on one line. */
 .roll-card__topic { color: var(--muted); font: var(--label-font-size)/1.2 var(--font-special-elite); letter-spacing: .04em; min-height: 3.6em; text-transform: uppercase; }
-.roll-card__number { display: none; }
 .roll-card__title { font: italic 1.375rem/1.75rem var(--font-alegreya); margin-bottom: 16px; overflow-wrap: anywhere; }
 .roll-card__status, .roll-card__read { align-items: center; display: flex; font: var(--label-font-size)/1.2 var(--font-special-elite); letter-spacing: .04em; text-transform: uppercase; }
 .roll-card__read { font-size: var(--control-font-size); }
@@ -118,7 +117,7 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
   .roll-wind p { margin-left: 0; }
 
   .roll-stage { padding: 60px 36px 0 24px; }
-  uruk-roll[data-closed] .roll-stage { padding-bottom: 60px; }
+  uruk-roll:not(.roll-neighbors) .roll-stage { padding-bottom: 60px; }
   uruk-roll[data-closed] .roll-sheet { width: auto; }
 
   .roll-roller { bottom: auto; container-type: inline-size; height: 120px; left: -20px; right: -36px; top: -60px; width: auto; }
@@ -126,6 +125,7 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
   /* Slice the same 120px and 32px ends of the 386px artwork at either source density. */
   .roll-roller span { border-image-slice: calc(120 / 386 * 100%) 0 calc(32 / 386 * 100%) 0 fill; }
   .roll-roller--end { bottom: -60px; left: -20px; right: -36px; top: auto; transform: scaleY(-1); }
+  uruk-roll:not(.roll-neighbors) .roll-roller--end { display: block; }
 
   .roll-paper::after { display: none; }
   .roll-paper { animation-name: roll-open-down; border-block: 0 1px solid var(--ink); border-inline: 1.5px solid var(--ink); padding-right: 80px; }
@@ -133,14 +133,28 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
   .roll-seal::after { background: var(--seal) repeat-x calc(0px - var(--seal-offset, 0px)) 0 / var(--seal-tile, 228px) 64px; content: ""; height: 64px; left: 72px; position: absolute; top: 0; transform: rotate(90deg); transform-origin: 0 0; width: var(--sheet-height, 4000px); }
 
   .roll-frame { margin-left: 0; padding-top: 24px; }
-  uruk-roll[data-closed] .roll-frame { margin-right: 0; padding-block: 0 24px; }
-  uruk-roll[data-closed] .roll-heading { color: var(--ink); display: block; font: var(--label-font-size)/1.2 var(--font-special-elite); letter-spacing: .04em; padding: 28px 16px 8px; text-transform: uppercase; }
-  uruk-roll[data-empty] .roll-heading { display: none; }
-  uruk-roll[data-empty] .roll-frame { padding-top: 24px; }
+  uruk-roll[data-closed] .roll-frame { margin-right: 0; }
+
+  /* The same two lines are reserved before the cards in every filter. */
+  .roll-heading {
+    block-size: 2lh;
+    color: var(--ink);
+    display: -webkit-box;
+    font: var(--label-font-size)/1.2 var(--font-special-elite);
+    letter-spacing: .04em;
+    margin-bottom: 8px;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    padding-inline: 16px;
+    text-transform: uppercase;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
 
   /* A vertical swipe past the last roll card continues into the page. */
   .roll-window { height: var(--window-height, auto); overflow: hidden auto; scroll-snap-type: y mandatory; }
   .roll-track { grid-auto-columns: auto; grid-auto-flow: row; grid-auto-rows: var(--row-height, 1fr); width: auto; }
+  uruk-roll[data-closed] .roll-track { grid-auto-columns: auto; }
   .roll-track::after { display: none; }
 
   .roll-card { border-left: 0; border-top: 1px solid var(--ink); min-height: 228px; padding: 24px 16px 20px; }
@@ -149,13 +163,8 @@ uruk-roll[data-closed] .roll-track { grid-auto-columns: var(--card-width); }
 
   .roll-slot { border-left: 0; border-top: 1px solid var(--ink); min-height: 228px; padding: 24px 16px; }
 
-  uruk-roll[data-closed] .roll-card { align-content: start; align-items: baseline; border-bottom: 1px solid var(--ink); border-top: 0; flex-flow: row wrap; gap: 6px; min-height: 0; padding: 12px 16px; }
-  uruk-roll[data-closed] .roll-card__topic { display: none; }
-  uruk-roll[data-closed] .roll-card__number { color: var(--muted); display: block; font: var(--label-font-size)/1.2 var(--font-special-elite); order: 1; width: 40px; }
-  uruk-roll[data-closed] .roll-card__status { letter-spacing: 0; margin: 0 auto 0 0; order: 2; }
-  uruk-roll[data-closed] .roll-card__read { letter-spacing: 0; margin: 0; order: 3; }
-  uruk-roll[data-closed] .roll-card__title { flex-basis: 100%; font-size: 1rem; line-height: 1.25rem; margin: 0; order: 4; }
-  uruk-roll[data-closed] .roll-slot { border-bottom: 0; border-top: 1px solid var(--ink); }
+  /* Measure the full list's intrinsic row once per width, even if a filter is active. */
+  .roll-track[data-measure-rows] .roll-card[hidden] { display: flex !important; }
 
   .roll-neighbors .roll-card__title { margin-bottom: 16px; }
   .roll-neighbors .roll-card:not([data-neighbor]) { display: none; }

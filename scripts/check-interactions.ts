@@ -92,6 +92,15 @@ async function checkFilm(page: Page): Promise<void> {
 async function checkMenu(page: Page, origin: string): Promise<void> {
   await page.goto(`${origin}/results/`);
   const search = page.locator('[data-search]');
+  const phone = (page.viewportSize()?.width ?? 0) < 768;
+  const heading = page.locator('[data-roll-heading]');
+  const headingHeight = () => heading.evaluate((element) => element.getBoundingClientRect().height);
+  await page.evaluate(async () => { await document.fonts.ready; });
+  const initialHeight = await headingHeight();
+
+  assert.equal(await heading.isVisible(), phone);
+  if (phone) assert.match(await heading.innerText(), /^All \d+ results$/i);
+
   await search.fill('colour');
   await page.waitForFunction(() => location.search.includes('q=colour'));
 
@@ -102,6 +111,10 @@ async function checkMenu(page: Page, origin: string): Promise<void> {
 
   assert.ok(counts.cards.length > 0);
   assert.deepEqual(counts.cards, counts.rows);
+  if (phone) {
+    assert.match(await heading.innerText(), /results? for “colour”/i);
+    assert.equal(await headingHeight(), initialHeight);
+  }
   await search.fill('no-such-uruk-paper');
   assert.equal(await page.locator('.roll-card:not([hidden])').count(), 0);
   assert.equal(await page.locator('[data-no-results]').isVisible(), true);
@@ -110,7 +123,11 @@ async function checkMenu(page: Page, origin: string): Promise<void> {
   await page.locator('[data-filter="under-review"]').click();
   assert.equal(await page.locator('.roll-card:not([hidden]):not([data-status="under-review"])').count(), 0);
 
-  if ((page.viewportSize()?.width ?? 0) < 768) {
+  if (phone) {
+    await search.fill('long-unbroken-query'.repeat(12));
+    assert.match(await heading.innerText(), /^No matching results/i);
+    assert.equal(await headingHeight(), initialHeight);
+    await page.locator('[data-clear]').click();
     await page.locator('[data-filter=""]').click();
     const roll = page.getByRole('group', { name: 'Results roll', exact: true });
     await roll.evaluate((element) => element.scrollTo({ top: element.scrollHeight, behavior: 'instant' }));

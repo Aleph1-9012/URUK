@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { capPoint, capTurns, closedCardWidth, friezeColumn, initialCardIndex, knobRuling, rollerRulings, rollerTurn, sheetRows, wholeSealTile } from '../src/components/roll/model';
+import { capPoint, capTurns, closedCardWidth, friezeColumn, initialCardIndex, knobRuling, PHONE_ROLLER_JOIN, rollerRulings, rollerTurn, sheetRows, wholeSealTile } from '../src/components/roll/model';
 import { matches, queryWords, readSearch, searchText } from '../src/components/menu/matching';
 
 test('the current result is centred where possible and clamped at both ends', () => {
@@ -72,4 +72,20 @@ test('the cap and its knob come back to the drawing after a whole card', () => {
   expect(capTurns(100, 228, -1)).toBeCloseTo(-capTurns(100, 228, 1));
   expect(knobRuling(turns).x * 2).toBeCloseTo(127.5, 0);
   expect(knobRuling(turns).width).toBe(0.5);
+});
+
+test('both phone rollers match the seal on the paper where it leaves the cylinder', () => {
+  const tile = 228;
+  const offset = tile * 2.25 + 18;
+  const paperEdge = 45;
+
+  for (const direction of [1, -1]) {
+    const join = friezeColumn(PHONE_ROLLER_JOIN, offset, tile, direction, paperEdge);
+    expect(join.source).toBeCloseTo(0.25);
+    expect(join.top).toBeCloseTo(paperEdge);
+  }
+
+  const above = PHONE_ROLLER_JOIN - 5;
+  expect(friezeColumn(above, offset, tile, 1, paperEdge).source).toBeLessThan(0.25);
+  expect(friezeColumn(above, offset, tile, -1, paperEdge).source).toBeGreaterThan(0.25);
 });

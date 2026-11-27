@@ -8,6 +8,9 @@ const CLOSED_END_WIDTH = 100;
 // The cylinder as it is drawn in the roller artwork, in CSS pixels of its 120px box.
 export const ROLLER_CENTRE = 59;
 export const ROLLER_RADIUS = 37;
+export const PHONE_ROLLER_JOIN = 60;
+// The phone drawing meets the sheet 18px before the end of its 228px seal.
+export const PHONE_SEAL_PHASE = -18 / SEAL_TILE_WIDTH;
 
 const RULING_ANGLE = 0.1144;
 const FIRST_RULING = 0.218;
@@ -82,11 +85,23 @@ export function rollerRulings(turn: number, direction: number) {
   return rulings;
 }
 
-export function friezeColumn(x: number, offset: number, tile: number, direction: number) {
+export function friezeColumn(x: number, offset: number, tile: number, direction: number, paperEdge?: number) {
   const angle = Math.asin(Math.max(-1, Math.min(1, (ROLLER_CENTRE - x) / ROLLER_RADIUS)));
-  const position = offset - direction * (ROLLER_RADIUS * angle + FRIEZE_LEAD);
+  let lead = FRIEZE_LEAD;
+  let top = FRIEZE_TOP;
 
-  return { source: ((position % tile + tile) % tile) / tile, top: FRIEZE_TOP - FRIEZE_RISE * (1 - Math.cos(angle)) };
+  if (paperEdge !== undefined) {
+    // The phone sheet covers the front half of the cylinder. At that join the
+    // imprint and the paper must show the same point in the same seal tile.
+    const join = Math.asin((ROLLER_CENTRE - PHONE_ROLLER_JOIN) / ROLLER_RADIUS);
+    lead = -ROLLER_RADIUS * join;
+    top = paperEdge + FRIEZE_RISE * (1 - Math.cos(join));
+    offset += tile * PHONE_SEAL_PHASE;
+  }
+
+  const position = offset - direction * (ROLLER_RADIUS * angle + lead);
+
+  return { source: ((position % tile + tile) % tile) / tile, top: top - FRIEZE_RISE * (1 - Math.cos(angle)) };
 }
 
 export function capTurns(offset: number, tile: number, direction: number): number {

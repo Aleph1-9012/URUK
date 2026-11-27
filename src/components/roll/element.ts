@@ -1,4 +1,4 @@
-import { closedCardWidth, initialCardIndex, sheetRows, wholeSealTile } from './model';
+import { closedCardWidth, initialCardIndex, PHONE_SEAL_PHASE, sheetRows, wholeSealTile } from './model';
 import { drawRoller } from './roller';
 
 const PHONE = '(max-width: 47.999rem)';
@@ -24,6 +24,7 @@ class UrukRoll extends HTMLElement {
   private dragStart: { x: number; scroll: number } | undefined;
   private dragged = false;
   private seal: HTMLImageElement | undefined;
+  private sealStrip: HTMLElement | null = null;
   private sealOffset = 0;
   private drawnOffset: number | undefined;
   private turnFrame: number | undefined;
@@ -32,6 +33,9 @@ class UrukRoll extends HTMLElement {
   private fontsReady = false;
   private resultsReady = false;
   private phoneArrivalStarted = false;
+  private paperEdge: number | undefined;
+  private minimumRow: { width: number; height: number } | undefined;
+  private phoneRowHeight = 0;
 
   get cards(): HTMLAnchorElement[] {
     return Array.from(this.querySelectorAll<HTMLAnchorElement>('.roll-card'));
@@ -62,6 +66,7 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
+    this.sealStrip = this.querySelector('.roll-seal');
     if (this.hasAttribute('data-arrival') && !this.phoneArrivalStarted) {
       if (document.documentElement.hasAttribute('data-cone-stage')) {
         this.finishArrival();
@@ -146,6 +151,7 @@ class UrukRoll extends HTMLElement {
       if (signal.aborted) return;
 
       this.fontsReady = true;
+      this.minimumRow = undefined;
       this.measure();
       this.prepareArrival();
     });
@@ -201,6 +207,7 @@ class UrukRoll extends HTMLElement {
     const slot = this.querySelector<HTMLElement>('[data-roll-slot]');
     const note = this.querySelector<HTMLElement>('[data-roll-slot-note]');
     const help = this.querySelector<HTMLElement>('[data-roll-help]');
+    const heading = this.querySelector('[data-roll-heading]');
     this.unwritten ??= note?.textContent ?? '';
 
     if (slot && note) {
@@ -216,8 +223,7 @@ class UrukRoll extends HTMLElement {
     }
 
     this.toggleAttribute('data-filtered', filter.active);
-    this.toggleAttribute('data-empty', count === 0);
-    this.querySelector('[data-roll-heading]')?.replaceChildren(filter.description);
+    if (heading) heading.textContent = filter.description;
     this.scrollToStart();
     this.measure();
     this.resultsReady = true;
@@ -348,7 +354,9 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
-    const unopened = this.unopenedAmount(paper);
+    const phoneMenu = this.phone && !this.dataset.current;
+    const opening = phoneMenu ? this.dataset.arrival === 'opening' : paper.getAnimations().length > 0;
+    const unopened = opening ? this.unopenedAmount(paper) : 0;
     const offset = this.sealOffset + unopened * this.sealTile * OPENING_TURNS;
     const moved = this.drawnOffset === undefined ? 0 : offset - this.drawnOffset;
     this.drawnOffset = offset;
@@ -360,10 +368,11 @@ class UrukRoll extends HTMLElement {
         moved,
         tile: this.sealTile,
         direction: canvas.closest('.roll-roller--end') ? -1 : 1,
+        paperEdge: this.paperEdge,
       });
     }
 
-    if (moved !== 0 || paper.getAnimations().length > 0) {
+    if (moved !== 0 || opening) {
       this.scheduleTurn();
     }
   }
@@ -378,6 +387,11 @@ class UrukRoll extends HTMLElement {
 
     this.closeSheet();
     this.fitRows(viewport);
+    const roller = this.querySelector('.roll-roller--start');
+    // The turned seal is inset 8px from the paper's right edge.
+    this.paperEdge = this.phone && !this.dataset.current && this.sealStrip && roller
+      ? roller.getBoundingClientRect().right - this.sealStrip.getBoundingClientRect().right + 8
+      : undefined;
     const length = this.phone ? paper.clientHeight : paper.clientWidth;
     this.sealTile = wholeSealTile(length);
     this.style.setProperty('--seal-tile', `${this.sealTile}px`);
@@ -389,8 +403,8 @@ class UrukRoll extends HTMLElement {
   private closeSheet(): void {
     const filtered = this.hasAttribute('data-filtered');
 
-    if (!filtered || this.phone) {
-      this.toggleAttribute('data-closed', filtered);
+    if (this.phone || !filtered) {
+      this.toggleAttribute('data-closed', this.phone && !this.dataset.current);
       return;
     }
 
@@ -415,39 +429,51 @@ class UrukRoll extends HTMLElement {
   }
 
   private fitRows(viewport: HTMLElement): void {
-    const top = viewport.scrollTop;
+    if (!this.phone || this.dataset.current) {
+      if (this.phoneRowHeight) {
+        this.phoneRowHeight = 0;
+        viewport.style.removeProperty('--window-height');
+        viewport.style.removeProperty('--row-height');
+      }
+      return;
+    }
 
-    viewport.style.removeProperty('--window-height');
-    viewport.style.removeProperty('--row-height');
-
-    if (!this.phone || this.dataset.current) return;
-
-    const items = Array.from(this.visibleItems());
-    const first = items[0];
-
-    if (!first) return;
-
-    const closed = this.hasAttribute('data-closed');
+    const track = viewport.querySelector<HTMLElement>('.roll-track');
     const sheet = this.querySelector<HTMLElement>('.roll-sheet')?.getBoundingClientRect();
     const paper = this.querySelector<HTMLElement>('.roll-paper')?.getBoundingClientRect();
     const frame = viewport.getBoundingClientRect();
     const viewportHeight = this.querySelector<HTMLElement>('.roll-viewport-height')?.getBoundingClientRect().height;
 
-    if (!sheet || !paper || !viewportHeight) {
+    if (!track || !sheet || !paper || !viewportHeight) {
       return;
+    }
+
+    const width = frame.width;
+    const cards = this.cards;
+    const first = cards[0];
+
+    if (!first) return;
+
+    const top = viewport.scrollTop;
+
+    if (this.minimumRow?.width !== width) {
+      viewport.style.removeProperty('--row-height');
+      track.setAttribute('data-measure-rows', '');
+      this.minimumRow = { width, height: Math.ceil(first.getBoundingClientRect().height) };
+      track.removeAttribute('data-measure-rows');
     }
 
     // Measured against the paper, because the paper is still sliding out while the page opens.
     const below = paper.bottom - frame.bottom;
     const start = sheet.top + frame.top - paper.top + window.scrollY;
-    const available = viewportHeight - start - below - (closed ? CLOSING_ROLLER : 0);
+    const available = viewportHeight - start - below - CLOSING_ROLLER;
+    const fitted = sheetRows(available, this.minimumRow.height, cards.length + 1, true);
     // Whole pixels keep the last snap point at the scroll boundary.
-    const minimum = Math.ceil(first.bounds.height);
-    const fitted = sheetRows(available, minimum, items.length, !closed);
-    const rowHeight = Math.floor(fitted.rowHeight);
+    this.phoneRowHeight = Math.floor(fitted.rowHeight);
+    const count = track.querySelectorAll('[data-snap-item]:not([hidden])').length;
 
-    viewport.style.setProperty('--row-height', `${rowHeight}px`);
-    viewport.style.setProperty('--window-height', `${fitted.rows * rowHeight}px`);
+    viewport.style.setProperty('--row-height', `${this.phoneRowHeight}px`);
+    viewport.style.setProperty('--window-height', `${Math.min(count, fitted.rows) * this.phoneRowHeight}px`);
     viewport.scrollTop = top;
   }
 
@@ -477,12 +503,15 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
-    const item = this.visibleItems().next().value?.bounds;
-    const step = (this.phone ? item?.height : item?.width) ?? 0;
-    const distance = this.phone ? viewport.scrollTop : viewport.scrollLeft;
+    const phone = this.phone;
+    const step = this.phoneRowHeight || this.visibleItems().next().value?.bounds[phone ? 'height' : 'width'] || 0;
+    const distance = phone ? viewport.scrollTop : viewport.scrollLeft;
     this.sealOffset = step > 0 ? (distance / step) * this.sealTile : 0;
-    this.style.setProperty('--seal-offset', `${this.sealOffset}px`);
+    const phase = this.paperEdge === undefined ? 0 : PHONE_SEAL_PHASE * this.sealTile;
+    this.sealStrip?.style.setProperty('--seal-offset', `${this.sealOffset + phase}px`);
     this.scheduleTurn();
+
+    if (phone) return;
 
     for (const button of this.querySelectorAll<HTMLButtonElement>('[data-direction]')) {
       button.disabled = button.dataset.direction === '-1'
