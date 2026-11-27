@@ -178,12 +178,6 @@ class UrukRoll extends HTMLElement {
     return Math.max(0, this.viewport?.scrollTop ?? 0);
   }
 
-  get scrolledBeyondPage(): boolean {
-    const viewport = this.viewport;
-
-    return viewport !== null && viewport.scrollTop > viewport.clientHeight;
-  }
-
   scrollToStart(behavior: ScrollBehavior = 'instant'): void {
     if (this.resultsReady) this.finishArrival();
     this.viewport?.scrollTo({ top: 0, left: 0, behavior });

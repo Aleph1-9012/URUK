@@ -27,8 +27,7 @@ class UrukBackToTop extends HTMLElement {
     const pageY = Math.max(0, window.scrollY);
     const footerBounds = this.footer?.getBoundingClientRect();
     const footerAtEnd = footerBounds !== undefined && footerBounds.height > 0 && footerBounds.bottom <= window.innerHeight + 1;
-    const rollScrolled = this.roll?.scrolledBeyondPage ?? false;
-    const shouldFloat = (pageY > window.innerHeight || rollScrolled) && !footerAtEnd;
+    const shouldFloat = pageY > window.innerHeight && !footerAtEnd;
     const distance = pageY + (this.roll?.verticalScrollOffset ?? 0);
 
     this.style.setProperty('--rosette-angle', `${distance / PIXELS_PER_RADIAN}rad`);

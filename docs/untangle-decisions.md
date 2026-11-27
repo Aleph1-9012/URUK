@@ -117,9 +117,10 @@ defined before using its public methods. Its connection signal guards the
 asynchronous setup so a removed element cannot attach listeners later.
 
 Outcome: `dig/content.ts` owns the existing home-page explanation and explicit
-review metadata. The menu uses the roll's `filterResults` API; back-to-top uses
-`scrollToStart` and `scrolledBeyondPage`. The roll owns its internal selectors,
-messages, and layout measurements. The existing layout composition remains.
+review metadata. The menu uses the roll's `filterResults` API. Back to top uses
+`verticalScrollOffset` to turn the rosette and `scrollToStart` and `stopScroll`
+to control the roll. Page scroll determines when the button floats. The roll
+owns its internal selectors, messages, and layout measurements. The existing layout composition remains.
 
 ## Make routine work discoverable
 

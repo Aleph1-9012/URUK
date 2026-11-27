@@ -130,18 +130,22 @@ async function checkMenu(page: Page, origin: string): Promise<void> {
     await page.locator('[data-clear]').click();
     await page.locator('[data-filter=""]').click();
     const roll = page.getByRole('group', { name: 'Results roll', exact: true });
-    await roll.evaluate((element) => element.scrollTo({ top: element.scrollHeight, behavior: 'instant' }));
-    const back = page.locator('uruk-back-to-top[data-floating] a[aria-label="Back to top"]');
-    await back.waitFor({ state: 'visible' });
-    await back.click();
-    await roll.evaluate((element) => new Promise<void>((resolve) => {
-      function settled(): void {
-        if (element.scrollTop === 0) resolve();
-        else requestAnimationFrame(settled);
-      }
-
-      settled();
+    await roll.evaluate((element) => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      element.scrollTo({ top: element.scrollHeight, behavior: 'instant' });
+    });
+    await waitFrames(page);
+    const end = await roll.evaluate((element) => ({
+      page: scrollY, top: element.scrollTop, height: element.clientHeight, length: element.scrollHeight,
     }));
+    assert.equal(end.page, 0);
+    assert.equal(end.top, end.length - end.height);
+    assert.ok(end.top > end.height, 'The roll must scroll past one roll height.');
+    assert.equal(await page.locator('.back-to-top__floating').isVisible(), false, 'Roll scrolling alone must not show the floating button.');
+
+    await page.locator('.back-to-top__rest').click();
+    assert.equal(await roll.evaluate(element => element.scrollTop), 0);
+    assert.equal(await page.evaluate(() => window.scrollY), 0);
   }
 }
 
