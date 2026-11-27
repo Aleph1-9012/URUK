@@ -3,6 +3,7 @@
 Read `README.md` for commands and task entry points. Start with the feature's
 entry point and follow its imports; avoid reading every film for a local change.
 
+- Use `alpha` for site development and push commits to `origin/alpha`.
 - Apply the `anti-slop` skill for JavaScript and TypeScript work. The user's skill
   is at `/home/silverhand9012/.codex/skills/anti-slop/SKILL.md`. There is no
   configured repository lint command; do not claim one passed.
