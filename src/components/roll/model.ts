@@ -45,9 +45,9 @@ export function wholeSealTile(length: number): number {
   return length / Math.max(1, Math.round(length / SEAL_TILE_WIDTH));
 }
 
-export function sheetRows(available: number, rowHeight: number, total: number, stretch: boolean) {
+export function sheetRows(available: number, rowHeight: number, total: number) {
   const rows = Math.max(1, Math.min(total, Math.floor(available / rowHeight)));
-  const height = stretch && rows < total ? Math.max(rowHeight, available / rows) : rowHeight;
+  const height = rows < total ? Math.max(rowHeight, available / rows) : rowHeight;
 
   return { rows, rowHeight: height };
 }

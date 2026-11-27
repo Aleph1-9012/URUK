@@ -2,6 +2,7 @@ import { closedCardWidth, initialCardIndex, PHONE_SEAL_PHASE, sheetRows, wholeSe
 import { drawRoller } from './roller';
 
 const PHONE = '(max-width: 47.999rem)';
+const SHOWN_ITEMS = '[data-snap-item]:not([hidden])';
 const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
 
 // How far the roller turns while the sheet opens, in seal rollings. About one full turn keeps its lines readable.
@@ -45,12 +46,14 @@ class UrukRoll extends HTMLElement {
     return this.querySelector<HTMLElement>('.roll-window');
   }
 
-  private *visibleItems(): Generator<{ item: HTMLElement; bounds: DOMRect }, undefined> {
-    for (const item of this.querySelectorAll<HTMLElement>('[data-snap-item]:not([hidden])')) {
+  private firstItemBounds(): DOMRect | undefined {
+    for (const item of this.querySelectorAll<HTMLElement>(SHOWN_ITEMS)) {
       const bounds = item.getBoundingClientRect();
 
-      if (bounds.width > 0) yield { item, bounds };
+      if (bounds.width > 0) return bounds;
     }
+
+    return undefined;
   }
 
   private get phone(): boolean {
@@ -93,10 +96,10 @@ class UrukRoll extends HTMLElement {
 
     for (const button of this.querySelectorAll<HTMLButtonElement>('[data-direction]')) {
       button.addEventListener('click', () => {
-        const first = this.visibleItems().next().value;
+        const first = this.firstItemBounds();
 
         if (first) {
-          viewport.scrollBy({ left: first.bounds.width * Number(button.dataset.direction), behavior: this.behavior() });
+          viewport.scrollBy({ left: first.width * Number(button.dataset.direction), behavior: this.behavior() });
         }
       }, { signal });
     }
@@ -131,7 +134,7 @@ class UrukRoll extends HTMLElement {
       this.dragStart = undefined;
 
       if (this.dragged) {
-        const width = this.visibleItems().next().value?.bounds.width ?? 1;
+        const width = this.firstItemBounds()?.width ?? 1;
         const target = Math.round(viewport.scrollLeft / width) * width;
         viewport.style.removeProperty('scroll-snap-type');
         viewport.style.removeProperty('user-select');
@@ -197,8 +200,6 @@ class UrukRoll extends HTMLElement {
   }
 
   filterResults(families: ReadonlySet<string>, filter: ResultFilter): void {
-    if (this.resultsReady) this.finishArrival();
-
     for (const card of this.cards) {
       card.hidden = !families.has(card.dataset.family ?? '');
     }
@@ -415,7 +416,7 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
-    const count = Array.from(this.visibleItems()).length;
+    const count = this.querySelectorAll(SHOWN_ITEMS).length;
     const { paddingLeft, paddingRight } = getComputedStyle(stage);
     const available = stage.clientWidth - parseFloat(paddingLeft) - parseFloat(paddingRight) - parseFloat(getComputedStyle(frame).marginLeft);
     const width = closedCardWidth(count, available);
@@ -467,10 +468,10 @@ class UrukRoll extends HTMLElement {
     const below = paper.bottom - frame.bottom;
     const start = sheet.top + frame.top - paper.top + window.scrollY;
     const available = viewportHeight - start - below - CLOSING_ROLLER;
-    const fitted = sheetRows(available, this.minimumRow.height, cards.length + 1, true);
+    const fitted = sheetRows(available, this.minimumRow.height, cards.length + 1);
     // Whole pixels keep the last snap point at the scroll boundary.
     this.phoneRowHeight = Math.floor(fitted.rowHeight);
-    const count = track.querySelectorAll('[data-snap-item]:not([hidden])').length;
+    const count = track.querySelectorAll(SHOWN_ITEMS).length;
 
     viewport.style.setProperty('--row-height', `${this.phoneRowHeight}px`);
     viewport.style.setProperty('--window-height', `${Math.min(count, fitted.rows) * this.phoneRowHeight}px`);
@@ -484,11 +485,11 @@ class UrukRoll extends HTMLElement {
       return;
     }
 
-    const items = Array.from(this.visibleItems());
-    const width = items[0]?.bounds.width ?? 0;
+    const width = viewport.querySelector(SHOWN_ITEMS)?.getBoundingClientRect().width ?? 0;
 
     if (width > 0 && width !== this.lastCardWidth) {
-      const current = items.findIndex(({ item }) => item.dataset.family === this.dataset.current);
+      const items = Array.from(viewport.querySelectorAll<HTMLElement>(SHOWN_ITEMS));
+      const current = items.findIndex(item => item.getAttribute('aria-current') === 'page');
       const visible = Math.round(viewport.clientWidth / width);
 
       viewport.scrollTo({ left: initialCardIndex(current, visible, items.length) * width, behavior: 'instant' });
@@ -504,7 +505,7 @@ class UrukRoll extends HTMLElement {
     }
 
     const phone = this.phone;
-    const step = this.phoneRowHeight || this.visibleItems().next().value?.bounds[phone ? 'height' : 'width'] || 0;
+    const step = this.phoneRowHeight || this.firstItemBounds()?.[phone ? 'height' : 'width'] || 0;
     const distance = phone ? viewport.scrollTop : viewport.scrollLeft;
     this.sealOffset = step > 0 ? (distance / step) * this.sealTile : 0;
     const phase = this.paperEdge === undefined ? 0 : PHONE_SEAL_PHASE * this.sealTile;

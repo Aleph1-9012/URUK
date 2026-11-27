@@ -37,10 +37,10 @@ test('filtered cards stop at a closing roller only when every card fits whole', 
 });
 
 test('the phone sheet shows whole rows, and a scrolling list fills the sheet', () => {
-  expect(sheetRows(512, 228, 15, true)).toEqual({ rows: 2, rowHeight: 256 });
-  expect(sheetRows(100, 228, 15, true)).toEqual({ rows: 1, rowHeight: 228 });
-  expect(sheetRows(450, 103, 6, false)).toEqual({ rows: 4, rowHeight: 103 });
-  expect(sheetRows(900, 103, 4, false)).toEqual({ rows: 4, rowHeight: 103 });
+  expect(sheetRows(512, 228, 15)).toEqual({ rows: 2, rowHeight: 256 });
+  expect(sheetRows(100, 228, 15)).toEqual({ rows: 1, rowHeight: 228 });
+  expect(sheetRows(450, 103, 6)).toEqual({ rows: 4, rowHeight: 112.5 });
+  expect(sheetRows(900, 103, 4)).toEqual({ rows: 4, rowHeight: 103 });
 });
 
 test('a whole number of seal rollings spans the sheet', () => {
