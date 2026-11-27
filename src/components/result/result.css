@@ -46,6 +46,7 @@
 }
 @media (max-width: 63.999rem) { .result-opening { grid-template-columns: 1fr 1fr; gap: 24px; } }
 @media (max-width: 47.999rem) {
+  .result-page { padding-top: 16px; }
   .result-neighbors { width: 100%; }
   .result-opening { display: flex; flex-direction: column; gap: 30px; margin-bottom: 56px; }
   .result-introduction { display: contents; }

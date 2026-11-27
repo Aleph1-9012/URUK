@@ -125,7 +125,7 @@ const { active, showSearch = false } = Astro.props;
 
   @media (max-width: 47.999rem) {
     .site-header {
-      --header-gap: 14px;
+      --header-gap: 20px;
       min-height: 0;
     }
 
@@ -133,13 +133,8 @@ const { active, showSearch = false } = Astro.props;
       align-items: stretch;
       flex-direction: column;
       flex-wrap: nowrap;
-      gap: var(--header-gap);
       min-height: 0;
-      padding-block: var(--header-gap);
-    }
-
-    .site-header--search .site-header__inner {
-      padding-bottom: 0;
+      padding-block: 20px;
     }
 
     .site-header__row {
@@ -171,6 +166,7 @@ const { active, showSearch = false } = Astro.props;
 
     .site-header__search {
       flex: none;
+      margin-block-start: 29px;
     }
   }
 </style>
