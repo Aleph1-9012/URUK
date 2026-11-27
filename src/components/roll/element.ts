@@ -47,13 +47,10 @@ class UrukRoll extends HTMLElement {
   }
 
   private firstItemBounds(): DOMRect | undefined {
-    for (const item of this.querySelectorAll<HTMLElement>(SHOWN_ITEMS)) {
-      const bounds = item.getBoundingClientRect();
+    const selector = this.phone && this.dataset.current ? '[data-neighbor]:not([hidden])' : SHOWN_ITEMS;
+    const bounds = this.querySelector(selector)?.getBoundingClientRect();
 
-      if (bounds.width > 0) return bounds;
-    }
-
-    return undefined;
+    return bounds && bounds.width > 0 ? bounds : undefined;
   }
 
   private get phone(): boolean {
